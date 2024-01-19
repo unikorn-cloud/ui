@@ -34,7 +34,7 @@ spec:
   source:
     repoURL: https://spjmurray.github.io/unikorn-ui
     chart: unikorn-ui
-    targetRevision: v0.2.2
+    targetRevision: v0.2.3
     helm:
       parameters:
       - name: dockerConfig
