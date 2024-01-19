@@ -10,19 +10,13 @@ This is a user-friendly user interface built on top of [Unikorn](https://github.
 
 ## Installing
 
-Ensure you have a PAT that allows access to the images:
-
-```
-docker login ghcr.io --username spjmurray --password ghp_blahBlahBlah
-```
-
-Then install using your method of choice:
+Install using your method of choice:
 
 <details>
 <summary>Helm</summary>
 
 ```shell
-helm install unikorn-ui charts/unikorn-ui --namespace unikorn --create-namespace --set dockerConfig=$(base64 -w0 ~/.docker/config.json)
+helm install unikorn-ui charts/unikorn-ui --namespace unikorn --create-namespace
 ```
 </details>
 
