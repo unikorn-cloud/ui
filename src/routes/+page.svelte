@@ -147,10 +147,10 @@
 	 about styles being unused due to no <svg> tags...
 	-->
 	<img
-		src="img/ecai.svg"
-		alt="EscherCloud AI Logo"
+		src="img/logo.svg"
+		alt="Unikorn Logo"
 		onload="SVGInject(this)"
-		style="max-height: 2.1em; width: auto; margin-right: 2em;"
+		style="max-height: 2.2em; width: auto"
 	/>
 </header>
 
@@ -215,9 +215,11 @@
 	/* Global constants */
 	:global(:root) {
 		/* Brand color palette */
-		--brand: rgb(144, 97, 148);
-		--brand-light: rgb(171, 132, 174);
-		--brand-dark: rgb(108, 73, 111);
+		--brand: rgb(73, 118, 132);
+		--brand-light: rgb(101, 162, 181);
+		--brand-dark: rgb(49, 80, 89);
+		--input: var(--brand-dark);
+		--input-selected: var(--brand);
 		--border: rgb(170, 170, 170);
 
 		/* Generic colors */
@@ -237,7 +239,7 @@
 
 		--overlay: rgba(255, 255, 255, 0.9);
 		--overlay-highlight: rgba(254, 250, 255, 0.9);
-		--background: rgb(244, 229, 245);
+		--background: rgb(231, 238, 240);
 	}
 
 	/* Global styles */
@@ -250,21 +252,17 @@
 		font-family: sans-serif;
 	}
 	:global(body) {
-		background-image: url('/img/wave.svg');
-		background-repeat: no-repeat;
-		background-position: top right;
-		background-size: cover;
 		background-color: var(--background);
 	}
 	:global(h1, h2, h3, h4, h5, h6) {
-		color: var(--brand-dark);
+		color: var(--brand);
 	}
 	:global(a:link, a:visited) {
 		transition: all 0.2s ease-in;
-		color: var(--brand-dark);
+		color: var(--input);
 	}
 	:global(a:hover) {
-		color: var(--brand-light);
+		color: var(--input-selected);
 	}
 	:global(input[type='text'], input[type='password'], input[type='range'], select) {
 		box-sizing: border-box;
@@ -332,12 +330,12 @@
 		gap: var(--padding-small);
 		cursor: pointer;
 		color: white;
-		background-color: var(--brand);
+		background-color: var(--input);
 		border-radius: var(--radius);
 		border-style: none;
 	}
 	:global(button:hover) {
-		background-color: var(--brand-dark);
+		background-color: var(--input-selected);
 	}
 	:global(button:disabled) {
 		cursor: not-allowed;
@@ -381,8 +379,8 @@
 		padding: var(--padding);
 		background-color: var(--overlay);
 		display: flex;
-		gap: 2em;
-		align-content: center;
+		gap: 1em;
+		align-items: center;
 	}
 
 	#hamburger {
@@ -497,8 +495,8 @@
 	@media (prefers-color-scheme: dark) {
 		:global(:root) {
 			--overlay: rgba(40, 40, 40, 0.9);
-			--overlay-highlight: rgba(50, 33, 51, 0.9);
-			--background: rgb(13, 13, 28);
+			--overlay-highlight: rgb(23, 33, 36);
+			--background: rgb(7, 18, 21);
 			--border: rgb(80, 80, 80);
 		}
 		:global(body) {
@@ -507,21 +505,6 @@
 		}
 		:global(h1, h2, h3, h4, h5, h6) {
 			color: #eee;
-		}
-		:global(a:link, a:visited) {
-			color: var(--brand-light);
-		}
-		:global(a:hover) {
-			color: var(--brand-dark);
-		}
-		:global(button) {
-			background-color: var(--brand-dark);
-		}
-		:global(button:hover) {
-			background-color: var(--brand);
-		}
-		:global(button:disabled) {
-			background-color: var(--mid-grey);
 		}
 	}
 </style>

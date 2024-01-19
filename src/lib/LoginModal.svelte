@@ -125,8 +125,8 @@
 	<div class="login-modal-header">
 		<img
 			id="logo"
-			src="img/ecai.svg"
-			alt="EscherCloud AI Logo"
+			src="img/logo.svg"
+			alt="Unikorn Logo"
 			onload="SVGInject(this)"
 			style="padding-top: 2em; padding-bottom: 2em; width: 15em; max-width: 20em; height: auto;"
 		/>

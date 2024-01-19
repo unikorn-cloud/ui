@@ -22,43 +22,40 @@
 <style>
 	article {
 		cursor: pointer;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
 	}
 	header {
+		transition: all 0.3s ease-in-out;
 		color: white;
-		background-color: var(--brand);
+		background-color: var(--input);
 		padding: var(--padding-small);
 		border-top-right-radius: var(--radius);
 		border-top-left-radius: var(--radius);
 	}
+	header:hover {
+		background-color: var(--input-selected);
+	}
+	header.selected {
+		background-color: var(--input-selected);
+	}
+
 	main {
 		background-color: var(--overlay);
 		padding: var(--padding-small);
-		border: 1px solid var(--brand);
 		border-bottom-right-radius: var(--radius);
 		border-bottom-left-radius: var(--radius);
 	}
-	header.selected {
-		background-color: var(--brand-light);
-	}
 	main.selected {
-		border: 1px solid var(--brand-light);
 		background-color: var(--overlay-highlight);
 	}
 
 	@media (prefers-color-scheme: dark) {
 		header {
 			color: white;
-			background-color: var(--brand-dark);
 		}
 		main {
 			background-color: var(--overlay);
-			border: 1px solid var(--brand-dark);
-		}
-		header.selected {
-			background-color: var(--brand);
-		}
-		main.selected {
-			border: 1px solid var(--brand);
 		}
 	}
 </style>

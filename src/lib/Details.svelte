@@ -18,9 +18,6 @@
 </details>
 
 <style>
-	details {
-		transition: all 0.3s ease-in-out;
-	}
 	details[open] {
 		width: 100%;
 	}
@@ -29,7 +26,8 @@
 		border-bottom-right-radius: 0;
 	}
 	summary {
-		background-color: var(--brand);
+		transition: all 0.3s ease-in-out;
+		background-color: var(--input);
 		border-radius: var(--radius);
 		list-style-type: none;
 		cursor: pointer;
@@ -40,7 +38,7 @@
 		color: white;
 	}
 	summary:hover {
-		background-color: var(--brand-dark);
+		background-color: var(--input-selected);
 	}
 	section {
 		display: flex;
