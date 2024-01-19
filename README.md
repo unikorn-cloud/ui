@@ -40,7 +40,7 @@ spec:
   source:
     path: charts/unikorn-ui
     repoURL: git@github.com:spjmurray/unikorn-ui
-    targetRevision: 0.1.47
+    targetRevision: v0.2.0
     helm:
       parameters:
       - name: dockerConfig
