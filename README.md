@@ -38,8 +38,8 @@ metadata:
 spec:
   project: default
   source:
-    path: charts/unikorn-ui
-    repoURL: git@github.com:spjmurray/unikorn-ui
+    repoURL: https://spjmurray.github.io/unikorn-ui
+    chart: unikorn-ui
     targetRevision: v0.2.2
     helm:
       parameters:
