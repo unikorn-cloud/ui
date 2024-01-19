@@ -16,7 +16,7 @@ endif
 BUILDX_PLATFORMS := $(shell echo $(patsubst %,linux/%,$(ARCHITECTURES)) | sed 's/ /,/g')
 
 # This defines how docker containers are tagged.
-DOCKER_ORG = ghcr.io/eschercloudai
+DOCKER_ORG = ghcr.io/spjmurray
 
 .PHONY: all
 all: images

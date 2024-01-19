@@ -2,11 +2,11 @@
 
 A badass, opinionated, deployer of souls!
 
-![Unikorn](https://github.com/eschercloudai/unikorn/blob/6e51f1f10b69de0f069f3a858af432894de45723/docs/unikornapi.png)
+![Unikorn](https://github.com/spjmurray/unikorn/blob/6e51f1f10b69de0f069f3a858af432894de45723/docs/unikornapi.png)
 
 ## Overview
 
-This is a user-friendly user interface built on top of [Unikorn](https://github.com/eschercloudai/unikorn) server.
+This is a user-friendly user interface built on top of [Unikorn](https://github.com/spjmurray/unikorn) server.
 
 ## Installing
 
@@ -39,7 +39,7 @@ spec:
   project: default
   source:
     path: charts/unikorn-ui
-    repoURL: git@github.com:eschercloudai/unikorn-ui
+    repoURL: git@github.com:spjmurray/unikorn-ui
     targetRevision: 0.1.47
     helm:
       parameters:
