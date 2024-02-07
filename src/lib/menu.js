@@ -27,7 +27,7 @@ const menu = {
 			id: 'documentation',
 			value: 'Documentation',
 			icon: 'mdi:book-open-blank-variant',
-			link: 'https://docs.eschercloud.ai'
+			link: 'https://docs.unikorn-cloud.org'
 		}
 	]
 };

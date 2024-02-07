@@ -3,7 +3,10 @@
 	// potentially compromise the code or tokens with a supply chain attack,
 	// so keep imports deliberately sparese please!
 	import { browser } from '$app/environment';
+	import { env } from '$env/dynamic/public';
+
 	import { createRemoteJWKSet, jwtVerify } from 'jose';
+
 	import { setCredentials } from '$lib/credentials.js';
 	import { compareAccessTokenHash } from '$lib/oidc.js';
 
@@ -23,7 +26,7 @@
 				const code_verifier = window.sessionStorage.getItem('oauth2_code_challenge_verifier');
 				const form = new URLSearchParams({
 					grant_type: 'authorization_code',
-					client_id: '9a719e1e-aa85-4a21-a221-324e787efd78',
+					client_id: env.PUBLIC_OAUTH2_CLIENT_ID,
 					redirect_uri: `https://${window.location.host}/oauth2/callback`,
 					code: code,
 					code_verifier: code_verifier
@@ -37,21 +40,16 @@
 					body: form.toString()
 				};
 
-				const response = await fetch(
-					`https://${window.location.host}/api/v1/auth/oauth2/tokens`,
-					options
-				);
+				const response = await fetch(env.PUBLIC_OAUTH2_TOKEN_ENDPOINT, options);
 
 				// TODO: error handling.
 				const result = await response.json();
 
-				const jwks = createRemoteJWKSet(
-					new URL(`https://${window.location.host}/api/v1/auth/jwks`)
-				);
+				const jwks = createRemoteJWKSet(new URL(env.PUBLIC_OAUTH2_JWKS_ENDPOINT));
 
 				const jwt = await jwtVerify(result.id_token, jwks, {
-					issuer: `https://${window.location.host}`,
-					audience: '9a719e1e-aa85-4a21-a221-324e787efd78'
+					issuer: env.PUBLIC_OAUTH2_ISSUER,
+					audience: env.PUBLIC_OAUTH2_CLIENT_ID
 				});
 
 				try {

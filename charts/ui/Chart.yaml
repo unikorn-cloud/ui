@@ -1,0 +1,10 @@
+apiVersion: v2
+name: unikorn-ui
+description: A Helm chart for deploying Unikorn UI
+
+type: application
+
+version: v0.1.0
+appVersion: v0.1.0
+
+icon: https://assets.unikorn-cloud.org/assets/images/logos/dark-on-light/icon.png

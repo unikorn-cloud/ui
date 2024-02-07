@@ -1,8 +1,7 @@
 # Unikorn-UI
 
-A badass, opinionated, deployer of souls!
-
-![Unikorn UI](docs/screenshot.png)
+![Unikorn Logo](https://raw.githubusercontent.com/unikorn-cloud/assets/main/images/logos/light-on-dark/logo.svg#gh-dark-mode-only)
+![Unikorn Logo](https://raw.githubusercontent.com/unikorn-cloud/assets/main/images/logos/dark-on-light/logo.svg#gh-light-mode-only)
 
 ## Overview
 
@@ -16,7 +15,8 @@ Install using your method of choice:
 <summary>Helm</summary>
 
 ```shell
-helm install unikorn-ui charts/unikorn-ui --namespace unikorn --create-namespace
+helm repo add unikorn-ui https::/unikorn-cloud.github.io/ui
+helm install unikorn-ui unikorn-ui/ui --namespace unikorn --create-namespace
 ```
 </details>
 
@@ -32,9 +32,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://spjmurray.github.io/unikorn-ui
-    chart: unikorn-ui
-    targetRevision: v0.2.3
+    repoURL: https://unikorn-cloud.github.io/ui
+    chart: ui
+    targetRevision: v0.1.0
     helm:
       parameters:
       - name: dockerConfig
@@ -57,7 +57,7 @@ spec:
 make image
 ```
 
-## Developemnt
+## Development
 
 ### Installing
 

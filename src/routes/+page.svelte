@@ -1,15 +1,17 @@
 <script>
 	import { browser } from '$app/environment';
 	import { onDestroy } from 'svelte';
+
+	import Base64url from 'crypto-js/enc-base64url';
+	import SHA256 from 'crypto-js/sha256';
 	import MD5 from 'crypto-js/md5';
 
-	import { token, email, project, updateCredentials, removeCredentials } from '$lib/credentials.js';
+	import { token, email, removeCredentials } from '$lib/credentials.js';
 	import { getMenu, selected } from '$lib/menu.js';
 	import { listProjects } from '$lib/client.js';
 	import { env } from '$env/dynamic/public';
 
 	import Menu from '$lib/Menu.svelte';
-	import LoginModal from '$lib/LoginModal.svelte';
 	import LabeledInput from '$lib/LabeledInput.svelte';
 
 	import Breadcrumbs from '$lib/Breadcrumbs.svelte';
@@ -22,9 +24,6 @@
 
 	// Access token, this changing should trigger all the things.
 	let accessToken;
-
-	// OpenStack project ID.
-	let projectID;
 
 	// User email address from OIDC.
 	let emailAddress = '';
@@ -54,13 +53,11 @@
 
 	const emailUnsubscribe = email.subscribe(changeEmail);
 	const tokenUnsubscribe = token.subscribe(changeToken);
-	const projectUnsubscribe = project.subscribe(changeProjectID);
 	const selectedUnsubscribe = selected.subscribe(changeMenuItem);
 
 	onDestroy(() => {
 		tokenUnsubscribe();
 		emailUnsubscribe();
-		projectUnsubscribe();
 		selectedUnsubscribe();
 	});
 
@@ -73,15 +70,39 @@
 		removeCredentials();
 	}
 
-	function changeProjectID(value) {
-		projectID = value;
-	}
-
 	function changeEmail(value) {
 		emailAddress = value;
 	}
 
 	function changeToken(value) {
+		if (value == null) {
+			if (browser) {
+				let codeChallengeVerifierBytes = new Uint8Array(32);
+
+				crypto.getRandomValues(codeChallengeVerifierBytes);
+
+				const codeChallengeVerifier = btoa(codeChallengeVerifierBytes);
+				const codeChallenge = SHA256(codeChallengeVerifier).toString(Base64url);
+
+				window.sessionStorage.setItem('oauth2_code_challenge_verifier', codeChallengeVerifier);
+
+				// TODO: set a nonce
+				const query = new URLSearchParams({
+					response_type: 'code',
+					client_id: env.PUBLIC_OAUTH2_CLIENT_ID,
+					redirect_uri: `https://${window.location.host}/oauth2/callback`,
+					code_challenge_method: 'S256',
+					code_challenge: codeChallenge,
+					scope: 'openid email profile'
+				});
+
+				const url = new URL(env.PUBLIC_OAUTH2_AUTHORIZATION_ENDPOINT);
+				url.search = query.toString();
+
+				document.location = url.toString();
+			}
+		}
+
 		accessToken = value;
 	}
 
@@ -105,15 +126,19 @@
 
 		projects = result;
 
+		/*
 		// projectID *should* be set before the access token changes.
 		currentProject = projects.filter((p) => p.id == projectID)[0];
+		*/
 	}
 
 	$: updateProjects(accessToken);
 
 	// When the project changes, rescope the token.
 	async function changeProject() {
+		/*
 		await updateCredentials(accessToken, currentProject.id);
+		*/
 	}
 
 	function changeMenuItem(value) {
@@ -126,8 +151,6 @@
 		menu = getMenu(value);
 	}
 </script>
-
-<LoginModal />
 
 <Portal target="#modal" />
 <div id="modal" />

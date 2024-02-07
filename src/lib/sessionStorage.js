@@ -14,7 +14,11 @@ export function sessionStorage(key) {
 
 	function mySet(new_value) {
 		if (browser) {
-			window.sessionStorage.setItem(key, new_value);
+			if (new_value == null) {
+				window.sessionStorage.removeItem(key);
+			} else {
+				window.sessionStorage.setItem(key, new_value);
+			}
 		}
 
 		store.set(new_value);

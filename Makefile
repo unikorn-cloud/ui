@@ -16,7 +16,7 @@ endif
 BUILDX_PLATFORMS := $(shell echo $(patsubst %,linux/%,$(ARCHITECTURES)) | sed 's/ /,/g')
 
 # This defines how docker containers are tagged.
-DOCKER_ORG = ghcr.io/spjmurray
+DOCKER_ORG = ghcr.io/unikorn-cloud
 
 .PHONY: all
 all: images
@@ -35,4 +35,4 @@ images-kind-load: images
 .PHONY: lint
 lint:
 	npm run lint
-	helm lint --strict charts/unikorn-ui
+	helm lint --strict charts/ui
