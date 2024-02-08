@@ -51,11 +51,14 @@
 </script>
 
 <View>
+	<h1>Applications</h1>
+	<p>Deploy applications on exiting or dynamically provisioned clusters.</p>
+
 	<Hint>Select an application for more details.</Hint>
 
 	<ItemView items={applications}>
 		<svelte:fragment slot="header" let:item>
-			<div class="name">{item.humanReadableName}</div>
+			<h4>{item.humanReadableName}</h4>
 		</svelte:fragment>
 
 		<svelte:fragment slot="main" let:item>
@@ -97,8 +100,7 @@
 </View>
 
 <style>
-	div.name {
-		width: 100%;
+	h4 {
 		text-align: center;
 	}
 	div.image-wrapper {

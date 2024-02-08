@@ -10,8 +10,8 @@
 	}
 </script>
 
-<article on:click={click} on:keypress={click}>
-	<header class:selected>
+<article on:click={click} on:keypress={click} class:selected>
+	<header>
 		<slot name="header" />
 	</header>
 	<main class:selected>
@@ -22,40 +22,19 @@
 <style>
 	article {
 		cursor: pointer;
-		border: 1px solid var(--border);
 		border-radius: var(--radius);
+		background-color: var(--overlay);
+		backdrop-filter: blur(var(--radius));
+		box-shadow: 0 0 var(--radius) var(--shadow);
+	}
+	article.selected {
+		background-color: var(--overlay-highlight);
 	}
 	header {
 		transition: all 0.3s ease-in-out;
-		color: white;
-		background-color: var(--input);
-		padding: var(--padding-small);
-		border-top-right-radius: var(--radius);
-		border-top-left-radius: var(--radius);
+		padding: var(--padding);
 	}
-	header:hover {
-		background-color: var(--input-selected);
-	}
-	header.selected {
-		background-color: var(--input-selected);
-	}
-
 	main {
-		background-color: var(--overlay);
-		padding: var(--padding-small);
-		border-bottom-right-radius: var(--radius);
-		border-bottom-left-radius: var(--radius);
-	}
-	main.selected {
-		background-color: var(--overlay-highlight);
-	}
-
-	@media (prefers-color-scheme: dark) {
-		header {
-			color: white;
-		}
-		main {
-			background-color: var(--overlay);
-		}
+		padding: var(--padding);
 	}
 </style>

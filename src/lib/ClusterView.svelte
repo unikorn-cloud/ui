@@ -19,7 +19,6 @@
 	import View from '$lib/View.svelte';
 	import ItemView from '$lib/ItemView.svelte';
 	import ItemHeader from '$lib/ItemHeader.svelte';
-	import ToolBar from '$lib/ToolBar.svelte';
 	import Details from '$lib/Details.svelte';
 	import Button from '$lib/Button.svelte';
 	import Ribbon from '$lib/Ribbon.svelte';
@@ -239,7 +238,10 @@
 	/>
 {/if}
 
-<ToolBar>
+<View>
+	<h1>Kubernetes Clusters</h1>
+	<p>Provision, monitor and manage Kubernetes clusters.</p>
+
 	<Ribbon>
 		<Button text="New" icon="material-symbols:add" on:message={showCreateModal} />
 
@@ -253,9 +255,7 @@
 			/>
 		</Details>
 	</Ribbon>
-</ToolBar>
 
-<View>
 	{#if clusters.length == 0}
 		<Hint>
 			No clusters found, select <em>New</em> to get started!
