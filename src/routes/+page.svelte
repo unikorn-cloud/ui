@@ -7,14 +7,12 @@
 	import MD5 from 'crypto-js/md5';
 
 	import { token, email, removeCredentials } from '$lib/credentials.js';
-	import { getMenu, selected } from '$lib/menu.js';
+	import { menu, selected } from '$lib/menu.js';
 	import { listProjects } from '$lib/client.js';
 	import { env } from '$env/dynamic/public';
 
 	import Menu from '$lib/Menu.svelte';
-	import LabeledInput from '$lib/LabeledInput.svelte';
 
-	import Breadcrumbs from '$lib/Breadcrumbs.svelte';
 	import ControlPlaneView from '$lib/ControlPlaneView.svelte';
 	import ClusterView from '$lib/ClusterView.svelte';
 	import ApplicationView from '$lib/ApplicationView.svelte';
@@ -28,24 +26,21 @@
 	// User email address from OIDC.
 	let emailAddress = '';
 
-	// TODO: we should probably cache this in session storage.
-	let showmenu;
-
-	// Menu to display.
-	let menu;
+	// Only used in mobile view, default to closed.
+	let shownav = false;
 
 	// Content to display.
 	let content;
 
 	// Whether or not to behave as if it's a large desktop window.
-	let desktop;
+	let desktop = true;
 
 	if (browser) {
-		// TODO: unlikely but this may change due to a window resize...
-		const mql = window.matchMedia('(min-width: 720px)');
+		desktop = window.matchMedia('(min-width: 720px)').matches;
 
-		desktop = mql.matches;
-		showmenu = mql.matches;
+		window.onresize = () => {
+			desktop = window.matchMedia('(min-width: 720px)').matches;
+		};
 	}
 
 	let projects = [];
@@ -62,7 +57,7 @@
 	});
 
 	function toggleMenu() {
-		showmenu = !showmenu;
+		shownav = !shownav;
 	}
 
 	// logout flushes the token.
@@ -135,53 +130,84 @@
 	$: updateProjects(accessToken);
 
 	// When the project changes, rescope the token.
+	/*
 	async function changeProject() {
-		/*
 		await updateCredentials(accessToken, currentProject.id);
-		*/
 	}
+	*/
 
 	function changeMenuItem(value) {
 		// Hide the menu on mobile view, it's covering everything.
 		if (!desktop) {
-			showmenu = false;
+			shownav = false;
 		}
 
 		content = value;
-		menu = getMenu(value);
 	}
 </script>
 
 <Portal target="#modal" />
 <div id="modal" />
 
-<header>
-	<span id="hamburger" class="selectable" on:click={toggleMenu} on:keypress={toggleMenu}>
-		{#if showmenu}
-			<iconify-icon id="hamburger-icon" icon="material-symbols:close" />
-		{:else}
-			<iconify-icon id="hamburger-icon" icon="material-symbols:menu" />
-		{/if}
-		<label for="hamburger-icon">Menu</label>
-	</span>
-	<!--
-	 This needs to be injected into the DOM in order for the "currentColor" stuff to
-	 work, as such, the <img> will be replaced with an <svg>, and Svelte will complain
-	 about styles being unused due to no <svg> tags...
-	-->
-	<img
-		src="img/logo.svg"
-		alt="Unikorn Logo"
-		onload="SVGInject(this)"
-		style="max-height: 2.2em; width: auto"
-	/>
-</header>
+{#if desktop}
+	<nav id="nav-desktop">
+		<section id="nav-header">
+			<img
+				src="img/logo.svg"
+				alt="Unikorn Logo"
+				onload="SVGInject(this)"
+				style="max-height: 2.2em; width: auto"
+			/>
+		</section>
 
-<div id="content">
-	<div id="content-inner" class:showmenu>
-		<nav class:showmenu>
+		<section>
+			<div class="user">
+				<img src="https://www.gravatar.com/avatar/{MD5(emailAddress)}" alt="User Gravatar" />
+				<span>{emailAddress}</span>
+				<iconify-icon
+					class="selectable"
+					icon="material-symbols:logout"
+					on:click={logout}
+					on:keypress={logout}
+				/>
+			</div>
+		</section>
+
+		<section>
+			<Menu {menu} />
+		</section>
+
+		<div class="about">Version {env.PUBLIC_APPLICATION_VERSION}</div>
+	</nav>
+{:else}
+	<header>
+		<span id="hamburger" class="selectable" on:click={toggleMenu} on:keypress={toggleMenu}>
+			<iconify-icon id="hamburger-icon" icon="material-symbols:menu" />
+			<label for="hamburger-icon">menu</label>
+		</span>
+
+		<img
+			src="img/logo.svg"
+			alt="Unikorn Logo"
+			onload="SVGInject(this)"
+			style="max-height: 2.2em; width: auto"
+		/>
+	</header>
+
+	<div id="nav-overlay" class:shownav />
+
+	<div id="nav-container" class:shownav>
+		<nav id="nav-mobile">
+			<section id="nav-header">
+				<img
+					src="img/logo.svg"
+					alt="Unikorn Logo"
+					onload="SVGInject(this)"
+					style="max-height: 2.2em; width: auto"
+				/>
+			</section>
+
 			<section>
-				<h3>User</h3>
 				<div class="user">
 					<img src="https://www.gravatar.com/avatar/{MD5(emailAddress)}" alt="User Gravatar" />
 					<span>{emailAddress}</span>
@@ -195,44 +221,29 @@
 			</section>
 
 			<section>
-				<h3>Project</h3>
-				<LabeledInput id="project-select" value="Current project scope">
-					<select
-						id="project-select"
-						name="project"
-						bind:value={currentProject}
-						on:change={changeProject}
-					>
-						{#each projects as choice}
-							<option value={choice}>{choice.name}</option>
-						{/each}
-					</select>
-				</LabeledInput>
-			</section>
-
-			<section>
-				<h3>Menu</h3>
-				{#if menu}
-					<Menu {...menu} />
-				{/if}
+				<Menu {menu} />
 			</section>
 
 			<div class="about">Version {env.PUBLIC_APPLICATION_VERSION}</div>
 		</nav>
 
-		<main class:showmenu>
-			<Breadcrumbs />
-			<Errors />
-			{#if content == 'kubernetes-control-planes'}
-				<ControlPlaneView />
-			{:else if content == 'kubernetes-clusters'}
-				<ClusterView />
-			{:else if content == 'kubernetes-applications'}
-				<ApplicationView />
-			{/if}
-		</main>
+		<span id="nav-closer" class="selectable" on:click={toggleMenu} on:keypress={toggleMenu}>
+			<iconify-icon id="nav-close" icon="material-symbols:close" />
+			<label for="nav-close">close</label>
+		</span>
 	</div>
-</div>
+{/if}
+
+<main>
+	<Errors />
+	{#if content == 'kubernetes-control-planes'}
+		<ControlPlaneView />
+	{:else if content == 'kubernetes-clusters'}
+		<ClusterView />
+	{:else if content == 'kubernetes-applications'}
+		<ApplicationView />
+	{/if}
+</main>
 
 <style>
 	/* Global constants */
@@ -240,27 +251,26 @@
 		/* Brand color palette */
 		--brand: rgb(73, 118, 132);
 		--brand-light: rgb(101, 162, 181);
-		--brand-dark: rgb(49, 80, 89);
-		--input: var(--brand-dark);
-		--input-selected: var(--brand);
+		--brand-dark: rgb(31, 50, 55);
+		--input: var(--brand);
+		--input-selected: var(--brand-dark);
 		--border: rgb(170, 170, 170);
 
 		/* Generic colors */
 		--light-grey: rgb(200, 200, 200);
-		--mid-grey: rgb(128, 128, 128);
+		--mid-grey: rgb(160, 160, 160);
 		--dark-grey: rgb(96, 96, 96);
+		--shadow: var(--mid-grey);
 		--error: deeppink;
 
 		/* Various stylings to keep consistency */
 		--radius: 0.5rem;
-		--shadow-offset: 0.25rem;
-		--padding: 0.75rem;
 		--padding-small: 0.5rem;
-		--icon-size: 1.5rem;
-		--nav-icon-size: 2rem;
-		--nav-width: 100vw;
+		--padding: 0.75rem;
+		--padding-large: 1.5rem;
+		--icon-size: 1.25rem;
 
-		--overlay: rgba(255, 255, 255, 0.9);
+		--overlay: rgba(255, 255, 255, 0.8);
 		--overlay-highlight: rgba(254, 250, 255, 0.9);
 		--background: rgb(231, 238, 240);
 	}
@@ -275,7 +285,9 @@
 		font-family: sans-serif;
 	}
 	:global(body) {
-		background-color: var(--background);
+		background-attachment: fixed;
+		background-size: cover;
+		background-image: url('/img/light.jpg');
 	}
 	:global(h1, h2, h3, h4, h5, h6) {
 		color: var(--brand);
@@ -344,26 +356,6 @@
 	:global(input[type='checkbox']:checked::before) {
 		transform: scale(1);
 	}
-	:global(button) {
-		padding: var(--padding-small);
-		font-size: 1rem;
-		transition: all 0.2s ease-in;
-		display: inline-flex;
-		align-items: center;
-		gap: var(--padding-small);
-		cursor: pointer;
-		color: white;
-		background-color: var(--input);
-		border-radius: var(--radius);
-		border-style: none;
-	}
-	:global(button:hover) {
-		background-color: var(--input-selected);
-	}
-	:global(button:disabled) {
-		cursor: not-allowed;
-		background-color: var(--mid-grey);
-	}
 	:global(hr) {
 		color: var(--border);
 	}
@@ -384,36 +376,36 @@
 	:global(.error) {
 		color: var(--error);
 	}
+	:global(iconify-icon) {
+		font-size: var(--icon-size);
+	}
 
 	/* Main styling */
 	:global(.container) {
 		width: 100vw;
 		height: 100vh;
 		display: flex;
+		display: flex;
 		flex-direction: column;
-		backdrop-filter: blur(2px);
 	}
 
 	/* Header/masthead styling */
 	header {
-		box-sizing: border-box;
 		position: sticky;
 		top: 0;
-		padding: var(--padding);
-		background-color: var(--overlay);
 		display: flex;
-		gap: 1em;
+		gap: var(--padding);
 		align-items: center;
+		background-color: var(--overlay);
+		backdrop-filter: blur(var(--radius));
+		padding: var(--padding);
+		z-index: 1;
 	}
 
 	#hamburger {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		color: var(--brand);
-		/* Fixed size for when the icon updates... */
-		width: 2em;
-		height: 2em;
 	}
 	#hamburger > iconify-icon {
 		font-size: 1.5em;
@@ -422,49 +414,84 @@
 		font-size: 0.5em;
 	}
 
-	#content {
-		width: 100%;
-		height: 100%;
-		overflow: hidden;
-	}
-
-	#content-inner {
-		width: calc(var(--nav-width) + 100%);
-		height: 100%;
-		transition: all 0.3s ease-in-out;
-		transform: translateX(calc(var(--nav-width) * -1));
-		display: flex;
-	}
-
-	#content-inner.showmenu {
-		transform: none;
-	}
-
 	main {
-		max-width: 100vw;
-		height: 100%;
 		flex: 1;
 		display: flex;
 		flex-direction: column;
+		width: 100vw;
 	}
 
 	/* Nav styling */
+	#nav-overlay {
+		position: fixed;
+		width: 100vw;
+		height: 100vh;
+		display: none;
+		opacity: 0;
+		background-color: var(--overlay);
+		backdrop-filter: blur(var(--radius));
+		transition: all 0.2s ease-in-out;
+		z-index: 10;
+	}
+
+	#nav-overlay.shownav {
+		display: block;
+		opacity: 1;
+	}
+
+	#nav-container {
+		position: fixed;
+		width: 100vw;
+		transform: translateX(calc(-1 * 100vw));
+		transition: all 0.2s ease-in;
+		display: flex;
+		z-index: 20;
+	}
+
+	#nav-container.shownav {
+		transform: translateX(0);
+	}
+
 	nav {
-		min-width: var(--nav-width);
-		height: 100%;
+		height: 100vh;
 		overflow-y: auto;
 		display: flex;
 		flex-direction: column;
-		gap: calc(var(--padding) * 2);
-		background-color: var(--overlay);
+		gap: var(--padding-large);
 		padding: var(--padding);
-		padding-top: revert;
+		background-color: var(--brand-dark);
+		box-shadow: 0 0 var(--radius) var(--shadow);
+	}
+
+	nav#nav-mobile {
+		color: white;
+		flex-grow: 1;
 	}
 
 	nav > section {
 		display: flex;
 		flex-direction: column;
 		gap: var(--padding);
+	}
+
+	nav > section#nav-header {
+		flex-direction: row;
+		gap: var(--padding);
+		align-items: center;
+	}
+
+	#nav-closer {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: var(--padding);
+	}
+
+	#nav-closer > iconify-icon {
+		font-size: 1.5em;
+	}
+	#nav-closer > label {
+		font-size: 0.5em;
 	}
 
 	/* User nav element */
@@ -478,7 +505,7 @@
 		flex-grow: 1;
 	}
 	.user img {
-		max-height: var(--nav-icon-size);
+		max-height: 2em;
 		border-radius: 1em;
 		border: 1px solid currentColor;
 	}
@@ -489,20 +516,11 @@
 
 	.about {
 		font-size: 0.8em;
-		color: var(--dark-grey);
+		color: var(--mid-grey);
 	}
 
 	/* Desktop overrides */
 	@media only screen and (min-width: 720px) {
-		:global(:root) {
-			--nav-width: 300px;
-		}
-		#content-inner.showmenu {
-			width: 100%;
-		}
-		nav {
-			border-right: 1px solid var(--border);
-		}
 		:global(dl) {
 			display: grid;
 			grid-template-columns: auto 1fr;
@@ -512,22 +530,36 @@
 		:global(dt) {
 			grid-column-start: 1;
 		}
+		:global(.container) {
+			flex-direction: row;
+		}
+		main {
+			max-width: 100vw;
+		}
+		nav {
+			background-color: var(--overlay);
+			backdrop-filter: blur(var(--radius));
+		}
 	}
 
 	/* Color preference overrides */
 	@media (prefers-color-scheme: dark) {
 		:global(:root) {
-			--overlay: rgba(40, 40, 40, 0.9);
-			--overlay-highlight: rgb(23, 33, 36);
+			--overlay: rgba(40, 40, 40, 0.5);
+			--overlay-highlight: rgba(23, 33, 36, 0.8);
 			--background: rgb(7, 18, 21);
 			--border: rgb(80, 80, 80);
+			--shadow: rgba(0, 0, 0, 0.6);
 		}
 		:global(body) {
-			background-color: var(--background);
 			color: #eee;
+			background-image: url('/img/dark.jpg');
 		}
 		:global(h1, h2, h3, h4, h5, h6) {
 			color: #eee;
+		}
+		nav {
+			color: white;
 		}
 	}
 </style>

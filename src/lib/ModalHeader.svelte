@@ -4,19 +4,19 @@
 	export let icon;
 </script>
 
-<header>
+<h1>
 	<iconify-icon {icon} />
 	{text}
-</header>
+</h1>
 
 <style>
-	header {
+	h1 {
 		display: flex;
 		gap: var(--padding);
 		align-items: center;
 		padding: var(--padding);
-		background-color: var(--brand);
-		color: white;
-		font-size: 1.5rem;
+	}
+	iconify-icon {
+		font-size: inherit;
 	}
 </style>

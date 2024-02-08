@@ -11,10 +11,8 @@
 	import View from '$lib/View.svelte';
 	import ItemView from '$lib/ItemView.svelte';
 	import ItemHeader from '$lib/ItemHeader.svelte';
-	import Info from '$lib/Info.svelte';
 	import Hint from '$lib/Hint.svelte';
 	import Alert from '$lib/Alert.svelte';
-	import ToolBar from '$lib/ToolBar.svelte';
 	import Button from '$lib/Button.svelte';
 	import Ribbon from '$lib/Ribbon.svelte';
 	import Version from '$lib/Version.svelte';
@@ -146,25 +144,13 @@
 	/>
 {/if}
 
-<ToolBar>
+<View>
+	<h1>Control Planes</h1>
+	<p>Kubernetes cluster provisioning and life-cycle management.</p>
+
 	<Ribbon>
 		<Button text="New" icon="material-symbols:add" on:message={showCreateModal} />
 	</Ribbon>
-</ToolBar>
-
-<View>
-	<Info summary="Click to learn more about control planes">
-		<p>
-			Kubernetes control planes manage Kubernetes cluster creation, updates, upgrades, and deletion.
-			A Kubernetes cluster is managed by a single control plane, providing groupings of Kubernetes
-			clusters.
-		</p>
-		<p>
-			You may group clusters based on stability e.g. production, staging, development. This allows
-			upgrades to be tested in a staging control plane before applying those changes to a production
-			one.
-		</p>
-	</Info>
 
 	{#if controlPlanes.length == 0}
 		<Hint>

@@ -54,8 +54,9 @@
 			width: auto;
 			height: auto;
 			max-height: 80vh;
-			border: 1px outset var(--border);
+			background-color: var(--overlay);
 			border-radius: var(--radius);
+			box-shadow: 0 0 var(--radius) var(--shadow);
 		}
 
 		.modal.fixed {

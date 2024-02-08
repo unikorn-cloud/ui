@@ -8,12 +8,13 @@
 <style>
 	section {
 		display: flex;
-		gap: var(--padding-small);
+		gap: var(--padding);
 		align-items: center;
-		border: 1px solid var(--border);
 		background: var(--overlay);
+		backdrop-filter: blur(var(--radius));
 		border-radius: var(--radius);
 		padding: var(--padding-small);
+		box-shadow: 0 0 var(--radius) var(--shadow);
 	}
 	iconify-icon {
 		color: orange;

@@ -18,6 +18,9 @@
 </details>
 
 <style>
+	details {
+		box-shadow: 0 0 var(--radius) var(--shadow);
+	}
 	details[open] {
 		width: 100%;
 	}
@@ -44,23 +47,9 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--padding);
-		padding: var(--padding-small);
+		padding: var(--padding);
 		background-color: var(--overlay);
 		border-bottom-left-radius: var(--radius);
 		border-bottom-right-radius: var(--radius);
-		border: 1px solid var(--brand);
-	}
-
-	/* Color preference overrides */
-	@media (prefers-color-scheme: dark) {
-		summary {
-			background-color: var(--brand-dark);
-		}
-		summary:hover {
-			background-color: var(--brand);
-		}
-		section {
-			border: 1px solid var(--brand-dark);
-		}
 	}
 </style>
