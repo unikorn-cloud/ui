@@ -519,6 +519,18 @@
 		color: var(--mid-grey);
 	}
 
+	:global(.overlay) {
+		border-radius: var(--radius);
+		background-color: var(--overlay);
+		backdrop-filter: blur(var(--radius));
+		box-shadow: 0 0 var(--radius) var(--shadow);
+		border: 1px solid var(--border);
+	}
+
+	:global(.overlay-selected) {
+		background-color: var(--overlay-highlight);
+	}
+
 	/* Desktop overrides */
 	@media only screen and (min-width: 720px) {
 		:global(dl) {
@@ -545,10 +557,10 @@
 	/* Color preference overrides */
 	@media (prefers-color-scheme: dark) {
 		:global(:root) {
-			--overlay: rgba(40, 40, 40, 0.5);
+			--overlay: rgba(25, 25, 25, 0.5);
 			--overlay-highlight: rgba(23, 33, 36, 0.8);
 			--background: rgb(7, 18, 21);
-			--border: rgb(80, 80, 80);
+			--border: rgb(35, 35, 35);
 			--shadow: rgba(0, 0, 0, 0.6);
 		}
 		:global(body) {
