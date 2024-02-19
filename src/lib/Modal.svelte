@@ -7,7 +7,7 @@
 </script>
 
 <div class="modal-backdrop" class:active use:portal={'#modal'}>
-	<div class="modal" class:fixed style="--width: {width}">
+	<div class="modal widget" class:fixed style="--width: {width}">
 		<slot />
 	</div>
 </div>
@@ -37,8 +37,6 @@
 		flex-direction: column;
 		align-items: stretch;
 		overflow-y: auto;
-		background-color: var(--overlay);
-		backdrop-filter: blur(5px);
 	}
 
 	/* Desktop overrides */
@@ -55,8 +53,6 @@
 			height: auto;
 			max-height: 80vh;
 			background-color: var(--overlay);
-			border-radius: var(--radius);
-			box-shadow: 0 0 var(--radius) var(--shadow);
 		}
 
 		.modal.fixed {

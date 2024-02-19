@@ -10,11 +10,11 @@
 	}
 </script>
 
-<article on:click={click} on:keypress={click} class="overlay" class:overlay-selected={selected}>
+<article on:click={click} on:keypress={click} class="widget" class:widget-selected={selected}>
 	<header>
 		<slot name="header" />
 	</header>
-	<main class:selected>
+	<main>
 		<slot name="main" />
 	</main>
 </article>

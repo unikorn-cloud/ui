@@ -1,4 +1,4 @@
-<section class="overlay">
+<section class="admonition">
 	<iconify-icon icon="tabler:bulb" />
 	<div>
 		<slot />
