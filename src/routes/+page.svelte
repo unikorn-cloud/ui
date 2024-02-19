@@ -251,7 +251,7 @@
 		/* Brand color palette */
 		--brand: rgb(73, 118, 132);
 		--brand-light: rgb(101, 162, 181);
-		--brand-dark: rgb(31, 50, 55);
+		--brand-dark: rgb(50, 80, 90);
 		--input: var(--brand);
 		--input-selected: var(--brand-dark);
 		--border: rgb(170, 170, 170);
@@ -271,7 +271,7 @@
 		--icon-size: 1.25rem;
 
 		--overlay: rgba(255, 255, 255, 0.8);
-		--overlay-highlight: rgba(254, 250, 255, 0.9);
+		--overlay-highlight: rgba(230, 240, 245, 0.8);
 		--background: rgb(231, 238, 240);
 	}
 
@@ -291,6 +291,21 @@
 	}
 	:global(h1, h2, h3, h4, h5, h6) {
 		color: var(--brand);
+	}
+	:global(h1) {
+		font-size: 2rem;
+	}
+	:global(h2) {
+		font-size: 1.7rem;
+	}
+	:global(h3) {
+		font-size: 1.4rem;
+	}
+	:global(h4) {
+		font-size: 1.2rem;
+	}
+	:global(h5) {
+		font-size: 1rem;
 	}
 	:global(a:link, a:visited) {
 		transition: all 0.2s ease-in;
@@ -519,7 +534,8 @@
 		color: var(--mid-grey);
 	}
 
-	:global(.overlay) {
+	/* admonitions are main content elements that aren't interactive */
+	:global(.admonition) {
 		border-radius: var(--radius);
 		background-color: var(--overlay);
 		backdrop-filter: blur(var(--radius));
@@ -527,7 +543,22 @@
 		border: 1px solid var(--border);
 	}
 
-	:global(.overlay-selected) {
+	/* widgets are main content elements that are interactive and change on hover
+	   to communicate this */
+	:global(.widget) {
+		transition: all 0.2s ease-in;
+		border-radius: var(--radius);
+		background-color: var(--overlay);
+		backdrop-filter: blur(var(--radius));
+		box-shadow: 0 0 var(--radius) var(--shadow);
+		border: 1px solid var(--border);
+	}
+
+	:global(.widget-selected) {
+		background-color: var(--overlay-highlight);
+	}
+
+	:global(.widget:hover) {
 		background-color: var(--overlay-highlight);
 	}
 

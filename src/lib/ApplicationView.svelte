@@ -58,7 +58,7 @@
 
 	<ItemView items={applications}>
 		<svelte:fragment slot="header" let:item>
-			<h4>{item.humanReadableName}</h4>
+			<h5>{item.humanReadableName}</h5>
 		</svelte:fragment>
 
 		<svelte:fragment slot="main" let:item>
@@ -100,7 +100,7 @@
 </View>
 
 <style>
-	h4 {
+	h5 {
 		text-align: center;
 	}
 	div.image-wrapper {
