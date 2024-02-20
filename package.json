@@ -7,7 +7,9 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
-		"format": "prettier --plugin-search-dir . --write ."
+		"format": "prettier --plugin-search-dir . --write .",
+		"openapi": "openapi-generator-cli",
+		"openapi-server": "openapi-generator-cli generate -g typescript-fetch --generate-alias-as-model -i https://raw.githubusercontent.com/unikorn-cloud/unikorn/main/pkg/server/openapi/server.spec.yaml -o src/lib/openapi/server"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^2.0.0",
@@ -22,6 +24,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@openapitools/openapi-generator-cli": "^2.9.0",
 		"@sveltejs/adapter-node": "^1.2.0",
 		"crypto-js": "^4.1.1",
 		"jose": "^4.14.4",

@@ -3,7 +3,7 @@
 	import { lt } from 'semver';
 	import { token, removeCredentials } from '$lib/credentials.js';
 	import { age } from '$lib/time.js';
-	import { listControlPlanes, listApplicationBundlesControlPlane } from '$lib/client.js';
+	import { client } from '$lib/client.js';
 
 	import ControlPlaneCreateModal from '$lib/ControlPlaneCreateModal.svelte';
 	import ControlPlaneUpdateModal from '$lib/ControlPlaneUpdateModal.svelte';
@@ -41,30 +41,33 @@
 			return;
 		}
 
-		const bresult = await listApplicationBundlesControlPlane({
-			token: accessToken,
-			onUnauthorized: () => {
+		let bresult;
+
+		try {
+			bresult = await client(accessToken).apiV1ApplicationbundlesControlPlaneGet();
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (bresult == null) {
 			return;
 		}
 
 		const bundles = bresult.reverse().filter((x) => !x.endOfLife && !x.preview);
 
-		const result = await listControlPlanes({
-			token: accessToken,
-			onUnauthorized: () => {
-				removeCredentials();
-			},
-			onNotFound: () => {
-				// This means the project hasn't been provisioned yet.
-			}
-		});
+		let result;
 
-		if (result == null) {
+		try {
+			result = await client(accessToken).apiV1ControlplanesGet();
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
+				removeCredentials();
+			}
+
 			return;
 		}
 

@@ -1,10 +1,10 @@
 <script>
 	import { onDestroy } from 'svelte';
 	import { token, removeCredentials } from '$lib/credentials.js';
-	import { errors } from '$lib/errors.js';
+	//	import { errors } from '$lib/errors.js';
 	import { createEventDispatcher } from 'svelte';
 
-	import { updateControlPlane, listApplicationBundlesControlPlane } from '$lib/client.js';
+	import { client } from '$lib/client.js';
 
 	import { applicationBundleFormatter } from '$lib/formatters.js';
 
@@ -90,14 +90,17 @@
 
 		accessToken = t;
 
-		const result = await listApplicationBundlesControlPlane({
-			token: accessToken,
-			onUnauthorized: () => {
+		let result;
+
+		try {
+			result = await client(accessToken).apiV1ApplicationbundlesControlPlaneGet();
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (result == null) {
 			return;
 		}
 
@@ -153,23 +156,23 @@
 			body.applicationBundleAutoUpgrade = aa;
 		}
 
-		await updateControlPlane(controlPlane.name, {
-			token: accessToken,
-			body: body,
-			onBadRequest: (message) => {
-				if (message) {
-					errors.add(message);
-				}
-			},
-			onInternalServerError: (message) => {
-				if (message) {
-					errors.add(message);
-				}
-			},
-			onUnauthorized: () => {
+		try {
+			await client(accessToken).apiV1ControlplanesControlPlaneNamePut({
+				controlPlaneName: controlPlane.name,
+				controlPlane: body
+			});
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
+
+			// TODO: error handling and reporting.
+			//errors.add(message);
+
+			return;
+		}
 
 		dispatch('updated', {});
 

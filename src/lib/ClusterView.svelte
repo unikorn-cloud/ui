@@ -4,12 +4,7 @@
 	import { browser } from '$app/environment';
 	import { token, removeCredentials } from '$lib/credentials.js';
 	import { age } from '$lib/time.js';
-	import {
-		listControlPlanes,
-		listClusters,
-		getClusterKubeconfig,
-		listApplicationBundlesCluster
-	} from '$lib/client.js';
+	import { client } from '$lib/client.js';
 	import { namedObjectFormatter } from '$lib/formatters.js';
 
 	import SelectField from '$lib/SelectField.svelte';
@@ -59,14 +54,17 @@
 			return;
 		}
 
-		const result = await listControlPlanes({
-			token: accessToken,
-			onUnauthorized: () => {
+		let result;
+
+		try {
+			result = await client(accessToken).apiV1ApplicationbundlesClusterGet();
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (result == null) {
 			return;
 		}
 
@@ -99,14 +97,19 @@
 			return;
 		}
 
-		const result = await listClusters(controlPlane.status.name, {
-			token: accessToken,
-			onUnauthorized: () => {
+		let result;
+
+		try {
+			result = await client(accessToken).apiV1ControlplanesControlPlaneNameClustersGet({
+				controlPlaneName: controlPlane
+			});
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (result == null) {
 			return;
 		}
 
@@ -115,14 +118,17 @@
 			return;
 		}
 
-		const bresult = await listApplicationBundlesCluster({
-			token: accessToken,
-			onUnauthorized: () => {
+		let bresult;
+
+		try {
+			bresult = await client(accessToken).apiV1ApplicationbundlesClusterGet();
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (bresult == null) {
 			return;
 		}
 
@@ -157,16 +163,26 @@
 
 	// Define dropdown callback handlers.
 	async function handleKubeconfig(cl) {
-		const blob = await getClusterKubeconfig(controlPlane.name, cl.name, {
-			token: accessToken,
-			onUnauthorized: () => {
+		let result;
+
+		try {
+			result = await client(
+				accessToken
+			).apiV1ControlplanesControlPlaneNameClustersClusterNameKubeconfigGet({
+				controlPlaneName: controlPlane.name,
+				clusterName: cl.name
+			});
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (blob == null) {
 			return;
 		}
+
+		const blob = await result.blob();
 
 		if (browser) {
 			const url = window.URL.createObjectURL(blob);

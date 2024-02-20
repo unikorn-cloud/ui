@@ -1,7 +1,7 @@
 <script>
 	import { onDestroy } from 'svelte';
 	import { token, removeCredentials } from '$lib/credentials.js';
-	import { listApplications } from '$lib/client.js';
+	import { client } from '$lib/client.js';
 
 	import View from '$lib/View.svelte';
 	import ItemView from '$lib/ItemView.svelte';
@@ -33,18 +33,15 @@
 			return;
 		}
 
-		const result = await listApplications({
-			token: accessToken,
-			onUnauthorized: () => {
+		try {
+			applications = await client(accessToken).apiV1ApplicationsGet();
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
-
-		if (result == null) {
-			return;
 		}
-
-		applications = result;
 	}
 
 	$: updateApplictions(accessToken);

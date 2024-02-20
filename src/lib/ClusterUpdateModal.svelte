@@ -1,19 +1,10 @@
 <script>
 	import { onDestroy } from 'svelte';
 	import { token, removeCredentials } from '$lib/credentials.js';
-	import { errors } from '$lib/errors.js';
+	//	import { errors } from '$lib/errors.js';
 	import { createEventDispatcher } from 'svelte';
 
-	import {
-		listFlavors,
-		listImages,
-		listKeyPairs,
-		listComputeAvailabilityZones,
-		listBlockStorageAvailabilityZones,
-		listApplicationBundlesCluster,
-		listExternalNetworks,
-		updateCluster
-	} from '$lib/client.js';
+	import { client } from '$lib/client.js';
 
 	import {
 		namedObjectFormatter,
@@ -243,14 +234,19 @@
 	// Get a list of images from the origin, and derive a list of
 	// Kubernetes versions.
 	async function updateImages() {
-		const results = await listImages({
-			token: accessToken,
-			onUnauthorized: () => {
+		let results;
+
+		try {
+			results = await client(accessToken).apiV1RegionsRegionNameImagesGet({
+				regionName: 'uk-manchester'
+			});
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (results == null) {
 			return;
 		}
 
@@ -272,14 +268,19 @@
 
 	// Update the flavors available.
 	async function updateFlavors() {
-		const results = await listFlavors({
-			token: accessToken,
-			onUnauthorized: () => {
+		let results;
+
+		try {
+			results = await client(accessToken).apiV1RegionsRegionNameFlavorsGet({
+				regionName: 'uk-manchester'
+			});
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (results == null) {
 			return;
 		}
 
@@ -289,14 +290,19 @@
 
 	// Update the available SSH keypairs.
 	async function updateKeyPairs() {
-		const results = await listKeyPairs({
-			token: accessToken,
-			onUnauthorized: () => {
+		let results;
+
+		try {
+			results = await client(accessToken).apiV1RegionsRegionNameKeyPairsGet({
+				regionName: 'uk-manchester'
+			});
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (results == null) {
 			return;
 		}
 
@@ -306,14 +312,19 @@
 
 	// Update the available compute AZs.
 	async function updateComputeAZs() {
-		const results = await listComputeAvailabilityZones({
-			token: accessToken,
-			onUnauthorized: () => {
+		let results;
+
+		try {
+			results = await client(accessToken).apiV1RegionsRegionNameAvailabilityZonesComputeGet({
+				regionName: 'uk-manchester'
+			});
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (results == null) {
 			return;
 		}
 
@@ -322,14 +333,19 @@
 
 	// Update the available block storage AZs.
 	async function updateBlockStorageAZs() {
-		const results = await listBlockStorageAvailabilityZones({
-			token: accessToken,
-			onUnauthorized: () => {
+		let results;
+
+		try {
+			results = await client(accessToken).apiV1RegionsRegionNameAvailabilityZonesBlockStorageGet({
+				regionName: 'uk-manchester'
+			});
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (results == null) {
 			return;
 		}
 
@@ -338,14 +354,19 @@
 
 	// Update the available external networks.
 	async function updateExternalNetworks() {
-		const results = await listExternalNetworks({
-			token: accessToken,
-			onUnauthorized: () => {
+		let results;
+
+		try {
+			results = await client(accessToken).apiV1RegionsRegionNameExternalNetworksGet({
+				regionName: 'uk-manchester'
+			});
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (results == null) {
 			return;
 		}
 
@@ -353,14 +374,17 @@
 	}
 
 	async function updateApplicationBundles() {
-		const result = await listApplicationBundlesCluster({
-			token: accessToken,
-			onUnauthorized: () => {
+		let result;
+
+		try {
+			result = await client(accessToken).apiV1ApplicationbundlesClusterGet();
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (result == null) {
 			return;
 		}
 
@@ -529,23 +553,24 @@
 			body.workloadPools.push(pool);
 		}
 
-		await updateCluster(controlPlane.name, cluster.name, {
-			token: accessToken,
-			onBadRequest: (message) => {
-				if (message) {
-					errors.add(message);
-				}
-			},
-			onInternalServerError: (message) => {
-				if (message) {
-					errors.add(message);
-				}
-			},
-			onUnauthorized: () => {
+		try {
+			await client(accessToken).apiV1ControlplanesControlPlaneNameClustersPut({
+				controlPlaneName: controlPlane.name,
+				clusterName: cluster.name,
+				kubernetesCluster: body
+			});
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
-			},
-			body: body
-		});
+			}
+
+			// TODO: error handling and reporting.
+			//errors.add(message);
+
+			return;
+		}
 
 		dispatch('updated', {});
 		active = false;
