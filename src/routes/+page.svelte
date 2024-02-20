@@ -8,7 +8,6 @@
 
 	import { token, email, removeCredentials } from '$lib/credentials.js';
 	import { menu, selected } from '$lib/menu.js';
-	import { listProjects } from '$lib/client.js';
 	import { env } from '$env/dynamic/public';
 
 	import Menu from '$lib/Menu.svelte';
@@ -108,6 +107,7 @@
 			return;
 		}
 
+		/*
 		const result = await listProjects({
 			token: accessToken,
 			onUnauthorized: () => {
@@ -121,7 +121,6 @@
 
 		projects = result;
 
-		/*
 		// projectID *should* be set before the access token changes.
 		currentProject = projects.filter((p) => p.id == projectID)[0];
 		*/

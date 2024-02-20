@@ -3,7 +3,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	import { token, removeCredentials } from '$lib/credentials.js';
-	import { deleteControlPlane } from '$lib/client.js';
+	import { client } from '$lib/client.js';
 
 	import Modal from '$lib/Modal.svelte';
 	import ModalHeader from '$lib/ModalHeader.svelte';
@@ -36,12 +36,22 @@
 	}
 
 	async function submit() {
-		await deleteControlPlane(controlPlane.name, {
-			token: accessToken,
-			onUnauthorized: () => {
+		try {
+			await client(accessToken).apiV1ControlplanesControlPlaneNameDelete({
+				controlPlaneName: controlPlane.name
+			});
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
+
+			// TODO: error handling and reporting.
+			//errors.add(message);
+
+			return;
+		}
 
 		dispatch('deleted', {});
 		active = false;
