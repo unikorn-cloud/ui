@@ -588,7 +588,7 @@
 	/* Color preference overrides */
 	@media (prefers-color-scheme: dark) {
 		:global(:root) {
-			--overlay: rgba(25, 25, 25, 0.5);
+			--overlay: rgba(30, 30, 30, 0.5);
 			--overlay-highlight: rgba(23, 33, 36, 0.8);
 			--background: rgb(7, 18, 21);
 			--border: rgb(35, 35, 35);
