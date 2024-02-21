@@ -1,6 +1,6 @@
 <script>
 	import { onDestroy } from 'svelte';
-	import { token, removeCredentials } from '$lib/credentials.js';
+	import { token, region, removeCredentials } from '$lib/credentials.js';
 	//	import { errors } from '$lib/errors.js';
 	import { createEventDispatcher } from 'svelte';
 	import { env } from '$env/dynamic/public';
@@ -39,6 +39,8 @@
 
 	// When we get a token
 	let accessToken;
+
+	let regionName;
 
 	// We will raise clusterCreated on successful cluster creation.
 	const dispatch = createEventDispatcher();
@@ -171,7 +173,7 @@
 
 		try {
 			results = await client(accessToken).apiV1RegionsRegionNameImagesGet({
-				regionName: 'uk-manchester'
+				regionName: regionName
 			});
 		} catch (error) {
 			console.log(error);
@@ -227,7 +229,7 @@
 
 		try {
 			results = await client(accessToken).apiV1RegionsRegionNameFlavorsGet({
-				regionName: 'uk-manchester'
+				regionName: regionName
 			});
 		} catch (error) {
 			console.log(error);
@@ -259,7 +261,7 @@
 
 		try {
 			results = await client(accessToken).apiV1RegionsRegionNameKeyPairsGet({
-				regionName: 'uk-manchester'
+				regionName: regionName
 			});
 		} catch (error) {
 			console.log(error);
@@ -281,7 +283,7 @@
 
 		try {
 			results = await client(accessToken).apiV1RegionsRegionNameAvailabilityZonesComputeGet({
-				regionName: 'uk-manchester'
+				regionName: regionName
 			});
 		} catch (error) {
 			console.log(error);
@@ -322,7 +324,7 @@
 
 		try {
 			results = await client(accessToken).apiV1RegionsRegionNameAvailabilityZonesBlockStorageGet({
-				regionName: 'uk-manchester'
+				regionName: regionName
 			});
 		} catch (error) {
 			console.log(error);
@@ -343,7 +345,7 @@
 
 		try {
 			results = await client(accessToken).apiV1RegionsRegionNameExternalNetworksGet({
-				regionName: 'uk-manchester'
+				regionName: regionName
 			});
 		} catch (error) {
 			console.log(error);
@@ -388,8 +390,11 @@
 		}
 	}
 
+	// Get the region first, as it's required to poll the region's resources.
+	const regionUnsubscribe = region.subscribe((x) => (regionName = x));
 	const tokenUnsubscribe = token.subscribe(updateAll);
 
+	onDestroy(regionUnsubscribe);
 	onDestroy(tokenUnsubscribe);
 
 	async function updateAll(t) {

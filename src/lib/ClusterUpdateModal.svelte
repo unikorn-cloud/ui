@@ -1,6 +1,6 @@
 <script>
 	import { onDestroy } from 'svelte';
-	import { token, removeCredentials } from '$lib/credentials.js';
+	import { token, region, removeCredentials } from '$lib/credentials.js';
 	//	import { errors } from '$lib/errors.js';
 	import { createEventDispatcher } from 'svelte';
 
@@ -26,6 +26,8 @@
 	import Ribbon from '$lib/Ribbon.svelte';
 
 	let accessToken;
+
+	let regionName;
 
 	let loaded = false;
 
@@ -238,7 +240,7 @@
 
 		try {
 			results = await client(accessToken).apiV1RegionsRegionNameImagesGet({
-				regionName: 'uk-manchester'
+				regionName: regionName
 			});
 		} catch (error) {
 			console.log(error);
@@ -272,7 +274,7 @@
 
 		try {
 			results = await client(accessToken).apiV1RegionsRegionNameFlavorsGet({
-				regionName: 'uk-manchester'
+				regionName: regionName
 			});
 		} catch (error) {
 			console.log(error);
@@ -294,7 +296,7 @@
 
 		try {
 			results = await client(accessToken).apiV1RegionsRegionNameKeyPairsGet({
-				regionName: 'uk-manchester'
+				regionName: regionName
 			});
 		} catch (error) {
 			console.log(error);
@@ -316,7 +318,7 @@
 
 		try {
 			results = await client(accessToken).apiV1RegionsRegionNameAvailabilityZonesComputeGet({
-				regionName: 'uk-manchester'
+				regionName: regionName
 			});
 		} catch (error) {
 			console.log(error);
@@ -337,7 +339,7 @@
 
 		try {
 			results = await client(accessToken).apiV1RegionsRegionNameAvailabilityZonesBlockStorageGet({
-				regionName: 'uk-manchester'
+				regionName: regionName
 			});
 		} catch (error) {
 			console.log(error);
@@ -358,7 +360,7 @@
 
 		try {
 			results = await client(accessToken).apiV1RegionsRegionNameExternalNetworksGet({
-				regionName: 'uk-manchester'
+				regionName: regionName
 			});
 		} catch (error) {
 			console.log(error);
@@ -396,7 +398,11 @@
 			.filter((x) => !x.endOfLife || x.name == cluster.applicationBundle.name);
 	}
 
+	// Get the region first, as it's required to poll the region's resources.
+	const regionUnsubscribe = region.subscribe((x) => (regionName = x));
 	const tokenUnsubscribe = token.subscribe(updateAll);
+
+	onDestroy(regionUnsubscribe);
 	onDestroy(tokenUnsubscribe);
 
 	async function updateAll(t) {

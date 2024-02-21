@@ -3,22 +3,25 @@
 	export let value;
 </script>
 
-<div>
+{#if value}
+	<div>
+		<label for={id}>{@html value}</label>
+		<slot />
+	</div>
+{:else}
 	<slot />
-	<label for={id}>{@html value}</label>
-</div>
+{/if}
 
 <style>
 	div {
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
-		gap: var(--padding);
+		gap: var(--padding-small);
 		width: 100%;
 	}
 	label {
 		display: block;
-		font-style: italic;
 		font-size: 0.75rem;
 	}
 	label > :global(em) {

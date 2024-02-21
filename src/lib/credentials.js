@@ -1,3 +1,4 @@
+import { writable } from 'svelte/store';
 import { sessionStorage } from '$lib/sessionStorage.js';
 
 // token is the authorization bearer token for making API requests.
@@ -5,6 +6,10 @@ export const token = sessionStorage('token');
 
 // email is the user's email address.
 export const email = sessionStorage('email');
+
+// region is the currently selected region.
+// TODO: make this use persistent storage.
+export const region = writable('region');
 
 // This is called when the initial access token is acquired from the oauth
 // exchange.  It uses the token to rescope to a project, that's either selected
