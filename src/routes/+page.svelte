@@ -6,9 +6,11 @@
 	import SHA256 from 'crypto-js/sha256';
 	import MD5 from 'crypto-js/md5';
 
-	import { token, email, removeCredentials } from '$lib/credentials.js';
+	import { token, email, region, removeCredentials } from '$lib/credentials.js';
 	import { menu, selected } from '$lib/menu.js';
 	import { env } from '$env/dynamic/public';
+	import { client } from '$lib/client.js';
+	import { namedObjectFormatter } from '$lib/formatters.js';
 
 	import Menu from '$lib/Menu.svelte';
 
@@ -16,6 +18,7 @@
 	import ClusterView from '$lib/ClusterView.svelte';
 	import ApplicationView from '$lib/ApplicationView.svelte';
 	import Errors from '$lib/Errors.svelte';
+	import IconSelectField from '$lib/IconSelectField.svelte';
 
 	import Portal from 'svelte-portal';
 
@@ -42,16 +45,19 @@
 		};
 	}
 
-	let projects = [];
-	let currentProject = null;
+	let regionName = null;
+	let regions = [];
+	let selectedRegion = null;
 
 	const emailUnsubscribe = email.subscribe(changeEmail);
 	const tokenUnsubscribe = token.subscribe(changeToken);
+	const regionUnsubscribe = region.subscribe(changeRegion);
 	const selectedUnsubscribe = selected.subscribe(changeMenuItem);
 
 	onDestroy(() => {
 		tokenUnsubscribe();
 		emailUnsubscribe();
+		regionUnsubscribe();
 		selectedUnsubscribe();
 	});
 
@@ -66,6 +72,10 @@
 
 	function changeEmail(value) {
 		emailAddress = value;
+	}
+
+	function changeRegion(value) {
+		regionName = value;
 	}
 
 	function changeToken(value) {
@@ -100,40 +110,71 @@
 		accessToken = value;
 	}
 
-	async function updateProjects(accessToken) {
+	async function updateRegions(accessToken) {
 		if (accessToken == null) {
-			projects = [];
-			currentProject = null;
+			regions = [];
+			selectedRegion = null;
+
 			return;
 		}
 
-		/*
-		const result = await listProjects({
-			token: accessToken,
-			onUnauthorized: () => {
+		let result;
+
+		try {
+			result = await client(accessToken).apiV1RegionsGet();
+		} catch (error) {
+			console.log(error);
+
+			if (error.response.status == 401) {
 				removeCredentials();
 			}
-		});
 
-		if (result == null) {
 			return;
 		}
 
-		projects = result;
+		regions = result;
 
-		// projectID *should* be set before the access token changes.
-		currentProject = projects.filter((p) => p.id == projectID)[0];
-		*/
+		if (regions.length == 0) {
+			console.log('no regions defined');
+			return;
+		}
+
+		// If the region isn't set yet, then select one, otherwise find an existing
+		// match.
+		if (regionName == null) {
+			selectedRegion = regions[0];
+		} else {
+			const matchingRegions = regions.filter((x) => x.name == regionName);
+
+			if (matchingRegions.length == 0) {
+				console.log('region name not found, selecting a default');
+				selectedRegion = regions[0];
+				return;
+			}
+
+			selectedRegion = matchingRegions[0];
+		}
 	}
 
-	$: updateProjects(accessToken);
+	// Update the regions when the access token is set (logged in), or reset the
+	// reset the logic when unset (logged out).
+	$: updateRegions(accessToken);
 
-	// When the project changes, rescope the token.
-	/*
-	async function changeProject() {
-		await updateCredentials(accessToken, currentProject.id);
+	function selectRegion(selectedRegion) {
+		// User has logged out, do nothing.
+		if (selectedRegion == null) {
+			return;
+		}
+
+		// Only update if something has changed.
+		if (selectedRegion.name != regionName) {
+			region.set(selectedRegion.name);
+		}
 	}
-	*/
+
+	// When the selected region updates, then we need to optionally update the
+	// store to reflect this to all views.
+	$: selectRegion(selectedRegion);
 
 	function changeMenuItem(value) {
 		// Hide the menu on mobile view, it's covering everything.
@@ -170,6 +211,16 @@
 					on:keypress={logout}
 				/>
 			</div>
+		</section>
+
+		<section>
+			<IconSelectField
+				id="region"
+				icon="mdi:globe"
+				formatter={namedObjectFormatter}
+				options={regions}
+				bind:value={selectedRegion}
+			/>
 		</section>
 
 		<section>
@@ -217,6 +268,16 @@
 						on:keypress={logout}
 					/>
 				</div>
+			</section>
+
+			<section>
+				<IconSelectField
+					id="region"
+					icon="mdi:globe"
+					formatter={namedObjectFormatter}
+					options={regions}
+					bind:value={selectedRegion}
+				/>
 			</section>
 
 			<section>
@@ -594,7 +655,7 @@
 			--shadow: rgba(0, 0, 0, 0.6);
 		}
 		:global(body) {
-			color: #eee;
+			color: #ddd;
 			background-image: url('/img/dark.jpg');
 		}
 		:global(h1, h2, h3, h4, h5, h6) {
