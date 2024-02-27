@@ -18,6 +18,7 @@ Install using your method of choice:
 helm repo add unikorn-ui https::/unikorn-cloud.github.io/ui
 helm install unikorn-ui unikorn-ui/ui --namespace unikorn --create-namespace
 ```
+
 </details>
 
 <details>
@@ -37,8 +38,8 @@ spec:
     targetRevision: v0.1.0
     helm:
       parameters:
-      - name: dockerConfig
-        value: # output of "base64 -w0 ~/.docker/config.json"
+        - name: dockerConfig
+          value: # output of "base64 -w0 ~/.docker/config.json"
   destination:
     namespace: unikorn
     server: https://kubernetes.default.svc
@@ -47,8 +48,9 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
 ```
+
 </details>
 
 ## Building the Container

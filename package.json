@@ -47,7 +47,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@floating-ui/dom": "1.6.3",
+		"@floating-ui/dom": "^1.6.3",
 		"@openapitools/openapi-generator-cli": "^2.9.0",
 		"@sveltejs/adapter-node": "^4.0.1",
 		"crypto-js": "^4.2.0",

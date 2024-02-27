@@ -12,6 +12,6 @@ pnpm-lock.yaml
 package-lock.json
 yarn.lock
 
-/static
-/charts
 README.md
+/src/lib
+/static
