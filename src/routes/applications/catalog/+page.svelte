@@ -10,23 +10,19 @@
 	};
 
 	/* Client setup */
-	import { token, removeCredentials } from '$lib/credentials.js';
-	import { client } from '$lib/client.js';
+	import { token } from '$lib/credentials.js';
+	import { client, error } from '$lib/client.ts';
 	import { Applications } from '$lib/openapi/server/models';
 
 	let applications: Applications;
 
-	token.subscribe(async (token) => {
-		if (!token) return;
+	token.subscribe(async (at: string): void => {
+		if (!at) return;
 
 		try {
-			applications = await client(token).apiV1ApplicationsGet();
-		} catch (error) {
-			if (error.response.status == 401) {
-				removeCredentials();
-			}
-
-			// TODO: raise a toast or something!
+			applications = await client(at).apiV1ApplicationsGet();
+		} catch (e: Error) {
+			return error(e);
 		}
 	});
 </script>
