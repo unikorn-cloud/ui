@@ -24,19 +24,19 @@ export interface KubernetesClusterOpenStack {
      * @type {string}
      * @memberof KubernetesClusterOpenStack
      */
-    computeAvailabilityZone: string;
+    computeAvailabilityZone?: string;
     /**
      * Volume availability zone for control plane, and workload pool default.
      * @type {string}
      * @memberof KubernetesClusterOpenStack
      */
-    volumeAvailabilityZone: string;
+    volumeAvailabilityZone?: string;
     /**
      * OpenStack external network ID.
      * @type {string}
      * @memberof KubernetesClusterOpenStack
      */
-    externalNetworkID: string;
+    externalNetworkID?: string;
     /**
      * OpenStack SSH Key to install on all machines.
      * @type {string}
@@ -50,9 +50,6 @@ export interface KubernetesClusterOpenStack {
  */
 export function instanceOfKubernetesClusterOpenStack(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "computeAvailabilityZone" in value;
-    isInstance = isInstance && "volumeAvailabilityZone" in value;
-    isInstance = isInstance && "externalNetworkID" in value;
 
     return isInstance;
 }
@@ -67,9 +64,9 @@ export function KubernetesClusterOpenStackFromJSONTyped(json: any, ignoreDiscrim
     }
     return {
         
-        'computeAvailabilityZone': json['computeAvailabilityZone'],
-        'volumeAvailabilityZone': json['volumeAvailabilityZone'],
-        'externalNetworkID': json['externalNetworkID'],
+        'computeAvailabilityZone': !exists(json, 'computeAvailabilityZone') ? undefined : json['computeAvailabilityZone'],
+        'volumeAvailabilityZone': !exists(json, 'volumeAvailabilityZone') ? undefined : json['volumeAvailabilityZone'],
+        'externalNetworkID': !exists(json, 'externalNetworkID') ? undefined : json['externalNetworkID'],
         'sshKeyName': !exists(json, 'sshKeyName') ? undefined : json['sshKeyName'],
     };
 }

@@ -27,30 +27,23 @@ import {
  */
 export interface OpenstackMachinePool {
     /**
-     * Number of machines.
+     * Number of machines for a statically sized pool or the maximum for an auto-scaled pool.
      * @type {number}
      * @memberof OpenstackMachinePool
      */
     replicas: number;
     /**
-     * Kubernetes version. This should be derived from the image name as images
-     * will be preloaded with containers for a specific Kubernetes version.
-     * @type {string}
-     * @memberof OpenstackMachinePool
-     */
-    version: string;
-    /**
      * OpenStack image name.
      * @type {string}
      * @memberof OpenstackMachinePool
      */
-    imageName: string;
+    imageName?: string;
     /**
      * OpenStack flavor name.
      * @type {string}
      * @memberof OpenstackMachinePool
      */
-    flavorName: string;
+    flavorName?: string;
     /**
      * 
      * @type {OpenstackVolume}
@@ -65,9 +58,6 @@ export interface OpenstackMachinePool {
 export function instanceOfOpenstackMachinePool(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "replicas" in value;
-    isInstance = isInstance && "version" in value;
-    isInstance = isInstance && "imageName" in value;
-    isInstance = isInstance && "flavorName" in value;
 
     return isInstance;
 }
@@ -83,9 +73,8 @@ export function OpenstackMachinePoolFromJSONTyped(json: any, ignoreDiscriminator
     return {
         
         'replicas': json['replicas'],
-        'version': json['version'],
-        'imageName': json['imageName'],
-        'flavorName': json['flavorName'],
+        'imageName': !exists(json, 'imageName') ? undefined : json['imageName'],
+        'flavorName': !exists(json, 'flavorName') ? undefined : json['flavorName'],
         'disk': !exists(json, 'disk') ? undefined : OpenstackVolumeFromJSON(json['disk']),
     };
 }
@@ -100,7 +89,6 @@ export function OpenstackMachinePoolToJSON(value?: OpenstackMachinePool | null):
     return {
         
         'replicas': value.replicas,
-        'version': value.version,
         'imageName': value.imageName,
         'flavorName': value.flavorName,
         'disk': OpenstackVolumeToJSON(value.disk),

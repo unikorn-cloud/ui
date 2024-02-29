@@ -1,171 +1,111 @@
-<script>
-	import { namedObjectFormatter, flavorFormatter } from '$lib/formatters.js';
+<script lang="ts">
+	import * as Models from '$lib/openapi/server/models';
 
-	import TextField from '$lib/TextField.svelte';
-	import SelectField from '$lib/SelectField.svelte';
-	import CheckBoxField from '$lib/CheckBoxField.svelte';
-	import SliderField from '$lib/SliderField.svelte';
-	import Details from '$lib/Details.svelte';
+	import { SlideToggle, RangeSlider } from '@skeletonlabs/skeleton';
 
-	export let flavors;
-	export let images;
-	export let computeAZs;
-	export let advanced;
+	import * as Formatters from '$lib/formatters.js';
+	import * as Validation from '$lib/validation.ts';
 
-	let name = '';
-	let nameValid = false;
+	/* The pool should be bound to expose the built configuration */
+	export let pool: Models.KubernetesClusterWorkloadPool;
 
-	let image = null;
-	let flavor = null;
-	let autoscaling = true;
-	let replicas = 3;
-	let minReplicas = 0;
-	let maxReplicas = 3;
-	let labels = null;
-	let disk = 50;
-	let computeAZ = null;
-
-	// Set defaults when they are available.
-	function changeImages(images) {
-		if (images.length != 0) {
-			image = images[0];
-		}
-	}
-
-	$: changeImages(images);
-
-	function changeFlavors(flavors) {
-		if (flavors.length != 0) {
-			flavor = flavors[0];
-		}
-	}
-
-	$: changeFlavors(flavors);
-
-	let maxReplicasValid = true;
-
-	$: maxReplicasValid = autoscaling ? maxReplicas > minReplicas : true;
-
-	// TODO: must be unique!
-	function validateName(name) {
-		return name.match(/^(?!-)[a-z0-9-]{0,62}[a-z0-9]$/);
-	}
-
-	$: valid = [nameValid, maxReplicasValid].every((x) => x);
-
-	// Roll up all the parameters in an easy to use/bind variable.
-	// On an update to any of the variables, update the object/any bindings
-	// and notify any listeners of the change.
-	export let object;
-
-	$: {
-		object = {
-			valid: valid,
-			name: name,
-			image: image,
-			flavor: flavor,
-			autoscaling: autoscaling,
-			replicas: replicas,
-			minReplicas: minReplicas,
-			maxReplicas: maxReplicas,
-			labels: labels,
-			disk: disk,
-			computeAZ: computeAZ
+	/* Initializers... */
+	if (!pool.machine) {
+		pool.machine = {
+			disk: {}
 		};
 	}
+
+	/* Whether the configuration is valid */
+	export let valid: boolean;
+
+	/* Flavors allows the pool type to be populated */
+	export let flavors: Models.OpenstackFlavors;
+
+	let flavor: string;
+
+	function updateFlavors(flavors: Models.OpenstackFlavors): void {
+		/* Bizarrely this triggers when the select is interacted with :shrug: */
+		if (!flavors || flavor) return;
+		flavor = flavors[0].name;
+	}
+
+	$: updateFlavors(flavors);
+
+	/* Default to 50GB per node */
+	let storage: number = 50;
+
+	/* Default to autoscaling with scale from zero */
+	let autoscaling: boolean = true;
+	let replicasMin: number = 0;
+	let replicasMax: number = 3;
+
+	$: valid = Validation.kubernetesNameValid(pool.name);
+
+	/* Update the model as we update the inputs */
+	$: pool.machine.flavorName = flavor;
+	$: pool.machine.disk.size = storage;
+	$: pool.machine.replicas = replicasMax;
+	$: pool.machine.autoscaling = autoscaling ? { minimumReplicas: replicasMin } : null;
 </script>
 
-<TextField
-	id="name"
-	placeholder="Workload pool name"
-	help="A valid Kubernetes name, unique within the cluster.  This will present itself on Kubernetes nodes as the label <em>topology.eschercloud.ai/node-pool</em>."
-	validator={validateName}
-	invalidtext="Name must contain only lower-case characters, numbers or hyphens (-), it must start and end
-	with a character or number, and must be at most 63 characters."
-	bind:value={name}
-	bind:valid={nameValid}
-/>
+<h4 class="h4">Pool Name</h4>
+<p>
+	Select a name for your workload pool. The name must be unique within the cluster. Workload pool
+	names can be used to schedule workloads within the Kubernetes cluster via Kubernetes node
+	selectors.
+</p>
+<input type="text" class="input" bind:value={pool.name} />
 
-{#if advanced}
-	<SelectField
-		id="image"
-		help="Virtual machine image to use."
-		formatter={namedObjectFormatter}
-		options={images}
-		bind:value={image}
-	/>
-{/if}
+<h4 class="h4">Pool Type</h4>
+<p>
+	The pool type allows the selection of the pool's available resources to be used by workloads per
+	pool member. This includes CPU, GPU and memory.
+</p>
+<select class="select" bind:value={flavor}>
+	{#each flavors || [] as flavor}
+		<option value={flavor.name}>{Formatters.flavorFormatter(flavor)}</option>
+	{/each}
+</select>
 
-<SelectField
-	id="flavor"
-	help="Virtual machine type to use."
-	formatter={flavorFormatter}
-	options={flavors}
-	bind:value={flavor}
-/>
+<h4 class="h4">Pool Storage</h4>
+<p>Define the local storage required for a workload pool member.</p>
+<div class="flex gap-8">
+	<RangeSlider class="grow" min="50" max="4000" step="50" bind:value={storage} />
+	<span>{storage} GB</span>
+</div>
 
-<SliderField
-	id="disk"
-	help="The size of the root disk."
-	min="50"
-	max="2000"
-	step="50"
-	formatter={(x) => `${x}GiB`}
-	bind:value={disk}
-/>
-
-<CheckBoxField
-	id="autoscaling"
-	help="Enables workload pool autoscaling."
-	label="Enable autoscaling?"
-	bind:checked={autoscaling}
-/>
+<h4 class="h4">Pool Automatic Scaling</h4>
+<p>
+	Automatic scaling enables the pool to grow, and shrink, depending on workload requirements. With
+	automatic scaling you only pay for what you us, but there is an associated performance penalty
+	when nodes are dynamically created and added to the cluster.
+</p>
+<SlideToggle bind:checked={autoscaling} />
 
 {#if autoscaling}
-	<SliderField
-		id="minReplicas"
-		help="Minimum number of virtual machines."
-		min="0"
-		max="50"
-		bind:value={minReplicas}
-	/>
+	<h6 class="h6">Minimum Pool Size</h6>
+	<p>
+		Define the minimum pool replicas. When zero, the pool will not consume any resources when not in
+		use. Otherwise, it will define a minimum number of members that must exist at any time,
+		providing resource that can be used immediately without waiting for automatic scaling.
+	</p>
+	<div class="flex gap-8">
+		<RangeSlider class="grow" min="0" max="100" step="1" bind:value={replicasMin} />
+		<span>{replicasMin}</span>
+	</div>
 
-	<!-- TODO: this should be relative to the minimum -->
-	<SliderField
-		id="maxReplicas"
-		help="Maximum number of virtual machines."
-		min="0"
-		max="50"
-		bind:value={maxReplicas}
-		bind:valid={maxReplicasValid}
-		invalidText="Maximum replicas must be greater than minimum replicas"
-	/>
+	<h6 class="h6">Maximum Pool Size</h6>
+	<p>Define the maximum pool replicas.</p>
+	<div class="flex gap-8">
+		<RangeSlider class="grow" min="1" max="100" step="1" bind:value={replicasMax} />
+		<span>{replicasMax}</span>
+	</div>
 {:else}
-	<SliderField
-		id="replicas"
-		help="Number of virtual machines."
-		min="1"
-		max="50"
-		bind:value={replicas}
-	/>
-{/if}
-
-{#if advanced}
-	<Details summary="Advanced Options" icon="mdi:cog">
-		<TextField
-			id="labels"
-			placeholder="key1=value1,key2=value2"
-			help="Comma separated set of labels to apply to Kubernetes nodes on creation."
-			bind:value={labels}
-		/>
-
-		<SelectField
-			id="computeAZ"
-			help="Availability zone to provision the pool in."
-			formatter={namedObjectFormatter}
-			nullable="true"
-			options={computeAZs}
-			bind:value={computeAZ}
-		/>
-	</Details>
+	<h6 class="h6">Pool Size</h6>
+	<p>Define the pool replicas</p>
+	<div class="flex gap-8">
+		<RangeSlider class="grow" min="1" max="100" step="1" bind:value={replicasMax} />
+		<span>{replicasMax}</span>
+	</div>
 {/if}

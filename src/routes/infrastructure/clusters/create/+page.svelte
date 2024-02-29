@@ -22,13 +22,28 @@
 
 	let at: string;
 
+	/* Variables that trigger reactive actions */
 	let region: string;
 	let regions: Models.Regions;
+
+	let project: string;
+	let projects: Models.Projects;
 
 	let controlplane: string = 'default';
 	let controlplanes: Models.ControlPlanes;
 
-	token.subscribe(async (token: string) => {
+	let cluster: string;
+	let clusters: Api.KubernetesClusters;
+
+	let images: Models.OpenstackImages;
+	let flavors: Models.OpenstackFlavors;
+
+	let version: string;
+	let versions: Array<string>;
+
+	let autoUpgrade: boolean = true;
+
+	token.subscribe((token: string): void => {
 		/* Setup the token on load */
 		if (!token) return;
 		at = token;
@@ -37,35 +52,53 @@
 		/* TODO: parallelize with Promise.all */
 		client(at)
 			.apiV1RegionsGet()
-			.then((v) => (regions = v))
+			.then((v) => {
+				if (v.length == 0) return;
+
+				regions = v;
+				region = regions[0].name;
+			})
 			.catch((e: Error) => error(e));
+
+		client(at)
+			.apiV1ProjectsGet()
+			.then((v) => {
+				if (v.length == 0) return;
+
+				projects = v;
+				project = projects[0].name;
+			})
+			.catch((e: Error) => error(e));
+	});
+
+	function updateControlPlanes(at: string, project: string) {
+		if (!at || !project) return;
 
 		client(at)
 			.apiV1ControlplanesGet()
-			.then((v) => (controlplanes = v))
+			.then((v) => {
+				if (v.length == 0) return;
+
+				// TODO: a possible excuse for request query parameters?
+				controlplanes = v.filter((x) => x.metadata.project == project);
+				controlplane = controlplanes[0].name;
+			})
 			.catch((e: Error) => error(e));
+	}
 
-		/* We always need a region */
-		region = regions[0].name;
-
-		/* Control planes may not exist, a default can be created implicitly */
-		controlplane = controlplanes[0] ? controlplanes[0].name : null;
-	});
-
-	let cluster: string;
-	let clusters: Api.KubernetesClusters;
+	$: updateControlPlanes(at, project);
 
 	/* Clusters are scoped to control planes, so update this when the CP does */
-	async function updateClusters(at: string, controlplane: string): void {
+	function updateClusters(at: string, controlplane: string): void {
 		if (!at || !controlplane) return;
 
-		const parameters: Api.ApiV1ControlplanesControlPlaneNameClustersGetRequest = {
-			controlPlaneName: controlplane
-		};
-
 		client(at)
-			.apiV1ControlplanesControlPlaneNameClustersGet(parameters)
-			.then((v) => (clusters = v))
+			.apiV1ClustersGet()
+			.then((v) => {
+				if (v.length == 0) return;
+
+				clusters = v.filter((x) => x.metadata.controlplane == controlplane);
+			})
 			.catch((e: Error) => error(e));
 	}
 
@@ -73,14 +106,13 @@
 
 	/* Cluster name must be valid, and it must be unique */
 	$: step1Valid =
+		project &&
+		cluster &&
 		Validation.kubernetesNameValid(cluster) &&
 		Validation.unique(cluster, Validation.namedResourceNames(clusters));
 
 	/* Once the region has been selected we can poll the images and other resources */
-	let images: Models.OpenstackImages;
-	let flavors: Models.OpenstackFlavors;
-
-	async function updateImages(at: string, region: string): void {
+	function updateImages(at: string, region: string): void {
 		if (!at || !region) return;
 
 		const parameters: Api.ApiV1RegionsRegionNameImagesGetRequest = {
@@ -93,7 +125,7 @@
 			.catch((e: Error) => error(e));
 	}
 
-	async function updateFlavors(at: string, region: string): void {
+	function updateFlavors(at: string, region: string): void {
 		if (!at || !region) return;
 
 		const parameters: Api.ApiV1RegionsRegionNameFlavorsGetRequest = {
@@ -110,19 +142,21 @@
 	$: updateFlavors(at, region);
 
 	/* From the images, we can get a list of Kubernetes versions */
-	$: kubernetesVersions = [
-		...new Set(
-			(images || []).map((x) => {
-				return x.versions.kubernetes;
-			})
-		)
-	]
-		.sort()
-		.reverse();
-	$: kubernetesVersion = kubernetesVersions[0];
+	function updateVersions(at: string, images: Models.OpenstackImages): void {
+		if (!at || !images) return;
 
-	/* Auto upgrade is enabled by default */
-	let autoUpgrade: boolean = true;
+		versions = [
+			...new Set(
+				(images || []).map((x) => {
+					return x.versions.kubernetes;
+				})
+			)
+		].reverse();
+
+		version = versions[0];
+	}
+
+	$: updateVersions(at, images);
 
 	/* Define a types we can manage, but also bind the configuration dialog to */
 	type WorkloadPool = { model: Models.KubernetesClusterWorkloadPools; valid: boolean };
@@ -150,17 +184,37 @@
 		workloadPools = workloadPools;
 	}
 
-	import WorkloadPoolCreate from '$lib/WorkloadPoolCreate2.svelte';
+	import WorkloadPoolCreate from '$lib/WorkloadPoolCreate.svelte';
 
 	/* There must be at least one workload pool, all of them must be valid and every pool must have a unique name */
 	$: step3Valid =
 		workloadPools.length > 0 &&
 		workloadPools.every((x) => x.valid) &&
 		[...new Set(workloadPools.map((x) => x.model.name))].length == workloadPools.length;
+
+	function complete() {
+		const parameters: Api.ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPostRequest =
+			{
+				projectName: project,
+				controlPlaneName: controlplane,
+				kubernetesCluster: {
+					name: cluster,
+					region: region,
+					version: version,
+					applicationBundleAutoUpgrade: autoUpgrade,
+					workloadPools: workloadPools.map((x) => x.model)
+				}
+			};
+
+		client(at)
+			.apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPost(parameters)
+			.then(() => (window.location = '/infrastructure/clusters'))
+			.catch((e: Error) => error(e));
+	}
 </script>
 
 <ShellPage {settings}>
-	<Stepper>
+	<Stepper on:complete={complete}>
 		<Step locked={!step1Valid}>
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 
@@ -169,6 +223,14 @@
 			<select id="region-name" class="select" bind:value={region}>
 				{#each regions || [] as region}
 					<option value={region.name}>{region.name}</option>
+				{/each}
+			</select>
+
+			<h4 class="h4">Project Selection</h4>
+			<label for="project-name"> Select a project to provision in the cluster in. </label>
+			<select id="project-name" class="select" bind:value={project}>
+				{#each projects || [] as project}
+					<option value={project.name}>{project.name}</option>
 				{/each}
 			</select>
 
@@ -200,8 +262,8 @@
 				feature set and enhanced security. Certain applications &mdash; e.g. Kubeflow &mdash; may
 				require a specific version.
 			</label>
-			<select id="kubernetes-version" class="select" value={kubernetesVersion}>
-				{#each kubernetesVersions || [] as version}
+			<select id="kubernetes-version" class="select" value={version}>
+				{#each versions || [] as version}
 					<option value={version}>{version}</option>
 				{/each}
 			</select>
@@ -253,6 +315,8 @@
 		</Step>
 		<Step>
 			<svelte:fragment slot="header">Confirmation</svelte:fragment>
+
+			<p>Insert a summary of what's about to be created...</p>
 		</Step>
 	</Stepper>
 </ShellPage>

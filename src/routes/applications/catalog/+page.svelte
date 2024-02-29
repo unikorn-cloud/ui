@@ -16,14 +16,13 @@
 
 	let applications: Applications;
 
-	token.subscribe(async (at: string): void => {
+	token.subscribe((at: string): void => {
 		if (!at) return;
 
-		try {
-			applications = await client(at).apiV1ApplicationsGet();
-		} catch (e: Error) {
-			return error(e);
-		}
+		client(at)
+			.apiV1ApplicationsGet()
+			.then((v) => (applications = v))
+			.catch((e: Error) => error(e));
 	});
 </script>
 

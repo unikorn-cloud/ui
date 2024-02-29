@@ -26,12 +26,6 @@ export interface KubernetesClusterAutoscaling {
      * @memberof KubernetesClusterAutoscaling
      */
     minimumReplicas: number;
-    /**
-     * The maximum number of replicas to allow. Must be greater than the minimum.
-     * @type {number}
-     * @memberof KubernetesClusterAutoscaling
-     */
-    maximumReplicas: number;
 }
 
 /**
@@ -40,7 +34,6 @@ export interface KubernetesClusterAutoscaling {
 export function instanceOfKubernetesClusterAutoscaling(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "minimumReplicas" in value;
-    isInstance = isInstance && "maximumReplicas" in value;
 
     return isInstance;
 }
@@ -56,7 +49,6 @@ export function KubernetesClusterAutoscalingFromJSONTyped(json: any, ignoreDiscr
     return {
         
         'minimumReplicas': json['minimumReplicas'],
-        'maximumReplicas': json['maximumReplicas'],
     };
 }
 
@@ -70,7 +62,6 @@ export function KubernetesClusterAutoscalingToJSON(value?: KubernetesClusterAuto
     return {
         
         'minimumReplicas': value.minimumReplicas,
-        'maximumReplicas': value.maximumReplicas,
     };
 }
 

@@ -18,13 +18,11 @@ models/ControlPlanes.ts
 models/KubernetesCluster.ts
 models/KubernetesClusterAPI.ts
 models/KubernetesClusterAutoscaling.ts
-models/KubernetesClusterFeatures.ts
 models/KubernetesClusterNetwork.ts
 models/KubernetesClusterOpenStack.ts
 models/KubernetesClusterWorkloadPool.ts
 models/KubernetesClusterWorkloadPools.ts
 models/KubernetesClusters.ts
-models/KubernetesResourceStatus.ts
 models/Oauth2Error.ts
 models/OpenstackAvailabilityZone.ts
 models/OpenstackAvailabilityZones.ts
@@ -45,6 +43,7 @@ models/Project.ts
 models/Projects.ts
 models/Region.ts
 models/Regions.ts
+models/ResourceMetadata.ts
 models/TimeWindow.ts
 models/index.ts
 runtime.ts
