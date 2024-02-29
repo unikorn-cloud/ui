@@ -1,36 +1,22 @@
-<script>
-	export let status = 'unknown';
+<script lang="ts">
+	export let status: string;
+
+	function getColor(status: string): string {
+		if (status == 'Provisioned') return 'text-success-500';
+		if (status == 'Errored') return 'text-error-500';
+		if (status == 'Unknown') return 'text-warning-500';
+		return 'text-surface-500';
+	}
+
+	function getIcon(status: string): string {
+		if (status == 'Provisioned') return 'mdi:tick-circle-outline';
+		if (status == 'Errored') return 'mdi:error-outline';
+		if (status == 'Unknown') return 'mdi:question-mark';
+		return 'svg-spinners:ring-resize';
+	}
+
+	$: color = getColor(status);
+	$: icon = getIcon(status);
 </script>
 
-{#if status == 'ok'}
-	<iconify-icon class="ok" icon="mdi:tick-circle-outline" />
-{:else if status == 'warning'}
-	<iconify-icon class="warning" icon="mdi:warning-circle-outline" />
-{:else if status == 'error'}
-	<iconify-icon class="error" icon="mdi:error-outline" />
-{:else if status == 'progressing'}
-	<iconify-icon class="progressing" icon="svg-spinners:ring-resize" />
-{:else}
-	<iconify-icon class="unknown" icon="mdi:question-mark" />
-{/if}
-
-<style>
-	.ok {
-		color: lightgreen;
-	}
-	.warning {
-		color: orange;
-	}
-	.error {
-		color: red;
-	}
-	.unknown {
-		color: var(--light-grey);
-	}
-	.progressing {
-		color: var(--light-grey);
-	}
-	iconify-icon {
-		font-size: var(--icon-size);
-	}
-</style>
+<iconify-icon class="text-2xl {color}" {icon} />

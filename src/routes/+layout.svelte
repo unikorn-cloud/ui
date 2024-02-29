@@ -8,8 +8,8 @@
 	/* Required for configuration */
 	import { env } from '$env/dynamic/public';
 
-	/* Required for drawers */
-	import { initializeStores, AppShell } from '@skeletonlabs/skeleton';
+	/* Required for drawers and modals */
+	import { initializeStores, Modal } from '@skeletonlabs/skeleton';
 	initializeStores();
 
 	/* Required for popups */
@@ -17,6 +17,8 @@
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
+	/* Shell components */
+	import { AppShell } from '@skeletonlabs/skeleton';
 	import ShellAppBar from '$lib/shell/ShellAppBar.svelte';
 	import ShellSideBar from '$lib/shell/ShellSideBar.svelte';
 	import ShellDrawer from '$lib/shell/ShellDrawer.svelte';
@@ -72,6 +74,7 @@
 	<script src="/js/svg-inject.min.js"></script>
 </svelte:head>
 
+<Modal />
 <ShellDrawer />
 
 <AppShell class="h-screen">

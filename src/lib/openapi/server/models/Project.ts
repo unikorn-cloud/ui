@@ -28,6 +28,12 @@ import {
 export interface Project {
     /**
      * 
+     * @type {string}
+     * @memberof Project
+     */
+    name: string;
+    /**
+     * 
      * @type {KubernetesResourceStatus}
      * @memberof Project
      */
@@ -39,6 +45,7 @@ export interface Project {
  */
 export function instanceOfProject(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "name" in value;
 
     return isInstance;
 }
@@ -53,6 +60,7 @@ export function ProjectFromJSONTyped(json: any, ignoreDiscriminator: boolean): P
     }
     return {
         
+        'name': json['name'],
         'status': !exists(json, 'status') ? undefined : KubernetesResourceStatusFromJSON(json['status']),
     };
 }
@@ -66,6 +74,7 @@ export function ProjectToJSON(value?: Project | null): any {
     }
     return {
         
+        'name': value.name,
         'status': KubernetesResourceStatusToJSON(value.status),
     };
 }

@@ -35,17 +35,15 @@
 
 		/* Get top-level resources required for the first step */
 		/* TODO: parallelize with Promise.all */
-		try {
-			regions = await client(at).apiV1RegionsGet();
-		} catch (e: Error) {
-			return error(e);
-		}
+		client(at)
+			.apiV1RegionsGet()
+			.then((v) => (regions = v))
+			.catch((e: Error) => error(e));
 
-		try {
-			controlplanes = await client(at).apiV1ControlplanesGet();
-		} catch (e: Error) {
-			return error(e);
-		}
+		client(at)
+			.apiV1ControlplanesGet()
+			.then((v) => (controlplanes = v))
+			.catch((e: Error) => error(e));
 
 		/* We always need a region */
 		region = regions[0].name;
@@ -159,22 +157,10 @@
 		workloadPools.length > 0 &&
 		workloadPools.every((x) => x.valid) &&
 		[...new Set(workloadPools.map((x) => x.model.name))].length == workloadPools.length;
-
-	$: console.log('length', workloadPools.length);
-	$: console.log(
-		'valid',
-		workloadPools.every((x) => x.valid)
-	);
-	$: console.log(
-		'names',
-		[...new Set(workloadPools.map((x) => x.model.name))].length,
-		workloadPools.length
-	);
 </script>
 
 <ShellPage {settings}>
 	<Stepper>
-		<!-- TODO: lock step until inputs are validated -->
 		<Step locked={!step1Valid}>
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 

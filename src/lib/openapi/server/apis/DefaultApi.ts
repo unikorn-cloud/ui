@@ -27,6 +27,8 @@ import type {
   OpenstackFlavors,
   OpenstackImages,
   OpenstackKeyPairs,
+  Project,
+  Projects,
   Regions,
 } from '../models/index';
 import {
@@ -54,6 +56,10 @@ import {
     OpenstackImagesToJSON,
     OpenstackKeyPairsFromJSON,
     OpenstackKeyPairsToJSON,
+    ProjectFromJSON,
+    ProjectToJSON,
+    ProjectsFromJSON,
+    ProjectsToJSON,
     RegionsFromJSON,
     RegionsToJSON,
 } from '../models/index';
@@ -103,6 +109,14 @@ export interface ApiV1ControlplanesControlPlaneNamePutRequest {
 
 export interface ApiV1ControlplanesPostRequest {
     controlPlane: ControlPlane;
+}
+
+export interface ApiV1ProjectsPostRequest {
+    project: Project;
+}
+
+export interface ApiV1ProjectsProjectNameDeleteRequest {
+    projectName: string;
 }
 
 export interface ApiV1RegionsRegionNameAvailabilityZonesBlockStorageGetRequest {
@@ -642,9 +656,9 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * Deletes the project associated with the authenticated user\'s scoped authorisation token. This is a cascading operation and will delete all contained control planes and clusters.
+     * Deletes an organization and all its resources based on the access token claims.
      */
-    async apiV1ProjectDeleteRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiV1OrganizationDeleteRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -655,7 +669,139 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/project`,
+            path: `/api/v1/organization`,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Deletes an organization and all its resources based on the access token claims.
+     */
+    async apiV1OrganizationDelete(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationDeleteRaw(initOverrides);
+    }
+
+    /**
+     * Creates a new organization based on the access token claims.
+     */
+    async apiV1OrganizationPostRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organization`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Creates a new organization based on the access token claims.
+     */
+    async apiV1OrganizationPost(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationPostRaw(initOverrides);
+    }
+
+    /**
+     * List all projects for the organization.
+     */
+    async apiV1ProjectsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Projects>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/projects`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ProjectsFromJSON(jsonValue));
+    }
+
+    /**
+     * List all projects for the organization.
+     */
+    async apiV1ProjectsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Projects> {
+        const response = await this.apiV1ProjectsGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates a new project resource for the user\'s organization.
+     */
+    async apiV1ProjectsPostRaw(requestParameters: ApiV1ProjectsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.project === null || requestParameters.project === undefined) {
+            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1ProjectsPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/projects`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ProjectToJSON(requestParameters.project),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Creates a new project resource for the user\'s organization.
+     */
+    async apiV1ProjectsPost(requestParameters: ApiV1ProjectsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1ProjectsPostRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Deletes the project associated with the authenticated user\'s scoped authorisation token. This is a cascading operation and will delete all contained control planes and clusters.
+     */
+    async apiV1ProjectsProjectNameDeleteRaw(requestParameters: ApiV1ProjectsProjectNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
+            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameDelete.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/projects/{projectName}`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -667,38 +813,8 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Deletes the project associated with the authenticated user\'s scoped authorisation token. This is a cascading operation and will delete all contained control planes and clusters.
      */
-    async apiV1ProjectDelete(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1ProjectDeleteRaw(initOverrides);
-    }
-
-    /**
-     * Creates a new project resource associated with the authenticated user\'s scoped authorisation token.
-     */
-    async apiV1ProjectPostRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/project`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Creates a new project resource associated with the authenticated user\'s scoped authorisation token.
-     */
-    async apiV1ProjectPost(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1ProjectPostRaw(initOverrides);
+    async apiV1ProjectsProjectNameDelete(requestParameters: ApiV1ProjectsProjectNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1ProjectsProjectNameDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
