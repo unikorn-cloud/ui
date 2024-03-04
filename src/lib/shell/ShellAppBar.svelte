@@ -1,7 +1,8 @@
 <script lang="ts">
 	import MD5 from 'crypto-js/md5';
 
-	import { DrawerSettings, AppBar, Avatar, LightSwitch, popup } from '@skeletonlabs/skeleton';
+	import { AppBar, Avatar, LightSwitch, popup } from '@skeletonlabs/skeleton';
+	import type { DrawerSettings } from '@skeletonlabs/skeleton';
 
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
 	const drawerStore = getDrawerStore();

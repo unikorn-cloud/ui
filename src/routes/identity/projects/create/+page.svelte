@@ -1,6 +1,6 @@
 <script lang="ts">
 	/* Page setup */
-	import { ShellPageSettings } from '$lib/layouts/types.ts';
+	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 
 	const settings: ShellPageSettings = {
