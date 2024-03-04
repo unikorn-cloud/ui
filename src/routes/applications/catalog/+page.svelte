@@ -9,6 +9,9 @@
 		description: 'View platform applications that can be deployed on your infrastructure.'
 	};
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	const toastStore = getToastStore();
+
 	/* Client setup */
 	import { token } from '$lib/credentials.js';
 	import { client, error } from '$lib/client.ts';
@@ -19,7 +22,7 @@
 	token.subscribe((at: string): void => {
 		if (!at) return;
 
-		client(at)
+		client(toastStore, at)
 			.apiV1ApplicationsGet()
 			.then((v) => (applications = v))
 			.catch((e: Error) => error(e));

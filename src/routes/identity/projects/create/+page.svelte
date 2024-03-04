@@ -9,6 +9,9 @@
 		description: 'Create a new project.'
 	};
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	const toastStore = getToastStore();
+
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 
 	/* Client setup */
@@ -31,7 +34,7 @@
 		at = token;
 
 		/* Get top-level resources required for the first step */
-		client(at)
+		client(toastStore, at)
 			.apiV1ProjectsGet()
 			.then((v) => (projects = v))
 			.catch((e: Error) => error(e));
@@ -49,7 +52,7 @@
 			}
 		};
 
-		client(at)
+		client(toastStore, at)
 			.apiV1ProjectsPost(parameters)
 			.then(() => (window.location = '/identity/projects'))
 			.catch((e: Error) => error(e));
