@@ -1,4 +1,5 @@
 <script>
+	/*
 	import { browser } from '$app/environment';
 	import { onDestroy } from 'svelte';
 
@@ -50,12 +51,12 @@
 	let selectedRegion = null;
 
 	const emailUnsubscribe = email.subscribe(changeEmail);
-	const tokenUnsubscribe = token.subscribe(changeToken);
+	//	const tokenUnsubscribe = token.subscribe(changeToken);
 	const regionUnsubscribe = region.subscribe(changeRegion);
 	const selectedUnsubscribe = selected.subscribe(changeMenuItem);
 
 	onDestroy(() => {
-		tokenUnsubscribe();
+		//		tokenUnsubscribe();
 		emailUnsubscribe();
 		regionUnsubscribe();
 		selectedUnsubscribe();
@@ -184,8 +185,10 @@
 
 		content = value;
 	}
+	*/
 </script>
 
+<!--
 <Portal target="#modal" />
 <div id="modal" />
 
@@ -304,11 +307,11 @@
 		<ApplicationView />
 	{/if}
 </main>
+-->
 
 <style>
-	/* Global constants */
+	/*
 	:global(:root) {
-		/* Brand color palette */
 		--brand: rgb(73, 118, 132);
 		--brand-light: rgb(101, 162, 181);
 		--brand-dark: rgb(50, 80, 90);
@@ -316,14 +319,12 @@
 		--input-selected: var(--brand-dark);
 		--border: rgb(170, 170, 170);
 
-		/* Generic colors */
 		--light-grey: rgb(200, 200, 200);
 		--mid-grey: rgb(160, 160, 160);
 		--dark-grey: rgb(96, 96, 96);
 		--shadow: var(--mid-grey);
 		--error: deeppink;
 
-		/* Various stylings to keep consistency */
 		--radius: 0.5rem;
 		--padding-small: 0.5rem;
 		--padding: 0.75rem;
@@ -335,7 +336,6 @@
 		--background: rgb(231, 238, 240);
 	}
 
-	/* Global styles */
 	:global(*) {
 		margin: 0;
 		padding: 0;
@@ -444,7 +444,6 @@
 		font-weight: bold;
 	}
 
-	/* Global styles */
 	:global(.selectable) {
 		cursor: pointer;
 	}
@@ -455,7 +454,6 @@
 		font-size: var(--icon-size);
 	}
 
-	/* Main styling */
 	:global(.container) {
 		width: 100vw;
 		height: 100vh;
@@ -464,7 +462,6 @@
 		flex-direction: column;
 	}
 
-	/* Header/masthead styling */
 	header {
 		position: sticky;
 		top: 0;
@@ -496,7 +493,6 @@
 		width: 100vw;
 	}
 
-	/* Nav styling */
 	#nav-overlay {
 		position: fixed;
 		width: 100vw;
@@ -569,7 +565,6 @@
 		font-size: 0.5em;
 	}
 
-	/* User nav element */
 	.user {
 		display: flex;
 		align-items: center;
@@ -594,7 +589,6 @@
 		color: var(--mid-grey);
 	}
 
-	/* admonitions are main content elements that aren't interactive */
 	:global(.admonition) {
 		border-radius: var(--radius);
 		background-color: var(--overlay);
@@ -603,8 +597,6 @@
 		border: 1px solid var(--border);
 	}
 
-	/* widgets are main content elements that are interactive and change on hover
-	   to communicate this */
 	:global(.widget) {
 		transition: all 0.2s ease-in;
 		border-radius: var(--radius);
@@ -622,7 +614,6 @@
 		background-color: var(--overlay-highlight);
 	}
 
-	/* Desktop overrides */
 	@media only screen and (min-width: 720px) {
 		:global(dl) {
 			display: grid;
@@ -645,7 +636,6 @@
 		}
 	}
 
-	/* Color preference overrides */
 	@media (prefers-color-scheme: dark) {
 		:global(:root) {
 			--overlay: rgba(30, 30, 30, 0.5);
@@ -665,4 +655,5 @@
 			color: white;
 		}
 	}
+	*/
 </style>
