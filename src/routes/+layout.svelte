@@ -8,6 +8,18 @@
 	/* Required for configuration */
 	import { env } from '$env/dynamic/public';
 
+	/* Required for OpenTelemetry */
+	import { Resource } from '@opentelemetry/resources';
+	import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+	import { BasicTracerProvider } from '@opentelemetry/sdk-trace-base';
+
+	const provider = new BasicTracerProvider({
+		resource: new Resource({
+			[SemanticResourceAttributes.SERVICE_NAME]: 'unikorn-ui'
+		})
+	});
+	provider.register();
+
 	/* Required for drawers and modals */
 	import { initializeStores, Modal } from '@skeletonlabs/skeleton';
 	initializeStores();

@@ -55,6 +55,12 @@
 		''}"
 >
 	<AppRail background="bg-transparent" border="border-r border-surface-500/30">
+		<AppRailAnchor href="/">
+			<svelte:fragment slot="lead">
+				<iconify-icon icon="mdi:home-outline" class="text-2xl" />
+			</svelte:fragment>
+			<span>Home</span>
+		</AppRailAnchor>
 		<AppRailTile bind:group={railCategory} name="identity" value={'/identity'}>
 			<svelte:fragment slot="lead">
 				<iconify-icon icon="mdi:perm-identity" class="text-2xl" />
