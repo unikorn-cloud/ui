@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ShellPageSettings } from '$lib/layouts/types.ts';
+	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 
 	export let settings: ShellPageSettings;
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ShellPageSettings } from '$lib/layouts/types.ts';
+	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 

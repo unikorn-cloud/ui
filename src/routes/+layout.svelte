@@ -10,7 +10,6 @@
 
 	/* Required for drawers and modals */
 	import { initializeStores, Modal } from '@skeletonlabs/skeleton';
-	console.log('init stores');
 	initializeStores();
 
 	/* Required for toasts */

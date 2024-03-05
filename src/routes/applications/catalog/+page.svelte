@@ -1,6 +1,6 @@
 <script lang="ts">
 	/* Page setup */
-	import { ShellPageSettings } from '$lib/layouts/types.ts';
+	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 
 	const settings: ShellPageSettings = {
@@ -15,7 +15,7 @@
 	/* Client setup */
 	import { token } from '$lib/credentials.js';
 	import { client, error } from '$lib/client.ts';
-	import { Applications } from '$lib/openapi/server/models';
+	import type { Applications } from '$lib/openapi/server/models';
 
 	let applications: Applications;
 

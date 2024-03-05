@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ShellPageSettings } from '$lib/layouts/types.ts';
+	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 
 	const settings: ShellPageSettings = {
@@ -13,7 +13,8 @@
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	import { getModalStore, ModalSettings } from '@skeletonlabs/skeleton';
+	import { getModalStore } from '@skeletonlabs/skeleton';
+	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	const modalStore = getModalStore();
 
 	/* Client setup */

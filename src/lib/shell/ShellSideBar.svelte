@@ -90,7 +90,7 @@
 				<ul>
 					{#each segment.items as { label, href }}
 						<a {href} class={itemActive(href)} data-sveltekit-preload-data="hover">
-							<li on:keypress on:click={drawerStore.close}>
+							<li on:keypress={drawerStore.close} on:click={drawerStore.close}>
 								<span class="flex-auto">{label}</span>
 							</li>
 						</a>
