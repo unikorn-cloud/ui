@@ -31,12 +31,6 @@ import {
     KubernetesClusterAPIFromJSONTyped,
     KubernetesClusterAPIToJSON,
 } from './KubernetesClusterAPI';
-import type { KubernetesClusterFeatures } from './KubernetesClusterFeatures';
-import {
-    KubernetesClusterFeaturesFromJSON,
-    KubernetesClusterFeaturesFromJSONTyped,
-    KubernetesClusterFeaturesToJSON,
-} from './KubernetesClusterFeatures';
 import type { KubernetesClusterNetwork } from './KubernetesClusterNetwork';
 import {
     KubernetesClusterNetworkFromJSON,
@@ -55,18 +49,18 @@ import {
     KubernetesClusterWorkloadPoolsFromJSONTyped,
     KubernetesClusterWorkloadPoolsToJSON,
 } from './KubernetesClusterWorkloadPools';
-import type { KubernetesResourceStatus } from './KubernetesResourceStatus';
-import {
-    KubernetesResourceStatusFromJSON,
-    KubernetesResourceStatusFromJSONTyped,
-    KubernetesResourceStatusToJSON,
-} from './KubernetesResourceStatus';
 import type { OpenstackMachinePool } from './OpenstackMachinePool';
 import {
     OpenstackMachinePoolFromJSON,
     OpenstackMachinePoolFromJSONTyped,
     OpenstackMachinePoolToJSON,
 } from './OpenstackMachinePool';
+import type { ResourceMetadata } from './ResourceMetadata';
+import {
+    ResourceMetadataFromJSON,
+    ResourceMetadataFromJSONTyped,
+    ResourceMetadataToJSON,
+} from './ResourceMetadata';
 
 /**
  * Kubernetes cluster creation parameters.
@@ -75,17 +69,35 @@ import {
  */
 export interface KubernetesCluster {
     /**
+     * 
+     * @type {ResourceMetadata}
+     * @memberof KubernetesCluster
+     */
+    metadata?: ResourceMetadata;
+    /**
      * Cluster name.
      * @type {string}
      * @memberof KubernetesCluster
      */
     name: string;
     /**
+     * The region to provision the cluster in.
+     * @type {string}
+     * @memberof KubernetesCluster
+     */
+    region: string;
+    /**
+     * The Kuebernetes version.  This should be derived from image metadata.
+     * @type {string}
+     * @memberof KubernetesCluster
+     */
+    version: string;
+    /**
      * 
      * @type {ApplicationBundle}
      * @memberof KubernetesCluster
      */
-    applicationBundle: ApplicationBundle;
+    applicationBundle?: ApplicationBundle;
     /**
      * 
      * @type {ApplicationBundleAutoUpgrade}
@@ -97,13 +109,13 @@ export interface KubernetesCluster {
      * @type {KubernetesClusterOpenStack}
      * @memberof KubernetesCluster
      */
-    openstack: KubernetesClusterOpenStack;
+    openstack?: KubernetesClusterOpenStack;
     /**
      * 
      * @type {KubernetesClusterNetwork}
      * @memberof KubernetesCluster
      */
-    network: KubernetesClusterNetwork;
+    network?: KubernetesClusterNetwork;
     /**
      * 
      * @type {KubernetesClusterAPI}
@@ -115,25 +127,13 @@ export interface KubernetesCluster {
      * @type {OpenstackMachinePool}
      * @memberof KubernetesCluster
      */
-    controlPlane: OpenstackMachinePool;
+    controlPlane?: OpenstackMachinePool;
     /**
      * 
      * @type {KubernetesClusterWorkloadPools}
      * @memberof KubernetesCluster
      */
     workloadPools: KubernetesClusterWorkloadPools;
-    /**
-     * 
-     * @type {KubernetesClusterFeatures}
-     * @memberof KubernetesCluster
-     */
-    features?: KubernetesClusterFeatures;
-    /**
-     * 
-     * @type {KubernetesResourceStatus}
-     * @memberof KubernetesCluster
-     */
-    status?: KubernetesResourceStatus;
 }
 
 /**
@@ -142,10 +142,8 @@ export interface KubernetesCluster {
 export function instanceOfKubernetesCluster(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "applicationBundle" in value;
-    isInstance = isInstance && "openstack" in value;
-    isInstance = isInstance && "network" in value;
-    isInstance = isInstance && "controlPlane" in value;
+    isInstance = isInstance && "region" in value;
+    isInstance = isInstance && "version" in value;
     isInstance = isInstance && "workloadPools" in value;
 
     return isInstance;
@@ -161,16 +159,17 @@ export function KubernetesClusterFromJSONTyped(json: any, ignoreDiscriminator: b
     }
     return {
         
+        'metadata': !exists(json, 'metadata') ? undefined : ResourceMetadataFromJSON(json['metadata']),
         'name': json['name'],
-        'applicationBundle': ApplicationBundleFromJSON(json['applicationBundle']),
+        'region': json['region'],
+        'version': json['version'],
+        'applicationBundle': !exists(json, 'applicationBundle') ? undefined : ApplicationBundleFromJSON(json['applicationBundle']),
         'applicationBundleAutoUpgrade': !exists(json, 'applicationBundleAutoUpgrade') ? undefined : ApplicationBundleAutoUpgradeFromJSON(json['applicationBundleAutoUpgrade']),
-        'openstack': KubernetesClusterOpenStackFromJSON(json['openstack']),
-        'network': KubernetesClusterNetworkFromJSON(json['network']),
+        'openstack': !exists(json, 'openstack') ? undefined : KubernetesClusterOpenStackFromJSON(json['openstack']),
+        'network': !exists(json, 'network') ? undefined : KubernetesClusterNetworkFromJSON(json['network']),
         'api': !exists(json, 'api') ? undefined : KubernetesClusterAPIFromJSON(json['api']),
-        'controlPlane': OpenstackMachinePoolFromJSON(json['controlPlane']),
+        'controlPlane': !exists(json, 'controlPlane') ? undefined : OpenstackMachinePoolFromJSON(json['controlPlane']),
         'workloadPools': KubernetesClusterWorkloadPoolsFromJSON(json['workloadPools']),
-        'features': !exists(json, 'features') ? undefined : KubernetesClusterFeaturesFromJSON(json['features']),
-        'status': !exists(json, 'status') ? undefined : KubernetesResourceStatusFromJSON(json['status']),
     };
 }
 
@@ -183,7 +182,10 @@ export function KubernetesClusterToJSON(value?: KubernetesCluster | null): any {
     }
     return {
         
+        'metadata': ResourceMetadataToJSON(value.metadata),
         'name': value.name,
+        'region': value.region,
+        'version': value.version,
         'applicationBundle': ApplicationBundleToJSON(value.applicationBundle),
         'applicationBundleAutoUpgrade': ApplicationBundleAutoUpgradeToJSON(value.applicationBundleAutoUpgrade),
         'openstack': KubernetesClusterOpenStackToJSON(value.openstack),
@@ -191,8 +193,6 @@ export function KubernetesClusterToJSON(value?: KubernetesCluster | null): any {
         'api': KubernetesClusterAPIToJSON(value.api),
         'controlPlane': OpenstackMachinePoolToJSON(value.controlPlane),
         'workloadPools': KubernetesClusterWorkloadPoolsToJSON(value.workloadPools),
-        'features': KubernetesClusterFeaturesToJSON(value.features),
-        'status': KubernetesResourceStatusToJSON(value.status),
     };
 }
 

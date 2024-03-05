@@ -25,12 +25,12 @@ import {
     ApplicationBundleAutoUpgradeFromJSONTyped,
     ApplicationBundleAutoUpgradeToJSON,
 } from './ApplicationBundleAutoUpgrade';
-import type { KubernetesResourceStatus } from './KubernetesResourceStatus';
+import type { ResourceMetadata } from './ResourceMetadata';
 import {
-    KubernetesResourceStatusFromJSON,
-    KubernetesResourceStatusFromJSONTyped,
-    KubernetesResourceStatusToJSON,
-} from './KubernetesResourceStatus';
+    ResourceMetadataFromJSON,
+    ResourceMetadataFromJSONTyped,
+    ResourceMetadataToJSON,
+} from './ResourceMetadata';
 
 /**
  * A control plane.
@@ -40,10 +40,10 @@ import {
 export interface ControlPlane {
     /**
      * 
-     * @type {KubernetesResourceStatus}
+     * @type {ResourceMetadata}
      * @memberof ControlPlane
      */
-    status?: KubernetesResourceStatus;
+    metadata?: ResourceMetadata;
     /**
      * The name of the resource.
      * @type {string}
@@ -55,13 +55,19 @@ export interface ControlPlane {
      * @type {ApplicationBundle}
      * @memberof ControlPlane
      */
-    applicationBundle: ApplicationBundle;
+    applicationBundle?: ApplicationBundle;
+    /**
+     * Whether to enable auto upgrade or not.
+     * @type {boolean}
+     * @memberof ControlPlane
+     */
+    applicationBundleAutoUpgrade?: boolean;
     /**
      * 
      * @type {ApplicationBundleAutoUpgrade}
      * @memberof ControlPlane
      */
-    applicationBundleAutoUpgrade?: ApplicationBundleAutoUpgrade;
+    applicationBundleAutoUpgradeSchedule?: ApplicationBundleAutoUpgrade;
 }
 
 /**
@@ -70,7 +76,6 @@ export interface ControlPlane {
 export function instanceOfControlPlane(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "applicationBundle" in value;
 
     return isInstance;
 }
@@ -85,10 +90,11 @@ export function ControlPlaneFromJSONTyped(json: any, ignoreDiscriminator: boolea
     }
     return {
         
-        'status': !exists(json, 'status') ? undefined : KubernetesResourceStatusFromJSON(json['status']),
+        'metadata': !exists(json, 'metadata') ? undefined : ResourceMetadataFromJSON(json['metadata']),
         'name': json['name'],
-        'applicationBundle': ApplicationBundleFromJSON(json['applicationBundle']),
-        'applicationBundleAutoUpgrade': !exists(json, 'applicationBundleAutoUpgrade') ? undefined : ApplicationBundleAutoUpgradeFromJSON(json['applicationBundleAutoUpgrade']),
+        'applicationBundle': !exists(json, 'applicationBundle') ? undefined : ApplicationBundleFromJSON(json['applicationBundle']),
+        'applicationBundleAutoUpgrade': !exists(json, 'applicationBundleAutoUpgrade') ? undefined : json['applicationBundleAutoUpgrade'],
+        'applicationBundleAutoUpgradeSchedule': !exists(json, 'applicationBundleAutoUpgradeSchedule') ? undefined : ApplicationBundleAutoUpgradeFromJSON(json['applicationBundleAutoUpgradeSchedule']),
     };
 }
 
@@ -101,10 +107,11 @@ export function ControlPlaneToJSON(value?: ControlPlane | null): any {
     }
     return {
         
-        'status': KubernetesResourceStatusToJSON(value.status),
+        'metadata': ResourceMetadataToJSON(value.metadata),
         'name': value.name,
         'applicationBundle': ApplicationBundleToJSON(value.applicationBundle),
-        'applicationBundleAutoUpgrade': ApplicationBundleAutoUpgradeToJSON(value.applicationBundleAutoUpgrade),
+        'applicationBundleAutoUpgrade': value.applicationBundleAutoUpgrade,
+        'applicationBundleAutoUpgradeSchedule': ApplicationBundleAutoUpgradeToJSON(value.applicationBundleAutoUpgradeSchedule),
     };
 }
 

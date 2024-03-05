@@ -24,25 +24,25 @@ export interface KubernetesClusterNetwork {
      * @type {string}
      * @memberof KubernetesClusterNetwork
      */
-    nodePrefix: string;
+    nodePrefix?: string;
     /**
      * Network prefix to provision services in. Must be a valid CIDR block.
      * @type {string}
      * @memberof KubernetesClusterNetwork
      */
-    servicePrefix: string;
+    servicePrefix?: string;
     /**
      * Network prefix to provision pods in. Must be a valid CIDR block.
      * @type {string}
      * @memberof KubernetesClusterNetwork
      */
-    podPrefix: string;
+    podPrefix?: string;
     /**
      * A list of DNS name server to use.
      * @type {Array<string>}
      * @memberof KubernetesClusterNetwork
      */
-    dnsNameservers: Array<string>;
+    dnsNameservers?: Array<string>;
 }
 
 /**
@@ -50,10 +50,6 @@ export interface KubernetesClusterNetwork {
  */
 export function instanceOfKubernetesClusterNetwork(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "nodePrefix" in value;
-    isInstance = isInstance && "servicePrefix" in value;
-    isInstance = isInstance && "podPrefix" in value;
-    isInstance = isInstance && "dnsNameservers" in value;
 
     return isInstance;
 }
@@ -68,10 +64,10 @@ export function KubernetesClusterNetworkFromJSONTyped(json: any, ignoreDiscrimin
     }
     return {
         
-        'nodePrefix': json['nodePrefix'],
-        'servicePrefix': json['servicePrefix'],
-        'podPrefix': json['podPrefix'],
-        'dnsNameservers': json['dnsNameservers'],
+        'nodePrefix': !exists(json, 'nodePrefix') ? undefined : json['nodePrefix'],
+        'servicePrefix': !exists(json, 'servicePrefix') ? undefined : json['servicePrefix'],
+        'podPrefix': !exists(json, 'podPrefix') ? undefined : json['podPrefix'],
+        'dnsNameservers': !exists(json, 'dnsNameservers') ? undefined : json['dnsNameservers'],
     };
 }
 

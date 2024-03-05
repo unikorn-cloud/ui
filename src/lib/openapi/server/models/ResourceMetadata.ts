@@ -14,27 +14,39 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * A Kubernetes resource status.
+ * A resources's metadata
  * @export
- * @interface KubernetesResourceStatus
+ * @interface ResourceMetadata
  */
-export interface KubernetesResourceStatus {
+export interface ResourceMetadata {
     /**
-     * The name of the resource.
+     * Where the resource is related to a project, this is populated.
      * @type {string}
-     * @memberof KubernetesResourceStatus
+     * @memberof ResourceMetadata
      */
-    name: string;
+    project?: string;
+    /**
+     * Where the resource is scoped to a control plane, this is populated.
+     * @type {string}
+     * @memberof ResourceMetadata
+     */
+    controlplane?: string;
+    /**
+     * Where the resource is scoped to a region, this is populated,
+     * @type {string}
+     * @memberof ResourceMetadata
+     */
+    region?: string;
     /**
      * The time the resource was created.
      * @type {Date}
-     * @memberof KubernetesResourceStatus
+     * @memberof ResourceMetadata
      */
     creationTime: Date;
     /**
      * The time the resource was deleted.
      * @type {Date}
-     * @memberof KubernetesResourceStatus
+     * @memberof ResourceMetadata
      */
     deletionTime?: Date;
     /**
@@ -46,41 +58,42 @@ export interface KubernetesResourceStatus {
      * It may also change to "Error" if an unexpected error occurred during any operation.
      * Errors may be transient.
      * @type {string}
-     * @memberof KubernetesResourceStatus
+     * @memberof ResourceMetadata
      */
     status: string;
 }
 
 /**
- * Check if a given object implements the KubernetesResourceStatus interface.
+ * Check if a given object implements the ResourceMetadata interface.
  */
-export function instanceOfKubernetesResourceStatus(value: object): boolean {
+export function instanceOfResourceMetadata(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "name" in value;
     isInstance = isInstance && "creationTime" in value;
     isInstance = isInstance && "status" in value;
 
     return isInstance;
 }
 
-export function KubernetesResourceStatusFromJSON(json: any): KubernetesResourceStatus {
-    return KubernetesResourceStatusFromJSONTyped(json, false);
+export function ResourceMetadataFromJSON(json: any): ResourceMetadata {
+    return ResourceMetadataFromJSONTyped(json, false);
 }
 
-export function KubernetesResourceStatusFromJSONTyped(json: any, ignoreDiscriminator: boolean): KubernetesResourceStatus {
+export function ResourceMetadataFromJSONTyped(json: any, ignoreDiscriminator: boolean): ResourceMetadata {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'name': json['name'],
+        'project': !exists(json, 'project') ? undefined : json['project'],
+        'controlplane': !exists(json, 'controlplane') ? undefined : json['controlplane'],
+        'region': !exists(json, 'region') ? undefined : json['region'],
         'creationTime': (new Date(json['creationTime'])),
         'deletionTime': !exists(json, 'deletionTime') ? undefined : (new Date(json['deletionTime'])),
         'status': json['status'],
     };
 }
 
-export function KubernetesResourceStatusToJSON(value?: KubernetesResourceStatus | null): any {
+export function ResourceMetadataToJSON(value?: ResourceMetadata | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -89,7 +102,9 @@ export function KubernetesResourceStatusToJSON(value?: KubernetesResourceStatus 
     }
     return {
         
-        'name': value.name,
+        'project': value.project,
+        'controlplane': value.controlplane,
+        'region': value.region,
         'creationTime': (value.creationTime.toISOString()),
         'deletionTime': value.deletionTime === undefined ? undefined : (value.deletionTime.toISOString()),
         'status': value.status,

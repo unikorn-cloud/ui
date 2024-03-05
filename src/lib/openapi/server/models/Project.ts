@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { KubernetesResourceStatus } from './KubernetesResourceStatus';
+import type { ResourceMetadata } from './ResourceMetadata';
 import {
-    KubernetesResourceStatusFromJSON,
-    KubernetesResourceStatusFromJSONTyped,
-    KubernetesResourceStatusToJSON,
-} from './KubernetesResourceStatus';
+    ResourceMetadataFromJSON,
+    ResourceMetadataFromJSONTyped,
+    ResourceMetadataToJSON,
+} from './ResourceMetadata';
 
 /**
  * A project.
@@ -28,16 +28,16 @@ import {
 export interface Project {
     /**
      * 
+     * @type {ResourceMetadata}
+     * @memberof Project
+     */
+    metadata?: ResourceMetadata;
+    /**
+     * 
      * @type {string}
      * @memberof Project
      */
     name: string;
-    /**
-     * 
-     * @type {KubernetesResourceStatus}
-     * @memberof Project
-     */
-    status?: KubernetesResourceStatus;
 }
 
 /**
@@ -60,8 +60,8 @@ export function ProjectFromJSONTyped(json: any, ignoreDiscriminator: boolean): P
     }
     return {
         
+        'metadata': !exists(json, 'metadata') ? undefined : ResourceMetadataFromJSON(json['metadata']),
         'name': json['name'],
-        'status': !exists(json, 'status') ? undefined : KubernetesResourceStatusFromJSON(json['status']),
     };
 }
 
@@ -74,8 +74,8 @@ export function ProjectToJSON(value?: Project | null): any {
     }
     return {
         
+        'metadata': ResourceMetadataToJSON(value.metadata),
         'name': value.name,
-        'status': KubernetesResourceStatusToJSON(value.status),
     };
 }
 
