@@ -1,7 +1,9 @@
-import { v4 as uuidv4 } from 'uuid';
 import * as Api from '$lib/openapi/server';
 import { removeCredentials } from '$lib/credentials.js';
 import { ToastSettings } from '@skeletonlabs/skeleton';
+import { ROOT_CONTEXT, defaultTextMapSetter, propagation, trace } from '@opentelemetry/api';
+import type { Span } from '@opentelemetry/api';
+import { W3CTraceContextPropagator } from '@opentelemetry/core';
 
 // authenticationMiddleware performs logout if the request is unauthorized.
 function authenticationMiddleware(): Api.Middleware {
@@ -13,23 +15,36 @@ function authenticationMiddleware(): Api.Middleware {
 	};
 }
 
-// baggageMiddleware injects w3c baggage to support request tracing and simple
+// traceContextMiddleware injects w3c trace context to support request tracing and simple
 // handling of support requests.
-// TODO: this probably wants to be a full OpenTelemetry trace context
-// but baby steps, because otel is impregnable!
-function baggageMiddleware(toastStore: any): Api.Middleware {
-	const requestID = uuidv4();
+function traceContextMiddleware(toastStore: any): Api.Middleware {
+	// Cache the span across the call so we can get at the trace
+	// context, in particular the trace ID, after the call completes.
+	let span: Span;
 
 	return {
 		pre: (ctx: Api.RequestContext): Promise<Api.FetchParams | void> => {
-			ctx.init.headers['baggage'] = `request-id=${requestID}`;
+			let tracer = trace.getTracer('unikorn-ui');
+			span = tracer.startSpan(ctx.url);
+			console.log(span);
+
+			const propagator = new W3CTraceContextPropagator();
+
+			propagator.inject(
+				trace.setSpanContext(ROOT_CONTEXT, span.spanContext()),
+				ctx.init.headers,
+				defaultTextMapSetter
+			);
+			console.log(ctx);
 		},
 		post: (ctx: Api.ErrorContext): Promise<Response | void> => {
+			span.end();
+
 			if (ctx.response.ok) return;
 
 			const toast: ToastSettings = {
 				autohide: false,
-				message: `Server request failed, please quote request ID ${requestID} when requesting help`,
+				message: `Server request failed, please quote request ID ${span.spanContext().traceId} when requesting help`,
 				background: 'variant-filled-error'
 			};
 
@@ -45,7 +60,7 @@ export function client(toastStore: any, token: string): BaseAPI {
 	const config = new Api.Configuration({
 		basePath: '',
 		accessToken: 'Bearer ' + token,
-		middleware: [authenticationMiddleware(), baggageMiddleware(toastStore)]
+		middleware: [authenticationMiddleware(), traceContextMiddleware(toastStore)]
 	});
 
 	return new Api.DefaultApi(config);
