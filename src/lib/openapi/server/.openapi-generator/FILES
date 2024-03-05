@@ -42,6 +42,7 @@ models/OpenstackProject.ts
 models/OpenstackProjects.ts
 models/OpenstackVolume.ts
 models/Project.ts
+models/Projects.ts
 models/Region.ts
 models/Regions.ts
 models/TimeWindow.ts

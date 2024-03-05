@@ -12,5 +12,5 @@ export function namedResourceNames(resources: any): Array<string> {
 
 export function unique(needle: string, haystack: Array<string>): boolean {
 	if (haystack == null) return true;
-	return haystack.includes(needle);
+	return !haystack.includes(needle);
 }

@@ -41,6 +41,7 @@ export * from './OpenstackProject';
 export * from './OpenstackProjects';
 export * from './OpenstackVolume';
 export * from './Project';
+export * from './Projects';
 export * from './Region';
 export * from './Regions';
 export * from './TimeWindow';
