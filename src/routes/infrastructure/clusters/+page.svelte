@@ -20,12 +20,15 @@
 	import * as Models from '$lib/openapi/server/models';
 	import * as Api from '$lib/openapi/server/apis';
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	const toastStore = getToastStore();
+
 	let at: string;
 
 	let resources: Models.KubernetesClusters;
 
 	function update(): void {
-		client(at)
+		client(toastStore, at)
 			.apiV1ClustersGet()
 			.then((v) => (resources = v))
 			.catch((e: Error) => error(e));
@@ -57,7 +60,7 @@
 						clusterName: resource.name
 					};
 
-				client(at)
+				client(toastStore, at)
 					.apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDelete(
 						parameters
 					)

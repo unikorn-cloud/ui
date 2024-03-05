@@ -10,7 +10,11 @@
 
 	/* Required for drawers and modals */
 	import { initializeStores, Modal } from '@skeletonlabs/skeleton';
+	console.log('init stores');
 	initializeStores();
+
+	/* Required for toasts */
+	import { Toast } from '@skeletonlabs/skeleton';
 
 	/* Required for popups */
 	import { storePopup } from '@skeletonlabs/skeleton';
@@ -75,6 +79,7 @@
 </svelte:head>
 
 <Modal />
+<Toast />
 <ShellDrawer />
 
 <AppShell class="h-screen">

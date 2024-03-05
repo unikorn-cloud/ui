@@ -9,6 +9,9 @@
 		description: 'Create and deploy a new Kubernetes cluster.'
 	};
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	const toastStore = getToastStore();
+
 	import { Stepper, Step, SlideToggle } from '@skeletonlabs/skeleton';
 
 	/* Client setup */
@@ -50,7 +53,7 @@
 
 		/* Get top-level resources required for the first step */
 		/* TODO: parallelize with Promise.all */
-		client(at)
+		client(toastStore, at)
 			.apiV1RegionsGet()
 			.then((v) => {
 				if (v.length == 0) return;
@@ -60,7 +63,7 @@
 			})
 			.catch((e: Error) => error(e));
 
-		client(at)
+		client(toastStore, at)
 			.apiV1ProjectsGet()
 			.then((v) => {
 				if (v.length == 0) return;
@@ -74,7 +77,7 @@
 	function updateControlPlanes(at: string, project: string) {
 		if (!at || !project) return;
 
-		client(at)
+		client(toastStore, at)
 			.apiV1ControlplanesGet()
 			.then((v) => {
 				if (v.length == 0) return;
@@ -92,7 +95,7 @@
 	function updateClusters(at: string, controlplane: string): void {
 		if (!at || !controlplane) return;
 
-		client(at)
+		client(toastStore, at)
 			.apiV1ClustersGet()
 			.then((v) => {
 				if (v.length == 0) return;
@@ -119,7 +122,7 @@
 			regionName: region
 		};
 
-		client(at)
+		client(toastStore, at)
 			.apiV1RegionsRegionNameImagesGet(parameters)
 			.then((v) => (images = v))
 			.catch((e: Error) => error(e));
@@ -132,7 +135,7 @@
 			regionName: region
 		};
 
-		client(at)
+		client(toastStore, at)
 			.apiV1RegionsRegionNameFlavorsGet(parameters)
 			.then((v) => (flavors = v))
 			.catch((e: Error) => error(e));
@@ -206,7 +209,7 @@
 				}
 			};
 
-		client(at)
+		client(toastStore, at)
 			.apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPost(parameters)
 			.then(() => (window.location = '/infrastructure/clusters'))
 			.catch((e: Error) => error(e));

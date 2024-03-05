@@ -10,6 +10,9 @@
 
 	import { onDestroy } from 'svelte';
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	const toastStore = getToastStore();
+
 	import { getModalStore, ModalSettings } from '@skeletonlabs/skeleton';
 	const modalStore = getModalStore();
 
@@ -24,7 +27,7 @@
 	let resources: Models.Projects;
 
 	function update(): void {
-		client(at)
+		client(toastStore, at)
 			.apiV1ProjectsGet()
 			.then((v) => (resources = v))
 			.catch((e: Error) => error(e));
@@ -53,7 +56,7 @@
 					projectName: resource.name
 				};
 
-				client(at)
+				client(toastStore, at)
 					.apiV1ProjectsProjectNameDelete(parameters)
 					.catch((e: Error) => error(e));
 			}
