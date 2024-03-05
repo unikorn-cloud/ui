@@ -1,0 +1,10 @@
+{{- if (not .Values.ingress.issuer) }}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: unikorn-ui-ingress
+  labels:
+    {{- include "unikorn-ui.labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+{{- end }}
