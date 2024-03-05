@@ -22,7 +22,9 @@
 		z-index: 100;
 		visibility: hidden;
 		opacity: 0;
-		transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+		transition:
+			opacity 0.3s ease-in-out,
+			visibility 0.3s ease-in-out;
 	}
 
 	.modal-backdrop.active {

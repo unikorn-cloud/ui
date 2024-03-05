@@ -1,19 +1,5 @@
-.DS_Store
-node_modules
-/build
-/.svelte-kit
-/package
-.env
-.env.*
-!.env.example
-/src/lib/openapi
-openapitools.json
-
 # Ignore files for PNPM, NPM and YARN
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
-
-/static
 /charts
-README.md
