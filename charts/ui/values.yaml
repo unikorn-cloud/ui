@@ -42,5 +42,7 @@ ingress:
   class: ~
   # Cert Manager certificate issuer to use.  If not specified it will generate a self signed one.
   issuer: ~
+  # clusterIssuer to use.
+  clusterIssuer: ~
   # If true, will add the external DNS hostname annotation.
   externalDns: false
