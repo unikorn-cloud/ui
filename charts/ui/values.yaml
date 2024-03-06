@@ -22,9 +22,25 @@ imagePullSecret:
 # Allows override of the global default image.
 image:
 
-# Athentication settings.
+# What DNS name I have.
+host: console.unikorn-cloud.org
+
+# Backend API configuration.
+api:
+  # The API's hostname.
+  host: https://api.unikorn-cloud.org
+
+# Authentication settings.
 oauth2:
   # The identity provider's name (and OIDC discovery endpoint).
   issuer: https://identity.unikorn-cloud.org
   # The client identifier assigned to this application.
   clientID: 3fc34852-9186-4884-b580-78bf4bcf628a
+
+ingress:
+  # Sets the ingress class to use.
+  class: ~
+  # Cert Manager certificate issuer to use.  If not specified it will generate a self signed one.
+  issuer: ~
+  # If true, will add the external DNS hostname annotation.
+  externalDns: false

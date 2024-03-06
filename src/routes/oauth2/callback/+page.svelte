@@ -1,14 +1,17 @@
-<script>
+<script lang="ts">
 	// The key to security here is to not import anything that could
 	// potentially compromise the code or tokens with a supply chain attack,
 	// so keep imports deliberately sparse please!
 	import { browser } from '$app/environment';
-	import { env } from '$env/dynamic/public';
 
+	/* Required for configuration */
+	import { oidcClientID, oidcDiscovery, compareAccessTokenHash } from '$lib/oidc.ts';
+	import type { OIDCDiscovery } from '$lib/oidc.ts';
+
+	/* Required for verification */
 	import { createRemoteJWKSet, jwtVerify } from 'jose';
 
 	import { setCredentials } from '$lib/credentials.js';
-	import { compareAccessTokenHash } from '$lib/oidc.js';
 
 	let error;
 	let description;
@@ -34,11 +37,14 @@
 
 		const code = location.searchParams.get('code');
 
+		const discovery: OIDCDiscovery = await oidcDiscovery();
+
+		console.log(window.location);
 		const code_verifier = window.sessionStorage.getItem('oauth2_code_challenge_verifier');
 		const form = new URLSearchParams({
 			grant_type: 'authorization_code',
-			client_id: env.PUBLIC_OAUTH2_CLIENT_ID,
-			redirect_uri: `https://${window.location.host}/oauth2/callback`,
+			client_id: oidcClientID,
+			redirect_uri: `${window.location.protocol}//${window.location.host}/oauth2/callback`,
 			code: code,
 			code_verifier: code_verifier
 		});
@@ -51,12 +57,9 @@
 			body: form.toString()
 		};
 
-		const response = await fetch(env.PUBLIC_OAUTH2_TOKEN_ENDPOINT, options);
+		const response = await fetch(discovery.token_endpoint, options);
 
 		const result = await response.json();
-
-		console.log(response);
-		console.log(result);
 
 		if (!response.ok) {
 			error = result.error;
@@ -64,11 +67,11 @@
 			return;
 		}
 
-		const jwks = createRemoteJWKSet(new URL(env.PUBLIC_OAUTH2_JWKS_ENDPOINT));
+		const jwks = createRemoteJWKSet(new URL(discovery.jwks_uri));
 
 		const jwt = await jwtVerify(result.id_token, jwks, {
-			issuer: env.PUBLIC_OAUTH2_ISSUER,
-			audience: env.PUBLIC_OAUTH2_CLIENT_ID
+			issuer: discovery.issuer,
+			audience: oidcClientID
 		});
 
 		try {
@@ -88,7 +91,7 @@
 </script>
 
 {#if error}
-	<h1>An Error Occurred</h1>
+	<h1 class="h1">An Error Occurred</h1>
 	<dl>
 		<dt>Error</dt>
 		<dd>{error}</dd>
@@ -97,5 +100,5 @@
 		<dd>{description}</dd>
 	</dl>
 {:else}
-	<h1>Exchanging Credentials: Just a Moment...</h1>
+	<h1 class="h1">Exchanging Credentials: Just a Moment...</h1>
 {/if}

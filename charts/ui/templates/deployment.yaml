@@ -30,6 +30,8 @@ spec:
         env:
         - name: PUBLIC_APPLICATION_VERSION
           value: {{ .Chart.Version }}
+        - name: PUBLIC_API_HOST
+          value: {{ .Values.api.host }}
         - name: PUBLIC_OAUTH2_ISSUER
           value: {{ .Values.oauth2.issuer }}
         # TODO: implement OIDC discovery protocol.

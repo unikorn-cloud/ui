@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	/* Required for styling */
 	import '../app.postcss';
 
@@ -6,7 +6,8 @@
 	import { browser } from '$app/environment';
 
 	/* Required for configuration */
-	import { env } from '$env/dynamic/public';
+	import { oidcClientID, oidcDiscovery } from '$lib/oidc.ts';
+	import type { OIDCDiscovery } from '$lib/oidc.ts';
 
 	/* Required for OpenTelemetry */
 	import { Resource } from '@opentelemetry/resources';
@@ -43,7 +44,7 @@
 	import SHA256 from 'crypto-js/sha256';
 	import { token } from '$lib/credentials.js';
 
-	token.subscribe((token) => {
+	token.subscribe(async (token) => {
 		/* When a token isn't set, and its on the browser, do authentication */
 		if (token || !browser) {
 			return;
@@ -53,6 +54,8 @@
 		if (window.location.pathname.startsWith('/oauth2/')) {
 			return;
 		}
+
+		const oidc: OIDCDiscovery = await oidcDiscovery();
 
 		/* Kck off the oauth2/oidc authentication code flow */
 		/* TODO: it may be better to use Passport */
@@ -69,14 +72,14 @@
 		// TODO: set a nonce
 		const query = new URLSearchParams({
 			response_type: 'code',
-			client_id: env.PUBLIC_OAUTH2_CLIENT_ID,
-			redirect_uri: `https://${window.location.host}/oauth2/callback`,
+			client_id: oidcClientID,
+			redirect_uri: `${window.location.protocol}//${window.location.host}/oauth2/callback`,
 			code_challenge_method: 'S256',
 			code_challenge: codeChallenge,
 			scope: 'openid email profile'
 		});
 
-		const url = new URL(env.PUBLIC_OAUTH2_AUTHORIZATION_ENDPOINT);
+		const url = new URL(oidc.authorization_endpoint);
 		url.search = query.toString();
 
 		document.location = url.toString();

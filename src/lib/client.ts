@@ -1,6 +1,9 @@
+import { env } from '$env/dynamic/public';
+
 import * as Api from '$lib/openapi/server';
 import { removeCredentials } from '$lib/credentials.js';
 import { ToastSettings } from '@skeletonlabs/skeleton';
+
 import { ROOT_CONTEXT, defaultTextMapSetter, propagation, trace } from '@opentelemetry/api';
 import type { Span } from '@opentelemetry/api';
 import { W3CTraceContextPropagator } from '@opentelemetry/core';
@@ -26,7 +29,6 @@ function traceContextMiddleware(toastStore: any): Api.Middleware {
 		pre: (ctx: Api.RequestContext): Promise<Api.FetchParams | void> => {
 			let tracer = trace.getTracer('unikorn-ui');
 			span = tracer.startSpan(ctx.url);
-			console.log(span);
 
 			const propagator = new W3CTraceContextPropagator();
 
@@ -35,7 +37,6 @@ function traceContextMiddleware(toastStore: any): Api.Middleware {
 				ctx.init.headers,
 				defaultTextMapSetter
 			);
-			console.log(ctx);
 		},
 		post: (ctx: Api.ErrorContext): Promise<Response | void> => {
 			span.end();
@@ -58,7 +59,7 @@ function traceContextMiddleware(toastStore: any): Api.Middleware {
 // lookup for the store will fail, hence we have to pass it in.
 export function client(toastStore: any, token: string): BaseAPI {
 	const config = new Api.Configuration({
-		basePath: '',
+		basePath: env.PUBLIC_API_HOST,
 		accessToken: 'Bearer ' + token,
 		middleware: [authenticationMiddleware(), traceContextMiddleware(toastStore)]
 	});
