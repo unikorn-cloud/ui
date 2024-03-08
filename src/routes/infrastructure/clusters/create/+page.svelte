@@ -12,7 +12,7 @@
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	import { Stepper, Step, SlideToggle } from '@skeletonlabs/skeleton';
+	import { Stepper, Step } from '@skeletonlabs/skeleton';
 
 	/* Client setup */
 	import { client, error } from '$lib/client.ts';
@@ -43,8 +43,6 @@
 
 	let version: string;
 	let versions: Array<string>;
-
-	let autoUpgrade: boolean = true;
 
 	token.subscribe((token: string): void => {
 		/* Setup the token on load */
@@ -107,9 +105,11 @@
 
 	$: updateClusters(at, controlplane);
 
+	/* Project must be set */
+	$: step1Valid = project;
+
 	/* Cluster name must be valid, and it must be unique */
-	$: step1Valid =
-		project &&
+	$: step2Valid =
 		cluster &&
 		Validation.kubernetesNameValid(cluster) &&
 		Validation.unique(cluster, Validation.namedResourceNames(clusters));
@@ -204,7 +204,6 @@
 					name: cluster,
 					region: region,
 					version: version,
-					applicationBundleAutoUpgrade: autoUpgrade,
 					workloadPools: workloadPools.map((x) => x.model)
 				}
 			};
@@ -247,6 +246,10 @@
 					<option value={controlplane.name}>{controlplane.name}</option>
 				{/each}
 			</select>
+		</Step>
+
+		<Step locked={!step2Valid}>
+			<svelte:fragment slot="header">Basic Cluster Setup</svelte:fragment>
 
 			<h4 class="h4">Cluster Name</h4>
 			<label for="cluster-name">
@@ -254,9 +257,6 @@
 				more than 63 characters, and contain only letters, numbers and hyphens.
 			</label>
 			<input type="text" class="input" required bind:value={cluster} />
-		</Step>
-		<Step>
-			<svelte:fragment slot="header">Basic Cluster Setup</svelte:fragment>
 
 			<h4 class="h4">Kubernetes Version</h4>
 			<label for="kubernetes-version">
@@ -270,16 +270,6 @@
 					<option value={version}>{version}</option>
 				{/each}
 			</select>
-
-			<h4 class="h4">Lifecycle Management</h4>
-			<p>
-				Automatic upgrades provide new features and fixes in a timely manner. It is recommended that
-				this option should be enabled. This option only affects managed software components
-				installed and managed on the cluster, and not the Kubernetes version itself. Managed
-				software componenets will be upgraded regardless when they reach their end-of-life, so this
-				option provides a fast-stream for upgrades.
-			</p>
-			<SlideToggle bind:checked={autoUpgrade} />
 		</Step>
 		<Step locked={!step3Valid}>
 			<svelte:fragment slot="header">Worker Setup</svelte:fragment>
