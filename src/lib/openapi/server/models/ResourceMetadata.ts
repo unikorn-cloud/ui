@@ -26,11 +26,11 @@ export interface ResourceMetadata {
      */
     project?: string;
     /**
-     * Where the resource is scoped to a control plane, this is populated.
+     * Where the resource is scoped to a cluster manager, this is populated.
      * @type {string}
      * @memberof ResourceMetadata
      */
-    controlplane?: string;
+    clustermanager?: string;
     /**
      * Where the resource is scoped to a region, this is populated,
      * @type {string}
@@ -85,7 +85,7 @@ export function ResourceMetadataFromJSONTyped(json: any, ignoreDiscriminator: bo
     return {
         
         'project': !exists(json, 'project') ? undefined : json['project'],
-        'controlplane': !exists(json, 'controlplane') ? undefined : json['controlplane'],
+        'clustermanager': !exists(json, 'clustermanager') ? undefined : json['clustermanager'],
         'region': !exists(json, 'region') ? undefined : json['region'],
         'creationTime': (new Date(json['creationTime'])),
         'deletionTime': !exists(json, 'deletionTime') ? undefined : (new Date(json['deletionTime'])),
@@ -103,7 +103,7 @@ export function ResourceMetadataToJSON(value?: ResourceMetadata | null): any {
     return {
         
         'project': value.project,
-        'controlplane': value.controlplane,
+        'clustermanager': value.clustermanager,
         'region': value.region,
         'creationTime': (value.creationTime.toISOString()),
         'deletionTime': value.deletionTime === undefined ? undefined : (value.deletionTime.toISOString()),

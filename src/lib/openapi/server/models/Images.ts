@@ -13,39 +13,39 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { OpenstackProject } from './OpenstackProject';
+import type { Image } from './Image';
 import {
-    OpenstackProjectFromJSON,
-    OpenstackProjectFromJSONTyped,
-    OpenstackProjectToJSON,
-} from './OpenstackProject';
+    ImageFromJSON,
+    ImageFromJSONTyped,
+    ImageToJSON,
+} from './Image';
 
 /**
- * A list of OpenStack projects.
+ * A list of images that are compatible with this platform.
  * @export
- * @interface OpenstackProjects
+ * @interface Images
  */
-export interface OpenstackProjects extends Array<OpenstackProject> {
+export interface Images extends Array<Image> {
 }
 
 /**
- * Check if a given object implements the OpenstackProjects interface.
+ * Check if a given object implements the Images interface.
  */
-export function instanceOfOpenstackProjects(value: object): boolean {
+export function instanceOfImages(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function OpenstackProjectsFromJSON(json: any): OpenstackProjects {
-    return OpenstackProjectsFromJSONTyped(json, false);
+export function ImagesFromJSON(json: any): Images {
+    return ImagesFromJSONTyped(json, false);
 }
 
-export function OpenstackProjectsFromJSONTyped(json: any, ignoreDiscriminator: boolean): OpenstackProjects {
+export function ImagesFromJSONTyped(json: any, ignoreDiscriminator: boolean): Images {
     return json;
 }
 
-export function OpenstackProjectsToJSON(value?: OpenstackProjects | null): any {
+export function ImagesToJSON(value?: Images | null): any {
     return value;
 }
 

@@ -13,56 +13,56 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { OpenstackImageVersions } from './OpenstackImageVersions';
+import type { ImageVersions } from './ImageVersions';
 import {
-    OpenstackImageVersionsFromJSON,
-    OpenstackImageVersionsFromJSONTyped,
-    OpenstackImageVersionsToJSON,
-} from './OpenstackImageVersions';
+    ImageVersionsFromJSON,
+    ImageVersionsFromJSONTyped,
+    ImageVersionsToJSON,
+} from './ImageVersions';
 
 /**
- * And OpenStack image.
+ * An image.
  * @export
- * @interface OpenstackImage
+ * @interface Image
  */
-export interface OpenstackImage {
+export interface Image {
     /**
      * The unique image ID.
      * @type {string}
-     * @memberof OpenstackImage
+     * @memberof Image
      */
     id: string;
     /**
      * The image name.
      * @type {string}
-     * @memberof OpenstackImage
+     * @memberof Image
      */
     name: string;
     /**
      * Time when the image was created. Images with a newer creation time should
      * be favoured over older images as they will contain updates and fewer vulnerabilities.
      * @type {Date}
-     * @memberof OpenstackImage
+     * @memberof Image
      */
     created: Date;
     /**
      * Time when the image was last modified.
      * @type {Date}
-     * @memberof OpenstackImage
+     * @memberof Image
      */
     modified: Date;
     /**
      * 
-     * @type {OpenstackImageVersions}
-     * @memberof OpenstackImage
+     * @type {ImageVersions}
+     * @memberof Image
      */
-    versions: OpenstackImageVersions;
+    versions: ImageVersions;
 }
 
 /**
- * Check if a given object implements the OpenstackImage interface.
+ * Check if a given object implements the Image interface.
  */
-export function instanceOfOpenstackImage(value: object): boolean {
+export function instanceOfImage(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "id" in value;
     isInstance = isInstance && "name" in value;
@@ -73,11 +73,11 @@ export function instanceOfOpenstackImage(value: object): boolean {
     return isInstance;
 }
 
-export function OpenstackImageFromJSON(json: any): OpenstackImage {
-    return OpenstackImageFromJSONTyped(json, false);
+export function ImageFromJSON(json: any): Image {
+    return ImageFromJSONTyped(json, false);
 }
 
-export function OpenstackImageFromJSONTyped(json: any, ignoreDiscriminator: boolean): OpenstackImage {
+export function ImageFromJSONTyped(json: any, ignoreDiscriminator: boolean): Image {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -87,11 +87,11 @@ export function OpenstackImageFromJSONTyped(json: any, ignoreDiscriminator: bool
         'name': json['name'],
         'created': (new Date(json['created'])),
         'modified': (new Date(json['modified'])),
-        'versions': OpenstackImageVersionsFromJSON(json['versions']),
+        'versions': ImageVersionsFromJSON(json['versions']),
     };
 }
 
-export function OpenstackImageToJSON(value?: OpenstackImage | null): any {
+export function ImageToJSON(value?: Image | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -104,7 +104,7 @@ export function OpenstackImageToJSON(value?: OpenstackImage | null): any {
         'name': value.name,
         'created': (value.created.toISOString()),
         'modified': (value.modified.toISOString()),
-        'versions': OpenstackImageVersionsToJSON(value.versions),
+        'versions': ImageVersionsToJSON(value.versions),
     };
 }
 

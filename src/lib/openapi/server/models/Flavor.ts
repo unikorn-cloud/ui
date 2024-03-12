@@ -14,53 +14,53 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * An OpenStack flavor.
+ * A flavor.
  * @export
- * @interface OpenstackFlavor
+ * @interface Flavor
  */
-export interface OpenstackFlavor {
+export interface Flavor {
     /**
      * The unique flavor ID.
      * @type {string}
-     * @memberof OpenstackFlavor
+     * @memberof Flavor
      */
     id: string;
     /**
      * The flavor name.
      * @type {string}
-     * @memberof OpenstackFlavor
+     * @memberof Flavor
      */
     name: string;
     /**
      * The number of CPUs.
      * @type {number}
-     * @memberof OpenstackFlavor
+     * @memberof Flavor
      */
     cpus: number;
     /**
      * The amount of memory in GiB.
      * @type {number}
-     * @memberof OpenstackFlavor
+     * @memberof Flavor
      */
     memory: number;
     /**
      * The amount of ephemeral disk in GB.
      * @type {number}
-     * @memberof OpenstackFlavor
+     * @memberof Flavor
      */
     disk: number;
     /**
      * The number of GPUs, if not set there are none.
      * @type {number}
-     * @memberof OpenstackFlavor
+     * @memberof Flavor
      */
     gpus?: number;
 }
 
 /**
- * Check if a given object implements the OpenstackFlavor interface.
+ * Check if a given object implements the Flavor interface.
  */
-export function instanceOfOpenstackFlavor(value: object): boolean {
+export function instanceOfFlavor(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "id" in value;
     isInstance = isInstance && "name" in value;
@@ -71,11 +71,11 @@ export function instanceOfOpenstackFlavor(value: object): boolean {
     return isInstance;
 }
 
-export function OpenstackFlavorFromJSON(json: any): OpenstackFlavor {
-    return OpenstackFlavorFromJSONTyped(json, false);
+export function FlavorFromJSON(json: any): Flavor {
+    return FlavorFromJSONTyped(json, false);
 }
 
-export function OpenstackFlavorFromJSONTyped(json: any, ignoreDiscriminator: boolean): OpenstackFlavor {
+export function FlavorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Flavor {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -90,7 +90,7 @@ export function OpenstackFlavorFromJSONTyped(json: any, ignoreDiscriminator: boo
     };
 }
 
-export function OpenstackFlavorToJSON(value?: OpenstackFlavor | null): any {
+export function FlavorToJSON(value?: Flavor | null): any {
     if (value === undefined) {
         return undefined;
     }

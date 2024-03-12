@@ -14,52 +14,44 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * An OpenStack external network.
+ * A volume.
  * @export
- * @interface OpenstackExternalNetwork
+ * @interface Volume
  */
-export interface OpenstackExternalNetwork {
+export interface Volume {
     /**
-     * OpenStack external network ID.
-     * @type {string}
-     * @memberof OpenstackExternalNetwork
+     * Disk size in GiB.
+     * @type {number}
+     * @memberof Volume
      */
-    id: string;
-    /**
-     * Opestack external network name.
-     * @type {string}
-     * @memberof OpenstackExternalNetwork
-     */
-    name: string;
+    size: number;
 }
 
 /**
- * Check if a given object implements the OpenstackExternalNetwork interface.
+ * Check if a given object implements the Volume interface.
  */
-export function instanceOfOpenstackExternalNetwork(value: object): boolean {
+export function instanceOfVolume(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "id" in value;
-    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "size" in value;
 
     return isInstance;
 }
 
-export function OpenstackExternalNetworkFromJSON(json: any): OpenstackExternalNetwork {
-    return OpenstackExternalNetworkFromJSONTyped(json, false);
+export function VolumeFromJSON(json: any): Volume {
+    return VolumeFromJSONTyped(json, false);
 }
 
-export function OpenstackExternalNetworkFromJSONTyped(json: any, ignoreDiscriminator: boolean): OpenstackExternalNetwork {
+export function VolumeFromJSONTyped(json: any, ignoreDiscriminator: boolean): Volume {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'id': json['id'],
-        'name': json['name'],
+        'size': json['size'],
     };
 }
 
-export function OpenstackExternalNetworkToJSON(value?: OpenstackExternalNetwork | null): any {
+export function VolumeToJSON(value?: Volume | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -68,8 +60,7 @@ export function OpenstackExternalNetworkToJSON(value?: OpenstackExternalNetwork 
     }
     return {
         
-        'id': value.id,
-        'name': value.name,
+        'size': value.size,
     };
 }
 

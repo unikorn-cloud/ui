@@ -13,39 +13,39 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { OpenstackKeyPair } from './OpenstackKeyPair';
+import type { ClusterManager } from './ClusterManager';
 import {
-    OpenstackKeyPairFromJSON,
-    OpenstackKeyPairFromJSONTyped,
-    OpenstackKeyPairToJSON,
-} from './OpenstackKeyPair';
+    ClusterManagerFromJSON,
+    ClusterManagerFromJSONTyped,
+    ClusterManagerToJSON,
+} from './ClusterManager';
 
 /**
- * A list of OpenStack key pairs.
+ * A list of cluster managers.
  * @export
- * @interface OpenstackKeyPairs
+ * @interface ClusterManagers
  */
-export interface OpenstackKeyPairs extends Array<OpenstackKeyPair> {
+export interface ClusterManagers extends Array<ClusterManager> {
 }
 
 /**
- * Check if a given object implements the OpenstackKeyPairs interface.
+ * Check if a given object implements the ClusterManagers interface.
  */
-export function instanceOfOpenstackKeyPairs(value: object): boolean {
+export function instanceOfClusterManagers(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function OpenstackKeyPairsFromJSON(json: any): OpenstackKeyPairs {
-    return OpenstackKeyPairsFromJSONTyped(json, false);
+export function ClusterManagersFromJSON(json: any): ClusterManagers {
+    return ClusterManagersFromJSONTyped(json, false);
 }
 
-export function OpenstackKeyPairsFromJSONTyped(json: any, ignoreDiscriminator: boolean): OpenstackKeyPairs {
+export function ClusterManagersFromJSONTyped(json: any, ignoreDiscriminator: boolean): ClusterManagers {
     return json;
 }
 
-export function OpenstackKeyPairsToJSON(value?: OpenstackKeyPairs | null): any {
+export function ClusterManagersToJSON(value?: ClusterManagers | null): any {
     return value;
 }
 
