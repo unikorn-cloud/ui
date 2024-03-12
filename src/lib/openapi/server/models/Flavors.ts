@@ -13,39 +13,39 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { OpenstackImage } from './OpenstackImage';
+import type { Flavor } from './Flavor';
 import {
-    OpenstackImageFromJSON,
-    OpenstackImageFromJSONTyped,
-    OpenstackImageToJSON,
-} from './OpenstackImage';
+    FlavorFromJSON,
+    FlavorFromJSONTyped,
+    FlavorToJSON,
+} from './Flavor';
 
 /**
- * A list of OpenStack images that are compatible with this platform.
+ * A list of flavors.
  * @export
- * @interface OpenstackImages
+ * @interface Flavors
  */
-export interface OpenstackImages extends Array<OpenstackImage> {
+export interface Flavors extends Array<Flavor> {
 }
 
 /**
- * Check if a given object implements the OpenstackImages interface.
+ * Check if a given object implements the Flavors interface.
  */
-export function instanceOfOpenstackImages(value: object): boolean {
+export function instanceOfFlavors(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function OpenstackImagesFromJSON(json: any): OpenstackImages {
-    return OpenstackImagesFromJSONTyped(json, false);
+export function FlavorsFromJSON(json: any): Flavors {
+    return FlavorsFromJSONTyped(json, false);
 }
 
-export function OpenstackImagesFromJSONTyped(json: any, ignoreDiscriminator: boolean): OpenstackImages {
+export function FlavorsFromJSONTyped(json: any, ignoreDiscriminator: boolean): Flavors {
     return json;
 }
 
-export function OpenstackImagesToJSON(value?: OpenstackImages | null): any {
+export function FlavorsToJSON(value?: Flavors | null): any {
     return value;
 }
 

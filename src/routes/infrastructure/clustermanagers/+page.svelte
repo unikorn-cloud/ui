@@ -4,8 +4,8 @@
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
-		name: 'Control Planes',
-		description: 'Manage your control planes.'
+		name: 'Cluster Managers',
+		description: 'Manage your cluster life-cycle managers.'
 	};
 
 	import { onDestroy } from 'svelte';
@@ -25,11 +25,11 @@
 
 	let at: string;
 
-	let resources: Models.ControlPlanes;
+	let resources: Models.Clustermanagers;
 
 	function update(): void {
 		client(toastStore, at)
-			.apiV1ControlplanesGet()
+			.apiV1ClustermanagersGet()
 			.then((v) => (resources = v))
 			.catch((e: Error) => error(e));
 	}
@@ -45,7 +45,7 @@
 		onDestroy(() => clearInterval(ticker));
 	});
 
-	function remove(resource: Models.ControlPlane): void {
+	function remove(resource: Models.Clustermanager): void {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
@@ -53,13 +53,14 @@
 			response: (ok: boolean) => {
 				if (!ok) return;
 
-				const parameters: Api.ApiV1ProjectsProjectNameControlplanesControlPlaneNameDeleteRequest = {
-					projectName: resource.metadata.project,
-					controlPlaneName: resource.name
-				};
+				const parameters: Api.ApiV1ProjectsProjectNameClustermanagersClustermanagerNameDeleteRequest =
+					{
+						projectName: resource.metadata.project,
+						clusterManagerName: resource.name
+					};
 
 				client(toastStore, at)
-					.apiV1ProjectsProjectNameControlplanesControlPlaneNameDelete(parameters)
+					.apiV1ProjectsProjectNameClustermanagersClustermanagerNameDelete(parameters)
 					.catch((e: Error) => error(e));
 			}
 		};

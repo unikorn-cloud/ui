@@ -32,8 +32,8 @@
 	let project: string;
 	let projects: Models.Projects;
 
-	let controlplane: string = 'default';
-	let controlplanes: Models.ControlPlanes;
+	let clustermanager: string = 'default';
+	let clustermanagers: Models.ClusterManagers;
 
 	let cluster: string;
 	let clusters: Api.KubernetesClusters;
@@ -72,38 +72,38 @@
 			.catch((e: Error) => error(e));
 	});
 
-	function updateControlPlanes(at: string, project: string) {
+	function updateClusterManagers(at: string, project: string) {
 		if (!at || !project) return;
 
 		client(toastStore, at)
-			.apiV1ControlplanesGet()
+			.apiV1ClustermanagersGet()
 			.then((v) => {
 				if (v.length == 0) return;
 
 				// TODO: a possible excuse for request query parameters?
-				controlplanes = v.filter((x) => x.metadata.project == project);
-				controlplane = controlplanes[0].name;
+				clustermanagers = v.filter((x) => x.metadata.project == project);
+				clustermanager = clustermanagers[0].name;
 			})
 			.catch((e: Error) => error(e));
 	}
 
-	$: updateControlPlanes(at, project);
+	$: updateClusterManagers(at, project);
 
 	/* Clusters are scoped to control planes, so update this when the CP does */
-	function updateClusters(at: string, controlplane: string): void {
-		if (!at || !controlplane) return;
+	function updateClusters(at: string, clustermanager: string): void {
+		if (!at || !clustermanager) return;
 
 		client(toastStore, at)
 			.apiV1ClustersGet()
 			.then((v) => {
 				if (v.length == 0) return;
 
-				clusters = v.filter((x) => x.metadata.controlplane == controlplane);
+				clusters = v;
 			})
 			.catch((e: Error) => error(e));
 	}
 
-	$: updateClusters(at, controlplane);
+	$: updateClusters(at, clustermanager);
 
 	/* Project must be set */
 	$: step1Valid = project;
@@ -196,20 +196,19 @@
 		[...new Set(workloadPools.map((x) => x.model.name))].length == workloadPools.length;
 
 	function complete() {
-		const parameters: Api.ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPostRequest =
-			{
-				projectName: project,
-				controlPlaneName: controlplane,
-				kubernetesCluster: {
-					name: cluster,
-					region: region,
-					version: version,
-					workloadPools: workloadPools.map((x) => x.model)
-				}
-			};
+		const parameters: Api.ApiV1ProjectsProjectNameClustersPostRequest = {
+			projectName: project,
+			kubernetesCluster: {
+				name: cluster,
+				region: region,
+				clusterManager: clustermanager,
+				version: version,
+				workloadPools: workloadPools.map((x) => x.model)
+			}
+		};
 
 		client(toastStore, at)
-			.apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPost(parameters)
+			.apiV1ProjectsProjectNameClustersPost(parameters)
 			.then(() => (window.location = '/infrastructure/clusters'))
 			.catch((e: Error) => error(e));
 	}
@@ -236,14 +235,14 @@
 				{/each}
 			</select>
 
-			<h4 class="h4">Control Plane Selection</h4>
-			<label for="controlplane-name">
-				Select a control plane to manage the cluster life-cycle. If none is selected, a default will
-				be created for you.
+			<h4 class="h4">Life-Cycle Manager Selection</h4>
+			<label for="clustermanager-name">
+				Select a life cycle manager to manage the cluster life-cycle. If none is selected, a default
+				will be created for you.
 			</label>
-			<select id="controlplane-name" class="select" bind:value={controlplane}>
-				{#each controlplanes || [] as controlplane}
-					<option value={controlplane.name}>{controlplane.name}</option>
+			<select id="clustermanager-name" class="select" bind:value={clustermanager}>
+				{#each clustermanagers || [] as clustermanager}
+					<option value={clustermanager.name}>{clustermanager.name}</option>
 				{/each}
 			</select>
 		</Step>
@@ -253,8 +252,8 @@
 
 			<h4 class="h4">Cluster Name</h4>
 			<label for="cluster-name">
-				Choose a name for the cluster. The name must be unique within the control plane, contain no
-				more than 63 characters, and contain only letters, numbers and hyphens.
+				Choose a name for the cluster. The name must be unique within the project, contain no more
+				than 63 characters, and contain only letters, numbers and hyphens.
 			</label>
 			<input type="text" class="input" required bind:value={cluster} />
 

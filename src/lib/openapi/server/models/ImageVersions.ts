@@ -14,51 +14,53 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * An OpenStack volume.
+ * Image version metadata.
  * @export
- * @interface OpenstackVolume
+ * @interface ImageVersions
  */
-export interface OpenstackVolume {
+export interface ImageVersions {
     /**
-     * Disk size in GiB.
-     * @type {number}
-     * @memberof OpenstackVolume
-     */
-    size: number;
-    /**
-     * Volume availability zone. Overrides the cluster default.
+     * The kubernetes semantic version.  This should be used directly when specifying
+     * Kubernetes cluster managers and workload pools in a cluster specification.
      * @type {string}
-     * @memberof OpenstackVolume
+     * @memberof ImageVersions
      */
-    availabilityZone?: string;
+    kubernetes: string;
+    /**
+     * The nvidia driver version.
+     * @type {string}
+     * @memberof ImageVersions
+     */
+    nvidiaDriver: string;
 }
 
 /**
- * Check if a given object implements the OpenstackVolume interface.
+ * Check if a given object implements the ImageVersions interface.
  */
-export function instanceOfOpenstackVolume(value: object): boolean {
+export function instanceOfImageVersions(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "size" in value;
+    isInstance = isInstance && "kubernetes" in value;
+    isInstance = isInstance && "nvidiaDriver" in value;
 
     return isInstance;
 }
 
-export function OpenstackVolumeFromJSON(json: any): OpenstackVolume {
-    return OpenstackVolumeFromJSONTyped(json, false);
+export function ImageVersionsFromJSON(json: any): ImageVersions {
+    return ImageVersionsFromJSONTyped(json, false);
 }
 
-export function OpenstackVolumeFromJSONTyped(json: any, ignoreDiscriminator: boolean): OpenstackVolume {
+export function ImageVersionsFromJSONTyped(json: any, ignoreDiscriminator: boolean): ImageVersions {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'size': json['size'],
-        'availabilityZone': !exists(json, 'availabilityZone') ? undefined : json['availabilityZone'],
+        'kubernetes': json['kubernetes'],
+        'nvidiaDriver': json['nvidiaDriver'],
     };
 }
 
-export function OpenstackVolumeToJSON(value?: OpenstackVolume | null): any {
+export function ImageVersionsToJSON(value?: ImageVersions | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -67,8 +69,8 @@ export function OpenstackVolumeToJSON(value?: OpenstackVolume | null): any {
     }
     return {
         
-        'size': value.size,
-        'availabilityZone': value.availabilityZone,
+        'kubernetes': value.kubernetes,
+        'nvidiaDriver': value.nvidiaDriver,
     };
 }
 

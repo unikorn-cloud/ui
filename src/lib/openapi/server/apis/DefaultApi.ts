@@ -15,47 +15,35 @@
 
 import * as runtime from '../runtime';
 import type {
-  ApplicationBundles,
   Applications,
-  ControlPlane,
-  ControlPlanes,
+  ClusterManager,
+  ClusterManagers,
+  Flavors,
+  Images,
   KubernetesCluster,
   KubernetesClusters,
   Oauth2Error,
-  OpenstackAvailabilityZones,
-  OpenstackExternalNetworks,
-  OpenstackFlavors,
-  OpenstackImages,
-  OpenstackKeyPairs,
   Project,
   Projects,
   Regions,
 } from '../models/index';
 import {
-    ApplicationBundlesFromJSON,
-    ApplicationBundlesToJSON,
     ApplicationsFromJSON,
     ApplicationsToJSON,
-    ControlPlaneFromJSON,
-    ControlPlaneToJSON,
-    ControlPlanesFromJSON,
-    ControlPlanesToJSON,
+    ClusterManagerFromJSON,
+    ClusterManagerToJSON,
+    ClusterManagersFromJSON,
+    ClusterManagersToJSON,
+    FlavorsFromJSON,
+    FlavorsToJSON,
+    ImagesFromJSON,
+    ImagesToJSON,
     KubernetesClusterFromJSON,
     KubernetesClusterToJSON,
     KubernetesClustersFromJSON,
     KubernetesClustersToJSON,
     Oauth2ErrorFromJSON,
     Oauth2ErrorToJSON,
-    OpenstackAvailabilityZonesFromJSON,
-    OpenstackAvailabilityZonesToJSON,
-    OpenstackExternalNetworksFromJSON,
-    OpenstackExternalNetworksToJSON,
-    OpenstackFlavorsFromJSON,
-    OpenstackFlavorsToJSON,
-    OpenstackImagesFromJSON,
-    OpenstackImagesToJSON,
-    OpenstackKeyPairsFromJSON,
-    OpenstackKeyPairsToJSON,
     ProjectFromJSON,
     ProjectToJSON,
     ProjectsFromJSON,
@@ -68,61 +56,45 @@ export interface ApiV1ProjectsPostRequest {
     project: Project;
 }
 
-export interface ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDeleteRequest {
+export interface ApiV1ProjectsProjectNameClustermanagersClusterManagerNameDeleteRequest {
     projectName: string;
-    controlPlaneName: string;
+    clusterManagerName: string;
+}
+
+export interface ApiV1ProjectsProjectNameClustermanagersClusterManagerNamePutRequest {
+    projectName: string;
+    clusterManagerName: string;
+    clusterManager: ClusterManager;
+}
+
+export interface ApiV1ProjectsProjectNameClustermanagersPostRequest {
+    projectName: string;
+    clusterManager: ClusterManager;
+}
+
+export interface ApiV1ProjectsProjectNameClustersClusterNameDeleteRequest {
+    projectName: string;
     clusterName: string;
 }
 
-export interface ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameKubeconfigGetRequest {
+export interface ApiV1ProjectsProjectNameClustersClusterNameKubeconfigGetRequest {
     projectName: string;
-    controlPlaneName: string;
     clusterName: string;
 }
 
-export interface ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNamePutRequest {
+export interface ApiV1ProjectsProjectNameClustersClusterNamePutRequest {
     projectName: string;
-    controlPlaneName: string;
     clusterName: string;
     kubernetesCluster: KubernetesCluster;
 }
 
-export interface ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPostRequest {
+export interface ApiV1ProjectsProjectNameClustersPostRequest {
     projectName: string;
-    controlPlaneName: string;
     kubernetesCluster: KubernetesCluster;
-}
-
-export interface ApiV1ProjectsProjectNameControlplanesControlPlaneNameDeleteRequest {
-    projectName: string;
-    controlPlaneName: string;
-}
-
-export interface ApiV1ProjectsProjectNameControlplanesControlPlaneNamePutRequest {
-    projectName: string;
-    controlPlaneName: string;
-    controlPlane: ControlPlane;
-}
-
-export interface ApiV1ProjectsProjectNameControlplanesPostRequest {
-    projectName: string;
-    controlPlane: ControlPlane;
 }
 
 export interface ApiV1ProjectsProjectNameDeleteRequest {
     projectName: string;
-}
-
-export interface ApiV1RegionsRegionNameAvailabilityZonesBlockStorageGetRequest {
-    regionName: string;
-}
-
-export interface ApiV1RegionsRegionNameAvailabilityZonesComputeGetRequest {
-    regionName: string;
-}
-
-export interface ApiV1RegionsRegionNameExternalNetworksGetRequest {
-    regionName: string;
 }
 
 export interface ApiV1RegionsRegionNameFlavorsGetRequest {
@@ -133,76 +105,10 @@ export interface ApiV1RegionsRegionNameImagesGetRequest {
     regionName: string;
 }
 
-export interface ApiV1RegionsRegionNameKeyPairsGetRequest {
-    regionName: string;
-}
-
 /**
  * 
  */
 export class DefaultApi extends runtime.BaseAPI {
-
-    /**
-     * Lists global application bundles for clusters.  This is used to present a choice of versions for provisioning.
-     */
-    async apiV1ApplicationbundlesClusterGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApplicationBundles>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/applicationbundles/cluster`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ApplicationBundlesFromJSON(jsonValue));
-    }
-
-    /**
-     * Lists global application bundles for clusters.  This is used to present a choice of versions for provisioning.
-     */
-    async apiV1ApplicationbundlesClusterGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApplicationBundles> {
-        const response = await this.apiV1ApplicationbundlesClusterGetRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Lists global application bundles for control planes.  This is used to present a choice of versions for provisioning.
-     */
-    async apiV1ApplicationbundlesControlPlaneGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApplicationBundles>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/applicationbundles/controlPlane`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ApplicationBundlesFromJSON(jsonValue));
-    }
-
-    /**
-     * Lists global application bundles for control planes.  This is used to present a choice of versions for provisioning.
-     */
-    async apiV1ApplicationbundlesControlPlaneGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApplicationBundles> {
-        const response = await this.apiV1ApplicationbundlesControlPlaneGetRaw(initOverrides);
-        return await response.value();
-    }
 
     /**
      * Lists applications available to be installed on clusters.
@@ -236,6 +142,37 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
+     * Lists cluster managers within the organization.
+     */
+    async apiV1ClustermanagersGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ClusterManagers>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/clustermanagers`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ClusterManagersFromJSON(jsonValue));
+    }
+
+    /**
+     * Lists cluster managers within the organization.
+     */
+    async apiV1ClustermanagersGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ClusterManagers> {
+        const response = await this.apiV1ClustermanagersGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
      * List all clusters within the organization.
      */
     async apiV1ClustersGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<KubernetesClusters>> {
@@ -263,37 +200,6 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1ClustersGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<KubernetesClusters> {
         const response = await this.apiV1ClustersGetRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Lists control planes within the organization.
-     */
-    async apiV1ControlplanesGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ControlPlanes>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/controlplanes`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ControlPlanesFromJSON(jsonValue));
-    }
-
-    /**
-     * Lists control planes within the organization.
-     */
-    async apiV1ControlplanesGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ControlPlanes> {
-        const response = await this.apiV1ControlplanesGetRaw(initOverrides);
         return await response.value();
     }
 
@@ -426,19 +332,15 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete a cluster from within a the selected control plane.
+     * Deletes a cluster manager from within the scoped project. This is a cascading operation and will delete all contained clusters.
      */
-    async apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDeleteRaw(requestParameters: ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiV1ProjectsProjectNameClustermanagersClusterManagerNameDeleteRaw(requestParameters: ApiV1ProjectsProjectNameClustermanagersClusterManagerNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDelete.');
+            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameClustermanagersClusterManagerNameDelete.');
         }
 
-        if (requestParameters.controlPlaneName === null || requestParameters.controlPlaneName === undefined) {
-            throw new runtime.RequiredError('controlPlaneName','Required parameter requestParameters.controlPlaneName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDelete.');
-        }
-
-        if (requestParameters.clusterName === null || requestParameters.clusterName === undefined) {
-            throw new runtime.RequiredError('clusterName','Required parameter requestParameters.clusterName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDelete.');
+        if (requestParameters.clusterManagerName === null || requestParameters.clusterManagerName === undefined) {
+            throw new runtime.RequiredError('clusterManagerName','Required parameter requestParameters.clusterManagerName was null or undefined when calling apiV1ProjectsProjectNameClustermanagersClusterManagerNameDelete.');
         }
 
         const queryParameters: any = {};
@@ -451,7 +353,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/projects/{projectName}/controlplanes/{controlPlaneName}/clusters/{clusterName}`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"controlPlaneName"}}`, encodeURIComponent(String(requestParameters.controlPlaneName))).replace(`{${"clusterName"}}`, encodeURIComponent(String(requestParameters.clusterName))),
+            path: `/api/v1/projects/{projectName}/clustermanagers/{clusterManagerName}`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"clusterManagerName"}}`, encodeURIComponent(String(requestParameters.clusterManagerName))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -461,26 +363,108 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete a cluster from within a the selected control plane.
+     * Deletes a cluster manager from within the scoped project. This is a cascading operation and will delete all contained clusters.
      */
-    async apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDelete(requestParameters: ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDeleteRaw(requestParameters, initOverrides);
+    async apiV1ProjectsProjectNameClustermanagersClusterManagerNameDelete(requestParameters: ApiV1ProjectsProjectNameClustermanagersClusterManagerNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1ProjectsProjectNameClustermanagersClusterManagerNameDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
-     * Get a cluster\'s Kubernetes configuration.
+     * Updates a cluster manager within the scoped project.
      */
-    async apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameKubeconfigGetRaw(requestParameters: ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameKubeconfigGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiV1ProjectsProjectNameClustermanagersClusterManagerNamePutRaw(requestParameters: ApiV1ProjectsProjectNameClustermanagersClusterManagerNamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameKubeconfigGet.');
+            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameClustermanagersClusterManagerNamePut.');
         }
 
-        if (requestParameters.controlPlaneName === null || requestParameters.controlPlaneName === undefined) {
-            throw new runtime.RequiredError('controlPlaneName','Required parameter requestParameters.controlPlaneName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameKubeconfigGet.');
+        if (requestParameters.clusterManagerName === null || requestParameters.clusterManagerName === undefined) {
+            throw new runtime.RequiredError('clusterManagerName','Required parameter requestParameters.clusterManagerName was null or undefined when calling apiV1ProjectsProjectNameClustermanagersClusterManagerNamePut.');
+        }
+
+        if (requestParameters.clusterManager === null || requestParameters.clusterManager === undefined) {
+            throw new runtime.RequiredError('clusterManager','Required parameter requestParameters.clusterManager was null or undefined when calling apiV1ProjectsProjectNameClustermanagersClusterManagerNamePut.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/projects/{projectName}/clustermanagers/{clusterManagerName}`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"clusterManagerName"}}`, encodeURIComponent(String(requestParameters.clusterManagerName))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ClusterManagerToJSON(requestParameters.clusterManager),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Updates a cluster manager within the scoped project.
+     */
+    async apiV1ProjectsProjectNameClustermanagersClusterManagerNamePut(requestParameters: ApiV1ProjectsProjectNameClustermanagersClusterManagerNamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1ProjectsProjectNameClustermanagersClusterManagerNamePutRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Creates a new cluster manager within the project.
+     */
+    async apiV1ProjectsProjectNameClustermanagersPostRaw(requestParameters: ApiV1ProjectsProjectNameClustermanagersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
+            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameClustermanagersPost.');
+        }
+
+        if (requestParameters.clusterManager === null || requestParameters.clusterManager === undefined) {
+            throw new runtime.RequiredError('clusterManager','Required parameter requestParameters.clusterManager was null or undefined when calling apiV1ProjectsProjectNameClustermanagersPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/projects/{projectName}/clustermanagers`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ClusterManagerToJSON(requestParameters.clusterManager),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Creates a new cluster manager within the project.
+     */
+    async apiV1ProjectsProjectNameClustermanagersPost(requestParameters: ApiV1ProjectsProjectNameClustermanagersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1ProjectsProjectNameClustermanagersPostRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Delete a cluster from within a the selected cluster manager.
+     */
+    async apiV1ProjectsProjectNameClustersClusterNameDeleteRaw(requestParameters: ApiV1ProjectsProjectNameClustersClusterNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
+            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameClustersClusterNameDelete.');
         }
 
         if (requestParameters.clusterName === null || requestParameters.clusterName === undefined) {
-            throw new runtime.RequiredError('clusterName','Required parameter requestParameters.clusterName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameKubeconfigGet.');
+            throw new runtime.RequiredError('clusterName','Required parameter requestParameters.clusterName was null or undefined when calling apiV1ProjectsProjectNameClustersClusterNameDelete.');
         }
 
         const queryParameters: any = {};
@@ -493,7 +477,45 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/projects/{projectName}/controlplanes/{controlPlaneName}/clusters/{clusterName}/kubeconfig`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"controlPlaneName"}}`, encodeURIComponent(String(requestParameters.controlPlaneName))).replace(`{${"clusterName"}}`, encodeURIComponent(String(requestParameters.clusterName))),
+            path: `/api/v1/projects/{projectName}/clusters/{clusterName}`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"clusterName"}}`, encodeURIComponent(String(requestParameters.clusterName))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Delete a cluster from within a the selected cluster manager.
+     */
+    async apiV1ProjectsProjectNameClustersClusterNameDelete(requestParameters: ApiV1ProjectsProjectNameClustersClusterNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1ProjectsProjectNameClustersClusterNameDeleteRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Get a cluster\'s Kubernetes configuration.
+     */
+    async apiV1ProjectsProjectNameClustersClusterNameKubeconfigGetRaw(requestParameters: ApiV1ProjectsProjectNameClustersClusterNameKubeconfigGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
+            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameClustersClusterNameKubeconfigGet.');
+        }
+
+        if (requestParameters.clusterName === null || requestParameters.clusterName === undefined) {
+            throw new runtime.RequiredError('clusterName','Required parameter requestParameters.clusterName was null or undefined when calling apiV1ProjectsProjectNameClustersClusterNameKubeconfigGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/projects/{projectName}/clusters/{clusterName}/kubeconfig`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"clusterName"}}`, encodeURIComponent(String(requestParameters.clusterName))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -505,28 +527,24 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Get a cluster\'s Kubernetes configuration.
      */
-    async apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameKubeconfigGet(requestParameters: ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameKubeconfigGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameKubeconfigGetRaw(requestParameters, initOverrides);
+    async apiV1ProjectsProjectNameClustersClusterNameKubeconfigGet(requestParameters: ApiV1ProjectsProjectNameClustersClusterNameKubeconfigGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1ProjectsProjectNameClustersClusterNameKubeconfigGetRaw(requestParameters, initOverrides);
     }
 
     /**
-     * Update a cluster within the selected control plane.
+     * Update a cluster within the selected cluster manager.
      */
-    async apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNamePutRaw(requestParameters: ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiV1ProjectsProjectNameClustersClusterNamePutRaw(requestParameters: ApiV1ProjectsProjectNameClustersClusterNamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNamePut.');
-        }
-
-        if (requestParameters.controlPlaneName === null || requestParameters.controlPlaneName === undefined) {
-            throw new runtime.RequiredError('controlPlaneName','Required parameter requestParameters.controlPlaneName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNamePut.');
+            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameClustersClusterNamePut.');
         }
 
         if (requestParameters.clusterName === null || requestParameters.clusterName === undefined) {
-            throw new runtime.RequiredError('clusterName','Required parameter requestParameters.clusterName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNamePut.');
+            throw new runtime.RequiredError('clusterName','Required parameter requestParameters.clusterName was null or undefined when calling apiV1ProjectsProjectNameClustersClusterNamePut.');
         }
 
         if (requestParameters.kubernetesCluster === null || requestParameters.kubernetesCluster === undefined) {
-            throw new runtime.RequiredError('kubernetesCluster','Required parameter requestParameters.kubernetesCluster was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNamePut.');
+            throw new runtime.RequiredError('kubernetesCluster','Required parameter requestParameters.kubernetesCluster was null or undefined when calling apiV1ProjectsProjectNameClustersClusterNamePut.');
         }
 
         const queryParameters: any = {};
@@ -541,7 +559,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/projects/{projectName}/controlplanes/{controlPlaneName}/clusters/{clusterName}`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"controlPlaneName"}}`, encodeURIComponent(String(requestParameters.controlPlaneName))).replace(`{${"clusterName"}}`, encodeURIComponent(String(requestParameters.clusterName))),
+            path: `/api/v1/projects/{projectName}/clusters/{clusterName}`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"clusterName"}}`, encodeURIComponent(String(requestParameters.clusterName))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
@@ -552,26 +570,22 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * Update a cluster within the selected control plane.
+     * Update a cluster within the selected cluster manager.
      */
-    async apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNamePut(requestParameters: ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNamePutRaw(requestParameters, initOverrides);
+    async apiV1ProjectsProjectNameClustersClusterNamePut(requestParameters: ApiV1ProjectsProjectNameClustersClusterNamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1ProjectsProjectNameClustersClusterNamePutRaw(requestParameters, initOverrides);
     }
 
     /**
-     * Creates a new cluster within the selected control plane.
+     * Creates a new cluster within the selected cluster manager.
      */
-    async apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPostRaw(requestParameters: ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiV1ProjectsProjectNameClustersPostRaw(requestParameters: ApiV1ProjectsProjectNameClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPost.');
-        }
-
-        if (requestParameters.controlPlaneName === null || requestParameters.controlPlaneName === undefined) {
-            throw new runtime.RequiredError('controlPlaneName','Required parameter requestParameters.controlPlaneName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPost.');
+            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameClustersPost.');
         }
 
         if (requestParameters.kubernetesCluster === null || requestParameters.kubernetesCluster === undefined) {
-            throw new runtime.RequiredError('kubernetesCluster','Required parameter requestParameters.kubernetesCluster was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPost.');
+            throw new runtime.RequiredError('kubernetesCluster','Required parameter requestParameters.kubernetesCluster was null or undefined when calling apiV1ProjectsProjectNameClustersPost.');
         }
 
         const queryParameters: any = {};
@@ -586,7 +600,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/projects/{projectName}/controlplanes/{controlPlaneName}/clusters`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"controlPlaneName"}}`, encodeURIComponent(String(requestParameters.controlPlaneName))),
+            path: `/api/v1/projects/{projectName}/clusters`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -597,138 +611,14 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates a new cluster within the selected control plane.
+     * Creates a new cluster within the selected cluster manager.
      */
-    async apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPost(requestParameters: ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersPostRaw(requestParameters, initOverrides);
+    async apiV1ProjectsProjectNameClustersPost(requestParameters: ApiV1ProjectsProjectNameClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1ProjectsProjectNameClustersPostRaw(requestParameters, initOverrides);
     }
 
     /**
-     * Deletes a control plane from within the scoped project. This is a cascading operation and will delete all contained clusters.
-     */
-    async apiV1ProjectsProjectNameControlplanesControlPlaneNameDeleteRaw(requestParameters: ApiV1ProjectsProjectNameControlplanesControlPlaneNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameDelete.');
-        }
-
-        if (requestParameters.controlPlaneName === null || requestParameters.controlPlaneName === undefined) {
-            throw new runtime.RequiredError('controlPlaneName','Required parameter requestParameters.controlPlaneName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNameDelete.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/projects/{projectName}/controlplanes/{controlPlaneName}`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"controlPlaneName"}}`, encodeURIComponent(String(requestParameters.controlPlaneName))),
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Deletes a control plane from within the scoped project. This is a cascading operation and will delete all contained clusters.
-     */
-    async apiV1ProjectsProjectNameControlplanesControlPlaneNameDelete(requestParameters: ApiV1ProjectsProjectNameControlplanesControlPlaneNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1ProjectsProjectNameControlplanesControlPlaneNameDeleteRaw(requestParameters, initOverrides);
-    }
-
-    /**
-     * Updates a control plane within the scoped project.
-     */
-    async apiV1ProjectsProjectNameControlplanesControlPlaneNamePutRaw(requestParameters: ApiV1ProjectsProjectNameControlplanesControlPlaneNamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNamePut.');
-        }
-
-        if (requestParameters.controlPlaneName === null || requestParameters.controlPlaneName === undefined) {
-            throw new runtime.RequiredError('controlPlaneName','Required parameter requestParameters.controlPlaneName was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNamePut.');
-        }
-
-        if (requestParameters.controlPlane === null || requestParameters.controlPlane === undefined) {
-            throw new runtime.RequiredError('controlPlane','Required parameter requestParameters.controlPlane was null or undefined when calling apiV1ProjectsProjectNameControlplanesControlPlaneNamePut.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/projects/{projectName}/controlplanes/{controlPlaneName}`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"controlPlaneName"}}`, encodeURIComponent(String(requestParameters.controlPlaneName))),
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: ControlPlaneToJSON(requestParameters.controlPlane),
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Updates a control plane within the scoped project.
-     */
-    async apiV1ProjectsProjectNameControlplanesControlPlaneNamePut(requestParameters: ApiV1ProjectsProjectNameControlplanesControlPlaneNamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1ProjectsProjectNameControlplanesControlPlaneNamePutRaw(requestParameters, initOverrides);
-    }
-
-    /**
-     * Creates a new control plane within the project.
-     */
-    async apiV1ProjectsProjectNameControlplanesPostRaw(requestParameters: ApiV1ProjectsProjectNameControlplanesPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1ProjectsProjectNameControlplanesPost.');
-        }
-
-        if (requestParameters.controlPlane === null || requestParameters.controlPlane === undefined) {
-            throw new runtime.RequiredError('controlPlane','Required parameter requestParameters.controlPlane was null or undefined when calling apiV1ProjectsProjectNameControlplanesPost.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/projects/{projectName}/controlplanes`.replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))),
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: ControlPlaneToJSON(requestParameters.controlPlane),
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Creates a new control plane within the project.
-     */
-    async apiV1ProjectsProjectNameControlplanesPost(requestParameters: ApiV1ProjectsProjectNameControlplanesPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1ProjectsProjectNameControlplanesPostRaw(requestParameters, initOverrides);
-    }
-
-    /**
-     * Deletes the project associated with the authenticated user\'s scoped authorisation token. This is a cascading operation and will delete all contained control planes and clusters.
+     * Deletes the project associated with the authenticated user\'s scoped authorisation token. This is a cascading operation and will delete all contained cluster managers and clusters.
      */
     async apiV1ProjectsProjectNameDeleteRaw(requestParameters: ApiV1ProjectsProjectNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
@@ -755,7 +645,7 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * Deletes the project associated with the authenticated user\'s scoped authorisation token. This is a cascading operation and will delete all contained control planes and clusters.
+     * Deletes the project associated with the authenticated user\'s scoped authorisation token. This is a cascading operation and will delete all contained cluster managers and clusters.
      */
     async apiV1ProjectsProjectNameDelete(requestParameters: ApiV1ProjectsProjectNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.apiV1ProjectsProjectNameDeleteRaw(requestParameters, initOverrides);
@@ -793,114 +683,9 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * Lists all volume availability zones the authenticated user has access to.
-     */
-    async apiV1RegionsRegionNameAvailabilityZonesBlockStorageGetRaw(requestParameters: ApiV1RegionsRegionNameAvailabilityZonesBlockStorageGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OpenstackAvailabilityZones>> {
-        if (requestParameters.regionName === null || requestParameters.regionName === undefined) {
-            throw new runtime.RequiredError('regionName','Required parameter requestParameters.regionName was null or undefined when calling apiV1RegionsRegionNameAvailabilityZonesBlockStorageGet.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/regions/{regionName}/availability-zones/block-storage`.replace(`{${"regionName"}}`, encodeURIComponent(String(requestParameters.regionName))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => OpenstackAvailabilityZonesFromJSON(jsonValue));
-    }
-
-    /**
-     * Lists all volume availability zones the authenticated user has access to.
-     */
-    async apiV1RegionsRegionNameAvailabilityZonesBlockStorageGet(requestParameters: ApiV1RegionsRegionNameAvailabilityZonesBlockStorageGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OpenstackAvailabilityZones> {
-        const response = await this.apiV1RegionsRegionNameAvailabilityZonesBlockStorageGetRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Lists all compute availability zones the authenticated user has access to.
-     */
-    async apiV1RegionsRegionNameAvailabilityZonesComputeGetRaw(requestParameters: ApiV1RegionsRegionNameAvailabilityZonesComputeGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OpenstackAvailabilityZones>> {
-        if (requestParameters.regionName === null || requestParameters.regionName === undefined) {
-            throw new runtime.RequiredError('regionName','Required parameter requestParameters.regionName was null or undefined when calling apiV1RegionsRegionNameAvailabilityZonesComputeGet.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/regions/{regionName}/availability-zones/compute`.replace(`{${"regionName"}}`, encodeURIComponent(String(requestParameters.regionName))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => OpenstackAvailabilityZonesFromJSON(jsonValue));
-    }
-
-    /**
-     * Lists all compute availability zones the authenticated user has access to.
-     */
-    async apiV1RegionsRegionNameAvailabilityZonesComputeGet(requestParameters: ApiV1RegionsRegionNameAvailabilityZonesComputeGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OpenstackAvailabilityZones> {
-        const response = await this.apiV1RegionsRegionNameAvailabilityZonesComputeGetRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Lists all external networks the authenticated user has access to.
-     */
-    async apiV1RegionsRegionNameExternalNetworksGetRaw(requestParameters: ApiV1RegionsRegionNameExternalNetworksGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OpenstackExternalNetworks>> {
-        if (requestParameters.regionName === null || requestParameters.regionName === undefined) {
-            throw new runtime.RequiredError('regionName','Required parameter requestParameters.regionName was null or undefined when calling apiV1RegionsRegionNameExternalNetworksGet.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/regions/{regionName}/external-networks`.replace(`{${"regionName"}}`, encodeURIComponent(String(requestParameters.regionName))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => OpenstackExternalNetworksFromJSON(jsonValue));
-    }
-
-    /**
-     * Lists all external networks the authenticated user has access to.
-     */
-    async apiV1RegionsRegionNameExternalNetworksGet(requestParameters: ApiV1RegionsRegionNameExternalNetworksGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OpenstackExternalNetworks> {
-        const response = await this.apiV1RegionsRegionNameExternalNetworksGetRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
      * Lists all compute flavors that the authenticated user has access to
      */
-    async apiV1RegionsRegionNameFlavorsGetRaw(requestParameters: ApiV1RegionsRegionNameFlavorsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OpenstackFlavors>> {
+    async apiV1RegionsRegionNameFlavorsGetRaw(requestParameters: ApiV1RegionsRegionNameFlavorsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Flavors>> {
         if (requestParameters.regionName === null || requestParameters.regionName === undefined) {
             throw new runtime.RequiredError('regionName','Required parameter requestParameters.regionName was null or undefined when calling apiV1RegionsRegionNameFlavorsGet.');
         }
@@ -921,13 +706,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => OpenstackFlavorsFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => FlavorsFromJSON(jsonValue));
     }
 
     /**
      * Lists all compute flavors that the authenticated user has access to
      */
-    async apiV1RegionsRegionNameFlavorsGet(requestParameters: ApiV1RegionsRegionNameFlavorsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OpenstackFlavors> {
+    async apiV1RegionsRegionNameFlavorsGet(requestParameters: ApiV1RegionsRegionNameFlavorsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Flavors> {
         const response = await this.apiV1RegionsRegionNameFlavorsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -935,7 +720,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists all compute images that the authenticated user has access to.
      */
-    async apiV1RegionsRegionNameImagesGetRaw(requestParameters: ApiV1RegionsRegionNameImagesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OpenstackImages>> {
+    async apiV1RegionsRegionNameImagesGetRaw(requestParameters: ApiV1RegionsRegionNameImagesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Images>> {
         if (requestParameters.regionName === null || requestParameters.regionName === undefined) {
             throw new runtime.RequiredError('regionName','Required parameter requestParameters.regionName was null or undefined when calling apiV1RegionsRegionNameImagesGet.');
         }
@@ -956,49 +741,14 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => OpenstackImagesFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ImagesFromJSON(jsonValue));
     }
 
     /**
      * Lists all compute images that the authenticated user has access to.
      */
-    async apiV1RegionsRegionNameImagesGet(requestParameters: ApiV1RegionsRegionNameImagesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OpenstackImages> {
+    async apiV1RegionsRegionNameImagesGet(requestParameters: ApiV1RegionsRegionNameImagesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Images> {
         const response = await this.apiV1RegionsRegionNameImagesGetRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Lists all key pairs the authenticated user has access to.
-     */
-    async apiV1RegionsRegionNameKeyPairsGetRaw(requestParameters: ApiV1RegionsRegionNameKeyPairsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OpenstackKeyPairs>> {
-        if (requestParameters.regionName === null || requestParameters.regionName === undefined) {
-            throw new runtime.RequiredError('regionName','Required parameter requestParameters.regionName was null or undefined when calling apiV1RegionsRegionNameKeyPairsGet.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/regions/{regionName}/key-pairs`.replace(`{${"regionName"}}`, encodeURIComponent(String(requestParameters.regionName))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => OpenstackKeyPairsFromJSON(jsonValue));
-    }
-
-    /**
-     * Lists all key pairs the authenticated user has access to.
-     */
-    async apiV1RegionsRegionNameKeyPairsGet(requestParameters: ApiV1RegionsRegionNameKeyPairsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OpenstackKeyPairs> {
-        const response = await this.apiV1RegionsRegionNameKeyPairsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

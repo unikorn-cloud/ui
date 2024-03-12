@@ -54,17 +54,14 @@
 			response: (ok: boolean) => {
 				if (!ok) return;
 
-				const parameters: Api.ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDeleteRequest =
-					{
-						projectName: resource.metadata.project,
-						controlPlaneName: resource.metadata.controlplane,
-						clusterName: resource.name
-					};
+				const parameters: Api.ApiV1ProjectsProjectNameClustersClusterNameDeleteRequest = {
+					projectName: resource.metadata.project,
+					controlPlaneName: resource.metadata.controlplane,
+					clusterName: resource.name
+				};
 
 				client(toastStore, at)
-					.apiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDelete(
-						parameters
-					)
+					.apiV1ProjectsProjectNameClustersClusterNameDelete(parameters)
 					.catch((e: Error) => error(e));
 			}
 		};

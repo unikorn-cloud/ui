@@ -13,45 +13,59 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ResourceMetadata } from './ResourceMetadata';
+import {
+    ResourceMetadataFromJSON,
+    ResourceMetadataFromJSONTyped,
+    ResourceMetadataToJSON,
+} from './ResourceMetadata';
+
 /**
- * An OpenStack SSH key pair.
+ * A cluster manager.
  * @export
- * @interface OpenstackKeyPair
+ * @interface ClusterManager
  */
-export interface OpenstackKeyPair {
+export interface ClusterManager {
     /**
-     * The key pair name.
+     * 
+     * @type {ResourceMetadata}
+     * @memberof ClusterManager
+     */
+    metadata?: ResourceMetadata;
+    /**
+     * The name of the resource.
      * @type {string}
-     * @memberof OpenstackKeyPair
+     * @memberof ClusterManager
      */
     name: string;
 }
 
 /**
- * Check if a given object implements the OpenstackKeyPair interface.
+ * Check if a given object implements the ClusterManager interface.
  */
-export function instanceOfOpenstackKeyPair(value: object): boolean {
+export function instanceOfClusterManager(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "name" in value;
 
     return isInstance;
 }
 
-export function OpenstackKeyPairFromJSON(json: any): OpenstackKeyPair {
-    return OpenstackKeyPairFromJSONTyped(json, false);
+export function ClusterManagerFromJSON(json: any): ClusterManager {
+    return ClusterManagerFromJSONTyped(json, false);
 }
 
-export function OpenstackKeyPairFromJSONTyped(json: any, ignoreDiscriminator: boolean): OpenstackKeyPair {
+export function ClusterManagerFromJSONTyped(json: any, ignoreDiscriminator: boolean): ClusterManager {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
+        'metadata': !exists(json, 'metadata') ? undefined : ResourceMetadataFromJSON(json['metadata']),
         'name': json['name'],
     };
 }
 
-export function OpenstackKeyPairToJSON(value?: OpenstackKeyPair | null): any {
+export function ClusterManagerToJSON(value?: ClusterManager | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -60,6 +74,7 @@ export function OpenstackKeyPairToJSON(value?: OpenstackKeyPair | null): any {
     }
     return {
         
+        'metadata': ResourceMetadataToJSON(value.metadata),
         'name': value.name,
     };
 }

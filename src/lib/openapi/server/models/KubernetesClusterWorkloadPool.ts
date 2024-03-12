@@ -19,12 +19,12 @@ import {
     KubernetesClusterAutoscalingFromJSONTyped,
     KubernetesClusterAutoscalingToJSON,
 } from './KubernetesClusterAutoscaling';
-import type { OpenstackMachinePool } from './OpenstackMachinePool';
+import type { MachinePool } from './MachinePool';
 import {
-    OpenstackMachinePoolFromJSON,
-    OpenstackMachinePoolFromJSONTyped,
-    OpenstackMachinePoolToJSON,
-} from './OpenstackMachinePool';
+    MachinePoolFromJSON,
+    MachinePoolFromJSONTyped,
+    MachinePoolToJSON,
+} from './MachinePool';
 
 /**
  * A Kuberntes cluster workload pool.
@@ -40,16 +40,10 @@ export interface KubernetesClusterWorkloadPool {
     name: string;
     /**
      * 
-     * @type {OpenstackMachinePool}
+     * @type {MachinePool}
      * @memberof KubernetesClusterWorkloadPool
      */
-    machine: OpenstackMachinePool;
-    /**
-     * Workload pool availability zone. Overrides the cluster default.
-     * @type {string}
-     * @memberof KubernetesClusterWorkloadPool
-     */
-    availabilityZone?: string;
+    machine: MachinePool;
     /**
      * Workload pool key value labels to apply on node creation.
      * @type {{ [key: string]: string; }}
@@ -86,8 +80,7 @@ export function KubernetesClusterWorkloadPoolFromJSONTyped(json: any, ignoreDisc
     return {
         
         'name': json['name'],
-        'machine': OpenstackMachinePoolFromJSON(json['machine']),
-        'availabilityZone': !exists(json, 'availabilityZone') ? undefined : json['availabilityZone'],
+        'machine': MachinePoolFromJSON(json['machine']),
         'labels': !exists(json, 'labels') ? undefined : json['labels'],
         'autoscaling': !exists(json, 'autoscaling') ? undefined : KubernetesClusterAutoscalingFromJSON(json['autoscaling']),
     };
@@ -103,8 +96,7 @@ export function KubernetesClusterWorkloadPoolToJSON(value?: KubernetesClusterWor
     return {
         
         'name': value.name,
-        'machine': OpenstackMachinePoolToJSON(value.machine),
-        'availabilityZone': value.availabilityZone,
+        'machine': MachinePoolToJSON(value.machine),
         'labels': value.labels,
         'autoscaling': KubernetesClusterAutoscalingToJSON(value.autoscaling),
     };

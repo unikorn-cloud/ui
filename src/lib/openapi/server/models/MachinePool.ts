@@ -13,73 +13,65 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { OpenstackVolume } from './OpenstackVolume';
+import type { Volume } from './Volume';
 import {
-    OpenstackVolumeFromJSON,
-    OpenstackVolumeFromJSONTyped,
-    OpenstackVolumeToJSON,
-} from './OpenstackVolume';
+    VolumeFromJSON,
+    VolumeFromJSONTyped,
+    VolumeToJSON,
+} from './Volume';
 
 /**
  * A Kubernetes cluster machine.
  * @export
- * @interface OpenstackMachinePool
+ * @interface MachinePool
  */
-export interface OpenstackMachinePool {
+export interface MachinePool {
     /**
      * Number of machines for a statically sized pool or the maximum for an auto-scaled pool.
      * @type {number}
-     * @memberof OpenstackMachinePool
+     * @memberof MachinePool
      */
-    replicas: number;
+    replicas?: number;
     /**
-     * OpenStack image name.
+     * Flavor name.
      * @type {string}
-     * @memberof OpenstackMachinePool
-     */
-    imageName?: string;
-    /**
-     * OpenStack flavor name.
-     * @type {string}
-     * @memberof OpenstackMachinePool
+     * @memberof MachinePool
      */
     flavorName?: string;
     /**
      * 
-     * @type {OpenstackVolume}
-     * @memberof OpenstackMachinePool
+     * @type {Volume}
+     * @memberof MachinePool
      */
-    disk?: OpenstackVolume;
+    disk?: Volume;
 }
 
 /**
- * Check if a given object implements the OpenstackMachinePool interface.
+ * Check if a given object implements the MachinePool interface.
  */
-export function instanceOfOpenstackMachinePool(value: object): boolean {
+export function instanceOfMachinePool(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "replicas" in value;
 
     return isInstance;
 }
 
-export function OpenstackMachinePoolFromJSON(json: any): OpenstackMachinePool {
-    return OpenstackMachinePoolFromJSONTyped(json, false);
+export function MachinePoolFromJSON(json: any): MachinePool {
+    return MachinePoolFromJSONTyped(json, false);
 }
 
-export function OpenstackMachinePoolFromJSONTyped(json: any, ignoreDiscriminator: boolean): OpenstackMachinePool {
+export function MachinePoolFromJSONTyped(json: any, ignoreDiscriminator: boolean): MachinePool {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'replicas': json['replicas'],
-        'imageName': !exists(json, 'imageName') ? undefined : json['imageName'],
+        'replicas': !exists(json, 'replicas') ? undefined : json['replicas'],
         'flavorName': !exists(json, 'flavorName') ? undefined : json['flavorName'],
-        'disk': !exists(json, 'disk') ? undefined : OpenstackVolumeFromJSON(json['disk']),
+        'disk': !exists(json, 'disk') ? undefined : VolumeFromJSON(json['disk']),
     };
 }
 
-export function OpenstackMachinePoolToJSON(value?: OpenstackMachinePool | null): any {
+export function MachinePoolToJSON(value?: MachinePool | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -89,9 +81,8 @@ export function OpenstackMachinePoolToJSON(value?: OpenstackMachinePool | null):
     return {
         
         'replicas': value.replicas,
-        'imageName': value.imageName,
         'flavorName': value.flavorName,
-        'disk': OpenstackVolumeToJSON(value.disk),
+        'disk': VolumeToJSON(value.disk),
     };
 }
 

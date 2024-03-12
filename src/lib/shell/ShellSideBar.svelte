@@ -28,7 +28,7 @@
 				title: 'Infrastucture',
 				items: [
 					{ label: 'Kubernetes Clusters', href: '/infrastructure/clusters' },
-					{ label: 'Control Planes', href: '/infrastructure/controlplanes' }
+					{ label: 'Cluster Managers', href: '/infrastructure/clustermanagers' }
 				]
 			}
 		]
