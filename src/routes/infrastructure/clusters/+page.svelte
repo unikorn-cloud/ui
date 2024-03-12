@@ -57,7 +57,7 @@
 				const parameters: Api.ApiV1ProjectsProjectNameControlplanesControlPlaneNameClustersClusterNameDeleteRequest =
 					{
 						projectName: resource.metadata.project,
-						controlPlaneName: resource.metadata.controlPlane,
+						controlPlaneName: resource.metadata.controlplane,
 						clusterName: resource.name
 					};
 
