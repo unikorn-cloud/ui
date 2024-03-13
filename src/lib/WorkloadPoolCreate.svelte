@@ -46,7 +46,7 @@
 	$: pool.machine.flavorName = flavor;
 	$: pool.machine.disk.size = storage;
 	$: pool.machine.replicas = replicasMax;
-	$: pool.machine.autoscaling = autoscaling ? { minimumReplicas: replicasMin } : null;
+	$: pool.autoscaling = autoscaling ? { minimumReplicas: replicasMin } : null;
 </script>
 
 <h4 class="h4">Pool Name</h4>
