@@ -82,7 +82,7 @@
 			return;
 		}
 
-		await setCredentials(result.access_token, jwt.payload.email);
+		await setCredentials(result.access_token, JSON.stringify(jwt.payload));
 
 		window.location = window.sessionStorage.getItem('oauth2_location') || '/';
 	}

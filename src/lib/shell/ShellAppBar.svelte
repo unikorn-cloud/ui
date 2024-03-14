@@ -12,16 +12,22 @@
 		drawerStore.open(settings);
 	}
 
-	import { email, removeCredentials } from '$lib/credentials.js';
+	import { profile, logout } from '$lib/credentials.js';
 
 	let emailAddress: string;
 
-	email.subscribe((email) => {
-		emailAddress = email;
+	profile.subscribe((value) => {
+		if (!value) {
+			emailAddress = null;
+			return;
+		}
+
+		const claims = JSON.parse(value);
+		emailAddress = claims.email;
 	});
 
-	function logout(): void {
-		removeCredentials();
+	function doLogout(): void {
+		logout();
 	}
 </script>
 
@@ -55,7 +61,7 @@
 
 				<section class="flex justify-between items-center">
 					<h6 class="h6">Logout</h6>
-					<button class="btn p-0 text-2xl" on:click={logout} on:keypress={logout}>
+					<button class="btn p-0 text-2xl" on:click={doLogout} on:keypress={doLogout}>
 						<iconify-icon icon="material-symbols:logout" />
 					</button>
 				</section>

@@ -2,9 +2,9 @@ import { env } from '$env/dynamic/public';
 
 import * as Api from '$lib/openapi/server';
 import { removeCredentials } from '$lib/credentials.js';
-import { ToastSettings } from '@skeletonlabs/skeleton';
+import type { ToastSettings } from '@skeletonlabs/skeleton';
 
-import { ROOT_CONTEXT, defaultTextMapSetter, propagation, trace } from '@opentelemetry/api';
+import { ROOT_CONTEXT, defaultTextMapSetter, trace } from '@opentelemetry/api';
 import type { Span } from '@opentelemetry/api';
 import { W3CTraceContextPropagator } from '@opentelemetry/core';
 
