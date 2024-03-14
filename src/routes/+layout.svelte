@@ -42,7 +42,19 @@
 	/* Authentication */
 	import Base64url from 'crypto-js/enc-base64url';
 	import SHA256 from 'crypto-js/sha256';
-	import { token } from '$lib/credentials.js';
+	import { profile, token } from '$lib/credentials.js';
+
+	let claims;
+
+	// Get the ID token first, as we can use it, if it exists to aid login below...
+	profile.subscribe((value) => {
+		if (!value) {
+			claims = null;
+			return;
+		}
+
+		claims = JSON.parse(value);
+	});
 
 	token.subscribe(async (token) => {
 		/* When a token isn't set, and its on the browser, do authentication */
@@ -78,6 +90,11 @@
 			code_challenge: codeChallenge,
 			scope: 'openid email profile'
 		});
+
+		// Set the login hint if we can as that avoids the login prompt.
+		if (claims) {
+			query.set('login_hint', claims.email);
+		}
 
 		const url = new URL(oidc.authorization_endpoint);
 		url.search = query.toString();
