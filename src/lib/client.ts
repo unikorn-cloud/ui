@@ -1,6 +1,7 @@
 import { env } from '$env/dynamic/public';
 
-import * as Api from '$lib/openapi/server';
+import * as ServerApi from '$lib/openapi/server';
+import * as IdentityApi from '$lib/openapi/identity';
 import { removeCredentials } from '$lib/credentials.js';
 import type { ToastSettings } from '@skeletonlabs/skeleton';
 
@@ -58,13 +59,23 @@ function traceContextMiddleware(toastStore: any): Api.Middleware {
 // NOTE: the toast store must be initialized in a svelte compenent or the context
 // lookup for the store will fail, hence we have to pass it in.
 export function client(toastStore: any, token: string): BaseAPI {
-	const config = new Api.Configuration({
+	const config = new ServerApi.Configuration({
 		basePath: env.PUBLIC_API_HOST,
 		accessToken: 'Bearer ' + token,
 		middleware: [authenticationMiddleware(), traceContextMiddleware(toastStore)]
 	});
 
-	return new Api.DefaultApi(config);
+	return new ServerApi.DefaultApi(config);
+}
+
+export function identityClient(toastStore: any, token: string): BaseAPI {
+	const config = new IdentityApi.Configuration({
+		basePath: env.PUBLIC_OAUTH2_ISSUER,
+		accessToken: 'Bearer ' + token,
+		middleware: [authenticationMiddleware(), traceContextMiddleware(toastStore)]
+	});
+
+	return new IdentityApi.DefaultApi(config);
 }
 
 // error is a generic fallback when an exception occurs, everything else should
