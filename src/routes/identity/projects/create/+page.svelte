@@ -14,6 +14,8 @@
 
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 
+	import { organizationStore } from '$lib/stores';
+
 	/* Client setup */
 	import { client, error } from '$lib/clients';
 	import { token } from '$lib/credentials';
@@ -27,21 +29,29 @@
 	let project: string;
 	let projects: Models.Projects;
 
-	token.subscribe(async (token: string) => {
-		/* Setup the token on load */
-		if (!token) return;
+	let organization: string;
+
+	organizationStore.subscribe((value: string) => (organization = value));
+
+	token.subscribe((token: string) => {
 		at = token;
+		updateProjects();
+	});
+
+	function updateProjects() {
+		/* Setup the token on load */
+		if (!token || !organization) return;
 
 		/* Get top-level resources required for the first step */
 		const parameters = {
-			organizationName: 'UNDEFINED'
+			organizationName: organization
 		};
 
 		client(toastStore, at)
 			.apiV1OrganizationsOrganizationNameProjectsGet(parameters)
 			.then((v: Models.Projects) => (projects = v))
 			.catch((e: Error) => error(e));
-	});
+	}
 
 	/* Cluster name must be valid, and it must be unique */
 	$: step1Valid =
