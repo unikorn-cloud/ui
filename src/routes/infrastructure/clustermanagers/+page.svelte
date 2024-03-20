@@ -18,19 +18,22 @@
 	const modalStore = getModalStore();
 
 	/* Client setup */
-	import { client, error } from '$lib/client.ts';
-	import { token } from '$lib/credentials.js';
+	import { client, error } from '$lib/clients';
+	import { token } from '$lib/credentials';
 	import * as Models from '$lib/openapi/server/models';
-	import * as Api from '$lib/openapi/server/apis';
 
 	let at: string;
 
-	let resources: Models.Clustermanagers;
+	let resources: Models.ClusterManagers;
 
 	function update(): void {
+		const parameters = {
+			organizationName: 'UNDEFINED'
+		};
+
 		client(toastStore, at)
-			.apiV1ClustermanagersGet()
-			.then((v) => (resources = v))
+			.apiV1OrganizationsOrganizationNameClustermanagersGet(parameters)
+			.then((v: Models.ClusterManagers) => (resources = v))
 			.catch((e: Error) => error(e));
 	}
 
@@ -45,22 +48,24 @@
 		onDestroy(() => clearInterval(ticker));
 	});
 
-	function remove(resource: Models.Clustermanager): void {
+	function remove(resource: Models.ClusterManager): void {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
-			body: `Removing control plane "${resource.name}" will remove all resources owned by it.`,
+			body: `Removing control plane "${resource.spec.name}" will remove all resources owned by it.`,
 			response: (ok: boolean) => {
 				if (!ok) return;
 
-				const parameters: Api.ApiV1ProjectsProjectNameClustermanagersClustermanagerNameDeleteRequest =
-					{
-						projectName: resource.metadata.project,
-						clusterManagerName: resource.name
-					};
+				const parameters = {
+					organizationName: 'UNDEFINED',
+					projectName: resource.metadata.project,
+					clusterManagerName: resource.spec.name
+				};
 
 				client(toastStore, at)
-					.apiV1ProjectsProjectNameClustermanagersClustermanagerNameDelete(parameters)
+					.apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNameDelete(
+						parameters
+					)
 					.catch((e: Error) => error(e));
 			}
 		};
@@ -76,7 +81,7 @@
 		<article class="bg-surface-50-900-token rounded-lg p-4 flex items-center justify-between gap-8">
 			<header class="flex items-center gap-4">
 				<StatusIcon metadata={resource.metadata} />
-				<h6 class="h6">{resource.name}</h6>
+				<h6 class="h6">{resource.spec.name}</h6>
 			</header>
 
 			<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>

@@ -13,12 +13,18 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ResourceMetadata } from './ResourceMetadata';
+import type { ClusterManagerMetadata } from './ClusterManagerMetadata';
 import {
-    ResourceMetadataFromJSON,
-    ResourceMetadataFromJSONTyped,
-    ResourceMetadataToJSON,
-} from './ResourceMetadata';
+    ClusterManagerMetadataFromJSON,
+    ClusterManagerMetadataFromJSONTyped,
+    ClusterManagerMetadataToJSON,
+} from './ClusterManagerMetadata';
+import type { ClusterManagerSpec } from './ClusterManagerSpec';
+import {
+    ClusterManagerSpecFromJSON,
+    ClusterManagerSpecFromJSONTyped,
+    ClusterManagerSpecToJSON,
+} from './ClusterManagerSpec';
 
 /**
  * A cluster manager.
@@ -28,16 +34,16 @@ import {
 export interface ClusterManager {
     /**
      * 
-     * @type {ResourceMetadata}
+     * @type {ClusterManagerMetadata}
      * @memberof ClusterManager
      */
-    metadata?: ResourceMetadata;
+    metadata: ClusterManagerMetadata;
     /**
-     * The name of the resource.
-     * @type {string}
+     * 
+     * @type {ClusterManagerSpec}
      * @memberof ClusterManager
      */
-    name: string;
+    spec: ClusterManagerSpec;
 }
 
 /**
@@ -45,7 +51,8 @@ export interface ClusterManager {
  */
 export function instanceOfClusterManager(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "metadata" in value;
+    isInstance = isInstance && "spec" in value;
 
     return isInstance;
 }
@@ -60,8 +67,8 @@ export function ClusterManagerFromJSONTyped(json: any, ignoreDiscriminator: bool
     }
     return {
         
-        'metadata': !exists(json, 'metadata') ? undefined : ResourceMetadataFromJSON(json['metadata']),
-        'name': json['name'],
+        'metadata': ClusterManagerMetadataFromJSON(json['metadata']),
+        'spec': ClusterManagerSpecFromJSON(json['spec']),
     };
 }
 
@@ -74,8 +81,8 @@ export function ClusterManagerToJSON(value?: ClusterManager | null): any {
     }
     return {
         
-        'metadata': ResourceMetadataToJSON(value.metadata),
-        'name': value.name,
+        'metadata': ClusterManagerMetadataToJSON(value.metadata),
+        'spec': ClusterManagerSpecToJSON(value.spec),
     };
 }
 

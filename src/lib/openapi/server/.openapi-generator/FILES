@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
@@ -11,6 +10,8 @@ models/ApplicationVersion.ts
 models/ApplicationVersions.ts
 models/Applications.ts
 models/ClusterManager.ts
+models/ClusterManagerMetadata.ts
+models/ClusterManagerSpec.ts
 models/ClusterManagers.ts
 models/Flavor.ts
 models/Flavors.ts
@@ -20,13 +21,17 @@ models/Images.ts
 models/KubernetesCluster.ts
 models/KubernetesClusterAPI.ts
 models/KubernetesClusterAutoscaling.ts
+models/KubernetesClusterMetadata.ts
 models/KubernetesClusterNetwork.ts
+models/KubernetesClusterSpec.ts
 models/KubernetesClusterWorkloadPool.ts
 models/KubernetesClusterWorkloadPools.ts
 models/KubernetesClusters.ts
 models/MachinePool.ts
 models/Oauth2Error.ts
 models/Project.ts
+models/ProjectMetadata.ts
+models/ProjectSpec.ts
 models/Projects.ts
 models/Region.ts
 models/Regions.ts

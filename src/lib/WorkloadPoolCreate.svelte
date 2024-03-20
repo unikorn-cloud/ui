@@ -3,28 +3,21 @@
 
 	import { SlideToggle, RangeSlider } from '@skeletonlabs/skeleton';
 
-	import * as Formatters from '$lib/formatters.js';
-	import * as Validation from '$lib/validation.ts';
+	import * as Formatters from '$lib/formatters';
+	import * as Validation from '$lib/validation';
 
 	/* The pool should be bound to expose the built configuration */
 	export let pool: Models.KubernetesClusterWorkloadPool;
-
-	/* Initializers... */
-	if (!pool.machine) {
-		pool.machine = {
-			disk: {}
-		};
-	}
 
 	/* Whether the configuration is valid */
 	export let valid: boolean;
 
 	/* Flavors allows the pool type to be populated */
-	export let flavors: Models.OpenstackFlavors;
+	export let flavors: Models.Flavors;
 
 	let flavor: string;
 
-	function updateFlavors(flavors: Models.OpenstackFlavors): void {
+	function updateFlavors(flavors: Models.Flavors): void {
 		/* Bizarrely this triggers when the select is interacted with :shrug: */
 		if (!flavors || flavor) return;
 		flavor = flavors[0].name;
@@ -44,9 +37,18 @@
 
 	/* Update the model as we update the inputs */
 	$: pool.machine.flavorName = flavor;
-	$: pool.machine.disk.size = storage;
+
+	$: {
+		if (pool.machine.disk) {
+			pool.machine.disk.size = storage;
+		} else {
+			pool.machine.disk = { size: storage };
+		}
+	}
+
 	$: pool.machine.replicas = replicasMax;
-	$: pool.autoscaling = autoscaling ? { minimumReplicas: replicasMin } : null;
+
+	$: pool.autoscaling = autoscaling ? { minimumReplicas: replicasMin } : undefined;
 </script>
 
 <h4 class="h4">Pool Name</h4>
@@ -71,7 +73,7 @@
 <h4 class="h4">Pool Storage</h4>
 <p>Define the local storage required for a workload pool member.</p>
 <div class="flex gap-8">
-	<RangeSlider class="grow" min="50" max="4000" step="50" bind:value={storage} />
+	<RangeSlider class="grow" name="storage" min={50} max={4000} step={50} bind:value={storage} />
 	<span>{storage} GB</span>
 </div>
 
@@ -81,7 +83,7 @@
 	automatic scaling you only pay for what you us, but there is an associated performance penalty
 	when nodes are dynamically created and added to the cluster.
 </p>
-<SlideToggle bind:checked={autoscaling} />
+<SlideToggle name="autoscaling" bind:checked={autoscaling} />
 
 {#if autoscaling}
 	<h6 class="h6">Minimum Pool Size</h6>
@@ -91,21 +93,21 @@
 		providing resource that can be used immediately without waiting for automatic scaling.
 	</p>
 	<div class="flex gap-8">
-		<RangeSlider class="grow" min="0" max="100" step="1" bind:value={replicasMin} />
+		<RangeSlider name="minsize" class="grow" min={0} max={100} step={1} bind:value={replicasMin} />
 		<span>{replicasMin}</span>
 	</div>
 
 	<h6 class="h6">Maximum Pool Size</h6>
 	<p>Define the maximum pool replicas.</p>
 	<div class="flex gap-8">
-		<RangeSlider class="grow" min="1" max="100" step="1" bind:value={replicasMax} />
+		<RangeSlider class="grow" name="maxsize" min={1} max={100} step={1} bind:value={replicasMax} />
 		<span>{replicasMax}</span>
 	</div>
 {:else}
 	<h6 class="h6">Pool Size</h6>
 	<p>Define the pool replicas</p>
 	<div class="flex gap-8">
-		<RangeSlider class="grow" min="1" max="100" step="1" bind:value={replicasMax} />
+		<RangeSlider class="grow" name="size" min={1} max={100} step={1} bind:value={replicasMax} />
 		<span>{replicasMax}</span>
 	</div>
 {/if}

@@ -30,13 +30,13 @@ export interface Organization {
      * @type {string}
      * @memberof Organization
      */
-    domain: string;
+    domain?: string;
     /**
      * An identity provider for the organization. This must be an oauth2 provider name.
      * @type {string}
      * @memberof Organization
      */
-    providerName: string;
+    providerName?: string;
 }
 
 /**
@@ -45,8 +45,6 @@ export interface Organization {
 export function instanceOfOrganization(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "domain" in value;
-    isInstance = isInstance && "providerName" in value;
 
     return isInstance;
 }
@@ -62,8 +60,8 @@ export function OrganizationFromJSONTyped(json: any, ignoreDiscriminator: boolea
     return {
         
         'name': json['name'],
-        'domain': json['domain'],
-        'providerName': json['providerName'],
+        'domain': !exists(json, 'domain') ? undefined : json['domain'],
+        'providerName': !exists(json, 'providerName') ? undefined : json['providerName'],
     };
 }
 

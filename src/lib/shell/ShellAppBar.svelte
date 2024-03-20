@@ -4,27 +4,48 @@
 	import { AppBar, Avatar, LightSwitch, popup } from '@skeletonlabs/skeleton';
 	import type { DrawerSettings } from '@skeletonlabs/skeleton';
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	const toastStore = getToastStore();
+
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
 	const drawerStore = getDrawerStore();
+
+	import { organizationStore } from '$lib/stores';
 
 	function showSideMenu(): void {
 		const settings: DrawerSettings = { id: 'sidebar' };
 		drawerStore.open(settings);
 	}
 
-	import { profile, logout } from '$lib/credentials.js';
+	import { profile, token, logout } from '$lib/credentials';
+	import { identityClient, error } from '$lib/clients';
+	import * as Models from '$lib/openapi/identity/models';
 
 	let emailAddress: string;
 
-	profile.subscribe((value) => {
-		if (!value) {
-			emailAddress = null;
-			return;
-		}
+	profile.subscribe((value: string) => {
+		if (!value) return;
 
 		const claims = JSON.parse(value);
 		emailAddress = claims.email;
 	});
+
+	let organizations: Models.Organizations;
+	let organization: string;
+
+	token.subscribe((at: string) => {
+		if (!at) return;
+
+		identityClient(toastStore, at)
+			.apiV1OrganizationsGet()
+			.then((v: Models.Organizations) => {
+				organizations = v;
+				organization = organizations[0].name;
+			})
+			.catch((e: Error) => error(e));
+	});
+
+	$: organizationStore.set(organization);
 
 	function doLogout(): void {
 		logout();
@@ -47,6 +68,13 @@
 	</svelte:fragment>
 
 	<svelte:fragment slot="trail">
+		<!-- Oragnization -->
+		<select class="select" bind:value={organization}>
+			{#each organizations || [] as organization}
+				<option value={organization.name}>{organization.name}</option>
+			{/each}
+		</select>
+
 		<!-- User drop down -->
 		<button class="btn p-0" use:popup={{ event: 'click', target: 'user' }}>
 			<Avatar src="https://www.gravatar.com/avatar/{MD5(emailAddress)}" initials="SM" class="w-8" />

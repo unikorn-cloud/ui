@@ -96,6 +96,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
         const response = await this.request({
             path: `/api/v1/oauth2/providers`,
             method: 'GET',
@@ -121,6 +126,11 @@ export class DefaultApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
 
         const response = await this.request({
             path: `/api/v1/organizations`,
@@ -151,6 +161,11 @@ export class DefaultApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
 
         const response = await this.request({
             path: `/api/v1/organizations/{organization}/groups`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
@@ -184,6 +199,11 @@ export class DefaultApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
 
         const response = await this.request({
             path: `/api/v1/organizations/{organization}/groups/{groupid}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"groupid"}}`, encodeURIComponent(String(requestParameters.groupid))),
@@ -224,6 +244,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
         const response = await this.request({
             path: `/api/v1/organizations/{organization}/groups/{groupid}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"groupid"}}`, encodeURIComponent(String(requestParameters.groupid))),
             method: 'PUT',
@@ -259,6 +284,11 @@ export class DefaultApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
 
         const response = await this.request({
             path: `/api/v1/organizations/{organization}/groups`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
@@ -296,6 +326,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
         const response = await this.request({
             path: `/api/v1/organizations/{organization}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
             method: 'PUT',
@@ -327,6 +362,11 @@ export class DefaultApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
 
         const response = await this.request({
             path: `/api/v1/organizations`,
@@ -460,6 +500,36 @@ export class DefaultApi extends runtime.BaseAPI {
     async oauth2V2TokenPost(requestParameters: Oauth2V2TokenPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Token> {
         const response = await this.oauth2V2TokenPostRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     * Returns introspection information about an access token.
+     */
+    async oauth2V2UserinfoGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/oauth2/v2/userinfo'`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Returns introspection information about an access token.
+     */
+    async oauth2V2UserinfoGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.oauth2V2UserinfoGetRaw(initOverrides);
     }
 
     /**

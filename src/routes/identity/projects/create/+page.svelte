@@ -15,13 +15,12 @@
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 
 	/* Client setup */
-	import { client, error } from '$lib/client.ts';
-	import { token } from '$lib/credentials.js';
+	import { client, error } from '$lib/clients';
+	import { token } from '$lib/credentials';
 	import * as Models from '$lib/openapi/server/models';
-	import * as Api from '$lib/openapi/server/apis';
 
 	/* Input vaildation */
-	import * as Validation from '$lib/validation.ts';
+	import * as Validation from '$lib/validation';
 
 	let at: string;
 
@@ -34,9 +33,13 @@
 		at = token;
 
 		/* Get top-level resources required for the first step */
+		const parameters = {
+			organizationName: 'UNDEFINED'
+		};
+
 		client(toastStore, at)
-			.apiV1ProjectsGet()
-			.then((v) => (projects = v))
+			.apiV1OrganizationsOrganizationNameProjectsGet(parameters)
+			.then((v: Models.Projects) => (projects = v))
 			.catch((e: Error) => error(e));
 	});
 
@@ -46,15 +49,16 @@
 		Validation.unique(project, Validation.namedResourceNames(projects));
 
 	function complete() {
-		const parameters: Api.ApiV1ProjectsPostRequest = {
-			project: {
+		const parameters = {
+			organizationName: '',
+			projectSpec: {
 				name: project
 			}
 		};
 
 		client(toastStore, at)
-			.apiV1ProjectsPost(parameters)
-			.then(() => (window.location = '/identity/projects'))
+			.apiV1OrganizationsOrganizationNameProjectsPost(parameters)
+			.then(() => window.location.assign('/identity/projects'))
 			.catch((e: Error) => error(e));
 	}
 </script>

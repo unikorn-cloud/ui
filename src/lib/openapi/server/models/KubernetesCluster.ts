@@ -13,62 +13,37 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { KubernetesClusterWorkloadPools } from './KubernetesClusterWorkloadPools';
+import type { KubernetesClusterMetadata } from './KubernetesClusterMetadata';
 import {
-    KubernetesClusterWorkloadPoolsFromJSON,
-    KubernetesClusterWorkloadPoolsFromJSONTyped,
-    KubernetesClusterWorkloadPoolsToJSON,
-} from './KubernetesClusterWorkloadPools';
-import type { ResourceMetadata } from './ResourceMetadata';
+    KubernetesClusterMetadataFromJSON,
+    KubernetesClusterMetadataFromJSONTyped,
+    KubernetesClusterMetadataToJSON,
+} from './KubernetesClusterMetadata';
+import type { KubernetesClusterSpec } from './KubernetesClusterSpec';
 import {
-    ResourceMetadataFromJSON,
-    ResourceMetadataFromJSONTyped,
-    ResourceMetadataToJSON,
-} from './ResourceMetadata';
+    KubernetesClusterSpecFromJSON,
+    KubernetesClusterSpecFromJSONTyped,
+    KubernetesClusterSpecToJSON,
+} from './KubernetesClusterSpec';
 
 /**
- * Kubernetes cluster creation parameters.
+ * Kubernetes cluster read.
  * @export
  * @interface KubernetesCluster
  */
 export interface KubernetesCluster {
     /**
      * 
-     * @type {ResourceMetadata}
+     * @type {KubernetesClusterMetadata}
      * @memberof KubernetesCluster
      */
-    metadata?: ResourceMetadata;
-    /**
-     * Cluster name.
-     * @type {string}
-     * @memberof KubernetesCluster
-     */
-    name: string;
-    /**
-     * The region to provision the cluster in.
-     * @type {string}
-     * @memberof KubernetesCluster
-     */
-    region: string;
-    /**
-     * The name of the cluster manager to use, if one is not specified
-     * the system will create one for you.
-     * @type {string}
-     * @memberof KubernetesCluster
-     */
-    clusterManager?: string;
-    /**
-     * The Kuebernetes version.  This should be derived from image metadata.
-     * @type {string}
-     * @memberof KubernetesCluster
-     */
-    version: string;
+    metadata: KubernetesClusterMetadata;
     /**
      * 
-     * @type {KubernetesClusterWorkloadPools}
+     * @type {KubernetesClusterSpec}
      * @memberof KubernetesCluster
      */
-    workloadPools: KubernetesClusterWorkloadPools;
+    spec: KubernetesClusterSpec;
 }
 
 /**
@@ -76,10 +51,8 @@ export interface KubernetesCluster {
  */
 export function instanceOfKubernetesCluster(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "region" in value;
-    isInstance = isInstance && "version" in value;
-    isInstance = isInstance && "workloadPools" in value;
+    isInstance = isInstance && "metadata" in value;
+    isInstance = isInstance && "spec" in value;
 
     return isInstance;
 }
@@ -94,12 +67,8 @@ export function KubernetesClusterFromJSONTyped(json: any, ignoreDiscriminator: b
     }
     return {
         
-        'metadata': !exists(json, 'metadata') ? undefined : ResourceMetadataFromJSON(json['metadata']),
-        'name': json['name'],
-        'region': json['region'],
-        'clusterManager': !exists(json, 'clusterManager') ? undefined : json['clusterManager'],
-        'version': json['version'],
-        'workloadPools': KubernetesClusterWorkloadPoolsFromJSON(json['workloadPools']),
+        'metadata': KubernetesClusterMetadataFromJSON(json['metadata']),
+        'spec': KubernetesClusterSpecFromJSON(json['spec']),
     };
 }
 
@@ -112,12 +81,8 @@ export function KubernetesClusterToJSON(value?: KubernetesCluster | null): any {
     }
     return {
         
-        'metadata': ResourceMetadataToJSON(value.metadata),
-        'name': value.name,
-        'region': value.region,
-        'clusterManager': value.clusterManager,
-        'version': value.version,
-        'workloadPools': KubernetesClusterWorkloadPoolsToJSON(value.workloadPools),
+        'metadata': KubernetesClusterMetadataToJSON(value.metadata),
+        'spec': KubernetesClusterSpecToJSON(value.spec),
     };
 }
 

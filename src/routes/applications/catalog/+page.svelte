@@ -13,18 +13,18 @@
 	const toastStore = getToastStore();
 
 	/* Client setup */
-	import { token } from '$lib/credentials.js';
-	import { client, error } from '$lib/client.ts';
-	import type { Applications } from '$lib/openapi/server/models';
+	import { token } from '$lib/credentials';
+	import { client, error } from '$lib/clients';
+	import * as Models from '$lib/openapi/server/models';
 
-	let applications: Applications;
+	let applications: Models.Applications;
 
 	token.subscribe((at: string): void => {
 		if (!at) return;
 
 		client(toastStore, at)
 			.apiV1ApplicationsGet()
-			.then((v) => (applications = v))
+			.then((v: Models.Applications) => (applications = v))
 			.catch((e: Error) => error(e));
 	});
 </script>
@@ -44,7 +44,7 @@
 					<!-- Application title -->
 					<div class="flex flex-col gap-2">
 						<div class="flex gap-2">
-							{#each application.tags as tag}
+							{#each application.tags || [] as tag}
 								<div class="badge variant-soft">{tag}</div>
 							{/each}
 						</div>

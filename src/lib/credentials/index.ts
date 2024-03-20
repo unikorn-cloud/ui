@@ -1,17 +1,17 @@
 import { writable } from 'svelte/store';
-import { sessionStorage } from '$lib/sessionStorage.js';
+import { sessionstore } from '$lib/sessionstore';
 
 // token is the authorization bearer token for making API requests.
-export const token = sessionStorage('token');
+export const token = sessionstore('token');
 
 // idToken is the user's idToken and contains OIDC information about them.
-export const profile = sessionStorage('id_token');
+export const profile = sessionstore('id_token');
 
 // This is called when the initial access token is acquired from the oauth
 // exchange.  It uses the token to rescope to a project, that's either selected
 // from persistent storage, and as a fallback, just selects the first one the
 // user has access too as a default.
-export function setCredentials(accessToken, idToken) {
+export function setCredentials(accessToken: string, idToken: string) {
 	// Set everything else up first, then update the token.
 	// Everything should hang off the presence of a token, so we expect the
 	// other details to be ready to be consumed by that point.
@@ -22,11 +22,11 @@ export function setCredentials(accessToken, idToken) {
 // Remove credentials i.e. on token expiry.
 // It retains the ID token information for a login hint.
 export function removeCredentials() {
-	token.set(null);
+	token.set(undefined);
 }
 
 // Fully logs out and forgets everything about a user.
 export function logout() {
-	token.set(null);
-	profile.set(null);
+	token.set(undefined);
+	profile.set(undefined);
 }

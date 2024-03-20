@@ -6,8 +6,7 @@
 	import { browser } from '$app/environment';
 
 	/* Required for configuration */
-	import { oidcClientID, oidcDiscovery } from '$lib/oidc.ts';
-	import type { OIDCDiscovery } from '$lib/oidc.ts';
+	import * as OIDC from '$lib/oidc';
 
 	/* Required for OpenTelemetry */
 	import { Resource } from '@opentelemetry/resources';
@@ -42,16 +41,13 @@
 	/* Authentication */
 	import Base64url from 'crypto-js/enc-base64url';
 	import SHA256 from 'crypto-js/sha256';
-	import { profile, token } from '$lib/credentials.js';
+	import { profile, token } from '$lib/credentials';
 
-	let claims;
+	let claims: { email: string } | undefined;
 
 	// Get the ID token first, as we can use it, if it exists to aid login below...
 	profile.subscribe((value) => {
-		if (!value) {
-			claims = null;
-			return;
-		}
+		if (!value) return;
 
 		claims = JSON.parse(value);
 	});
@@ -67,7 +63,7 @@
 			return;
 		}
 
-		const oidc: OIDCDiscovery = await oidcDiscovery();
+		const oidc = await OIDC.discovery();
 
 		/* Kck off the oauth2/oidc authentication code flow */
 		/* TODO: it may be better to use Passport */
@@ -75,7 +71,7 @@
 
 		crypto.getRandomValues(codeChallengeVerifierBytes);
 
-		const codeChallengeVerifier = btoa(codeChallengeVerifierBytes);
+		const codeChallengeVerifier = btoa(codeChallengeVerifierBytes.toString());
 		const codeChallenge = SHA256(codeChallengeVerifier).toString(Base64url);
 
 		window.sessionStorage.setItem('oauth2_code_challenge_verifier', codeChallengeVerifier);
@@ -84,7 +80,7 @@
 		// TODO: set a nonce
 		const query = new URLSearchParams({
 			response_type: 'code',
-			client_id: oidcClientID,
+			client_id: OIDC.clientID,
 			redirect_uri: `${window.location.protocol}//${window.location.host}/oauth2/callback`,
 			code_challenge_method: 'S256',
 			code_challenge: codeChallenge,
