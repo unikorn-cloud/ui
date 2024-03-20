@@ -104,7 +104,7 @@
 				</ul>
 			</nav>
 
-			{#if i < nav.length - 1}
+			{#if i < Object.keys(nav).length - 1}
 				<hr class="!my-6 opacity-50" />
 			{/if}
 		{/each}

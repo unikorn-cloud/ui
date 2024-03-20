@@ -15,13 +15,12 @@
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 
 	/* Client setup */
-	import { client, error } from '$lib/client.ts';
-	import { token } from '$lib/credentials.js';
+	import { client, error } from '$lib/clients';
+	import { token } from '$lib/credentials';
 	import * as Models from '$lib/openapi/server/models';
-	import * as Api from '$lib/openapi/server/apis';
 
 	/* Input vaildation */
-	import * as Validation from '$lib/validation.ts';
+	import * as Validation from '$lib/validation';
 
 	let at: string;
 
@@ -36,10 +35,10 @@
 	let clustermanagers: Models.ClusterManagers;
 
 	let cluster: string;
-	let clusters: Api.KubernetesClusters;
+	let clusters: Models.KubernetesClusters;
 
-	let images: Models.OpenstackImages;
-	let flavors: Models.OpenstackFlavors;
+	let images: Models.Images;
+	let flavors: Models.Flavors;
 
 	let version: string;
 	let versions: Array<string>;
@@ -53,7 +52,7 @@
 		/* TODO: parallelize with Promise.all */
 		client(toastStore, at)
 			.apiV1RegionsGet()
-			.then((v) => {
+			.then((v: Models.Regions) => {
 				if (v.length == 0) return;
 
 				regions = v;
@@ -61,13 +60,17 @@
 			})
 			.catch((e: Error) => error(e));
 
+		const parameters = {
+			organizationName: 'UNDEFINED'
+		};
+
 		client(toastStore, at)
-			.apiV1ProjectsGet()
-			.then((v) => {
+			.apiV1OrganizationsOrganizationNameProjectsGet(parameters)
+			.then((v: Models.Projects) => {
 				if (v.length == 0) return;
 
 				projects = v;
-				project = projects[0].name;
+				project = projects[0].spec.name;
 			})
 			.catch((e: Error) => error(e));
 	});
@@ -75,14 +78,18 @@
 	function updateClusterManagers(at: string, project: string) {
 		if (!at || !project) return;
 
+		const parameters = {
+			organizationName: 'UNDEFINED'
+		};
+
 		client(toastStore, at)
-			.apiV1ClustermanagersGet()
-			.then((v) => {
+			.apiV1OrganizationsOrganizationNameClustermanagersGet(parameters)
+			.then((v: Models.ClusterManagers) => {
 				if (v.length == 0) return;
 
 				// TODO: a possible excuse for request query parameters?
 				clustermanagers = v.filter((x) => x.metadata.project == project);
-				clustermanager = clustermanagers[0].name;
+				clustermanager = clustermanagers[0].spec.name;
 			})
 			.catch((e: Error) => error(e));
 	}
@@ -93,9 +100,13 @@
 	function updateClusters(at: string, clustermanager: string): void {
 		if (!at || !clustermanager) return;
 
+		const parameters = {
+			organizationName: 'UNDEFINED'
+		};
+
 		client(toastStore, at)
-			.apiV1ClustersGet()
-			.then((v) => {
+			.apiV1OrganizationsOrganizationNameClustersGet(parameters)
+			.then((v: Models.KubernetesClusters) => {
 				if (v.length == 0) return;
 
 				clusters = v;
@@ -118,26 +129,26 @@
 	function updateImages(at: string, region: string): void {
 		if (!at || !region) return;
 
-		const parameters: Api.ApiV1RegionsRegionNameImagesGetRequest = {
+		const parameters = {
 			regionName: region
 		};
 
 		client(toastStore, at)
 			.apiV1RegionsRegionNameImagesGet(parameters)
-			.then((v) => (images = v))
+			.then((v: Models.Images) => (images = v))
 			.catch((e: Error) => error(e));
 	}
 
 	function updateFlavors(at: string, region: string): void {
 		if (!at || !region) return;
 
-		const parameters: Api.ApiV1RegionsRegionNameFlavorsGetRequest = {
+		const parameters = {
 			regionName: region
 		};
 
 		client(toastStore, at)
 			.apiV1RegionsRegionNameFlavorsGet(parameters)
-			.then((v) => (flavors = v))
+			.then((v: Models.Flavors) => (flavors = v))
 			.catch((e: Error) => error(e));
 	}
 
@@ -145,7 +156,7 @@
 	$: updateFlavors(at, region);
 
 	/* From the images, we can get a list of Kubernetes versions */
-	function updateVersions(at: string, images: Models.OpenstackImages): void {
+	function updateVersions(at: string, images: Models.Images): void {
 		if (!at || !images) return;
 
 		versions = [
@@ -162,7 +173,7 @@
 	$: updateVersions(at, images);
 
 	/* Define a types we can manage, but also bind the configuration dialog to */
-	type WorkloadPool = { model: Models.KubernetesClusterWorkloadPools; valid: boolean };
+	type WorkloadPool = { model: Models.KubernetesClusterWorkloadPool; valid: boolean };
 	type WorkloadPools = Array<WorkloadPool>;
 
 	/* Workload pools you need at lea<st one */
@@ -170,7 +181,10 @@
 	addPool();
 
 	function addPool(): void {
-		let model: Models.KubernetesClusterWorkloadPools = {};
+		let model: Models.KubernetesClusterWorkloadPool = {
+			name: '',
+			machine: {}
+		};
 		let valid: boolean = false;
 
 		let pool: WorkloadPool = {
@@ -196,9 +210,10 @@
 		[...new Set(workloadPools.map((x) => x.model.name))].length == workloadPools.length;
 
 	function complete() {
-		const parameters: Api.ApiV1ProjectsProjectNameClustersPostRequest = {
+		const parameters = {
+			organizationName: 'UNDEFINED',
 			projectName: project,
-			kubernetesCluster: {
+			kubernetesClusterSpec: {
 				name: cluster,
 				region: region,
 				clusterManager: clustermanager,
@@ -208,8 +223,8 @@
 		};
 
 		client(toastStore, at)
-			.apiV1ProjectsProjectNameClustersPost(parameters)
-			.then(() => (window.location = '/infrastructure/clusters'))
+			.apiV1OrganizationsOrganizationNameProjectsProjectNameClustersPost(parameters)
+			.then(() => window.location.assign('/infrastructure/clusters'))
 			.catch((e: Error) => error(e));
 	}
 </script>
@@ -231,7 +246,7 @@
 			<label for="project-name"> Select a project to provision in the cluster in. </label>
 			<select id="project-name" class="select" bind:value={project}>
 				{#each projects || [] as project}
-					<option value={project.name}>{project.name}</option>
+					<option value={project.spec.name}>{project.spec.name}</option>
 				{/each}
 			</select>
 
@@ -242,7 +257,7 @@
 			</label>
 			<select id="clustermanager-name" class="select" bind:value={clustermanager}>
 				{#each clustermanagers || [] as clustermanager}
-					<option value={clustermanager.name}>{clustermanager.name}</option>
+					<option value={clustermanager.spec.name}>{clustermanager.spec.name}</option>
 				{/each}
 			</select>
 		</Step>

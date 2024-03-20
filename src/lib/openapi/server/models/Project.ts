@@ -13,12 +13,18 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ResourceMetadata } from './ResourceMetadata';
+import type { ProjectMetadata } from './ProjectMetadata';
 import {
-    ResourceMetadataFromJSON,
-    ResourceMetadataFromJSONTyped,
-    ResourceMetadataToJSON,
-} from './ResourceMetadata';
+    ProjectMetadataFromJSON,
+    ProjectMetadataFromJSONTyped,
+    ProjectMetadataToJSON,
+} from './ProjectMetadata';
+import type { ProjectSpec } from './ProjectSpec';
+import {
+    ProjectSpecFromJSON,
+    ProjectSpecFromJSONTyped,
+    ProjectSpecToJSON,
+} from './ProjectSpec';
 
 /**
  * A project.
@@ -28,16 +34,16 @@ import {
 export interface Project {
     /**
      * 
-     * @type {ResourceMetadata}
+     * @type {ProjectMetadata}
      * @memberof Project
      */
-    metadata?: ResourceMetadata;
+    metadata: ProjectMetadata;
     /**
      * 
-     * @type {string}
+     * @type {ProjectSpec}
      * @memberof Project
      */
-    name: string;
+    spec: ProjectSpec;
 }
 
 /**
@@ -45,7 +51,8 @@ export interface Project {
  */
 export function instanceOfProject(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "metadata" in value;
+    isInstance = isInstance && "spec" in value;
 
     return isInstance;
 }
@@ -60,8 +67,8 @@ export function ProjectFromJSONTyped(json: any, ignoreDiscriminator: boolean): P
     }
     return {
         
-        'metadata': !exists(json, 'metadata') ? undefined : ResourceMetadataFromJSON(json['metadata']),
-        'name': json['name'],
+        'metadata': ProjectMetadataFromJSON(json['metadata']),
+        'spec': ProjectSpecFromJSON(json['spec']),
     };
 }
 
@@ -74,8 +81,8 @@ export function ProjectToJSON(value?: Project | null): any {
     }
     return {
         
-        'metadata': ResourceMetadataToJSON(value.metadata),
-        'name': value.name,
+        'metadata': ProjectMetadataToJSON(value.metadata),
+        'spec': ProjectSpecToJSON(value.spec),
     };
 }
 

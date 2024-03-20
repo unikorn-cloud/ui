@@ -5,16 +5,15 @@
 	import { browser } from '$app/environment';
 
 	/* Required for configuration */
-	import { oidcClientID, oidcDiscovery, compareAccessTokenHash } from '$lib/oidc.ts';
-	import type { OIDCDiscovery } from '$lib/oidc.ts';
+	import * as OIDC from '$lib/oidc';
 
 	/* Required for verification */
 	import { createRemoteJWKSet, jwtVerify } from 'jose';
 
-	import { setCredentials } from '$lib/credentials.js';
+	import { setCredentials } from '$lib/credentials';
 
-	let error;
-	let description;
+	let error: string;
+	let description: string;
 
 	async function handleCallback() {
 		if (!browser) {
@@ -24,8 +23,8 @@
 		const location = new URL(window.location.href);
 
 		if (location.searchParams.has('error')) {
-			error = location.searchParams.get('error');
-			description = location.searchParams.get('description');
+			error = location.searchParams.get('error') || 'server_error';
+			description = location.searchParams.get('description') || 'no description provided';
 			return;
 		}
 
@@ -36,14 +35,25 @@
 		}
 
 		const code = location.searchParams.get('code');
+		if (!code) {
+			error = 'server_error';
+			description = 'authorization code not present';
+			return;
+		}
 
-		const discovery: OIDCDiscovery = await oidcDiscovery();
+		const code_verifier = window.sessionStorage.getItem('oauth2_code_challenge_verifier');
+		if (!code_verifier) {
+			error = 'client_error';
+			description = 'code verifier not set';
+			return;
+		}
+
+		const discovery = await OIDC.discovery();
 
 		console.log(window.location);
-		const code_verifier = window.sessionStorage.getItem('oauth2_code_challenge_verifier');
 		const form = new URLSearchParams({
 			grant_type: 'authorization_code',
-			client_id: oidcClientID,
+			client_id: OIDC.clientID,
 			redirect_uri: `${window.location.protocol}//${window.location.host}/oauth2/callback`,
 			code: code,
 			code_verifier: code_verifier
@@ -71,20 +81,20 @@
 
 		const jwt = await jwtVerify(result.id_token, jwks, {
 			issuer: discovery.issuer,
-			audience: oidcClientID
+			audience: OIDC.clientID
 		});
 
 		try {
-			compareAccessTokenHash(jwt, result.access_token);
+			OIDC.compareAccessTokenHash(jwt, result.access_token);
 		} catch (err) {
 			error = 'client_error';
-			description = err;
+			// TODO: error description.
 			return;
 		}
 
 		await setCredentials(result.access_token, JSON.stringify(jwt.payload));
 
-		window.location = window.sessionStorage.getItem('oauth2_location') || '/';
+		window.location.assign(window.sessionStorage.getItem('oauth2_location') || '/');
 	}
 
 	handleCallback();

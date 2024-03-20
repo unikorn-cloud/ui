@@ -81,6 +81,12 @@ export interface OpenidConfiguration {
      */
     tokenEndpoint: string;
     /**
+     * The oidc endpoint used to get information about an access token's user.
+     * @type {string}
+     * @memberof OpenidConfiguration
+     */
+    userinfoEndpoint: string;
+    /**
      * The oauth2 endpoint that exposes public signing keys for token validation.
      * @type {string}
      * @memberof OpenidConfiguration
@@ -138,6 +144,7 @@ export function instanceOfOpenidConfiguration(value: object): boolean {
     isInstance = isInstance && "issuer" in value;
     isInstance = isInstance && "authorizationEndpoint" in value;
     isInstance = isInstance && "tokenEndpoint" in value;
+    isInstance = isInstance && "userinfoEndpoint" in value;
     isInstance = isInstance && "jwksUri" in value;
     isInstance = isInstance && "scopesSupported" in value;
     isInstance = isInstance && "claimsSupported" in value;
@@ -163,6 +170,7 @@ export function OpenidConfigurationFromJSONTyped(json: any, ignoreDiscriminator:
         'issuer': json['issuer'],
         'authorizationEndpoint': json['authorization_endpoint'],
         'tokenEndpoint': json['token_endpoint'],
+        'userinfoEndpoint': json['userinfo_endpoint'],
         'jwksUri': json['jwks_uri'],
         'scopesSupported': ((json['scopes_supported'] as Array<any>).map(ScopeFromJSON)),
         'claimsSupported': ((json['claims_supported'] as Array<any>).map(ClaimFromJSON)),
@@ -186,6 +194,7 @@ export function OpenidConfigurationToJSON(value?: OpenidConfiguration | null): a
         'issuer': value.issuer,
         'authorization_endpoint': value.authorizationEndpoint,
         'token_endpoint': value.tokenEndpoint,
+        'userinfo_endpoint': value.userinfoEndpoint,
         'jwks_uri': value.jwksUri,
         'scopes_supported': ((value.scopesSupported as Array<any>).map(ScopeToJSON)),
         'claims_supported': ((value.claimsSupported as Array<any>).map(ClaimToJSON)),

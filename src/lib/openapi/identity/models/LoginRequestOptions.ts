@@ -24,7 +24,13 @@ export interface LoginRequestOptions {
      * @type {string}
      * @memberof LoginRequestOptions
      */
-    email: string;
+    email?: string | null;
+    /**
+     * The explcit provider type.
+     * @type {string}
+     * @memberof LoginRequestOptions
+     */
+    provider: LoginRequestOptionsProviderEnum;
     /**
      * The query string supplied to the authorization endpoint.
      * @type {string}
@@ -33,12 +39,24 @@ export interface LoginRequestOptions {
     query: string;
 }
 
+
+/**
+ * @export
+ */
+export const LoginRequestOptionsProviderEnum = {
+    Dynamic: 'dynamic',
+    Google: 'google',
+    Microsoft: 'microsoft'
+} as const;
+export type LoginRequestOptionsProviderEnum = typeof LoginRequestOptionsProviderEnum[keyof typeof LoginRequestOptionsProviderEnum];
+
+
 /**
  * Check if a given object implements the LoginRequestOptions interface.
  */
 export function instanceOfLoginRequestOptions(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "email" in value;
+    isInstance = isInstance && "provider" in value;
     isInstance = isInstance && "query" in value;
 
     return isInstance;
@@ -54,7 +72,8 @@ export function LoginRequestOptionsFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
-        'email': json['email'],
+        'email': !exists(json, 'email') ? undefined : json['email'],
+        'provider': json['provider'],
         'query': json['query'],
     };
 }
@@ -69,6 +88,7 @@ export function LoginRequestOptionsToJSON(value?: LoginRequestOptions | null): a
     return {
         
         'email': value.email,
+        'provider': value.provider,
         'query': value.query,
     };
 }

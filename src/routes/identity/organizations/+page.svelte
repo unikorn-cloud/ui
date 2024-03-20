@@ -13,17 +13,17 @@
 	const toastStore = getToastStore();
 
 	/* Client setup */
-	import { identityClient, error } from '$lib/client.ts';
-	import { token } from '$lib/credentials.js';
+	import * as Clients from '$lib/clients';
+	import { token } from '$lib/credentials';
 	import * as Models from '$lib/openapi/identity/models';
 
 	let organizations: Models.Organizations;
 
 	token.subscribe((at: string) => {
-		identityClient(toastStore, at)
+		Clients.identityClient(toastStore, at)
 			.apiV1OrganizationsGet()
-			.then((v) => (organizations = v))
-			.catch((e: Error) => error(e));
+			.then((v: Models.Organizations) => (organizations = v))
+			.catch((e: Error) => Clients.error(e));
 	});
 
 	function providerIcon(provider: string): string {
@@ -40,9 +40,11 @@
 				class="bg-surface-50-900-token rounded-lg p-4 flex items-center justify-between gap-8"
 			>
 				<header class="flex items-center gap-4">
-					<iconify-icon icon={providerIcon(resource.providerName)} />
 					<h6 class="h6">{resource.name}</h6>
-					{resource.domain}
+					{#if resource.providerName}
+						<iconify-icon icon={providerIcon(resource.providerName)} />
+						{resource.domain}
+					{/if}
 				</header>
 			</article>
 		{/each}

@@ -16,10 +16,9 @@
 	const modalStore = getModalStore();
 
 	/* Client setup */
-	import { client, error } from '$lib/client.ts';
-	import { token } from '$lib/credentials.js';
+	import { client, error } from '$lib/clients';
+	import { token } from '$lib/credentials';
 	import * as Models from '$lib/openapi/server/models';
-	import * as Api from '$lib/openapi/server/apis';
 
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
@@ -29,9 +28,13 @@
 	let resources: Models.KubernetesClusters;
 
 	function update(): void {
+		const parameters = {
+			organizationName: 'UNDEFINED'
+		};
+
 		client(toastStore, at)
-			.apiV1ClustersGet()
-			.then((v) => (resources = v))
+			.apiV1OrganizationsOrganizationNameClustersGet(parameters)
+			.then((v: Models.KubernetesClusters) => (resources = v))
 			.catch((e: Error) => error(e));
 	}
 
@@ -50,18 +53,21 @@
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
-			body: `Remove cluster "${resource.name}".`,
+			body: `Remove cluster "${resource.spec.name}".`,
 			response: (ok: boolean) => {
 				if (!ok) return;
+				if (!resource.metadata) return;
 
-				const parameters: Api.ApiV1ProjectsProjectNameClustersClusterNameDeleteRequest = {
+				const parameters = {
+					organizationName: 'UNDEFINED',
 					projectName: resource.metadata.project,
-					controlPlaneName: resource.metadata.controlplane,
-					clusterName: resource.name
+					clusterName: resource.spec.name
 				};
 
 				client(toastStore, at)
-					.apiV1ProjectsProjectNameClustersClusterNameDelete(parameters)
+					.apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameDelete(
+						parameters
+					)
 					.catch((e: Error) => error(e));
 			}
 		};
@@ -85,7 +91,7 @@
 		<article class="bg-surface-50-900-token rounded-lg p-4 flex items-center justify-between gap-8">
 			<header class="flex items-center gap-4">
 				<StatusIcon metadata={resource.metadata} />
-				<h6 class="h6">{resource.name}</h6>
+				<h6 class="h6">{resource.spec.name}</h6>
 			</header>
 
 			<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
