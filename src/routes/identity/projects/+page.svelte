@@ -46,6 +46,7 @@
 	}
 
 	$: update(at, organization);
+	$: console.log(resources);
 
 	function remove(resource: Models.Project): void {
 		const modal: ModalSettings = {

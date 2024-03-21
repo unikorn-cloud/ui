@@ -15,6 +15,8 @@
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	const modalStore = getModalStore();
 
+	import { organizationStore } from '$lib/stores';
+
 	/* Client setup */
 	import { client, error } from '$lib/clients';
 	import { token } from '$lib/credentials';
@@ -27,9 +29,26 @@
 
 	let resources: Models.KubernetesClusters;
 
+	let organization: string;
+
+	organizationStore.subscribe((value: string) => {
+		organization = value;
+		update();
+	});
+
+	token.subscribe((token: string): void => {
+		at = token;
+		update();
+
+		const ticker = setInterval(update, 5000);
+		onDestroy(() => clearInterval(ticker));
+	});
+
 	function update(): void {
+		if (!at || !organization) return;
+
 		const parameters = {
-			organizationName: 'UNDEFINED'
+			organizationName: organization
 		};
 
 		client(toastStore, at)
@@ -37,17 +56,6 @@
 			.then((v: Models.KubernetesClusters) => (resources = v))
 			.catch((e: Error) => error(e));
 	}
-
-	token.subscribe((token: string): void => {
-		/* Setup the token on load */
-		if (!token) return;
-		at = token;
-
-		update();
-
-		const ticker = setInterval(update, 5000);
-		onDestroy(() => clearInterval(ticker));
-	});
 
 	function remove(resource: Models.KubernetesCluster): void {
 		const modal: ModalSettings = {
@@ -59,7 +67,7 @@
 				if (!resource.metadata) return;
 
 				const parameters = {
-					organizationName: 'UNDEFINED',
+					organizationName: organization,
 					projectName: resource.metadata.project,
 					clusterName: resource.spec.name
 				};

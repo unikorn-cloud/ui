@@ -14,6 +14,8 @@
 
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 
+	import { organizationStore } from '$lib/stores';
+
 	/* Client setup */
 	import { client, error } from '$lib/clients';
 	import { token } from '$lib/credentials';
@@ -43,10 +45,20 @@
 	let version: string;
 	let versions: Array<string>;
 
-	token.subscribe((token: string): void => {
-		/* Setup the token on load */
-		if (!token) return;
-		at = token;
+	let organization: string;
+
+	organizationStore.subscribe((value: string) => {
+		organization = value;
+		updateRegions();
+	});
+
+	token.subscribe((value: string) => {
+		at = value;
+		updateRegions();
+	});
+
+	function updateRegions() {
+		if (!at || !organization) return;
 
 		/* Get top-level resources required for the first step */
 		/* TODO: parallelize with Promise.all */
@@ -61,7 +73,7 @@
 			.catch((e: Error) => error(e));
 
 		const parameters = {
-			organizationName: 'UNDEFINED'
+			organizationName: organization
 		};
 
 		client(toastStore, at)
@@ -73,13 +85,13 @@
 				project = projects[0].spec.name;
 			})
 			.catch((e: Error) => error(e));
-	});
+	}
 
 	function updateClusterManagers(at: string, project: string) {
 		if (!at || !project) return;
 
 		const parameters = {
-			organizationName: 'UNDEFINED'
+			organizationName: organization
 		};
 
 		client(toastStore, at)
@@ -101,7 +113,7 @@
 		if (!at || !clustermanager) return;
 
 		const parameters = {
-			organizationName: 'UNDEFINED'
+			organizationName: organization
 		};
 
 		client(toastStore, at)
@@ -211,7 +223,7 @@
 
 	function complete() {
 		const parameters = {
-			organizationName: 'UNDEFINED',
+			organizationName: organization,
 			projectName: project,
 			kubernetesClusterSpec: {
 				name: cluster,
