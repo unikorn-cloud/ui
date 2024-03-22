@@ -50,7 +50,6 @@
 
 		const discovery = await OIDC.discovery();
 
-		console.log(window.location);
 		const form = new URLSearchParams({
 			grant_type: 'authorization_code',
 			client_id: OIDC.clientID,

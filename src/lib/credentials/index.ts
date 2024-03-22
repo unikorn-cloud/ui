@@ -27,6 +27,6 @@ export function removeCredentials() {
 
 // Fully logs out and forgets everything about a user.
 export function logout() {
-	token.set(undefined);
 	profile.set(undefined);
+	token.set(undefined);
 }
