@@ -9,6 +9,8 @@
 
 	/* Required for verification */
 	import { createRemoteJWKSet, jwtVerify } from 'jose';
+	import Base64url from 'crypto-js/enc-base64url';
+	import SHA256 from 'crypto-js/sha256';
 
 	import { setCredentials } from '$lib/credentials';
 
@@ -22,9 +24,27 @@
 
 		const location = new URL(window.location.href);
 
+		const nonce = window.sessionStorage.getItem('oidc_nonce');
+		window.sessionStorage.removeItem('oidc_nonce');
+
+		const code_verifier = window.sessionStorage.getItem('oauth2_code_challenge_verifier');
+		window.sessionStorage.removeItem('oauth2_code_challenge_verifier');
+
+		if (!nonce) {
+			error = 'client_error';
+			description = 'nonce not present in session storage, possibly a replay attack';
+			return;
+		}
+
+		if (!code_verifier) {
+			error = 'client_error';
+			description = 'code verifier not present in session storage, possibly a replay attack';
+			return;
+		}
+
 		if (location.searchParams.has('error')) {
 			error = location.searchParams.get('error') || 'server_error';
-			description = location.searchParams.get('description') || 'no description provided';
+			description = location.searchParams.get('error_description') || 'no description provided';
 			return;
 		}
 
@@ -38,13 +58,6 @@
 		if (!code) {
 			error = 'server_error';
 			description = 'authorization code not present';
-			return;
-		}
-
-		const code_verifier = window.sessionStorage.getItem('oauth2_code_challenge_verifier');
-		if (!code_verifier) {
-			error = 'client_error';
-			description = 'code verifier not set';
 			return;
 		}
 
@@ -83,11 +96,23 @@
 			audience: OIDC.clientID
 		});
 
+		if (jwt.payload.nonce != SHA256(nonce).toString(Base64url)) {
+			error = 'client_error';
+			description = 'id_token nonce does not match, replay attack detected';
+			return;
+		}
+
 		try {
 			OIDC.compareAccessTokenHash(jwt, result.access_token);
 		} catch (err) {
 			error = 'client_error';
-			// TODO: error description.
+
+			if (err instanceof Error) {
+				description = err.message;
+				return;
+			}
+
+			description = String(err);
 			return;
 		}
 
