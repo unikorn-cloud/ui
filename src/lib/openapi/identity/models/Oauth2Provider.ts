@@ -20,29 +20,39 @@ import { exists, mapValues } from '../runtime';
  */
 export interface Oauth2Provider {
     /**
-     * 
+     * A description of the provider.
      * @type {string}
      * @memberof Oauth2Provider
      */
     name: string;
     /**
-     * 
+     * The name to display for the provider.
      * @type {string}
      * @memberof Oauth2Provider
      */
     displayName: string;
     /**
-     * 
+     * The OIDC issuer, typically where to perform auto discovery relative to.
      * @type {string}
      * @memberof Oauth2Provider
      */
     issuer: string;
     /**
+     * The client identification, only shown for super admin or organization owned providers
+     * that you are an admin for.
      * 
      * @type {string}
      * @memberof Oauth2Provider
      */
-    clientID: string;
+    clientID?: string;
+    /**
+     * The client secret, only shown for super admin or organization owned providers
+     * that you are an admin for.
+     * 
+     * @type {string}
+     * @memberof Oauth2Provider
+     */
+    clientSecret?: string;
 }
 
 /**
@@ -53,7 +63,6 @@ export function instanceOfOauth2Provider(value: object): boolean {
     isInstance = isInstance && "name" in value;
     isInstance = isInstance && "displayName" in value;
     isInstance = isInstance && "issuer" in value;
-    isInstance = isInstance && "clientID" in value;
 
     return isInstance;
 }
@@ -71,7 +80,8 @@ export function Oauth2ProviderFromJSONTyped(json: any, ignoreDiscriminator: bool
         'name': json['name'],
         'displayName': json['displayName'],
         'issuer': json['issuer'],
-        'clientID': json['clientID'],
+        'clientID': !exists(json, 'clientID') ? undefined : json['clientID'],
+        'clientSecret': !exists(json, 'clientSecret') ? undefined : json['clientSecret'],
     };
 }
 
@@ -88,6 +98,7 @@ export function Oauth2ProviderToJSON(value?: Oauth2Provider | null): any {
         'displayName': value.displayName,
         'issuer': value.issuer,
         'clientID': value.clientID,
+        'clientSecret': value.clientSecret,
     };
 }
 
