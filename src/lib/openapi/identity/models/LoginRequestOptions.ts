@@ -30,34 +30,21 @@ export interface LoginRequestOptions {
      * @type {string}
      * @memberof LoginRequestOptions
      */
-    provider: LoginRequestOptionsProviderEnum;
+    provider?: string | null;
     /**
-     * The query string supplied to the authorization endpoint.
+     * The state string supplied by the authorization endpoint.
      * @type {string}
      * @memberof LoginRequestOptions
      */
-    query: string;
+    state: string;
 }
-
-
-/**
- * @export
- */
-export const LoginRequestOptionsProviderEnum = {
-    Dynamic: 'dynamic',
-    Google: 'google',
-    Microsoft: 'microsoft'
-} as const;
-export type LoginRequestOptionsProviderEnum = typeof LoginRequestOptionsProviderEnum[keyof typeof LoginRequestOptionsProviderEnum];
-
 
 /**
  * Check if a given object implements the LoginRequestOptions interface.
  */
 export function instanceOfLoginRequestOptions(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "provider" in value;
-    isInstance = isInstance && "query" in value;
+    isInstance = isInstance && "state" in value;
 
     return isInstance;
 }
@@ -73,8 +60,8 @@ export function LoginRequestOptionsFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'email': !exists(json, 'email') ? undefined : json['email'],
-        'provider': json['provider'],
-        'query': json['query'],
+        'provider': !exists(json, 'provider') ? undefined : json['provider'],
+        'state': json['state'],
     };
 }
 
@@ -89,7 +76,7 @@ export function LoginRequestOptionsToJSON(value?: LoginRequestOptions | null): a
         
         'email': value.email,
         'provider': value.provider,
-        'query': value.query,
+        'state': value.state,
     };
 }
 

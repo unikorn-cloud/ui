@@ -5,6 +5,8 @@ models/AuthMethod.ts
 models/Claim.ts
 models/CodeChallengeMethod.ts
 models/GrantType.ts
+models/Group.ts
+models/Groups.ts
 models/JsonWebKey.ts
 models/JsonWebKeySet.ts
 models/LoginRequestOptions.ts
@@ -15,9 +17,11 @@ models/OpenidConfiguration.ts
 models/Organization.ts
 models/Organizations.ts
 models/ResponseType.ts
+models/RoleList.ts
 models/Scope.ts
 models/SigningAlgorithm.ts
 models/Token.ts
 models/TokenRequestOptions.ts
+models/UserList.ts
 models/index.ts
 runtime.ts
