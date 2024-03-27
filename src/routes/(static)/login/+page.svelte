@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 
-	import logo from '/img/logo.svg?raw';
+	import Logo from '$lib/logos/Logo.svelte';
 
 	// POST address from the authention server.
 	let callback: string;
@@ -44,8 +44,7 @@
 
 <div class="w-screen h-screen lg:w-96 p-8 flex flex-col gap-8 rounded bg-surface-100-800-token">
 	<header id="login-header">
-		<!-- eslint-disable svelte/no-at-html-tags -->
-		{@html logo}
+		<Logo />
 	</header>
 	<main>
 		<form id="login_form" class="flex flex-col gap-8" method="post" action={callback}>

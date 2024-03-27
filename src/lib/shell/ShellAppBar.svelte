@@ -17,6 +17,8 @@
 		drawerStore.open(settings);
 	}
 
+	import Logo from '$lib/logos/Logo.svelte';
+
 	import { profile, token, logout } from '$lib/credentials';
 	import { identityClient, error } from '$lib/clients';
 	import * as Models from '$lib/openapi/identity/models';
@@ -62,7 +64,7 @@
 
 			<!-- Logo, crop to just the icon in responsive mode -->
 			<div class="w-8 lg:w-auto overflow-hidden">
-				<img src="/img/logo.svg" alt="Logo" onload="SVGInject(this)" class="h-8 w-auto" />
+				<Logo class="h-8 w-auto" />
 			</div>
 		</div>
 	</svelte:fragment>
