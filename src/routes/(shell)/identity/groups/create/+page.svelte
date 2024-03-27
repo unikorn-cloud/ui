@@ -32,9 +32,9 @@
 
 	let group: string;
 
-	let users: string;
+	let users: string[];
 
-	let roles: string;
+	let roles: string[];
 
 	organizationStore.subscribe((value: string) => (organization = value));
 
@@ -62,17 +62,13 @@
 	);
 
 	function complete() {
-		const userList = users.split(' ');
-
-		const roleList = roles.split(' ');
-
 		const parameters = {
 			organization: organization,
 			group: {
 				id: 'ignored',
 				name: group,
-				roles: roleList,
-				users: userList
+				roles: roles,
+				users: users
 			}
 		};
 
@@ -98,11 +94,11 @@
 
 			<h4 class="h4">Add Roles</h4>
 			<label for="roles"> Select the roles members of this group have.</label>
-			<InputChip name="roles" input={roles} whitelist={['admin', 'user', 'reader']} />
+			<InputChip name="roles" bind:value={roles} whitelist={['admin', 'user', 'reader']} />
 
 			<h4 class="h4">Add Users</h4>
 			<label for="users"> Select users that are members of this group. </label>
-			<InputChip name="users" input={users} />
+			<InputChip name="users" bind:value={users} />
 		</Step>
 		<Step>
 			<svelte:fragment slot="header">Confirmation</svelte:fragment>

@@ -35,4 +35,5 @@ images-kind-load: images
 .PHONY: lint
 lint:
 	npm run lint
+	npm run check
 	helm lint --strict charts/ui
