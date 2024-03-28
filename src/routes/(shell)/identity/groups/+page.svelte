@@ -63,6 +63,7 @@
 
 				Clients.identityClient(toastStore, at)
 					.apiV1OrganizationsOrganizationGroupsGroupidDelete(parameters)
+					.then(() => update(at, organization))
 					.catch((e: Error) => Clients.error(e));
 			}
 		};
@@ -80,7 +81,7 @@
 	{#each groups || [] as resource}
 		<article class="bg-surface-50-900-token rounded-lg p-4 flex items-center justify-between gap-8">
 			<header class="flex items-center gap-4">
-				<h6 class="h6">{resource.name}</h6>
+				<a class="h6" href="/identity/groups/view/{resource.id}">{resource.name}</a>
 			</header>
 
 			<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>

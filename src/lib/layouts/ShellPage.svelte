@@ -11,5 +11,8 @@
 		<p>{settings.description}</p>
 	</header>
 
-	<slot />
+	<main class="flex flex-col gap-4">
+		<slot />
+		<main />
+	</main>
 </div>

@@ -34,19 +34,15 @@
 </script>
 
 <ShellPage {settings}>
-	<section class="flex flex-col gap-4">
-		{#each organizations || [] as resource}
-			<article
-				class="bg-surface-50-900-token rounded-lg p-4 flex items-center justify-between gap-8"
-			>
-				<header class="flex items-center gap-4">
-					<h6 class="h6">{resource.name}</h6>
-					{#if resource.providerName}
-						<iconify-icon icon={providerIcon(resource.providerName)} />
-						{resource.domain}
-					{/if}
-				</header>
-			</article>
-		{/each}
-	</section>
+	{#each organizations || [] as resource}
+		<article class="bg-surface-50-900-token rounded-lg p-4 flex items-center justify-between gap-8">
+			<header class="flex items-center gap-4">
+				<h6 class="h6">{resource.name}</h6>
+				{#if resource.providerName}
+					<iconify-icon icon={providerIcon(resource.providerName)} />
+					{resource.domain}
+				{/if}
+			</header>
+		</article>
+	{/each}
 </ShellPage>

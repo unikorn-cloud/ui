@@ -30,37 +30,35 @@
 </script>
 
 <ShellPage {settings}>
-	<section class="flex flex-col gap-4">
-		{#each applications || [] as application}
-			<article class="bg-surface-50-900-token rounded-lg p-8 flex flex-col gap-8">
-				<!-- Application metadata -->
-				<header class="flex gap-8">
-					<!-- Application logo -->
-					<div class="w-16">
-						<!-- eslint-disable svelte/no-at-html-tags -->
-						{@html atob(application.icon)}
+	{#each applications || [] as application}
+		<article class="bg-surface-50-900-token rounded-lg p-8 flex flex-col gap-8">
+			<!-- Application metadata -->
+			<header class="flex gap-8">
+				<!-- Application logo -->
+				<div class="w-16">
+					<!-- eslint-disable svelte/no-at-html-tags -->
+					{@html atob(application.icon)}
+				</div>
+
+				<!-- Application title -->
+				<div class="flex flex-col gap-2">
+					<div class="flex gap-2">
+						{#each application.tags || [] as tag}
+							<div class="badge variant-soft">{tag}</div>
+						{/each}
 					</div>
 
-					<!-- Application title -->
-					<div class="flex flex-col gap-2">
-						<div class="flex gap-2">
-							{#each application.tags || [] as tag}
-								<div class="badge variant-soft">{tag}</div>
-							{/each}
-						</div>
+					<h4 class="h4">{application.humanReadableName}</h4>
+				</div>
+			</header>
 
-						<h4 class="h4">{application.humanReadableName}</h4>
-					</div>
-				</header>
-
-				<!-- Application details -->
-				<main>
-					<h6 class="h6">Description</h6>
-					<p>{application.description}</p>
-				</main>
-			</article>
-		{/each}
-	</section>
+			<!-- Application details -->
+			<main>
+				<h6 class="h6">Description</h6>
+				<p>{application.description}</p>
+			</main>
+		</article>
+	{/each}
 </ShellPage>
 
 <style>

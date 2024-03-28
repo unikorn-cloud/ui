@@ -32,9 +32,9 @@
 
 	let group: string;
 
-	let users: string[];
+	let users: string[] = [];
 
-	let roles: string[];
+	let roles: string[] = [];
 
 	organizationStore.subscribe((value: string) => (organization = value));
 
@@ -74,7 +74,7 @@
 
 		Clients.identityClient(toastStore, at)
 			.apiV1OrganizationsOrganizationGroupsPost(parameters)
-			.then(() => window.location.assign('/identity/projects'))
+			.then(() => window.location.assign('/identity/groups'))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -94,7 +94,11 @@
 
 			<h4 class="h4">Add Roles</h4>
 			<label for="roles"> Select the roles members of this group have.</label>
-			<InputChip name="roles" bind:value={roles} whitelist={['admin', 'user', 'reader']} />
+			<select id="roles" class="select" multiple bind:value={roles}>
+				<option value="admin">Administrator</option>
+				<option value="user">User</option>
+				<option value="reader">Reader</option>
+			</select>
 
 			<h4 class="h4">Add Users</h4>
 			<label for="users"> Select users that are members of this group. </label>
