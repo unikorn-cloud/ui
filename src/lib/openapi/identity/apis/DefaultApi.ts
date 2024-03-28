@@ -61,6 +61,11 @@ export interface ApiV1OrganizationsOrganizationGroupsGroupidDeleteRequest {
     groupid: string;
 }
 
+export interface ApiV1OrganizationsOrganizationGroupsGroupidGetRequest {
+    organization: string;
+    groupid: string;
+}
+
 export interface ApiV1OrganizationsOrganizationGroupsGroupidPutRequest {
     organization: string;
     groupid: string;
@@ -200,6 +205,45 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationGroupsGroupidDelete(requestParameters: ApiV1OrganizationsOrganizationGroupsGroupidDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.apiV1OrganizationsOrganizationGroupsGroupidDeleteRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Allows a single group to be polled.
+     */
+    async apiV1OrganizationsOrganizationGroupsGroupidGetRaw(requestParameters: ApiV1OrganizationsOrganizationGroupsGroupidGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Group>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationGroupsGroupidGet.');
+        }
+
+        if (requestParameters.groupid === null || requestParameters.groupid === undefined) {
+            throw new runtime.RequiredError('groupid','Required parameter requestParameters.groupid was null or undefined when calling apiV1OrganizationsOrganizationGroupsGroupidGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organization}/groups/{groupid}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"groupid"}}`, encodeURIComponent(String(requestParameters.groupid))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GroupFromJSON(jsonValue));
+    }
+
+    /**
+     * Allows a single group to be polled.
+     */
+    async apiV1OrganizationsOrganizationGroupsGroupidGet(requestParameters: ApiV1OrganizationsOrganizationGroupsGroupidGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Group> {
+        const response = await this.apiV1OrganizationsOrganizationGroupsGroupidGetRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**

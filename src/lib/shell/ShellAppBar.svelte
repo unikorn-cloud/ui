@@ -71,11 +71,16 @@
 
 	<svelte:fragment slot="trail">
 		<!-- Oragnization -->
-		<select class="select" bind:value={organization}>
-			{#each organizations || [] as organization}
-				<option value={organization.name}>{organization.name}</option>
-			{/each}
-		</select>
+		<div class="input-group input-group-divider grid-cols-[1fr_auto]">
+			<div class="input-group-shim">
+				<iconify-icon icon="mdi:office-building-outline" />
+			</div>
+			<select bind:value={organization}>
+				{#each organizations || [] as organization}
+					<option value={organization.name}>{organization.name}</option>
+				{/each}
+			</select>
+		</div>
 
 		<!-- User drop down -->
 		<button class="btn p-0" use:popup={{ event: 'click', target: 'user' }}>
