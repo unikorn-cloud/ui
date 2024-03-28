@@ -60,7 +60,7 @@
 
 	function complete() {
 		const parameters = {
-			organizationName: '',
+			organizationName: organization,
 			projectSpec: {
 				name: project
 			}
