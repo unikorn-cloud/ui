@@ -1,5 +1,9 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './Acl';
+export * from './AclPermissions';
+export * from './AclScope';
+export * from './AclScopes';
 export * from './AuthMethod';
 export * from './Claim';
 export * from './CodeChallengeMethod';

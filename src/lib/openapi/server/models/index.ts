@@ -14,6 +14,7 @@ export * from './ClusterManagerSpec';
 export * from './ClusterManagers';
 export * from './Flavor';
 export * from './Flavors';
+export * from './GroupIDs';
 export * from './Image';
 export * from './ImageVersions';
 export * from './Images';

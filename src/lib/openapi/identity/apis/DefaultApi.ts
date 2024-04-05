@@ -15,6 +15,7 @@
 
 import * as runtime from '../runtime';
 import type {
+  Acl,
   Group,
   Groups,
   JsonWebKeySet,
@@ -24,10 +25,13 @@ import type {
   OpenidConfiguration,
   Organization,
   Organizations,
+  RoleList,
   Token,
   TokenRequestOptions,
 } from '../models/index';
 import {
+    AclFromJSON,
+    AclToJSON,
     GroupFromJSON,
     GroupToJSON,
     GroupsFromJSON,
@@ -46,11 +50,17 @@ import {
     OrganizationToJSON,
     OrganizationsFromJSON,
     OrganizationsToJSON,
+    RoleListFromJSON,
+    RoleListToJSON,
     TokenFromJSON,
     TokenToJSON,
     TokenRequestOptionsFromJSON,
     TokenRequestOptionsToJSON,
 } from '../models/index';
+
+export interface ApiV1OrganizationsOrganizationAclGetRequest {
+    organization: string;
+}
 
 export interface ApiV1OrganizationsOrganizationGroupsGetRequest {
     organization: string;
@@ -84,6 +94,10 @@ export interface ApiV1OrganizationsOrganizationOauth2ProvidersGetRequest {
 export interface ApiV1OrganizationsOrganizationPutRequest {
     organization: string;
     organization2: Organization;
+}
+
+export interface ApiV1OrganizationsOrganizationRolesGetRequest {
+    organization: string;
 }
 
 export interface ApiV1OrganizationsPostRequest {
@@ -131,6 +145,41 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Organizations> {
         const response = await this.apiV1OrganizationsGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Returns access control properties for the user.
+     */
+    async apiV1OrganizationsOrganizationAclGetRaw(requestParameters: ApiV1OrganizationsOrganizationAclGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Acl>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationAclGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organization}/acl`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AclFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns access control properties for the user.
+     */
+    async apiV1OrganizationsOrganizationAclGet(requestParameters: ApiV1OrganizationsOrganizationAclGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Acl> {
+        const response = await this.apiV1OrganizationsOrganizationAclGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -406,6 +455,41 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationPut(requestParameters: ApiV1OrganizationsOrganizationPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.apiV1OrganizationsOrganizationPutRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Returns roles that can be used by the organization.
+     */
+    async apiV1OrganizationsOrganizationRolesGetRaw(requestParameters: ApiV1OrganizationsOrganizationRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RoleList>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationRolesGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organization}/roles`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => RoleListFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns roles that can be used by the organization.
+     */
+    async apiV1OrganizationsOrganizationRolesGet(requestParameters: ApiV1OrganizationsOrganizationRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RoleList> {
+        const response = await this.apiV1OrganizationsOrganizationRolesGetRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**

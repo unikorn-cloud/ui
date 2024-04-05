@@ -15,6 +15,7 @@ models/ClusterManagerSpec.ts
 models/ClusterManagers.ts
 models/Flavor.ts
 models/Flavors.ts
+models/GroupIDs.ts
 models/Image.ts
 models/ImageVersions.ts
 models/Images.ts

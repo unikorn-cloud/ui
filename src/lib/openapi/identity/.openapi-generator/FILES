@@ -1,6 +1,10 @@
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
+models/Acl.ts
+models/AclPermissions.ts
+models/AclScope.ts
+models/AclScopes.ts
 models/AuthMethod.ts
 models/Claim.ts
 models/CodeChallengeMethod.ts

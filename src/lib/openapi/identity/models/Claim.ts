@@ -22,7 +22,7 @@ export const Claim = {
     Email: 'email',
     EmailVerified: 'email_verified',
     Exp: 'exp',
-    FamilityName: 'famility_name',
+    FamilyName: 'family_name',
     GivenName: 'given_name',
     Iat: 'iat',
     Iss: 'iss',
