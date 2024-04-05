@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import MD5 from 'crypto-js/md5';
 
 	import { AppBar, Avatar, LightSwitch, popup } from '@skeletonlabs/skeleton';
@@ -35,6 +36,13 @@
 	let organizations: Models.Organizations;
 	let organization: string;
 
+	let currentOrganization: string;
+
+	// Grab the organization out of session storage first.
+	organizationStore.subscribe((o: string) => {
+		currentOrganization = o;
+	});
+
 	token.subscribe((at: string) => {
 		if (!at) return;
 
@@ -42,12 +50,16 @@
 			.apiV1OrganizationsGet()
 			.then((v: Models.Organizations) => {
 				organizations = v;
-				organization = organizations[0].name;
+
+				// Try reuse the current organization if we can.
+				const existingOrganization = v.find((o) => o.name == currentOrganization);
+
+				organization = existingOrganization ? currentOrganization : organizations[0].name;
 			})
 			.catch((e: Error) => error(e));
 	});
 
-	$: organizationStore.set(organization);
+	$: if (organization) organizationStore.set(organization);
 
 	function doLogout(): void {
 		logout();

@@ -1,3 +1,3 @@
-import { writable } from 'svelte/store';
+import { sessionstore } from '$lib/sessionstore';
 
-export const organizationStore = writable('organization');
+export const organizationStore = sessionstore('organization');
