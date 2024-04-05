@@ -1,19 +1,50 @@
-<div class="p-8 w-full lg:max-w-[80em] mx-auto flex flex-col gap-16">
-	<header class="flex flex-col gap-4">
-		<h1 class="h1">Unikorn Dashboard</h1>
-		<p>Federated Platform-as-a-Service</p>
-	</header>
+<script lang="ts">
+	/* Authentication */
+	import { login } from '$lib/login';
 
-	<h2 class="h2">Let's Get Started!</h2>
+	login();
 
-	<p>
-		Begin by <a class="anchor" href="/identity/projects/create">creating a project</a> that will contain
-		all your resources, and allow access control.
-	</p>
+	/* Required for OpenTelemetry */
+	import { Resource } from '@opentelemetry/resources';
+	import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+	import { BasicTracerProvider } from '@opentelemetry/sdk-trace-base';
 
-	<p>
-		Then <a class="anchor" href="/infrastructure/clusters/create"
-			>create Kubernetes infrastructure</a
-		> on-demand to run your workloads.
-	</p>
-</div>
+	const provider = new BasicTracerProvider({
+		resource: new Resource({
+			[SemanticResourceAttributes.SERVICE_NAME]: 'unikorn-ui'
+		})
+	});
+	provider.register();
+
+	/* Required for drawers and modals */
+	import { initializeStores, Modal } from '@skeletonlabs/skeleton';
+	initializeStores();
+
+	/* Required for toasts */
+	import { Toast } from '@skeletonlabs/skeleton';
+
+	/* Required for popups */
+	import { storePopup } from '@skeletonlabs/skeleton';
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+
+	/* Shell components */
+	import { AppShell } from '@skeletonlabs/skeleton';
+	import ShellAppBar from '$lib/shell/ShellAppBar.svelte';
+	import ShellSideBar from '$lib/shell/ShellSideBar.svelte';
+	import ShellDrawer from '$lib/shell/ShellDrawer.svelte';
+</script>
+
+<Modal />
+<Toast />
+<ShellDrawer />
+
+<AppShell class="h-screen">
+	<svelte:fragment slot="header">
+		<ShellAppBar />
+	</svelte:fragment>
+
+	<svelte:fragment slot="sidebarLeft">
+		<ShellSideBar class="hidden lg:grid" />
+	</svelte:fragment>
+</AppShell>

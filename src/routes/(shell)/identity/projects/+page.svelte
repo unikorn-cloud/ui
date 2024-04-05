@@ -8,6 +8,8 @@
 		description: 'Manage your resources.'
 	};
 
+	import { onDestroy } from 'svelte';
+
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
@@ -24,15 +26,24 @@
 
 	let at: string;
 
-	token.subscribe((token: string) => (at = token));
-
 	let organization: string;
 
-	organizationStore.subscribe((value: string) => (organization = value));
+	token.subscribe((token: string) => {
+		at = token;
+		update();
+
+		const ticker = setInterval(update, 5000);
+		onDestroy(() => clearInterval(ticker));
+	});
+
+	organizationStore.subscribe((value: string) => {
+		organization = value;
+		update();
+	});
 
 	let resources: Models.Projects;
 
-	function update(at: string, organization: string): void {
+	function update(): void {
 		if (!at || !organization) return;
 
 		const parameters = {
@@ -44,8 +55,6 @@
 			.then((v: Models.Projects) => (resources = v))
 			.catch((e: Error) => error(e));
 	}
-
-	$: update(at, organization);
 
 	function remove(resource: Models.Project): void {
 		const modal: ModalSettings = {
