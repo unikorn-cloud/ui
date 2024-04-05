@@ -36,6 +36,8 @@
 
 	let roles: string[] = [];
 
+	let availableRoles: string[];
+
 	organizationStore.subscribe((value: string) => (organization = value));
 
 	token.subscribe((token: string) => (at = token));
@@ -51,15 +53,21 @@
 			.apiV1OrganizationsOrganizationGroupsGet(parameters)
 			.then((v: Models.Groups) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
+
+		Clients.identityClient(toastStore, at)
+			.apiV1OrganizationsOrganizationRolesGet(parameters)
+			.then((v: Models.RoleList) => (availableRoles = v))
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	$: update(at, organization);
 
 	/* Cluster name must be valid, and it must be unique */
-	$: step1Valid = Validation.unique(
-		group,
-		(groups || []).map((group) => group.name)
-	);
+	$: step1Valid =
+		Validation.unique(
+			group,
+			(groups || []).map((group) => group.name)
+		) && roles.length > 0;
 
 	function complete() {
 		const parameters = {
@@ -95,9 +103,9 @@
 			<h4 class="h4">Add Roles</h4>
 			<label for="roles"> Select the roles members of this group have.</label>
 			<select id="roles" class="select" multiple bind:value={roles}>
-				<option value="admin">Administrator</option>
-				<option value="user">User</option>
-				<option value="reader">Reader</option>
+				{#each availableRoles || [] as role}
+					<option value={role}>{role}</option>
+				{/each}
 			</select>
 
 			<h4 class="h4">Add Users</h4>

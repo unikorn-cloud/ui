@@ -19,12 +19,6 @@ import {
     KubernetesClusterWorkloadPoolsFromJSONTyped,
     KubernetesClusterWorkloadPoolsToJSON,
 } from './KubernetesClusterWorkloadPools';
-import type { ResourceMetadata } from './ResourceMetadata';
-import {
-    ResourceMetadataFromJSON,
-    ResourceMetadataFromJSONTyped,
-    ResourceMetadataToJSON,
-} from './ResourceMetadata';
 
 /**
  * Kubernetes cluster creation parameters.
@@ -32,12 +26,6 @@ import {
  * @interface KubernetesClusterSpec
  */
 export interface KubernetesClusterSpec {
-    /**
-     * 
-     * @type {ResourceMetadata}
-     * @memberof KubernetesClusterSpec
-     */
-    metadata?: ResourceMetadata;
     /**
      * Cluster name.
      * @type {string}
@@ -94,7 +82,6 @@ export function KubernetesClusterSpecFromJSONTyped(json: any, ignoreDiscriminato
     }
     return {
         
-        'metadata': !exists(json, 'metadata') ? undefined : ResourceMetadataFromJSON(json['metadata']),
         'name': json['name'],
         'region': json['region'],
         'clusterManager': !exists(json, 'clusterManager') ? undefined : json['clusterManager'],
@@ -112,7 +99,6 @@ export function KubernetesClusterSpecToJSON(value?: KubernetesClusterSpec | null
     }
     return {
         
-        'metadata': ResourceMetadataToJSON(value.metadata),
         'name': value.name,
         'region': value.region,
         'clusterManager': value.clusterManager,

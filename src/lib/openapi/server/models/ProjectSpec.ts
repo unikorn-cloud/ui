@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ResourceMetadata } from './ResourceMetadata';
+import type { GroupIDs } from './GroupIDs';
 import {
-    ResourceMetadataFromJSON,
-    ResourceMetadataFromJSONTyped,
-    ResourceMetadataToJSON,
-} from './ResourceMetadata';
+    GroupIDsFromJSON,
+    GroupIDsFromJSONTyped,
+    GroupIDsToJSON,
+} from './GroupIDs';
 
 /**
  * A project.
@@ -28,16 +28,16 @@ import {
 export interface ProjectSpec {
     /**
      * 
-     * @type {ResourceMetadata}
-     * @memberof ProjectSpec
-     */
-    metadata?: ResourceMetadata;
-    /**
-     * 
      * @type {string}
      * @memberof ProjectSpec
      */
     name: string;
+    /**
+     * 
+     * @type {GroupIDs}
+     * @memberof ProjectSpec
+     */
+    groupIDs?: GroupIDs;
 }
 
 /**
@@ -60,8 +60,8 @@ export function ProjectSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean
     }
     return {
         
-        'metadata': !exists(json, 'metadata') ? undefined : ResourceMetadataFromJSON(json['metadata']),
         'name': json['name'],
+        'groupIDs': !exists(json, 'groupIDs') ? undefined : GroupIDsFromJSON(json['groupIDs']),
     };
 }
 
@@ -74,8 +74,8 @@ export function ProjectSpecToJSON(value?: ProjectSpec | null): any {
     }
     return {
         
-        'metadata': ResourceMetadataToJSON(value.metadata),
         'name': value.name,
+        'groupIDs': GroupIDsToJSON(value.groupIDs),
     };
 }
 

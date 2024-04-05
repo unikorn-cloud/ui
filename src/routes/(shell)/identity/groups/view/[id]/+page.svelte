@@ -31,6 +31,8 @@
 
 	let group: Models.Group;
 
+	let availableRoles: string[];
+
 	function update(at: string, organization: string) {
 		if (!at || !organization) return;
 
@@ -42,6 +44,11 @@
 		Clients.identityClient(toastStore, at)
 			.apiV1OrganizationsOrganizationGroupsGroupidGet(parameters)
 			.then((v: Models.Group) => (group = v))
+			.catch((e: Error) => Clients.error(e));
+
+		Clients.identityClient(toastStore, at)
+			.apiV1OrganizationsOrganizationRolesGet(parameters)
+			.then((v: Models.RoleList) => (availableRoles = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -61,9 +68,9 @@
 		<label class="label">
 			<span>Roles for users in the group.</span>
 			<select class="select" multiple bind:value={group.roles}>
-				<option value="admin">Administrator</option>
-				<option value="user">User</option>
-				<option value="reader">Reader</option>
+				{#each availableRoles || [] as role}
+					<option value={role}>{role}</option>
+				{/each}
 			</select>
 		</label>
 
