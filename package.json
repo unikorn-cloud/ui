@@ -14,7 +14,7 @@
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
 		"openapi": "openapi-generator-cli",
-		"openapi:identity": "openapi-generator-cli generate -g typescript-fetch --generate-alias-as-model --global-property skipFormModel=false -i https://raw.githubusercontent.com/unikorn-cloud/identity/main/pkg/openapi/server.spec.yaml -o src/lib/openapi/identity",
+		"openapi:identity": "openapi-generator-cli generate -g typescript-fetch --generate-alias-as-model --global-property skipFormModel=false -i https://raw.githubusercontent.com/unikorn-cloud/identity/main/openapi/server.spec.yaml -o src/lib/openapi/identity",
 		"openapi:server": "openapi-generator-cli generate -g typescript-fetch --generate-alias-as-model -i https://raw.githubusercontent.com/unikorn-cloud/unikorn/main/pkg/server/openapi/server.spec.yaml -o src/lib/openapi/server"
 	},
 	"devDependencies": {

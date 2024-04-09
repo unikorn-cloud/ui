@@ -10,6 +10,7 @@ models/Claim.ts
 models/CodeChallengeMethod.ts
 models/GrantType.ts
 models/Group.ts
+models/GroupIDs.ts
 models/Groups.ts
 models/JsonWebKey.ts
 models/JsonWebKeySet.ts
@@ -20,6 +21,10 @@ models/Oauth2Providers.ts
 models/OpenidConfiguration.ts
 models/Organization.ts
 models/Organizations.ts
+models/Project.ts
+models/ProjectMetadata.ts
+models/ProjectSpec.ts
+models/Projects.ts
 models/ResponseType.ts
 models/RoleList.ts
 models/Scope.ts

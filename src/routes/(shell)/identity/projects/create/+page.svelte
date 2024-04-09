@@ -19,8 +19,7 @@
 	/* Client setup */
 	import * as Clients from '$lib/clients';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/server/models';
-	import * as IdentityModels from '$lib/openapi/identity/models';
+	import * as Models from '$lib/openapi/identity/models';
 
 	/* Input vaildation */
 	import * as Validation from '$lib/validation';
@@ -32,7 +31,7 @@
 
 	let organization: string;
 
-	let groups: IdentityModels.Groups;
+	let groups: Models.Groups;
 	let groupIDs: string[] = [];
 
 	$: console.log(groupIDs);
@@ -50,11 +49,11 @@
 
 		/* Get top-level resources required for the first step */
 		const parameters = {
-			organizationName: organization
+			organization: organization
 		};
 
-		Clients.client(toastStore, at)
-			.apiV1OrganizationsOrganizationNameProjectsGet(parameters)
+		Clients.identityClient(toastStore, at)
+			.apiV1OrganizationsOrganizationProjectsGet(parameters)
 			.then((v: Models.Projects) => (projects = v))
 			.catch((e: Error) => Clients.error(e));
 
@@ -64,7 +63,7 @@
 
 		Clients.identityClient(toastStore, at)
 			.apiV1OrganizationsOrganizationGroupsGet(groupsParameters)
-			.then((v: IdentityModels.Groups) => (groups = v))
+			.then((v: Models.Groups) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -75,15 +74,15 @@
 
 	function complete() {
 		const parameters = {
-			organizationName: organization,
+			organization: organization,
 			projectSpec: {
 				name: project,
 				groupIDs: groupIDs
 			}
 		};
 
-		Clients.client(toastStore, at)
-			.apiV1OrganizationsOrganizationNameProjectsPost(parameters)
+		Clients.identityClient(toastStore, at)
+			.apiV1OrganizationsOrganizationProjectsPost(parameters)
 			.then(() => window.location.assign('/identity/projects'))
 			.catch((e: Error) => Clients.error(e));
 	}

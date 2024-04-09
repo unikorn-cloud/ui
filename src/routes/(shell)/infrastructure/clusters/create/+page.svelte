@@ -17,9 +17,10 @@
 	import { organizationStore } from '$lib/stores';
 
 	/* Client setup */
-	import { client, error } from '$lib/clients';
+	import * as Clients from '$lib/clients';
 	import { token } from '$lib/credentials';
 	import * as Models from '$lib/openapi/server/models';
+	import * as IdentityModels from '$lib/openapi/identity/models';
 
 	/* Input vaildation */
 	import * as Validation from '$lib/validation';
@@ -31,7 +32,7 @@
 	let regions: Models.Regions;
 
 	let project: string;
-	let projects: Models.Projects;
+	let projects: IdentityModels.Projects;
 
 	let clustermanager: string = 'default';
 	let clustermanagers: Models.ClusterManagers;
@@ -62,7 +63,7 @@
 
 		/* Get top-level resources required for the first step */
 		/* TODO: parallelize with Promise.all */
-		client(toastStore, at)
+		Clients.client(toastStore, at)
 			.apiV1RegionsGet()
 			.then((v: Models.Regions) => {
 				if (v.length == 0) return;
@@ -70,21 +71,21 @@
 				regions = v;
 				region = regions[0].name;
 			})
-			.catch((e: Error) => error(e));
+			.catch((e: Error) => Clients.error(e));
 
 		const parameters = {
-			organizationName: organization
+			organization: organization
 		};
 
-		client(toastStore, at)
-			.apiV1OrganizationsOrganizationNameProjectsGet(parameters)
-			.then((v: Models.Projects) => {
+		Clients.identityClient(toastStore, at)
+			.apiV1OrganizationsOrganizationProjectsGet(parameters)
+			.then((v: IdentityModels.Projects) => {
 				if (v.length == 0) return;
 
 				projects = v;
 				project = projects[0].spec.name;
 			})
-			.catch((e: Error) => error(e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	function updateClusterManagers(at: string, project: string) {
@@ -94,7 +95,7 @@
 			organizationName: organization
 		};
 
-		client(toastStore, at)
+		Clients.client(toastStore, at)
 			.apiV1OrganizationsOrganizationNameClustermanagersGet(parameters)
 			.then((v: Models.ClusterManagers) => {
 				if (v.length == 0) return;
@@ -103,7 +104,7 @@
 				clustermanagers = v.filter((x) => x.metadata.project == project);
 				clustermanager = clustermanagers[0].spec.name;
 			})
-			.catch((e: Error) => error(e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	$: updateClusterManagers(at, project);
@@ -116,14 +117,14 @@
 			organizationName: organization
 		};
 
-		client(toastStore, at)
+		Clients.client(toastStore, at)
 			.apiV1OrganizationsOrganizationNameClustersGet(parameters)
 			.then((v: Models.KubernetesClusters) => {
 				if (v.length == 0) return;
 
 				clusters = v;
 			})
-			.catch((e: Error) => error(e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	$: updateClusters(at, clustermanager);
@@ -145,10 +146,10 @@
 			regionName: region
 		};
 
-		client(toastStore, at)
+		Clients.client(toastStore, at)
 			.apiV1RegionsRegionNameImagesGet(parameters)
 			.then((v: Models.Images) => (images = v))
-			.catch((e: Error) => error(e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	function updateFlavors(at: string, region: string): void {
@@ -158,10 +159,10 @@
 			regionName: region
 		};
 
-		client(toastStore, at)
+		Clients.client(toastStore, at)
 			.apiV1RegionsRegionNameFlavorsGet(parameters)
 			.then((v: Models.Flavors) => (flavors = v))
-			.catch((e: Error) => error(e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	$: updateImages(at, region);
@@ -234,10 +235,10 @@
 			}
 		};
 
-		client(toastStore, at)
+		Clients.client(toastStore, at)
 			.apiV1OrganizationsOrganizationNameProjectsProjectNameClustersPost(parameters)
 			.then(() => window.location.assign('/infrastructure/clusters'))
-			.catch((e: Error) => error(e));
+			.catch((e: Error) => Clients.error(e));
 	}
 </script>
 
