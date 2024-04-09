@@ -15,7 +15,6 @@ models/ClusterManagerSpec.ts
 models/ClusterManagers.ts
 models/Flavor.ts
 models/Flavors.ts
-models/GroupIDs.ts
 models/Image.ts
 models/ImageVersions.ts
 models/Images.ts
@@ -30,10 +29,6 @@ models/KubernetesClusterWorkloadPools.ts
 models/KubernetesClusters.ts
 models/MachinePool.ts
 models/Oauth2Error.ts
-models/Project.ts
-models/ProjectMetadata.ts
-models/ProjectSpec.ts
-models/Projects.ts
 models/Region.ts
 models/Regions.ts
 models/ResourceMetadata.ts

@@ -20,9 +20,9 @@
 	import { organizationStore } from '$lib/stores';
 
 	/* Client setup */
-	import { client, error } from '$lib/clients';
+	import * as Clients from '$lib/clients';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/server/models';
+	import * as Models from '$lib/openapi/identity/models';
 
 	let at: string;
 
@@ -47,13 +47,13 @@
 		if (!at || !organization) return;
 
 		const parameters = {
-			organizationName: organization
+			organization: organization
 		};
 
-		client(toastStore, at)
-			.apiV1OrganizationsOrganizationNameProjectsGet(parameters)
+		Clients.identityClient(toastStore, at)
+			.apiV1OrganizationsOrganizationProjectsGet(parameters)
 			.then((v: Models.Projects) => (resources = v))
-			.catch((e: Error) => error(e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	function remove(resource: Models.Project): void {
@@ -65,13 +65,13 @@
 				if (!ok) return;
 
 				const parameters = {
-					organizationName: organization,
-					projectName: resource.spec.name
+					organization: organization,
+					project: resource.spec.name
 				};
 
-				client(toastStore, at)
-					.apiV1OrganizationsOrganizationNameProjectsProjectNameDelete(parameters)
-					.catch((e: Error) => error(e));
+				Clients.identityClient(toastStore, at)
+					.apiV1OrganizationsOrganizationProjectsProjectDelete(parameters)
+					.catch((e: Error) => Clients.error(e));
 			}
 		};
 
