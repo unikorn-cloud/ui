@@ -24,13 +24,21 @@
 	import { identityClient, error } from '$lib/clients';
 	import * as Models from '$lib/openapi/identity/models';
 
-	let emailAddress: string;
+	let initials: string;
+	let picture: string;
 
 	profile.subscribe((value: string) => {
 		if (!value) return;
 
 		const claims = JSON.parse(value);
-		emailAddress = claims.email;
+
+		const givenName = claims.given_name || '?';
+		const familyName = claims.family_name || '?';
+
+		initials = givenName[0] + familyName[0];
+		picture = claims.picture;
+
+		console.log(initials);
 	});
 
 	let organizations: Models.Organizations;
@@ -96,7 +104,7 @@
 
 		<!-- User drop down -->
 		<button class="btn p-0" use:popup={{ event: 'click', target: 'user' }}>
-			<Avatar src="https://www.gravatar.com/avatar/{MD5(emailAddress)}" initials="SM" class="w-8" />
+			<Avatar src={picture} {initials} class="!w-10 !h-10" />
 		</button>
 
 		<div class="card p-4 w-60 shadow-x1" data-popup="user">
