@@ -16,6 +16,7 @@
 import * as runtime from '../runtime';
 import type {
   Acl,
+  AvailableGroups,
   Group,
   Groups,
   JsonWebKeySet,
@@ -34,6 +35,8 @@ import type {
 import {
     AclFromJSON,
     AclToJSON,
+    AvailableGroupsFromJSON,
+    AvailableGroupsToJSON,
     GroupFromJSON,
     GroupToJSON,
     GroupsFromJSON,
@@ -65,6 +68,10 @@ import {
 } from '../models/index';
 
 export interface ApiV1OrganizationsOrganizationAclGetRequest {
+    organization: string;
+}
+
+export interface ApiV1OrganizationsOrganizationAvailableGroupsGetRequest {
     organization: string;
 }
 
@@ -200,6 +207,41 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationAclGet(requestParameters: ApiV1OrganizationsOrganizationAclGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Acl> {
         const response = await this.apiV1OrganizationsOrganizationAclGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Returns a list of groups that are defined for the organization in the domain provider.
+     */
+    async apiV1OrganizationsOrganizationAvailableGroupsGetRaw(requestParameters: ApiV1OrganizationsOrganizationAvailableGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AvailableGroups>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationAvailableGroupsGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organization}/available-groups`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AvailableGroupsFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns a list of groups that are defined for the organization in the domain provider.
+     */
+    async apiV1OrganizationsOrganizationAvailableGroupsGet(requestParameters: ApiV1OrganizationsOrganizationAvailableGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AvailableGroups> {
+        const response = await this.apiV1OrganizationsOrganizationAvailableGroupsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

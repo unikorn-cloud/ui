@@ -6,6 +6,8 @@ models/AclPermissions.ts
 models/AclScope.ts
 models/AclScopes.ts
 models/AuthMethod.ts
+models/AvailableGroup.ts
+models/AvailableGroups.ts
 models/Claim.ts
 models/CodeChallengeMethod.ts
 models/GrantType.ts
@@ -25,6 +27,7 @@ models/Project.ts
 models/ProjectMetadata.ts
 models/ProjectSpec.ts
 models/Projects.ts
+models/ProviderGroupList.ts
 models/ResponseType.ts
 models/RoleList.ts
 models/Scope.ts

@@ -33,6 +33,8 @@
 
 	let availableRoles: string[];
 
+	let availableGroups: Models.AvailableGroups;
+
 	function update(at: string, organization: string) {
 		if (!at || !organization) return;
 
@@ -50,6 +52,11 @@
 			.apiV1OrganizationsOrganizationRolesGet(parameters)
 			.then((v: Models.RoleList) => (availableRoles = v))
 			.catch((e: Error) => Clients.error(e));
+
+		Clients.identityClient(toastStore, at)
+			.apiV1OrganizationsOrganizationAvailableGroupsGet(parameters)
+			.then((v: Models.AvailableGroups) => (availableGroups = v))
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	$: update(at, organization);
@@ -65,6 +72,7 @@
 	{#if group}
 		<h3 class="h3">{group.name}</h3>
 
+		<h4 class="h4">Roles</h4>
 		<label class="label">
 			<span>Roles for users in the group.</span>
 			<select class="select" multiple bind:value={group.roles}>
@@ -74,6 +82,19 @@
 			</select>
 		</label>
 
+		{#if availableGroups}
+			<h4 class="h4">Identity Provider Groups</h4>
+			<label for="groups">
+				Select any groups from your identity provider that will implicitly include users.
+			</label>
+			<select id="groups" class="select" multiple bind:value={group.providerGroups}>
+				{#each availableGroups || [] as group}
+					<option value={group.name}>{group.displayName || group.name}</option>
+				{/each}
+			</select>
+		{/if}
+
+		<h4 class="h4">Explicit Users</h4>
 		<label class="label" for="users"> Users that are part of the group. </label>
 		<InputChip name="users" bind:value={group.users} />
 
