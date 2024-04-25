@@ -63,6 +63,17 @@
 
 	function submit() {
 		if (!at || !organization) return;
+
+		const parameters = {
+			organization: organization,
+			groupid: group.id,
+			group: group
+		};
+
+		Clients.identityClient(toastStore, at)
+			.apiV1OrganizationsOrganizationGroupsGroupidPut(parameters)
+			.then(() => window.location.assign('/identity/groups'))
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	import { InputChip } from '@skeletonlabs/skeleton';
@@ -70,7 +81,7 @@
 
 <ShellPage {settings}>
 	{#if group}
-		<h3 class="h3">{group.name}</h3>
+		<h2 class="h2">{group.name}</h2>
 
 		<h4 class="h4">Roles</h4>
 		<label class="label">
