@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ProviderGroupList } from './ProviderGroupList';
+import {
+    ProviderGroupListFromJSON,
+    ProviderGroupListFromJSONTyped,
+    ProviderGroupListToJSON,
+} from './ProviderGroupList';
 import type { RoleList } from './RoleList';
 import {
     RoleListFromJSON,
@@ -56,6 +62,12 @@ export interface Group {
      * @memberof Group
      */
     roles: RoleList;
+    /**
+     * 
+     * @type {ProviderGroupList}
+     * @memberof Group
+     */
+    providerGroups?: ProviderGroupList;
 }
 
 /**
@@ -84,6 +96,7 @@ export function GroupFromJSONTyped(json: any, ignoreDiscriminator: boolean): Gro
         'name': json['name'],
         'users': !exists(json, 'users') ? undefined : UserListFromJSON(json['users']),
         'roles': RoleListFromJSON(json['roles']),
+        'providerGroups': !exists(json, 'providerGroups') ? undefined : ProviderGroupListFromJSON(json['providerGroups']),
     };
 }
 
@@ -100,6 +113,7 @@ export function GroupToJSON(value?: Group | null): any {
         'name': value.name,
         'users': UserListToJSON(value.users),
         'roles': RoleListToJSON(value.roles),
+        'providerGroups': ProviderGroupListToJSON(value.providerGroups),
     };
 }
 
