@@ -13,7 +13,8 @@
 				items: [
 					{ label: 'Organizations', href: '/identity/organizations' },
 					{ label: 'Groups', href: '/identity/groups' },
-					{ label: 'Projects', href: '/identity/projects' }
+					{ label: 'Projects', href: '/identity/projects' },
+					{ label: 'Tokens', href: '/identity/tokens' }
 				]
 			}
 		],

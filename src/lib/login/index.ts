@@ -6,7 +6,22 @@ import { token, profile } from '$lib/credentials';
 import Base64url from 'crypto-js/enc-base64url';
 import SHA256 from 'crypto-js/sha256';
 
+export enum LoginType {
+	// Normal login flow will set the credentials in the browser.
+	Normal = 'normal',
+	// PAT flow will return the credentials as a POST.
+	PAT = 'pat'
+}
+
+export interface Oauth2State {
+	type: LoginType;
+}
+
 export function login() {
+	loginWithType(LoginType.Normal);
+}
+
+export function loginWithType(loginType: LoginType) {
 	let claims: { email: string } | undefined;
 
 	// Get the ID token first, as we can use it, if it exists to aid login below...
@@ -21,7 +36,7 @@ export function login() {
 
 	token.subscribe(async (token) => {
 		/* When a token isn't set, and its on the browser, do authentication */
-		if (token || !browser) {
+		if (!browser || (loginType == LoginType.Normal && token)) {
 			return;
 		}
 
@@ -46,6 +61,10 @@ export function login() {
 		window.sessionStorage.setItem('oauth2_code_challenge_verifier', codeChallengeVerifier);
 		window.sessionStorage.setItem('oauth2_location', window.location.pathname);
 
+		const state: Oauth2State = {
+			type: loginType
+		};
+
 		// TODO: set a nonce
 		const query = new URLSearchParams({
 			response_type: 'code',
@@ -54,7 +73,8 @@ export function login() {
 			code_challenge_method: 'S256',
 			code_challenge: codeChallenge,
 			scope: 'openid email profile',
-			nonce: nonceHash
+			nonce: nonceHash,
+			state: JSON.stringify(state)
 		});
 
 		// Set the login hint if we can as that avoids the login prompt.
