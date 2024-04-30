@@ -37,8 +37,6 @@
 
 		initials = givenName[0] + familyName[0];
 		picture = claims.picture;
-
-		console.log(initials);
 	});
 
 	let organizations: Models.Organizations;

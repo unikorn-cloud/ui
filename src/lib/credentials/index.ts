@@ -7,6 +7,10 @@ export const token = sessionstore('token');
 // idToken is the user's idToken and contains OIDC information about them.
 export const profile = sessionstore('id_token');
 
+// pat is used to communicate a PAT from the oauth2 callback to the
+// client page.
+export const pat = sessionstore('pat');
+
 // This is called when the initial access token is acquired from the oauth
 // exchange.  It uses the token to rescope to a project, that's either selected
 // from persistent storage, and as a fallback, just selects the first one the
@@ -29,4 +33,13 @@ export function removeCredentials() {
 export function logout() {
 	profile.set(undefined);
 	token.set(undefined);
+}
+
+export function setPAT(patString: string) {
+	console.log(patString);
+	pat.set(patString);
+}
+
+export function unsetPAT() {
+	pat.set(undefined);
 }

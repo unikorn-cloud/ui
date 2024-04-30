@@ -12,7 +12,8 @@
 	import Base64url from 'crypto-js/enc-base64url';
 	import SHA256 from 'crypto-js/sha256';
 
-	import { setCredentials } from '$lib/credentials';
+	import { setCredentials, setPAT } from '$lib/credentials';
+	import * as Login from '$lib/login';
 
 	let error: string;
 	let description: string;
@@ -54,12 +55,17 @@
 			return;
 		}
 
-		const code = location.searchParams.get('code');
-		if (!code) {
+		if (!location.searchParams.has('state')) {
 			error = 'server_error';
-			description = 'authorization code not present';
+			description = 'state parameter not specified';
 			return;
 		}
+
+		const code = location.searchParams.get('code') || '';
+
+		const stateJSON = location.searchParams.get('state') || '';
+
+		const state: Login.Oauth2State = JSON.parse(stateJSON);
 
 		const discovery = await OIDC.discovery();
 
@@ -116,7 +122,11 @@
 			return;
 		}
 
-		await setCredentials(result.access_token, JSON.stringify(jwt.payload));
+		if (state.type == Login.LoginType.Normal) {
+			setCredentials(result.access_token, JSON.stringify(jwt.payload));
+		} else if (state.type == Login.LoginType.PAT) {
+			setPAT(JSON.stringify(result));
+		}
 
 		window.location.assign(window.sessionStorage.getItem('oauth2_location') || '/');
 	}
