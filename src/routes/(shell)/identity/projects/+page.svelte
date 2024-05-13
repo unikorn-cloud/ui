@@ -21,14 +21,15 @@
 
 	/* Client setup */
 	import * as Clients from '$lib/clients';
+	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Models from '$lib/openapi/identity/models';
 
-	let at: string;
+	let at: InternalToken;
 
 	let organization: string;
 
-	token.subscribe((token: string) => {
+	token.subscribe((token: InternalToken) => {
 		at = token;
 		update();
 

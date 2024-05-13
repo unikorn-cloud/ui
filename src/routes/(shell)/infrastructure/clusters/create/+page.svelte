@@ -18,6 +18,7 @@
 
 	/* Client setup */
 	import * as Clients from '$lib/clients';
+	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Models from '$lib/openapi/server/models';
 	import * as IdentityModels from '$lib/openapi/identity/models';
@@ -25,7 +26,7 @@
 	/* Input vaildation */
 	import * as Validation from '$lib/validation';
 
-	let at: string;
+	let at: InternalToken;
 
 	/* Variables that trigger reactive actions */
 	let region: string;
@@ -53,7 +54,7 @@
 		updateRegions();
 	});
 
-	token.subscribe((value: string) => {
+	token.subscribe((value: InternalToken) => {
 		at = value;
 		updateRegions();
 	});
@@ -88,7 +89,7 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function updateClusterManagers(at: string, project: string) {
+	function updateClusterManagers(at: InternalToken, project: string) {
 		if (!at || !project) return;
 
 		const parameters = {
@@ -110,7 +111,7 @@
 	$: updateClusterManagers(at, project);
 
 	/* Clusters are scoped to control planes, so update this when the CP does */
-	function updateClusters(at: string, clustermanager: string): void {
+	function updateClusters(at: InternalToken, clustermanager: string): void {
 		if (!at || !clustermanager) return;
 
 		const parameters = {
@@ -139,7 +140,7 @@
 		Validation.unique(cluster, Validation.namedResourceNames(clusters));
 
 	/* Once the region has been selected we can poll the images and other resources */
-	function updateImages(at: string, region: string): void {
+	function updateImages(at: InternalToken, region: string): void {
 		if (!at || !region) return;
 
 		const parameters = {
@@ -152,7 +153,7 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function updateFlavors(at: string, region: string): void {
+	function updateFlavors(at: InternalToken, region: string): void {
 		if (!at || !region) return;
 
 		const parameters = {
@@ -169,7 +170,7 @@
 	$: updateFlavors(at, region);
 
 	/* From the images, we can get a list of Kubernetes versions */
-	function updateVersions(at: string, images: Models.Images): void {
+	function updateVersions(at: InternalToken, images: Models.Images): void {
 		if (!at || !images) return;
 
 		versions = [

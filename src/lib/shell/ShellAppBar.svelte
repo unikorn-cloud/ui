@@ -20,23 +20,26 @@
 
 	import Logo from '$lib/logos/Logo.svelte';
 
+	import type { InternalToken } from '$lib/oauth2';
 	import { profile, token, logout } from '$lib/credentials';
 	import { identityClient, error } from '$lib/clients';
 	import * as Models from '$lib/openapi/identity/models';
+	import * as OIDC from '$lib/oidc';
 
 	let initials: string;
 	let picture: string;
 
-	profile.subscribe((value: string) => {
+	profile.subscribe((value: OIDC.IDToken) => {
 		if (!value) return;
 
-		const claims = JSON.parse(value);
-
-		const givenName = claims.given_name || '?';
-		const familyName = claims.family_name || '?';
+		const givenName = value.given_name || '?';
+		const familyName = value.family_name || '?';
 
 		initials = givenName[0] + familyName[0];
-		picture = claims.picture;
+
+		if (value.picture) {
+			picture = value.picture;
+		}
 	});
 
 	let organizations: Models.Organizations;
@@ -49,7 +52,7 @@
 		currentOrganization = o;
 	});
 
-	token.subscribe((at: string) => {
+	token.subscribe((at: InternalToken) => {
 		if (!at) return;
 
 		identityClient(toastStore, at)

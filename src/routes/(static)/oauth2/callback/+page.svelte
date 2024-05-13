@@ -6,13 +6,14 @@
 
 	/* Required for configuration */
 	import * as OIDC from '$lib/oidc';
+	import type { InternalToken, Token } from '$lib/oauth2';
 
 	/* Required for verification */
 	import { createRemoteJWKSet, jwtVerify } from 'jose';
 	import Base64url from 'crypto-js/enc-base64url';
 	import SHA256 from 'crypto-js/sha256';
 
-	import { setCredentials, setPAT } from '$lib/credentials';
+	import { setCredentials, pat } from '$lib/credentials';
 	import * as Login from '$lib/login';
 
 	let error: string;
@@ -102,7 +103,9 @@
 			audience: OIDC.clientID
 		});
 
-		if (jwt.payload.nonce != SHA256(nonce).toString(Base64url)) {
+		const id_token = jwt.payload as OIDC.IDToken;
+
+		if (id_token.nonce != SHA256(nonce).toString(Base64url)) {
 			error = 'client_error';
 			description = 'id_token nonce does not match, replay attack detected';
 			return;
@@ -123,9 +126,18 @@
 		}
 
 		if (state.type == Login.LoginType.Normal) {
-			setCredentials(result.access_token, JSON.stringify(jwt.payload));
+			const token = result as InternalToken;
+
+			// Set the expiry time so we know when to perform a rotation.
+			// Add a little wiggle room in there to account for any latency.
+			const expiry = new Date(Date.now());
+
+			expiry.setSeconds(expiry.getSeconds() + token.expires_in - 60);
+			token.expiry = expiry.toJSON();
+
+			setCredentials(token, id_token);
 		} else if (state.type == Login.LoginType.PAT) {
-			setPAT(JSON.stringify(result));
+			pat.set(result as Token);
 		}
 
 		window.location.assign(window.sessionStorage.getItem('oauth2_location') || '/');

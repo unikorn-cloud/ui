@@ -15,22 +15,19 @@
 		Login.loginWithType(Login.LoginType.PAT);
 	}
 
-	import { pat, unsetPAT } from '$lib/credentials';
+	import type { Token } from '$lib/oauth2';
+	import { pat } from '$lib/credentials';
 
-	let patJSON: string;
+	let token: Token;
 
 	// If there is a PAT in storage, only show it the one time, and remore it
 	// immediately.
-	pat.subscribe((x: string) => {
-		console.log(pat);
-		console.log(x);
-		if (x) {
-			patJSON = x;
-			unsetPAT();
-		}
+	pat.subscribe((x: Token) => {
+		token = x;
+		pat.clear();
 	});
 
-	$: console.log(patJSON);
+	import { clipboard } from '@skeletonlabs/skeleton';
 </script>
 
 <ShellPage {settings}>
@@ -43,13 +40,25 @@
 		<span>Create</span>
 	</button>
 
-	{#if patJSON}
+	{#if token}
 		<h3 class="h3">Your Personal Access Token</h3>
 		<p>
 			<em>This token will only be shown once, so make a copy and keep it secure.</em>
 		</p>
-		<code>
-			{patJSON}
-		</code>
+		<div class="flex gap-4 items-center">
+			<div
+				data-clipboard="pat"
+				class="p-2 overflow-hidden textarea text-ellipsis whitespace-nowrap"
+			>
+				{JSON.stringify(token)}
+			</div>
+			<button
+				use:clipboard={{ element: 'pat' }}
+				class="btn variant-ghost-primary flex items-center"
+			>
+				<iconify-icon icon="mdi:clipboard-outline" />
+				<span>Copy</span>
+			</button>
+		</div>
 	{/if}
 </ShellPage>

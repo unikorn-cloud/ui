@@ -18,13 +18,14 @@
 
 	/* Client setup */
 	import * as Clients from '$lib/clients';
+	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Models from '$lib/openapi/identity/models';
 
 	/* Input vaildation */
 	import * as Validation from '$lib/validation';
 
-	let at: string;
+	let at: InternalToken;
 
 	let organization: string;
 
@@ -44,9 +45,9 @@
 
 	organizationStore.subscribe((value: string) => (organization = value));
 
-	token.subscribe((token: string) => (at = token));
+	token.subscribe((token: InternalToken) => (at = token));
 
-	function update(at: string, organization: string) {
+	function update(at: InternalToken, organization: string) {
 		if (!at || !organization) return;
 
 		const parameters = {
