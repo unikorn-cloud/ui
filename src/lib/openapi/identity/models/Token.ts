@@ -32,6 +32,12 @@ export interface Token {
      */
     accessToken: string;
     /**
+     * The opaque refresh token.
+     * @type {string}
+     * @memberof Token
+     */
+    refreshToken: string;
+    /**
      * An OIDC ID token.
      * @type {string}
      * @memberof Token
@@ -52,6 +58,7 @@ export function instanceOfToken(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "tokenType" in value;
     isInstance = isInstance && "accessToken" in value;
+    isInstance = isInstance && "refreshToken" in value;
     isInstance = isInstance && "expiresIn" in value;
 
     return isInstance;
@@ -69,6 +76,7 @@ export function TokenFromJSONTyped(json: any, ignoreDiscriminator: boolean): Tok
         
         'tokenType': json['token_type'],
         'accessToken': json['access_token'],
+        'refreshToken': json['refresh_token'],
         'idToken': !exists(json, 'id_token') ? undefined : json['id_token'],
         'expiresIn': json['expires_in'],
     };
@@ -85,6 +93,7 @@ export function TokenToJSON(value?: Token | null): any {
         
         'token_type': value.tokenType,
         'access_token': value.accessToken,
+        'refresh_token': value.refreshToken,
         'id_token': value.idToken,
         'expires_in': value.expiresIn,
     };

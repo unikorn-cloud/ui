@@ -26,6 +26,7 @@ import type {
   OpenidConfiguration,
   Organization,
   Organizations,
+  Project,
   ProjectSpec,
   Projects,
   RoleList,
@@ -55,6 +56,8 @@ import {
     OrganizationToJSON,
     OrganizationsFromJSON,
     OrganizationsToJSON,
+    ProjectFromJSON,
+    ProjectToJSON,
     ProjectSpecFromJSON,
     ProjectSpecToJSON,
     ProjectsFromJSON,
@@ -116,6 +119,17 @@ export interface ApiV1OrganizationsOrganizationProjectsPostRequest {
 export interface ApiV1OrganizationsOrganizationProjectsProjectDeleteRequest {
     organization: string;
     project: string;
+}
+
+export interface ApiV1OrganizationsOrganizationProjectsProjectGetRequest {
+    organization: string;
+    project: string;
+}
+
+export interface ApiV1OrganizationsOrganizationProjectsProjectPutRequest {
+    organization: string;
+    project: string;
+    projectSpec: ProjectSpec;
 }
 
 export interface ApiV1OrganizationsOrganizationPutRequest {
@@ -590,6 +604,90 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationProjectsProjectDelete(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.apiV1OrganizationsOrganizationProjectsProjectDeleteRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Gets a project.
+     */
+    async apiV1OrganizationsOrganizationProjectsProjectGetRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Project>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectGet.');
+        }
+
+        if (requestParameters.project === null || requestParameters.project === undefined) {
+            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organization}/projects/{project}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"project"}}`, encodeURIComponent(String(requestParameters.project))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ProjectFromJSON(jsonValue));
+    }
+
+    /**
+     * Gets a project.
+     */
+    async apiV1OrganizationsOrganizationProjectsProjectGet(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Project> {
+        const response = await this.apiV1OrganizationsOrganizationProjectsProjectGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Updates a project.
+     */
+    async apiV1OrganizationsOrganizationProjectsProjectPutRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectPut.');
+        }
+
+        if (requestParameters.project === null || requestParameters.project === undefined) {
+            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectPut.');
+        }
+
+        if (requestParameters.projectSpec === null || requestParameters.projectSpec === undefined) {
+            throw new runtime.RequiredError('projectSpec','Required parameter requestParameters.projectSpec was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectPut.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organization}/projects/{project}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"project"}}`, encodeURIComponent(String(requestParameters.project))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ProjectSpecToJSON(requestParameters.projectSpec),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Updates a project.
+     */
+    async apiV1OrganizationsOrganizationProjectsProjectPut(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationProjectsProjectPutRaw(requestParameters, initOverrides);
     }
 
     /**
