@@ -13,13 +13,14 @@
 	const toastStore = getToastStore();
 
 	/* Client setup */
+	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import { client, error } from '$lib/clients';
 	import * as Models from '$lib/openapi/server/models';
 
 	let applications: Models.Applications;
 
-	token.subscribe((at: string): void => {
+	token.subscribe((at: InternalToken): void => {
 		if (!at) return;
 
 		client(toastStore, at)

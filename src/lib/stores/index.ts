@@ -1,3 +1,3 @@
 import { sessionstore } from '$lib/sessionstore';
 
-export const organizationStore = sessionstore('organization');
+export const organizationStore = sessionstore<string>('organization');

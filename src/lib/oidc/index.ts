@@ -9,6 +9,30 @@ import { env } from '$env/dynamic/public';
 export const issuer = env.PUBLIC_OAUTH2_ISSUER || '';
 export const clientID = env.PUBLIC_OAUTH2_CLIENT_ID || '';
 
+export type IDToken = {
+	// openid scope.
+	nonce: string;
+	at_hash: string;
+	// email scope.
+	email: string;
+	email_verified?: boolean;
+	// profile scope.
+	name?: string;
+	given_name?: string;
+	family_name?: string;
+	middle_name?: string;
+	nickname?: string;
+	preferred_username?: string;
+	profile?: string;
+	picture?: string;
+	website?: string;
+	gender?: string;
+	birthdate?: string;
+	zoneinfo?: string;
+	locale?: string;
+	updated_at?: string;
+};
+
 // This is some of what's offered by the API, just enough
 // to function for now.
 export type DiscoveryInfo = {

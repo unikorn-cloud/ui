@@ -19,13 +19,14 @@
 
 	/* Client setup */
 	import { client, error } from '$lib/clients';
+	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Models from '$lib/openapi/server/models';
 
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	let at: string;
+	let at: InternalToken;
 
 	let resources: Models.KubernetesClusters;
 
@@ -36,7 +37,7 @@
 		update();
 	});
 
-	token.subscribe((token: string): void => {
+	token.subscribe((token: InternalToken): void => {
 		at = token;
 		update();
 

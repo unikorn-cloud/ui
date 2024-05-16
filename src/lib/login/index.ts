@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 
 import * as OIDC from '$lib/oidc';
+import type { InternalToken } from '$lib/oauth2';
 import { token, profile } from '$lib/credentials';
 
 import Base64url from 'crypto-js/enc-base64url';
@@ -22,21 +23,20 @@ export function login() {
 }
 
 export function loginWithType(loginType: LoginType) {
-	let claims: { email: string } | undefined;
+	let claims: OIDC.IDToken;
 
 	// Get the ID token first, as we can use it, if it exists to aid login below...
-	profile.subscribe((value) => {
-		if (!value) {
-			claims = undefined;
+	profile.subscribe((value: OIDC.IDToken) => {
+		claims = value;
+	});
+
+	token.subscribe(async (at: InternalToken) => {
+		if (!browser) {
 			return;
 		}
 
-		claims = JSON.parse(value);
-	});
-
-	token.subscribe(async (token) => {
-		/* When a token isn't set, and its on the browser, do authentication */
-		if (!browser || (loginType == LoginType.Normal && token)) {
+		// Don't login when we're in the UI and we already have a token.
+		if (loginType == LoginType.Normal && at) {
 			return;
 		}
 
@@ -78,7 +78,7 @@ export function loginWithType(loginType: LoginType) {
 		});
 
 		// Set the login hint if we can as that avoids the login prompt.
-		if (claims) {
+		if (claims && claims.email) {
 			query.set('login_hint', claims.email);
 		}
 

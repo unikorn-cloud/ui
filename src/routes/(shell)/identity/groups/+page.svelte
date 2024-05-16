@@ -20,12 +20,13 @@
 
 	/* Client setup */
 	import * as Clients from '$lib/clients';
+	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Models from '$lib/openapi/identity/models';
 
-	let at: string;
+	let at: InternalToken;
 
-	token.subscribe((token: string) => (at = token));
+	token.subscribe((token: InternalToken) => (at = token));
 
 	let organization: string;
 
@@ -33,7 +34,7 @@
 
 	let groups: Models.Groups;
 
-	function update(at: string, organization: string) {
+	function update(at: InternalToken, organization: string) {
 		if (!at || !organization) return;
 
 		const parameters = {
