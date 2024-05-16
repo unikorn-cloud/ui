@@ -92,7 +92,7 @@
 		<article class="bg-surface-50-900-token rounded-lg p-4 flex items-center justify-between gap-8">
 			<header class="flex items-center gap-4">
 				<StatusIcon metadata={resource.metadata} />
-				<h6 class="h6">{resource.spec.name}</h6>
+				<a class="h6" href="/identity/projects/view/{resource.spec.name}">{resource.spec.name}</a>
 			</header>
 
 			<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>

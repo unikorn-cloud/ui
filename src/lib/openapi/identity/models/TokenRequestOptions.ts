@@ -61,6 +61,12 @@ export interface TokenRequestOptions {
      * @memberof TokenRequestOptions
      */
     password?: string | null;
+    /**
+     * A refresh token for the refresh_token grant type.
+     * @type {string}
+     * @memberof TokenRequestOptions
+     */
+    refreshToken?: string | null;
 }
 
 /**
@@ -90,6 +96,7 @@ export function TokenRequestOptionsFromJSONTyped(json: any, ignoreDiscriminator:
         'codeVerifier': !exists(json, 'code_verifier') ? undefined : json['code_verifier'],
         'username': !exists(json, 'username') ? undefined : json['username'],
         'password': !exists(json, 'password') ? undefined : json['password'],
+        'refreshToken': !exists(json, 'refresh_token') ? undefined : json['refresh_token'],
     };
 }
 
@@ -109,6 +116,7 @@ export function TokenRequestOptionsToJSON(value?: TokenRequestOptions | null): a
         'code_verifier': value.codeVerifier,
         'username': value.username,
         'password': value.password,
+        'refresh_token': value.refreshToken,
     };
 }
 
