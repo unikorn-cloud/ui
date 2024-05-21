@@ -2,8 +2,8 @@
 	import { page } from '$app/stores';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -73,16 +73,17 @@
 	{#if project}
 		<h2 class="h2">{project.spec.name}</h2>
 
-		<h4 class="h4">Groups</h4>
-		<label for="groups">
-			Choose one or more groups of users that can access this project and all resources that it
-			contains.
-		</label>
-		<select id="groups" class="select" multiple bind:value={project.spec.groupIDs}>
-			{#each groups || [] as group}
-				<option value={group.id}>{group.name}</option>
-			{/each}
-		</select>
+		<ShellSection title="Groups">
+			<label for="groups">
+				Choose one or more groups of users that can access this project and all resources that it
+				contains.
+			</label>
+			<select id="groups" class="select" multiple bind:value={project.spec.groupIDs}>
+				{#each groups || [] as group}
+					<option value={group.id}>{group.name}</option>
+				{/each}
+			</select>
+		</ShellSection>
 
 		<button
 			class="btn variant-ghost-primary flex gap-2 items-center"

@@ -2,6 +2,7 @@
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -105,38 +106,42 @@
 		<Step locked={!step1Valid}>
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 
-			<h4 class="h4">Group Name</h4>
-			<label for="group">
-				Choose a name for the group. The name must be unique within the organization.
-			</label>
-			<input id="group" type="text" class="input" required bind:value={group} />
-
-			<h4 class="h4">Roles</h4>
-			<label for="roles"> Select the roles members of this group have.</label>
-			<select id="roles" class="select" multiple bind:value={roles}>
-				{#each availableRoles || [] as role}
-					<option value={role}>{role}</option>
-				{/each}
-			</select>
-
-			{#if availableGroups}
-				<h4 class="h4">Identity Provider Groups</h4>
-				<label for="groups">
-					Select any groups from your identity provider that will implicitly include users.
+			<ShellSection title="Group Name">
+				<label for="group">
+					Choose a name for the group. The name must be unique within the organization.
 				</label>
-				<select id="groups" class="select" multiple bind:value={selectedGroups}>
-					{#each availableGroups || [] as group}
-						<option value={group.name}>{group.displayName || group.name}</option>
+				<input id="group" type="text" class="input" required bind:value={group} />
+			</ShellSection>
+
+			<ShellSection title="Roles">
+				<label for="roles"> Select the roles members of this group have.</label>
+				<select id="roles" class="select" multiple bind:value={roles}>
+					{#each availableRoles || [] as role}
+						<option value={role}>{role}</option>
 					{/each}
 				</select>
+			</ShellSection>
+
+			{#if availableGroups}
+				<ShellSection title="Identity Provider Groups">
+					<label for="groups">
+						Select any groups from your identity provider that will implicitly include users.
+					</label>
+					<select id="groups" class="select" multiple bind:value={selectedGroups}>
+						{#each availableGroups || [] as group}
+							<option value={group.name}>{group.displayName || group.name}</option>
+						{/each}
+					</select>
+				</ShellSection>
 			{/if}
 
-			<h4 class="h4">Explicit Users</h4>
-			<label for="users"
-				>Add any explicit users that are members of this group. These may be from outside the
-				organization.</label
-			>
-			<InputChip name="users" bind:value={users} />
+			<ShellSection title="Explicit Users">
+				<label for="users"
+					>Add any explicit users that are members of this group. These may be from outside the
+					organization.</label
+				>
+				<InputChip name="users" bind:value={users} />
+			</ShellSection>
 		</Step>
 		<Step>
 			<svelte:fragment slot="header">Confirmation</svelte:fragment>

@@ -7,7 +7,7 @@
 		if (metadata.status == 'Provisioned') return 'text-success-500';
 		if (metadata.status == 'Errored') return 'text-error-500';
 		if (metadata.status == 'Unknown') return 'text-warning-500';
-		return 'text-surface-500';
+		return 'dark:text-surface-500';
 	}
 
 	function getIcon(metadata: Models.ResourceMetadata): string {

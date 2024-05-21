@@ -2,6 +2,8 @@
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellList from '$lib/layouts/ShellList.svelte';
+	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -21,29 +23,25 @@
 	let organizations: Models.Organizations;
 
 	token.subscribe((at: InternalToken) => {
+		if (!at) return;
+
 		Clients.identityClient(toastStore, at)
 			.apiV1OrganizationsGet()
 			.then((v: Models.Organizations) => (organizations = v))
 			.catch((e: Error) => Clients.error(e));
 	});
-
-	function providerIcon(provider: string): string {
-		if (provider == 'google-identity') return 'logos:google-icon';
-		if (provider == 'microsoft-entra') return 'logos:microsoft-icon';
-		return '';
-	}
 </script>
 
 <ShellPage {settings}>
-	{#each organizations || [] as resource}
-		<article class="bg-surface-50-900-token rounded-lg p-4 flex items-center justify-between gap-8">
-			<header class="flex items-center gap-4">
-				<h6 class="h6">{resource.name}</h6>
-				{#if resource.providerName}
-					<iconify-icon icon={providerIcon(resource.providerName)} />
-					{resource.domain}
-				{/if}
-			</header>
-		</article>
-	{/each}
+	<ShellList>
+		{#each organizations || [] as resource}
+			<ShellListItem>
+				<header class="flex items-center gap-4">
+					<a class="font-bold" href="/identity/organizations/view/{resource.name}"
+						>{resource.name}</a
+					>
+				</header>
+			</ShellListItem>
+		{/each}
+	</ShellList>
 </ShellPage>

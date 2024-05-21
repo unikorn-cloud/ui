@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -41,24 +42,25 @@
 	</button>
 
 	{#if token}
-		<h3 class="h3">Your Personal Access Token</h3>
-		<p>
-			<em>This token will only be shown once, so make a copy and keep it secure.</em>
-		</p>
-		<div class="flex gap-4 items-center">
-			<div
-				data-clipboard="pat"
-				class="p-2 overflow-hidden textarea text-ellipsis whitespace-nowrap"
-			>
-				{JSON.stringify(token)}
+		<ShellSection title="Your Personal Access Token">
+			<p>
+				<em>This token will only be shown once, so make a copy and keep it secure.</em>
+			</p>
+			<div class="flex gap-4 items-center">
+				<div
+					data-clipboard="pat"
+					class="p-2 overflow-hidden textarea text-ellipsis whitespace-nowrap"
+				>
+					{JSON.stringify(token)}
+				</div>
+				<button
+					use:clipboard={{ element: 'pat' }}
+					class="btn variant-ghost-primary flex items-center"
+				>
+					<iconify-icon icon="mdi:clipboard-outline" />
+					<span>Copy</span>
+				</button>
 			</div>
-			<button
-				use:clipboard={{ element: 'pat' }}
-				class="btn variant-ghost-primary flex items-center"
-			>
-				<iconify-icon icon="mdi:clipboard-outline" />
-				<span>Copy</span>
-			</button>
-		</div>
+		</ShellSection>
 	{/if}
 </ShellPage>
