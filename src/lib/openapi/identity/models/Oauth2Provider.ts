@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { Oauth2ProviderType } from './Oauth2ProviderType';
+import {
+    Oauth2ProviderTypeFromJSON,
+    Oauth2ProviderTypeFromJSONTyped,
+    Oauth2ProviderTypeToJSON,
+} from './Oauth2ProviderType';
+
 /**
  * An oauth2 provider.
  * @export
@@ -25,6 +32,12 @@ export interface Oauth2Provider {
      * @memberof Oauth2Provider
      */
     name: string;
+    /**
+     * 
+     * @type {Oauth2ProviderType}
+     * @memberof Oauth2Provider
+     */
+    type?: Oauth2ProviderType;
     /**
      * The name to display for the provider.
      * @type {string}
@@ -78,6 +91,7 @@ export function Oauth2ProviderFromJSONTyped(json: any, ignoreDiscriminator: bool
     return {
         
         'name': json['name'],
+        'type': !exists(json, 'type') ? undefined : Oauth2ProviderTypeFromJSON(json['type']),
         'displayName': json['displayName'],
         'issuer': json['issuer'],
         'clientID': !exists(json, 'clientID') ? undefined : json['clientID'],
@@ -95,6 +109,7 @@ export function Oauth2ProviderToJSON(value?: Oauth2Provider | null): any {
     return {
         
         'name': value.name,
+        'type': Oauth2ProviderTypeToJSON(value.type),
         'displayName': value.displayName,
         'issuer': value.issuer,
         'clientID': value.clientID,

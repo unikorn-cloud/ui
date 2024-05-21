@@ -2,6 +2,8 @@
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellList from '$lib/layouts/ShellList.svelte';
+	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -79,15 +81,17 @@
 		<span>Create</span>
 	</a>
 
-	{#each groups || [] as resource}
-		<article class="bg-surface-50-900-token rounded-lg p-4 flex items-center justify-between gap-8">
-			<header class="flex items-center gap-4">
-				<a class="h6" href="/identity/groups/view/{resource.id}">{resource.name}</a>
-			</header>
+	<ShellList>
+		{#each groups || [] as resource}
+			<ShellListItem>
+				<header class="flex items-center gap-4">
+					<a class="h6" href="/identity/groups/view/{resource.id}">{resource.name}</a>
+				</header>
 
-			<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
-				<iconify-icon icon="mdi:close" />
-			</button>
-		</article>
-	{/each}
+				<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
+					<iconify-icon icon="mdi:close" />
+				</button>
+			</ShellListItem>
+		{/each}
+	</ShellList>
 </ShellPage>

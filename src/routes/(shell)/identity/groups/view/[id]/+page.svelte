@@ -2,8 +2,8 @@
 	import { page } from '$app/stores';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -84,31 +84,34 @@
 	{#if group}
 		<h2 class="h2">{group.name}</h2>
 
-		<h4 class="h4">Roles</h4>
-		<label class="label">
-			<span>Roles for users in the group.</span>
-			<select class="select" multiple bind:value={group.roles}>
-				{#each availableRoles || [] as role}
-					<option value={role}>{role}</option>
-				{/each}
-			</select>
-		</label>
+		<ShellSection title="Roles">
+			<label class="label">
+				<span>Roles for users in the group.</span>
+				<select class="select" multiple bind:value={group.roles}>
+					{#each availableRoles || [] as role}
+						<option value={role}>{role}</option>
+					{/each}
+				</select>
+			</label>
+		</ShellSection>
 
 		{#if availableGroups}
-			<h4 class="h4">Identity Provider Groups</h4>
-			<label for="groups">
-				Select any groups from your identity provider that will implicitly include users.
-			</label>
-			<select id="groups" class="select" multiple bind:value={group.providerGroups}>
-				{#each availableGroups || [] as group}
-					<option value={group.name}>{group.displayName || group.name}</option>
-				{/each}
-			</select>
+			<ShellSection title="Identity Provider Groups">
+				<label for="groups">
+					Select any groups from your identity provider that will implicitly include users.
+				</label>
+				<select id="groups" class="select" multiple bind:value={group.providerGroups}>
+					{#each availableGroups || [] as group}
+						<option value={group.name}>{group.displayName || group.name}</option>
+					{/each}
+				</select>
+			</ShellSection>
 		{/if}
 
-		<h4 class="h4">Explicit Users</h4>
-		<label class="label" for="users"> Users that are part of the group. </label>
-		<InputChip name="users" bind:value={group.users} />
+		<ShellSection title="Explicit Users">
+			<label class="label" for="users"> Users that are part of the group. </label>
+			<InputChip name="users" bind:value={group.users} />
+		</ShellSection>
 
 		<button
 			class="btn variant-ghost-primary flex gap-2 items-center"

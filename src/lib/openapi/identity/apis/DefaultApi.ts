@@ -22,6 +22,7 @@ import type {
   JsonWebKeySet,
   LoginRequestOptions,
   Oauth2Error,
+  Oauth2Provider,
   Oauth2Providers,
   OpenidConfiguration,
   Organization,
@@ -48,6 +49,8 @@ import {
     LoginRequestOptionsToJSON,
     Oauth2ErrorFromJSON,
     Oauth2ErrorToJSON,
+    Oauth2ProviderFromJSON,
+    Oauth2ProviderToJSON,
     Oauth2ProvidersFromJSON,
     Oauth2ProvidersToJSON,
     OpenidConfigurationFromJSON,
@@ -78,6 +81,10 @@ export interface ApiV1OrganizationsOrganizationAvailableGroupsGetRequest {
     organization: string;
 }
 
+export interface ApiV1OrganizationsOrganizationGetRequest {
+    organization: string;
+}
+
 export interface ApiV1OrganizationsOrganizationGroupsGetRequest {
     organization: string;
 }
@@ -103,8 +110,22 @@ export interface ApiV1OrganizationsOrganizationGroupsPostRequest {
     group: Group;
 }
 
-export interface ApiV1OrganizationsOrganizationOauth2ProvidersGetRequest {
+export interface ApiV1OrganizationsOrganizationOauth2providerDeleteRequest {
     organization: string;
+}
+
+export interface ApiV1OrganizationsOrganizationOauth2providerGetRequest {
+    organization: string;
+}
+
+export interface ApiV1OrganizationsOrganizationOauth2providerPostRequest {
+    organization: string;
+    oauth2Provider: Oauth2Provider;
+}
+
+export interface ApiV1OrganizationsOrganizationOauth2providerPutRequest {
+    organization: string;
+    oauth2Provider: Oauth2Provider;
 }
 
 export interface ApiV1OrganizationsOrganizationProjectsGetRequest {
@@ -157,6 +178,37 @@ export interface Oauth2V2TokenPostRequest {
  * 
  */
 export class DefaultApi extends runtime.BaseAPI {
+
+    /**
+     * Lists system identity providers.
+     */
+    async apiV1Oauth2providersGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Oauth2Providers>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/oauth2providers`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => Oauth2ProvidersFromJSON(jsonValue));
+    }
+
+    /**
+     * Lists system identity providers.
+     */
+    async apiV1Oauth2providersGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Oauth2Providers> {
+        const response = await this.apiV1Oauth2providersGetRaw(initOverrides);
+        return await response.value();
+    }
 
     /**
      * Returns a list of organizations that are owned/managed by the user.
@@ -256,6 +308,41 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationAvailableGroupsGet(requestParameters: ApiV1OrganizationsOrganizationAvailableGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AvailableGroups> {
         const response = await this.apiV1OrganizationsOrganizationAvailableGroupsGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get an organization.
+     */
+    async apiV1OrganizationsOrganizationGetRaw(requestParameters: ApiV1OrganizationsOrganizationGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Organization>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organization}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => OrganizationFromJSON(jsonValue));
+    }
+
+    /**
+     * Get an organization.
+     */
+    async apiV1OrganizationsOrganizationGet(requestParameters: ApiV1OrganizationsOrganizationGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Organization> {
+        const response = await this.apiV1OrganizationsOrganizationGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -458,11 +545,11 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns a list of identity providers, either public or owned by the organization.
+     * Delete an organization\'s identity provider.
      */
-    async apiV1OrganizationsOrganizationOauth2ProvidersGetRaw(requestParameters: ApiV1OrganizationsOrganizationOauth2ProvidersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Oauth2Providers>> {
+    async apiV1OrganizationsOrganizationOauth2providerDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationOauth2providerDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationOauth2ProvidersGet.');
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationOauth2providerDelete.');
         }
 
         const queryParameters: any = {};
@@ -475,21 +562,137 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/oauth2/providers`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            path: `/api/v1/organizations/{organization}/oauth2provider`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Delete an organization\'s identity provider.
+     */
+    async apiV1OrganizationsOrganizationOauth2providerDelete(requestParameters: ApiV1OrganizationsOrganizationOauth2providerDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationOauth2providerDeleteRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Gets an organization\'s identity provider.
+     */
+    async apiV1OrganizationsOrganizationOauth2providerGetRaw(requestParameters: ApiV1OrganizationsOrganizationOauth2providerGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Oauth2Provider>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationOauth2providerGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organization}/oauth2provider`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => Oauth2ProvidersFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => Oauth2ProviderFromJSON(jsonValue));
     }
 
     /**
-     * Returns a list of identity providers, either public or owned by the organization.
+     * Gets an organization\'s identity provider.
      */
-    async apiV1OrganizationsOrganizationOauth2ProvidersGet(requestParameters: ApiV1OrganizationsOrganizationOauth2ProvidersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Oauth2Providers> {
-        const response = await this.apiV1OrganizationsOrganizationOauth2ProvidersGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationOauth2providerGet(requestParameters: ApiV1OrganizationsOrganizationOauth2providerGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Oauth2Provider> {
+        const response = await this.apiV1OrganizationsOrganizationOauth2providerGetRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     * Create an organization\'s identity provider.
+     */
+    async apiV1OrganizationsOrganizationOauth2providerPostRaw(requestParameters: ApiV1OrganizationsOrganizationOauth2providerPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationOauth2providerPost.');
+        }
+
+        if (requestParameters.oauth2Provider === null || requestParameters.oauth2Provider === undefined) {
+            throw new runtime.RequiredError('oauth2Provider','Required parameter requestParameters.oauth2Provider was null or undefined when calling apiV1OrganizationsOrganizationOauth2providerPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organization}/oauth2provider`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: Oauth2ProviderToJSON(requestParameters.oauth2Provider),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Create an organization\'s identity provider.
+     */
+    async apiV1OrganizationsOrganizationOauth2providerPost(requestParameters: ApiV1OrganizationsOrganizationOauth2providerPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationOauth2providerPostRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Update an organization\'s identity provider.
+     */
+    async apiV1OrganizationsOrganizationOauth2providerPutRaw(requestParameters: ApiV1OrganizationsOrganizationOauth2providerPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationOauth2providerPut.');
+        }
+
+        if (requestParameters.oauth2Provider === null || requestParameters.oauth2Provider === undefined) {
+            throw new runtime.RequiredError('oauth2Provider','Required parameter requestParameters.oauth2Provider was null or undefined when calling apiV1OrganizationsOrganizationOauth2providerPut.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organization}/oauth2provider`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: Oauth2ProviderToJSON(requestParameters.oauth2Provider),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Update an organization\'s identity provider.
+     */
+    async apiV1OrganizationsOrganizationOauth2providerPut(requestParameters: ApiV1OrganizationsOrganizationOauth2providerPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationOauth2providerPutRaw(requestParameters, initOverrides);
     }
 
     /**

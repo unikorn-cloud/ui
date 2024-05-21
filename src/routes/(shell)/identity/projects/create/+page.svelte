@@ -2,6 +2,7 @@
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -94,23 +95,25 @@
 		<Step locked={!step1Valid}>
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 
-			<h4 class="h4">Project Name</h4>
-			<label for="cluster-name">
-				Choose a name for the project. The name must be unique within the organiation, contain no
-				more than 63 characters, and contain only letters, numbers and hyphens.
-			</label>
-			<input type="text" class="input" required bind:value={project} />
+			<ShellSection title="Project Name">
+				<label for="cluster-name">
+					Choose a name for the project. The name must be unique within the organiation, contain no
+					more than 63 characters, and contain only letters, numbers and hyphens.
+				</label>
+				<input type="text" class="input" required bind:value={project} />
+			</ShellSection>
 
-			<h4 class="h4">Groups</h4>
-			<label for="groups">
-				Choose one or more groups of users that can access this project and all resources that it
-				contains.
-			</label>
-			<select id="groups" class="select" multiple bind:value={groupIDs}>
-				{#each groups || [] as group}
-					<option value={group.id}>{group.name}</option>
-				{/each}
-			</select>
+			<ShellSection title="Groups">
+				<label for="groups">
+					Choose one or more groups of users that can access this project and all resources that it
+					contains.
+				</label>
+				<select id="groups" class="select" multiple bind:value={groupIDs}>
+					{#each groups || [] as group}
+						<option value={group.id}>{group.name}</option>
+					{/each}
+				</select>
+			</ShellSection>
 		</Step>
 		<Step>
 			<svelte:fragment slot="header">Confirmation</svelte:fragment>

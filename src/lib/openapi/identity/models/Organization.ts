@@ -13,6 +13,19 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { OrganizationType } from './OrganizationType';
+import {
+    OrganizationTypeFromJSON,
+    OrganizationTypeFromJSONTyped,
+    OrganizationTypeToJSON,
+} from './OrganizationType';
+import type { ProviderScope } from './ProviderScope';
+import {
+    ProviderScopeFromJSON,
+    ProviderScopeFromJSONTyped,
+    ProviderScopeToJSON,
+} from './ProviderScope';
+
 /**
  * An organization.
  * @export
@@ -26,17 +39,39 @@ export interface Organization {
      */
     name: string;
     /**
-     * An email domain that identifies all users.
+     * 
+     * @type {OrganizationType}
+     * @memberof Organization
+     */
+    organizationType: OrganizationType;
+    /**
+     * The email domain of the organization.
      * @type {string}
      * @memberof Organization
      */
     domain?: string;
     /**
-     * An identity provider for the organization. This must be an oauth2 provider name.
+     * 
+     * @type {ProviderScope}
+     * @memberof Organization
+     */
+    providerScope?: ProviderScope;
+    /**
+     * The name of the provider to use, the scope is determined by useCustomProvider.
+     * If false, this refers to a built in provider, if true, then to an organization
+     * specific one.
      * @type {string}
      * @memberof Organization
      */
     providerName?: string;
+    /**
+     * When set this identifies the customer ID for the google managed organization.
+     * This enables the access to, and use of, Google groups as a source of truth
+     * for RBAC.
+     * @type {string}
+     * @memberof Organization
+     */
+    googleCustomerID?: string;
 }
 
 /**
@@ -45,6 +80,7 @@ export interface Organization {
 export function instanceOfOrganization(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "organizationType" in value;
 
     return isInstance;
 }
@@ -60,8 +96,11 @@ export function OrganizationFromJSONTyped(json: any, ignoreDiscriminator: boolea
     return {
         
         'name': json['name'],
+        'organizationType': OrganizationTypeFromJSON(json['organizationType']),
         'domain': !exists(json, 'domain') ? undefined : json['domain'],
+        'providerScope': !exists(json, 'providerScope') ? undefined : ProviderScopeFromJSON(json['providerScope']),
         'providerName': !exists(json, 'providerName') ? undefined : json['providerName'],
+        'googleCustomerID': !exists(json, 'googleCustomerID') ? undefined : json['googleCustomerID'],
     };
 }
 
@@ -75,8 +114,11 @@ export function OrganizationToJSON(value?: Organization | null): any {
     return {
         
         'name': value.name,
+        'organizationType': OrganizationTypeToJSON(value.organizationType),
         'domain': value.domain,
+        'providerScope': ProviderScopeToJSON(value.providerScope),
         'providerName': value.providerName,
+        'googleCustomerID': value.googleCustomerID,
     };
 }
 
