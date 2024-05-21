@@ -85,7 +85,7 @@
 		{#each groups || [] as resource}
 			<ShellListItem>
 				<header class="flex items-center gap-4">
-					<a class="h6" href="/identity/groups/view/{resource.id}">{resource.name}</a>
+					<a class="font-bold" href="/identity/groups/view/{resource.id}">{resource.name}</a>
 				</header>
 
 				<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>

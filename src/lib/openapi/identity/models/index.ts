@@ -18,6 +18,7 @@ export * from './JsonWebKeySet';
 export * from './LoginRequestOptions';
 export * from './Oauth2Error';
 export * from './Oauth2Provider';
+export * from './Oauth2ProviderCreate';
 export * from './Oauth2ProviderType';
 export * from './Oauth2Providers';
 export * from './OpenidConfiguration';

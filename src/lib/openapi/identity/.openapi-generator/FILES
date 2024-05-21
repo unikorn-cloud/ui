@@ -19,6 +19,7 @@ models/JsonWebKeySet.ts
 models/LoginRequestOptions.ts
 models/Oauth2Error.ts
 models/Oauth2Provider.ts
+models/Oauth2ProviderCreate.ts
 models/Oauth2ProviderType.ts
 models/Oauth2Providers.ts
 models/OpenidConfiguration.ts
