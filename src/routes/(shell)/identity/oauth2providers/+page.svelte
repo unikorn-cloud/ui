@@ -6,8 +6,8 @@
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
-		name: 'Projects',
-		description: 'Manage your resources.'
+		name: 'OAuth2 Providers',
+		description: 'Manage your OAuth2 providers.'
 	};
 
 	import { onDestroy } from 'svelte';
@@ -44,7 +44,7 @@
 		update();
 	});
 
-	let resources: Models.Projects;
+	let resources: Models.Oauth2Providers;
 
 	function update(): void {
 		if (!at || !organization) return;
@@ -54,38 +54,38 @@
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationProjectsGet(parameters)
-			.then((v: Models.Projects) => (resources = v))
+			.apiV1OrganizationsOrganizationOauth2providersGet(parameters)
+			.then((v: Models.Oauth2Providers) => (resources = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function remove(resource: Models.Project): void {
+	function remove(resource: Models.Oauth2Provider): void {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
-			body: `Removing project "${resource.spec.name}" will also remove all resources owned by it.`,
 			response: (ok: boolean) => {
 				if (!ok) return;
 
 				const parameters = {
 					organization: organization,
-					project: resource.spec.name
+					provider: resource.name
 				};
 
 				Clients.identityClient(toastStore, at)
-					.apiV1OrganizationsOrganizationProjectsProjectDelete(parameters)
+					.apiV1OrganizationsOrganizationOauth2providersProviderDelete(parameters)
 					.catch((e: Error) => Clients.error(e));
 			}
 		};
 
 		modalStore.trigger(modal);
 	}
-
-	import StatusIcon from '$lib/StatusIcon.svelte';
 </script>
 
 <ShellPage {settings}>
-	<a href="/identity/projects/create" class="btn variant-ghost-primary flex gap-2 items-center">
+	<a
+		href="/identity/oauth2providers/create"
+		class="btn variant-ghost-primary flex gap-2 items-center"
+	>
 		<iconify-icon icon="material-symbols:add" />
 		<span>Create</span>
 	</a>
@@ -94,10 +94,10 @@
 		{#each resources || [] as resource}
 			<ShellListItem>
 				<header class="flex items-center gap-4">
-					<StatusIcon metadata={resource.metadata} />
-					<a class="font-bold" href="/identity/projects/view/{resource.spec.name}"
-						>{resource.spec.name}</a
+					<a class="font-bold" href="/identity/oauth2providers/view/{resource.name}"
+						>{resource.name}</a
 					>
+					<em>{resource.displayName}</em>
 				</header>
 
 				<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>

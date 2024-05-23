@@ -1,10 +1,12 @@
-export type NamedResourceSpec = {
+export type NamedResource = {
 	name: string;
 };
 
-export type NamedResource = {
-	spec: NamedResourceSpec;
+export type NamedResourceWithSpec = {
+	spec: NamedResource;
 };
+
+export type NamedResourceUnion = NamedResource | NamedResourceWithSpec;
 
 export function kubernetesNameValid(name: string | null | undefined): boolean {
 	if (!name) return false;
@@ -14,10 +16,17 @@ export function kubernetesNameValid(name: string | null | undefined): boolean {
 }
 
 export function namedResourceNames(
-	resources: Array<NamedResource> | null | undefined
+	resources: Array<NamedResourceUnion> | null | undefined
 ): Array<string> {
 	if (!resources) return [];
-	return resources.map((x) => x.spec.name);
+
+	return resources.map((x) => {
+		if ('spec' in x) {
+			return (x as NamedResourceWithSpec).spec.name;
+		}
+
+		return x.name;
+	});
 }
 
 export function unique(needle: string, haystack: Array<string>): boolean {

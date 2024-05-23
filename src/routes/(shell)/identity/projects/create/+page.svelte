@@ -36,8 +36,6 @@
 	let groups: Models.Groups;
 	let groupIDs: string[] = [];
 
-	$: console.log(groupIDs);
-
 	organizationStore.subscribe((value: string) => (organization = value));
 
 	token.subscribe((token: InternalToken) => {

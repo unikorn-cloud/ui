@@ -19,15 +19,17 @@
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/identity/models';
+	import * as Identity from '$lib/openapi/identity';
 
 	let at: InternalToken;
 
 	token.subscribe((token: InternalToken) => (at = token));
 
-	let organization: Models.Organization;
+	let organization: Identity.Organization;
 
-	let providers: Models.Oauth2Providers;
+	let providers: Identity.Oauth2Providers;
+
+	let organizationProviders: Identity.Oauth2Providers;
 
 	function update(at: InternalToken) {
 		if (!at) return;
@@ -38,28 +40,25 @@
 
 		Clients.identityClient(toastStore, at)
 			.apiV1OrganizationsOrganizationGet(parameters)
-			.then((v: Models.Organization) => (organization = v))
+			.then((v: Identity.Organization) => (organization = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identityClient(toastStore, at)
 			.apiV1Oauth2providersGet()
-			.then((v: Models.Oauth2Providers) => (providers = v))
+			.then((v: Identity.Oauth2Providers) => (providers = v))
+			.catch((e: Error) => Clients.error(e));
+
+		Clients.identityClient(toastStore, at)
+			.apiV1OrganizationsOrganizationOauth2providersGet(parameters)
+			.then((v: Identity.Oauth2Providers) => (organizationProviders = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
 	$: update(at);
 
 	function submit() {
-		// Perform any cleanup actions.
-		// TODO: Is there a more idiomatic way of doing this?
-		if (organization.organizationType == Models.OrganizationType.Adhoc) {
-			delete organization['domain'];
-			delete organization['providerScope'];
-			delete organization['providerName'];
-		}
-
-		if (organization.googleCustomerID === '') delete organization['googleCustomerID'];
-
+		// Update the organization.
+		// TODO: input validation!
 		const parameters = {
 			organization: $page.params.id,
 			organization2: organization
@@ -70,8 +69,6 @@
 			.then(() => window.location.assign('/identity/organizations'))
 			.catch((e: Error) => Clients.error(e));
 	}
-
-	import { clipboard } from '@skeletonlabs/skeleton';
 </script>
 
 <ShellPage {settings}>
@@ -88,13 +85,13 @@
 				Google or Microsoft, and must be manually added to groups.
 			</label>
 			<select id="organization-type" class="select" bind:value={organization.organizationType}>
-				{#each Object.entries(Models.OrganizationType) as [symbol, value]}
+				{#each Object.entries(Identity.OrganizationType) as [symbol, value]}
 					<option {value}>{symbol}</option>
 				{/each}
 			</select>
 		</ShellSection>
 
-		{#if organization.organizationType == Models.OrganizationType.Domain}
+		{#if organization.organizationType == Identity.OrganizationType.Domain}
 			<ShellSection title="Email Domain">
 				<label for="domain"
 					>Domain name you are registering. To ensure you own the domain we require you to update
@@ -116,23 +113,20 @@
 					you to define your own identity provider for the organization.
 				</label>
 				<select class="select" bind:value={organization.providerScope}>
-					{#each Object.entries(Models.ProviderScope) as [symbol, value]}
+					{#each Object.entries(Identity.ProviderScope) as [symbol, value]}
 						<option {value}>{symbol}</option>
 					{/each}
 				</select>
 
-				{#if organization.providerScope == Models.ProviderScope.Global}
-					<label for="global-idp"
-						>Identity provider to use. Selecting <em>Custom</em> will allow you to use your own OIDC
-						compliant identity service.</label
-					>
+				{#if organization.providerScope == Identity.ProviderScope.Global}
+					<label for="global-idp">Identity provider to use.</label>
 					<select class="select" bind:value={organization.providerName}>
 						{#each providers || [] as p}
 							<option value={p.name}>{p.displayName}</option>
 						{/each}
 					</select>
 
-					{#if ((providers || []).find((x) => x.name == organization.providerName) || {}).type == Models.Oauth2ProviderType.Google}
+					{#if ((providers || []).find((x) => x.name == organization.providerName) || {}).type == Identity.Oauth2ProviderType.Google}
 						<label for="customer-id">
 							Your Google customer ID. This can be obtained from the <a
 								href="https://admin.google.com">Google admin console</a
@@ -147,56 +141,13 @@
 						/>
 					{/if}
 				{:else}
-					<label for="callback"
-						>Oauth2 callback address. This is used to configure your OIDC application with before
-						continuing with the following fields.</label
-					>
-					<div id="callback" class="flex gap-4 items-center">
-						<div
-							data-clipboard="pat"
-							class="p-2 overflow-hidden textarea text-ellipsis whitespace-nowrap"
-						>
-							{window.location.protocol + '://' + window.location.hostname + '/oauth2/callback'}
-						</div>
-						<button
-							use:clipboard={{ element: 'pat' }}
-							class="btn variant-ghost-primary flex items-center"
-						>
-							<iconify-icon icon="mdi:clipboard-outline" />
-							<span>Copy</span>
-						</button>
-					</div>
-
-					<label for="issuer"
-						>Issuer address. This is the base address used to derive the <em
-							>/.well-known/openid-configuration</em
-						> endpoint</label
-					>
-					<input
-						id="issuer"
-						class="input"
-						type="url"
-						placeholder="https://identity.domain.com"
-						required
-					/>
-
-					<label for="client-id">Client Identifier</label>
-					<input
-						id="client-id"
-						class="input"
-						type="text"
-						placeholder="73458e95-1d2c-481b-81e8-7225fd089060"
-						required
-					/>
-
-					<label for="client-secret">Client Secret</label>
-					<input
-						id="client-secret"
-						class="input"
-						type="text"
-						placeholder="ooHovOvanogyisAvChuOvbyctoffOdloidKuAlsyemgosJias3twanechorjIdCo"
-						required
-					/>
+					<!-- TODO: allow inline creation for better UX -->
+					<label for="global-idp">Identity provider to use.</label>
+					<select class="select" bind:value={organization.providerName}>
+						{#each organizationProviders || [] as p}
+							<option value={p.name}>{p.displayName}</option>
+						{/each}
+					</select>
 				{/if}
 			</ShellSection>
 		{/if}
