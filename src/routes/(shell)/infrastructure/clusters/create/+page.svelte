@@ -93,11 +93,11 @@
 		if (!at || !project) return;
 
 		const parameters = {
-			organizationName: organization
+			organization: organization
 		};
 
 		Clients.client(toastStore, at)
-			.apiV1OrganizationsOrganizationNameClustermanagersGet(parameters)
+			.apiV1OrganizationsOrganizationClustermanagersGet(parameters)
 			.then((v: Models.ClusterManagers) => {
 				if (v.length == 0) return;
 
@@ -115,11 +115,11 @@
 		if (!at || !clustermanager) return;
 
 		const parameters = {
-			organizationName: organization
+			organization: organization
 		};
 
 		Clients.client(toastStore, at)
-			.apiV1OrganizationsOrganizationNameClustersGet(parameters)
+			.apiV1OrganizationsOrganizationClustersGet(parameters)
 			.then((v: Models.KubernetesClusters) => {
 				if (v.length == 0) return;
 
@@ -225,8 +225,8 @@
 
 	function complete() {
 		const parameters = {
-			organizationName: organization,
-			projectName: project,
+			organization: organization,
+			project: project,
 			kubernetesClusterSpec: {
 				name: cluster,
 				region: region,
@@ -237,7 +237,7 @@
 		};
 
 		Clients.client(toastStore, at)
-			.apiV1OrganizationsOrganizationNameProjectsProjectNameClustersPost(parameters)
+			.apiV1OrganizationsOrganizationProjectsProjectClustersPost(parameters)
 			.then(() => window.location.assign('/infrastructure/clusters'))
 			.catch((e: Error) => Clients.error(e));
 	}

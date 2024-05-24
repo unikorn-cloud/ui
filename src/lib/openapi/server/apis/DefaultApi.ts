@@ -46,55 +46,55 @@ import {
     RegionsToJSON,
 } from '../models/index';
 
-export interface ApiV1OrganizationsOrganizationNameClustermanagersGetRequest {
-    organizationName: string;
+export interface ApiV1OrganizationsOrganizationClustermanagersGetRequest {
+    organization: string;
 }
 
-export interface ApiV1OrganizationsOrganizationNameClustersGetRequest {
-    organizationName: string;
+export interface ApiV1OrganizationsOrganizationClustersGetRequest {
+    organization: string;
 }
 
-export interface ApiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNameDeleteRequest {
-    organizationName: string;
-    projectName: string;
-    clusterManagerName: string;
+export interface ApiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerDeleteRequest {
+    organization: string;
+    project: string;
+    clusterManager: string;
 }
 
-export interface ApiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNamePutRequest {
-    organizationName: string;
-    projectName: string;
-    clusterManagerName: string;
+export interface ApiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerPutRequest {
+    organization: string;
+    project: string;
+    clusterManager: string;
     clusterManagerSpec: ClusterManagerSpec;
 }
 
-export interface ApiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersPostRequest {
-    organizationName: string;
-    projectName: string;
+export interface ApiV1OrganizationsOrganizationProjectsProjectClustermanagersPostRequest {
+    organization: string;
+    project: string;
     clusterManagerSpec: ClusterManagerSpec;
 }
 
-export interface ApiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameDeleteRequest {
-    organizationName: string;
-    projectName: string;
-    clusterName: string;
+export interface ApiV1OrganizationsOrganizationProjectsProjectClustersClusterDeleteRequest {
+    organization: string;
+    project: string;
+    cluster: string;
 }
 
-export interface ApiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameKubeconfigGetRequest {
-    organizationName: string;
-    projectName: string;
-    clusterName: string;
+export interface ApiV1OrganizationsOrganizationProjectsProjectClustersClusterKubeconfigGetRequest {
+    organization: string;
+    project: string;
+    cluster: string;
 }
 
-export interface ApiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNamePutRequest {
-    organizationName: string;
-    projectName: string;
-    clusterName: string;
+export interface ApiV1OrganizationsOrganizationProjectsProjectClustersClusterPutRequest {
+    organization: string;
+    project: string;
+    cluster: string;
     kubernetesClusterSpec: KubernetesClusterSpec;
 }
 
-export interface ApiV1OrganizationsOrganizationNameProjectsProjectNameClustersPostRequest {
-    organizationName: string;
-    projectName: string;
+export interface ApiV1OrganizationsOrganizationProjectsProjectClustersPostRequest {
+    organization: string;
+    project: string;
     kubernetesClusterSpec: KubernetesClusterSpec;
 }
 
@@ -145,9 +145,9 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists cluster managers within the organization.
      */
-    async apiV1OrganizationsOrganizationNameClustermanagersGetRaw(requestParameters: ApiV1OrganizationsOrganizationNameClustermanagersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ClusterManagers>> {
-        if (requestParameters.organizationName === null || requestParameters.organizationName === undefined) {
-            throw new runtime.RequiredError('organizationName','Required parameter requestParameters.organizationName was null or undefined when calling apiV1OrganizationsOrganizationNameClustermanagersGet.');
+    async apiV1OrganizationsOrganizationClustermanagersGetRaw(requestParameters: ApiV1OrganizationsOrganizationClustermanagersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ClusterManagers>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationClustermanagersGet.');
         }
 
         const queryParameters: any = {};
@@ -160,7 +160,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationName}/clustermanagers`.replace(`{${"organizationName"}}`, encodeURIComponent(String(requestParameters.organizationName))),
+            path: `/api/v1/organizations/{organization}/clustermanagers`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -172,17 +172,17 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists cluster managers within the organization.
      */
-    async apiV1OrganizationsOrganizationNameClustermanagersGet(requestParameters: ApiV1OrganizationsOrganizationNameClustermanagersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ClusterManagers> {
-        const response = await this.apiV1OrganizationsOrganizationNameClustermanagersGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationClustermanagersGet(requestParameters: ApiV1OrganizationsOrganizationClustermanagersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ClusterManagers> {
+        const response = await this.apiV1OrganizationsOrganizationClustermanagersGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * List all clusters within the organization.
      */
-    async apiV1OrganizationsOrganizationNameClustersGetRaw(requestParameters: ApiV1OrganizationsOrganizationNameClustersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<KubernetesClusters>> {
-        if (requestParameters.organizationName === null || requestParameters.organizationName === undefined) {
-            throw new runtime.RequiredError('organizationName','Required parameter requestParameters.organizationName was null or undefined when calling apiV1OrganizationsOrganizationNameClustersGet.');
+    async apiV1OrganizationsOrganizationClustersGetRaw(requestParameters: ApiV1OrganizationsOrganizationClustersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<KubernetesClusters>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationClustersGet.');
         }
 
         const queryParameters: any = {};
@@ -195,7 +195,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationName}/clusters`.replace(`{${"organizationName"}}`, encodeURIComponent(String(requestParameters.organizationName))),
+            path: `/api/v1/organizations/{organization}/clusters`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -207,25 +207,25 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * List all clusters within the organization.
      */
-    async apiV1OrganizationsOrganizationNameClustersGet(requestParameters: ApiV1OrganizationsOrganizationNameClustersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<KubernetesClusters> {
-        const response = await this.apiV1OrganizationsOrganizationNameClustersGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationClustersGet(requestParameters: ApiV1OrganizationsOrganizationClustersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<KubernetesClusters> {
+        const response = await this.apiV1OrganizationsOrganizationClustersGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Deletes a cluster manager from within the scoped project. This is a cascading operation and will delete all contained clusters.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNameDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organizationName === null || requestParameters.organizationName === undefined) {
-            throw new runtime.RequiredError('organizationName','Required parameter requestParameters.organizationName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNameDelete.');
+    async apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerDelete.');
         }
 
-        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNameDelete.');
+        if (requestParameters.project === null || requestParameters.project === undefined) {
+            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerDelete.');
         }
 
-        if (requestParameters.clusterManagerName === null || requestParameters.clusterManagerName === undefined) {
-            throw new runtime.RequiredError('clusterManagerName','Required parameter requestParameters.clusterManagerName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNameDelete.');
+        if (requestParameters.clusterManager === null || requestParameters.clusterManager === undefined) {
+            throw new runtime.RequiredError('clusterManager','Required parameter requestParameters.clusterManager was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerDelete.');
         }
 
         const queryParameters: any = {};
@@ -238,7 +238,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationName}/projects/{projectName}/clustermanagers/{clusterManagerName}`.replace(`{${"organizationName"}}`, encodeURIComponent(String(requestParameters.organizationName))).replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"clusterManagerName"}}`, encodeURIComponent(String(requestParameters.clusterManagerName))),
+            path: `/api/v1/organizations/{organization}/projects/{project}/clustermanagers/{clusterManager}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"project"}}`, encodeURIComponent(String(requestParameters.project))).replace(`{${"clusterManager"}}`, encodeURIComponent(String(requestParameters.clusterManager))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -250,28 +250,28 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Deletes a cluster manager from within the scoped project. This is a cascading operation and will delete all contained clusters.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNameDelete(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNameDeleteRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerDelete(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
      * Updates a cluster manager within the scoped project.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNamePutRaw(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organizationName === null || requestParameters.organizationName === undefined) {
-            throw new runtime.RequiredError('organizationName','Required parameter requestParameters.organizationName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNamePut.');
+    async apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerPutRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerPut.');
         }
 
-        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNamePut.');
+        if (requestParameters.project === null || requestParameters.project === undefined) {
+            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerPut.');
         }
 
-        if (requestParameters.clusterManagerName === null || requestParameters.clusterManagerName === undefined) {
-            throw new runtime.RequiredError('clusterManagerName','Required parameter requestParameters.clusterManagerName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNamePut.');
+        if (requestParameters.clusterManager === null || requestParameters.clusterManager === undefined) {
+            throw new runtime.RequiredError('clusterManager','Required parameter requestParameters.clusterManager was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerPut.');
         }
 
         if (requestParameters.clusterManagerSpec === null || requestParameters.clusterManagerSpec === undefined) {
-            throw new runtime.RequiredError('clusterManagerSpec','Required parameter requestParameters.clusterManagerSpec was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNamePut.');
+            throw new runtime.RequiredError('clusterManagerSpec','Required parameter requestParameters.clusterManagerSpec was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerPut.');
         }
 
         const queryParameters: any = {};
@@ -286,7 +286,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationName}/projects/{projectName}/clustermanagers/{clusterManagerName}`.replace(`{${"organizationName"}}`, encodeURIComponent(String(requestParameters.organizationName))).replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"clusterManagerName"}}`, encodeURIComponent(String(requestParameters.clusterManagerName))),
+            path: `/api/v1/organizations/{organization}/projects/{project}/clustermanagers/{clusterManager}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"project"}}`, encodeURIComponent(String(requestParameters.project))).replace(`{${"clusterManager"}}`, encodeURIComponent(String(requestParameters.clusterManager))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
@@ -299,24 +299,24 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Updates a cluster manager within the scoped project.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNamePut(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNamePutRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerPut(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerPutRaw(requestParameters, initOverrides);
     }
 
     /**
      * Creates a new cluster manager within the project.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersPostRaw(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organizationName === null || requestParameters.organizationName === undefined) {
-            throw new runtime.RequiredError('organizationName','Required parameter requestParameters.organizationName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersPost.');
+    async apiV1OrganizationsOrganizationProjectsProjectClustermanagersPostRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustermanagersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustermanagersPost.');
         }
 
-        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersPost.');
+        if (requestParameters.project === null || requestParameters.project === undefined) {
+            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustermanagersPost.');
         }
 
         if (requestParameters.clusterManagerSpec === null || requestParameters.clusterManagerSpec === undefined) {
-            throw new runtime.RequiredError('clusterManagerSpec','Required parameter requestParameters.clusterManagerSpec was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersPost.');
+            throw new runtime.RequiredError('clusterManagerSpec','Required parameter requestParameters.clusterManagerSpec was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustermanagersPost.');
         }
 
         const queryParameters: any = {};
@@ -331,7 +331,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationName}/projects/{projectName}/clustermanagers`.replace(`{${"organizationName"}}`, encodeURIComponent(String(requestParameters.organizationName))).replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))),
+            path: `/api/v1/organizations/{organization}/projects/{project}/clustermanagers`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"project"}}`, encodeURIComponent(String(requestParameters.project))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -344,24 +344,24 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Creates a new cluster manager within the project.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersPost(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersPostRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationProjectsProjectClustermanagersPost(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustermanagersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationProjectsProjectClustermanagersPostRaw(requestParameters, initOverrides);
     }
 
     /**
      * Delete a cluster from within a the selected cluster manager.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organizationName === null || requestParameters.organizationName === undefined) {
-            throw new runtime.RequiredError('organizationName','Required parameter requestParameters.organizationName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameDelete.');
+    async apiV1OrganizationsOrganizationProjectsProjectClustersClusterDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustersClusterDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersClusterDelete.');
         }
 
-        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameDelete.');
+        if (requestParameters.project === null || requestParameters.project === undefined) {
+            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersClusterDelete.');
         }
 
-        if (requestParameters.clusterName === null || requestParameters.clusterName === undefined) {
-            throw new runtime.RequiredError('clusterName','Required parameter requestParameters.clusterName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameDelete.');
+        if (requestParameters.cluster === null || requestParameters.cluster === undefined) {
+            throw new runtime.RequiredError('cluster','Required parameter requestParameters.cluster was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersClusterDelete.');
         }
 
         const queryParameters: any = {};
@@ -374,7 +374,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationName}/projects/{projectName}/clusters/{clusterName}`.replace(`{${"organizationName"}}`, encodeURIComponent(String(requestParameters.organizationName))).replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"clusterName"}}`, encodeURIComponent(String(requestParameters.clusterName))),
+            path: `/api/v1/organizations/{organization}/projects/{project}/clusters/{cluster}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"project"}}`, encodeURIComponent(String(requestParameters.project))).replace(`{${"cluster"}}`, encodeURIComponent(String(requestParameters.cluster))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -386,24 +386,24 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Delete a cluster from within a the selected cluster manager.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameDelete(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameDeleteRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationProjectsProjectClustersClusterDelete(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustersClusterDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationProjectsProjectClustersClusterDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
      * Get a cluster\'s Kubernetes configuration.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameKubeconfigGetRaw(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameKubeconfigGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organizationName === null || requestParameters.organizationName === undefined) {
-            throw new runtime.RequiredError('organizationName','Required parameter requestParameters.organizationName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameKubeconfigGet.');
+    async apiV1OrganizationsOrganizationProjectsProjectClustersClusterKubeconfigGetRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustersClusterKubeconfigGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersClusterKubeconfigGet.');
         }
 
-        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameKubeconfigGet.');
+        if (requestParameters.project === null || requestParameters.project === undefined) {
+            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersClusterKubeconfigGet.');
         }
 
-        if (requestParameters.clusterName === null || requestParameters.clusterName === undefined) {
-            throw new runtime.RequiredError('clusterName','Required parameter requestParameters.clusterName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameKubeconfigGet.');
+        if (requestParameters.cluster === null || requestParameters.cluster === undefined) {
+            throw new runtime.RequiredError('cluster','Required parameter requestParameters.cluster was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersClusterKubeconfigGet.');
         }
 
         const queryParameters: any = {};
@@ -416,7 +416,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationName}/projects/{projectName}/clusters/{clusterName}/kubeconfig`.replace(`{${"organizationName"}}`, encodeURIComponent(String(requestParameters.organizationName))).replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"clusterName"}}`, encodeURIComponent(String(requestParameters.clusterName))),
+            path: `/api/v1/organizations/{organization}/projects/{project}/clusters/{cluster}/kubeconfig`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"project"}}`, encodeURIComponent(String(requestParameters.project))).replace(`{${"cluster"}}`, encodeURIComponent(String(requestParameters.cluster))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -428,28 +428,28 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Get a cluster\'s Kubernetes configuration.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameKubeconfigGet(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameKubeconfigGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNameKubeconfigGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationProjectsProjectClustersClusterKubeconfigGet(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustersClusterKubeconfigGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationProjectsProjectClustersClusterKubeconfigGetRaw(requestParameters, initOverrides);
     }
 
     /**
      * Update a cluster within the selected cluster manager.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNamePutRaw(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organizationName === null || requestParameters.organizationName === undefined) {
-            throw new runtime.RequiredError('organizationName','Required parameter requestParameters.organizationName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNamePut.');
+    async apiV1OrganizationsOrganizationProjectsProjectClustersClusterPutRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustersClusterPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersClusterPut.');
         }
 
-        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNamePut.');
+        if (requestParameters.project === null || requestParameters.project === undefined) {
+            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersClusterPut.');
         }
 
-        if (requestParameters.clusterName === null || requestParameters.clusterName === undefined) {
-            throw new runtime.RequiredError('clusterName','Required parameter requestParameters.clusterName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNamePut.');
+        if (requestParameters.cluster === null || requestParameters.cluster === undefined) {
+            throw new runtime.RequiredError('cluster','Required parameter requestParameters.cluster was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersClusterPut.');
         }
 
         if (requestParameters.kubernetesClusterSpec === null || requestParameters.kubernetesClusterSpec === undefined) {
-            throw new runtime.RequiredError('kubernetesClusterSpec','Required parameter requestParameters.kubernetesClusterSpec was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNamePut.');
+            throw new runtime.RequiredError('kubernetesClusterSpec','Required parameter requestParameters.kubernetesClusterSpec was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersClusterPut.');
         }
 
         const queryParameters: any = {};
@@ -464,7 +464,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationName}/projects/{projectName}/clusters/{clusterName}`.replace(`{${"organizationName"}}`, encodeURIComponent(String(requestParameters.organizationName))).replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))).replace(`{${"clusterName"}}`, encodeURIComponent(String(requestParameters.clusterName))),
+            path: `/api/v1/organizations/{organization}/projects/{project}/clusters/{cluster}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"project"}}`, encodeURIComponent(String(requestParameters.project))).replace(`{${"cluster"}}`, encodeURIComponent(String(requestParameters.cluster))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
@@ -477,24 +477,24 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Update a cluster within the selected cluster manager.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNamePut(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationNameProjectsProjectNameClustersClusterNamePutRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationProjectsProjectClustersClusterPut(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustersClusterPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationProjectsProjectClustersClusterPutRaw(requestParameters, initOverrides);
     }
 
     /**
      * Creates a new cluster within the selected cluster manager.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustersPostRaw(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organizationName === null || requestParameters.organizationName === undefined) {
-            throw new runtime.RequiredError('organizationName','Required parameter requestParameters.organizationName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersPost.');
+    async apiV1OrganizationsOrganizationProjectsProjectClustersPostRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organization === null || requestParameters.organization === undefined) {
+            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersPost.');
         }
 
-        if (requestParameters.projectName === null || requestParameters.projectName === undefined) {
-            throw new runtime.RequiredError('projectName','Required parameter requestParameters.projectName was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersPost.');
+        if (requestParameters.project === null || requestParameters.project === undefined) {
+            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersPost.');
         }
 
         if (requestParameters.kubernetesClusterSpec === null || requestParameters.kubernetesClusterSpec === undefined) {
-            throw new runtime.RequiredError('kubernetesClusterSpec','Required parameter requestParameters.kubernetesClusterSpec was null or undefined when calling apiV1OrganizationsOrganizationNameProjectsProjectNameClustersPost.');
+            throw new runtime.RequiredError('kubernetesClusterSpec','Required parameter requestParameters.kubernetesClusterSpec was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectClustersPost.');
         }
 
         const queryParameters: any = {};
@@ -509,7 +509,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationName}/projects/{projectName}/clusters`.replace(`{${"organizationName"}}`, encodeURIComponent(String(requestParameters.organizationName))).replace(`{${"projectName"}}`, encodeURIComponent(String(requestParameters.projectName))),
+            path: `/api/v1/organizations/{organization}/projects/{project}/clusters`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"project"}}`, encodeURIComponent(String(requestParameters.project))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -522,8 +522,8 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Creates a new cluster within the selected cluster manager.
      */
-    async apiV1OrganizationsOrganizationNameProjectsProjectNameClustersPost(requestParameters: ApiV1OrganizationsOrganizationNameProjectsProjectNameClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationNameProjectsProjectNameClustersPostRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationProjectsProjectClustersPost(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationProjectsProjectClustersPostRaw(requestParameters, initOverrides);
     }
 
     /**

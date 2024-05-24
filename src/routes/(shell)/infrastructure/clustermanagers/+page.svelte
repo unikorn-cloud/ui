@@ -50,11 +50,11 @@
 		if (!at || !organization) return;
 
 		const parameters = {
-			organizationName: organization
+			organization: organization
 		};
 
 		client(toastStore, at)
-			.apiV1OrganizationsOrganizationNameClustermanagersGet(parameters)
+			.apiV1OrganizationsOrganizationClustermanagersGet(parameters)
 			.then((v: Models.ClusterManagers) => (resources = v))
 			.catch((e: Error) => error(e));
 	}
@@ -68,13 +68,13 @@
 				if (!ok) return;
 
 				const parameters = {
-					organizationName: organization,
-					projectName: resource.metadata.project,
-					clusterManagerName: resource.spec.name
+					organization: organization,
+					project: resource.metadata.project,
+					clusterManager: resource.spec.name
 				};
 
 				client(toastStore, at)
-					.apiV1OrganizationsOrganizationNameProjectsProjectNameClustermanagersClusterManagerNameDelete(
+					.apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerDelete(
 						parameters
 					)
 					.catch((e: Error) => error(e));
