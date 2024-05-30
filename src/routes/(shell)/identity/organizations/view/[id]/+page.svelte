@@ -25,7 +25,7 @@
 
 	token.subscribe((token: InternalToken) => (at = token));
 
-	let organization: Identity.Organization;
+	let organization: Identity.OrganizationRead;
 
 	let providers: Identity.Oauth2Providers;
 
@@ -35,12 +35,12 @@
 		if (!at) return;
 
 		const parameters = {
-			organization: $page.params.id
+			organizationID: $page.params.id
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationGet(parameters)
-			.then((v: Identity.Organization) => (organization = v))
+			.apiV1OrganizationsOrganizationIDGet(parameters)
+			.then((v: Identity.OrganizationRead) => (organization = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identityClient(toastStore, at)
@@ -49,7 +49,7 @@
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationOauth2providersGet(parameters)
+			.apiV1OrganizationsOrganizationIDOauth2providersGet(parameters)
 			.then((v: Identity.Oauth2Providers) => (organizationProviders = v))
 			.catch((e: Error) => Clients.error(e));
 	}
@@ -60,20 +60,34 @@
 		// Update the organization.
 		// TODO: input validation!
 		const parameters = {
-			organization: $page.params.id,
-			organization2: organization
+			organizationID: $page.params.id,
+			organizationWrite: organization
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationPut(parameters)
+			.apiV1OrganizationsOrganizationIDPut(parameters)
 			.then(() => window.location.assign('/identity/organizations'))
 			.catch((e: Error) => Clients.error(e));
 	}
+
+	function getOauth2ProviderType(
+		providers: Identity.Oauth2Providers,
+		organization: Identity.OrganizationRead
+	): Identity.Oauth2ProviderType | undefined {
+		if (!providers || !organization) return undefined;
+
+		const provider = providers.find((x) => x.metadata.id == organization.spec.providerID);
+		if (!provider) return undefined;
+
+		return provider.spec.type;
+	}
+
+	$: oauth2ProviderType = getOauth2ProviderType(providers, organization);
 </script>
 
 <ShellPage {settings}>
 	{#if organization}
-		<h2 class="h2">{organization.name}</h2>
+		<h2 class="h2">{organization.metadata.name}</h2>
 
 		<ShellSection title="Authentication Type">
 			<label for="organization-type"
@@ -84,14 +98,14 @@
 				authentication is selected, users will login by selected their generic provider explicitly e.g.
 				Google or Microsoft, and must be manually added to groups.
 			</label>
-			<select id="organization-type" class="select" bind:value={organization.organizationType}>
+			<select id="organization-type" class="select" bind:value={organization.spec.organizationType}>
 				{#each Object.entries(Identity.OrganizationType) as [symbol, value]}
 					<option {value}>{symbol}</option>
 				{/each}
 			</select>
 		</ShellSection>
 
-		{#if organization.organizationType == Identity.OrganizationType.Domain}
+		{#if organization.spec.organizationType == Identity.OrganizationType.Domain}
 			<ShellSection title="Email Domain">
 				<label for="domain"
 					>Domain name you are registering. To ensure you own the domain we require you to update
@@ -102,7 +116,7 @@
 					class="input"
 					placeholder="acme.corp"
 					required
-					bind:value={organization.domain}
+					bind:value={organization.spec.domain}
 				/>
 			</ShellSection>
 
@@ -112,21 +126,21 @@
 					available identity providers such as Google or Microsoft. Selecting <em>organization</em> allows
 					you to define your own identity provider for the organization.
 				</label>
-				<select class="select" bind:value={organization.providerScope}>
+				<select class="select" bind:value={organization.spec.providerScope}>
 					{#each Object.entries(Identity.ProviderScope) as [symbol, value]}
 						<option {value}>{symbol}</option>
 					{/each}
 				</select>
 
-				{#if organization.providerScope == Identity.ProviderScope.Global}
+				{#if organization.spec.providerScope == Identity.ProviderScope.Global}
 					<label for="global-idp">Identity provider to use.</label>
-					<select class="select" bind:value={organization.providerName}>
+					<select class="select" bind:value={organization.spec.providerID}>
 						{#each providers || [] as p}
-							<option value={p.name}>{p.displayName}</option>
+							<option value={p.metadata.id}>{p.metadata.name}</option>
 						{/each}
 					</select>
 
-					{#if ((providers || []).find((x) => x.name == organization.providerName) || {}).type == Identity.Oauth2ProviderType.Google}
+					{#if oauth2ProviderType == Identity.Oauth2ProviderType.Google}
 						<label for="customer-id">
 							Your Google customer ID. This can be obtained from the <a
 								href="https://admin.google.com">Google admin console</a
@@ -137,15 +151,15 @@
 							id="customer-id"
 							class="input"
 							placeholder="x83hRso7"
-							bind:value={organization.googleCustomerID}
+							bind:value={organization.spec.googleCustomerID}
 						/>
 					{/if}
 				{:else}
 					<!-- TODO: allow inline creation for better UX -->
 					<label for="global-idp">Identity provider to use.</label>
-					<select class="select" bind:value={organization.providerName}>
+					<select class="select" bind:value={organization.spec.providerID}>
 						{#each organizationProviders || [] as p}
-							<option value={p.name}>{p.displayName}</option>
+							<option value={p.metadata.id}>{p.metadata.name}</option>
 						{/each}
 					</select>
 				{/if}

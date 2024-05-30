@@ -30,43 +30,43 @@
 
 	token.subscribe((token: InternalToken) => (at = token));
 
-	let organization: string;
+	let organizationID: string;
 
-	organizationStore.subscribe((value: string) => (organization = value));
+	organizationStore.subscribe((value: string) => (organizationID = value));
 
 	let groups: Models.Groups;
 
-	function update(at: InternalToken, organization: string) {
-		if (!at || !organization) return;
+	function update(at: InternalToken, organizationID: string) {
+		if (!at || !organizationID) return;
 
 		const parameters = {
-			organization: organization
+			organizationID: organizationID
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationGroupsGet(parameters)
+			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
 			.then((v: Models.Groups) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: update(at, organization);
+	$: update(at, organizationID);
 
-	function remove(resource: Models.Group) {
+	function remove(resource: Models.GroupRead) {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
-			body: `Removing project "${resource.name}" will also remove all resources owned by it.`,
+			body: `Removing project "${resource.metadata.name}" will also remove all resources owned by it.`,
 			response: (ok: boolean) => {
 				if (!ok) return;
 
 				const parameters = {
-					organization: organization,
-					groupid: resource.id
+					organizationID: organizationID,
+					groupid: resource.metadata.id
 				};
 
 				Clients.identityClient(toastStore, at)
-					.apiV1OrganizationsOrganizationGroupsGroupidDelete(parameters)
-					.then(() => update(at, organization))
+					.apiV1OrganizationsOrganizationIDGroupsGroupidDelete(parameters)
+					.then(() => update(at, organizationID))
 					.catch((e: Error) => Clients.error(e));
 			}
 		};
@@ -83,11 +83,10 @@
 
 	<ShellList>
 		{#each groups || [] as resource}
-			<ShellListItem>
-				<header class="flex items-center gap-4">
-					<a class="font-bold" href="/identity/groups/view/{resource.id}">{resource.name}</a>
-				</header>
-
+			<ShellListItem
+				metadata={resource.metadata}
+				href="/identity/groups/view/{resource.metadata.id}"
+			>
 				<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
 					<iconify-icon icon="mdi:close" />
 				</button>

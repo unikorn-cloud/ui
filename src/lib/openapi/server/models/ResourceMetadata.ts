@@ -14,53 +14,24 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * A resources's metadata
+ * Resource metadata valid for all API resource reads and writes.
  * @export
  * @interface ResourceMetadata
  */
 export interface ResourceMetadata {
     /**
-     * Where the resource is related to a project, this is populated.
+     * A valid Kubenetes label value, typically used for resource names that can be
+     * indexed in the database.
      * @type {string}
      * @memberof ResourceMetadata
      */
-    project?: string;
+    name: string;
     /**
-     * Where the resource is scoped to a cluster manager, this is populated.
+     * The resource description, this optionally augments the name with more context.
      * @type {string}
      * @memberof ResourceMetadata
      */
-    clustermanager?: string;
-    /**
-     * Where the resource is scoped to a region, this is populated,
-     * @type {string}
-     * @memberof ResourceMetadata
-     */
-    region?: string;
-    /**
-     * The time the resource was created.
-     * @type {Date}
-     * @memberof ResourceMetadata
-     */
-    creationTime: Date;
-    /**
-     * The time the resource was deleted.
-     * @type {Date}
-     * @memberof ResourceMetadata
-     */
-    deletionTime?: Date;
-    /**
-     * The current status of the resource. Intially the status will be "Unknown" until
-     * the resource is reconciled by the relevant controller. It then will transition to
-     * "Provisioning" and will be ready for use when it changes to "Provisioned". The status
-     * will also transition to the "Provisioning" status during an update. The
-     * status will change to "Deprovisioning" when a delete request is being processed.
-     * It may also change to "Error" if an unexpected error occurred during any operation.
-     * Errors may be transient.
-     * @type {string}
-     * @memberof ResourceMetadata
-     */
-    status: string;
+    description?: string;
 }
 
 /**
@@ -68,8 +39,7 @@ export interface ResourceMetadata {
  */
 export function instanceOfResourceMetadata(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "creationTime" in value;
-    isInstance = isInstance && "status" in value;
+    isInstance = isInstance && "name" in value;
 
     return isInstance;
 }
@@ -84,12 +54,8 @@ export function ResourceMetadataFromJSONTyped(json: any, ignoreDiscriminator: bo
     }
     return {
         
-        'project': !exists(json, 'project') ? undefined : json['project'],
-        'clustermanager': !exists(json, 'clustermanager') ? undefined : json['clustermanager'],
-        'region': !exists(json, 'region') ? undefined : json['region'],
-        'creationTime': (new Date(json['creationTime'])),
-        'deletionTime': !exists(json, 'deletionTime') ? undefined : (new Date(json['deletionTime'])),
-        'status': json['status'],
+        'name': json['name'],
+        'description': !exists(json, 'description') ? undefined : json['description'],
     };
 }
 
@@ -102,12 +68,8 @@ export function ResourceMetadataToJSON(value?: ResourceMetadata | null): any {
     }
     return {
         
-        'project': value.project,
-        'clustermanager': value.clustermanager,
-        'region': value.region,
-        'creationTime': (value.creationTime.toISOString()),
-        'deletionTime': value.deletionTime === undefined ? undefined : (value.deletionTime.toISOString()),
-        'status': value.status,
+        'name': value.name,
+        'description': value.description,
     };
 }
 

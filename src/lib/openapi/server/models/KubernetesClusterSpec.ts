@@ -27,12 +27,6 @@ import {
  */
 export interface KubernetesClusterSpec {
     /**
-     * Cluster name.
-     * @type {string}
-     * @memberof KubernetesClusterSpec
-     */
-    name: string;
-    /**
      * The region to provision the cluster in.
      * @type {string}
      * @memberof KubernetesClusterSpec
@@ -64,7 +58,6 @@ export interface KubernetesClusterSpec {
  */
 export function instanceOfKubernetesClusterSpec(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "name" in value;
     isInstance = isInstance && "region" in value;
     isInstance = isInstance && "version" in value;
     isInstance = isInstance && "workloadPools" in value;
@@ -82,7 +75,6 @@ export function KubernetesClusterSpecFromJSONTyped(json: any, ignoreDiscriminato
     }
     return {
         
-        'name': json['name'],
         'region': json['region'],
         'clusterManager': !exists(json, 'clusterManager') ? undefined : json['clusterManager'],
         'version': json['version'],
@@ -99,7 +91,6 @@ export function KubernetesClusterSpecToJSON(value?: KubernetesClusterSpec | null
     }
     return {
         
-        'name': value.name,
         'region': value.region,
         'clusterManager': value.clusterManager,
         'version': value.version,

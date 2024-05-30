@@ -13,19 +13,19 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Oauth2Provider } from './Oauth2Provider';
+import type { Oauth2ProviderRead } from './Oauth2ProviderRead';
 import {
-    Oauth2ProviderFromJSON,
-    Oauth2ProviderFromJSONTyped,
-    Oauth2ProviderToJSON,
-} from './Oauth2Provider';
+    Oauth2ProviderReadFromJSON,
+    Oauth2ProviderReadFromJSONTyped,
+    Oauth2ProviderReadToJSON,
+} from './Oauth2ProviderRead';
 
 /**
  * A list of oauth2 providers.
  * @export
  * @interface Oauth2Providers
  */
-export interface Oauth2Providers extends Array<Oauth2Provider> {
+export interface Oauth2Providers extends Array<Oauth2ProviderRead> {
 }
 
 /**

@@ -17,18 +17,20 @@ import * as runtime from '../runtime';
 import type {
   Acl,
   AvailableGroups,
-  Group,
+  GroupRead,
+  GroupWrite,
   Groups,
   JsonWebKeySet,
   LoginRequestOptions,
   Oauth2Error,
-  Oauth2ProviderCreate,
+  Oauth2ProviderWrite,
   Oauth2Providers,
   OpenidConfiguration,
-  Organization,
+  OrganizationRead,
+  OrganizationWrite,
   Organizations,
-  Project,
-  ProjectSpec,
+  ProjectRead,
+  ProjectWrite,
   Projects,
   RoleList,
   Token,
@@ -39,8 +41,10 @@ import {
     AclToJSON,
     AvailableGroupsFromJSON,
     AvailableGroupsToJSON,
-    GroupFromJSON,
-    GroupToJSON,
+    GroupReadFromJSON,
+    GroupReadToJSON,
+    GroupWriteFromJSON,
+    GroupWriteToJSON,
     GroupsFromJSON,
     GroupsToJSON,
     JsonWebKeySetFromJSON,
@@ -49,20 +53,22 @@ import {
     LoginRequestOptionsToJSON,
     Oauth2ErrorFromJSON,
     Oauth2ErrorToJSON,
-    Oauth2ProviderCreateFromJSON,
-    Oauth2ProviderCreateToJSON,
+    Oauth2ProviderWriteFromJSON,
+    Oauth2ProviderWriteToJSON,
     Oauth2ProvidersFromJSON,
     Oauth2ProvidersToJSON,
     OpenidConfigurationFromJSON,
     OpenidConfigurationToJSON,
-    OrganizationFromJSON,
-    OrganizationToJSON,
+    OrganizationReadFromJSON,
+    OrganizationReadToJSON,
+    OrganizationWriteFromJSON,
+    OrganizationWriteToJSON,
     OrganizationsFromJSON,
     OrganizationsToJSON,
-    ProjectFromJSON,
-    ProjectToJSON,
-    ProjectSpecFromJSON,
-    ProjectSpecToJSON,
+    ProjectReadFromJSON,
+    ProjectReadToJSON,
+    ProjectWriteFromJSON,
+    ProjectWriteToJSON,
     ProjectsFromJSON,
     ProjectsToJSON,
     RoleListFromJSON,
@@ -73,99 +79,99 @@ import {
     TokenRequestOptionsToJSON,
 } from '../models/index';
 
-export interface ApiV1OrganizationsOrganizationAclGetRequest {
-    organization: string;
+export interface ApiV1OrganizationsOrganizationIDAclGetRequest {
+    organizationID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationAvailableGroupsGetRequest {
-    organization: string;
+export interface ApiV1OrganizationsOrganizationIDAvailableGroupsGetRequest {
+    organizationID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationGetRequest {
-    organization: string;
+export interface ApiV1OrganizationsOrganizationIDGetRequest {
+    organizationID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationGroupsGetRequest {
-    organization: string;
+export interface ApiV1OrganizationsOrganizationIDGroupsGetRequest {
+    organizationID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationGroupsGroupidDeleteRequest {
-    organization: string;
+export interface ApiV1OrganizationsOrganizationIDGroupsGroupidDeleteRequest {
+    organizationID: string;
     groupid: string;
 }
 
-export interface ApiV1OrganizationsOrganizationGroupsGroupidGetRequest {
-    organization: string;
+export interface ApiV1OrganizationsOrganizationIDGroupsGroupidGetRequest {
+    organizationID: string;
     groupid: string;
 }
 
-export interface ApiV1OrganizationsOrganizationGroupsGroupidPutRequest {
-    organization: string;
+export interface ApiV1OrganizationsOrganizationIDGroupsGroupidPutRequest {
+    organizationID: string;
     groupid: string;
-    group: Group;
+    groupWrite: GroupWrite;
 }
 
-export interface ApiV1OrganizationsOrganizationGroupsPostRequest {
-    organization: string;
-    group: Group;
+export interface ApiV1OrganizationsOrganizationIDGroupsPostRequest {
+    organizationID: string;
+    groupWrite: GroupWrite;
 }
 
-export interface ApiV1OrganizationsOrganizationOauth2providersGetRequest {
-    organization: string;
+export interface ApiV1OrganizationsOrganizationIDOauth2providersGetRequest {
+    organizationID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationOauth2providersPostRequest {
-    organization: string;
-    oauth2ProviderCreate: Oauth2ProviderCreate;
+export interface ApiV1OrganizationsOrganizationIDOauth2providersPostRequest {
+    organizationID: string;
+    oauth2ProviderWrite: Oauth2ProviderWrite;
 }
 
-export interface ApiV1OrganizationsOrganizationOauth2providersProviderDeleteRequest {
-    organization: string;
-    provider: string;
+export interface ApiV1OrganizationsOrganizationIDOauth2providersProviderIDDeleteRequest {
+    organizationID: string;
+    providerID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationOauth2providersProviderPutRequest {
-    organization: string;
-    provider: string;
-    oauth2ProviderCreate: Oauth2ProviderCreate;
+export interface ApiV1OrganizationsOrganizationIDOauth2providersProviderIDPutRequest {
+    organizationID: string;
+    providerID: string;
+    oauth2ProviderWrite: Oauth2ProviderWrite;
 }
 
-export interface ApiV1OrganizationsOrganizationProjectsGetRequest {
-    organization: string;
+export interface ApiV1OrganizationsOrganizationIDProjectsGetRequest {
+    organizationID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationProjectsPostRequest {
-    organization: string;
-    projectSpec: ProjectSpec;
+export interface ApiV1OrganizationsOrganizationIDProjectsPostRequest {
+    organizationID: string;
+    projectWrite: ProjectWrite;
 }
 
-export interface ApiV1OrganizationsOrganizationProjectsProjectDeleteRequest {
-    organization: string;
-    project: string;
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDDeleteRequest {
+    organizationID: string;
+    projectID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationProjectsProjectGetRequest {
-    organization: string;
-    project: string;
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDGetRequest {
+    organizationID: string;
+    projectID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationProjectsProjectPutRequest {
-    organization: string;
-    project: string;
-    projectSpec: ProjectSpec;
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDPutRequest {
+    organizationID: string;
+    projectID: string;
+    projectWrite: ProjectWrite;
 }
 
-export interface ApiV1OrganizationsOrganizationPutRequest {
-    organization: string;
-    organization2: Organization;
+export interface ApiV1OrganizationsOrganizationIDPutRequest {
+    organizationID: string;
+    organizationWrite: OrganizationWrite;
 }
 
-export interface ApiV1OrganizationsOrganizationRolesGetRequest {
-    organization: string;
+export interface ApiV1OrganizationsOrganizationIDRolesGetRequest {
+    organizationID: string;
 }
 
 export interface ApiV1OrganizationsPostRequest {
-    organization: Organization;
+    organizationWrite: OrganizationWrite;
 }
 
 export interface Oauth2V2LoginPostRequest {
@@ -246,9 +252,9 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns access control properties for the user.
      */
-    async apiV1OrganizationsOrganizationAclGetRaw(requestParameters: ApiV1OrganizationsOrganizationAclGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Acl>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationAclGet.');
+    async apiV1OrganizationsOrganizationIDAclGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDAclGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Acl>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDAclGet.');
         }
 
         const queryParameters: any = {};
@@ -261,7 +267,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/acl`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            path: `/api/v1/organizations/{organizationID}/acl`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -273,17 +279,17 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns access control properties for the user.
      */
-    async apiV1OrganizationsOrganizationAclGet(requestParameters: ApiV1OrganizationsOrganizationAclGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Acl> {
-        const response = await this.apiV1OrganizationsOrganizationAclGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDAclGet(requestParameters: ApiV1OrganizationsOrganizationIDAclGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Acl> {
+        const response = await this.apiV1OrganizationsOrganizationIDAclGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Returns a list of groups that are defined for the organization in the domain provider.
      */
-    async apiV1OrganizationsOrganizationAvailableGroupsGetRaw(requestParameters: ApiV1OrganizationsOrganizationAvailableGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AvailableGroups>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationAvailableGroupsGet.');
+    async apiV1OrganizationsOrganizationIDAvailableGroupsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDAvailableGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AvailableGroups>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDAvailableGroupsGet.');
         }
 
         const queryParameters: any = {};
@@ -296,7 +302,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/available-groups`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            path: `/api/v1/organizations/{organizationID}/available-groups`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -308,17 +314,17 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns a list of groups that are defined for the organization in the domain provider.
      */
-    async apiV1OrganizationsOrganizationAvailableGroupsGet(requestParameters: ApiV1OrganizationsOrganizationAvailableGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AvailableGroups> {
-        const response = await this.apiV1OrganizationsOrganizationAvailableGroupsGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDAvailableGroupsGet(requestParameters: ApiV1OrganizationsOrganizationIDAvailableGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AvailableGroups> {
+        const response = await this.apiV1OrganizationsOrganizationIDAvailableGroupsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Get an organization.
      */
-    async apiV1OrganizationsOrganizationGetRaw(requestParameters: ApiV1OrganizationsOrganizationGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Organization>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationGet.');
+    async apiV1OrganizationsOrganizationIDGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OrganizationRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDGet.');
         }
 
         const queryParameters: any = {};
@@ -331,29 +337,29 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            path: `/api/v1/organizations/{organizationID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => OrganizationFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => OrganizationReadFromJSON(jsonValue));
     }
 
     /**
      * Get an organization.
      */
-    async apiV1OrganizationsOrganizationGet(requestParameters: ApiV1OrganizationsOrganizationGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Organization> {
-        const response = await this.apiV1OrganizationsOrganizationGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDGet(requestParameters: ApiV1OrganizationsOrganizationIDGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OrganizationRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Returns a list of groups that are defined for the organization.
      */
-    async apiV1OrganizationsOrganizationGroupsGetRaw(requestParameters: ApiV1OrganizationsOrganizationGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Groups>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationGroupsGet.');
+    async apiV1OrganizationsOrganizationIDGroupsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Groups>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDGroupsGet.');
         }
 
         const queryParameters: any = {};
@@ -366,7 +372,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/groups`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            path: `/api/v1/organizations/{organizationID}/groups`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -378,21 +384,21 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns a list of groups that are defined for the organization.
      */
-    async apiV1OrganizationsOrganizationGroupsGet(requestParameters: ApiV1OrganizationsOrganizationGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Groups> {
-        const response = await this.apiV1OrganizationsOrganizationGroupsGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDGroupsGet(requestParameters: ApiV1OrganizationsOrganizationIDGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Groups> {
+        const response = await this.apiV1OrganizationsOrganizationIDGroupsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Allows the deletion of an existing group.
      */
-    async apiV1OrganizationsOrganizationGroupsGroupidDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationGroupsGroupidDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationGroupsGroupidDelete.');
+    async apiV1OrganizationsOrganizationIDGroupsGroupidDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDGroupsGroupidDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDGroupsGroupidDelete.');
         }
 
         if (requestParameters.groupid === null || requestParameters.groupid === undefined) {
-            throw new runtime.RequiredError('groupid','Required parameter requestParameters.groupid was null or undefined when calling apiV1OrganizationsOrganizationGroupsGroupidDelete.');
+            throw new runtime.RequiredError('groupid','Required parameter requestParameters.groupid was null or undefined when calling apiV1OrganizationsOrganizationIDGroupsGroupidDelete.');
         }
 
         const queryParameters: any = {};
@@ -405,7 +411,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/groups/{groupid}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"groupid"}}`, encodeURIComponent(String(requestParameters.groupid))),
+            path: `/api/v1/organizations/{organizationID}/groups/{groupid}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"groupid"}}`, encodeURIComponent(String(requestParameters.groupid))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -417,20 +423,20 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Allows the deletion of an existing group.
      */
-    async apiV1OrganizationsOrganizationGroupsGroupidDelete(requestParameters: ApiV1OrganizationsOrganizationGroupsGroupidDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationGroupsGroupidDeleteRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDGroupsGroupidDelete(requestParameters: ApiV1OrganizationsOrganizationIDGroupsGroupidDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDGroupsGroupidDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
      * Allows a single group to be polled.
      */
-    async apiV1OrganizationsOrganizationGroupsGroupidGetRaw(requestParameters: ApiV1OrganizationsOrganizationGroupsGroupidGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Group>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationGroupsGroupidGet.');
+    async apiV1OrganizationsOrganizationIDGroupsGroupidGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDGroupsGroupidGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GroupRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDGroupsGroupidGet.');
         }
 
         if (requestParameters.groupid === null || requestParameters.groupid === undefined) {
-            throw new runtime.RequiredError('groupid','Required parameter requestParameters.groupid was null or undefined when calling apiV1OrganizationsOrganizationGroupsGroupidGet.');
+            throw new runtime.RequiredError('groupid','Required parameter requestParameters.groupid was null or undefined when calling apiV1OrganizationsOrganizationIDGroupsGroupidGet.');
         }
 
         const queryParameters: any = {};
@@ -443,37 +449,37 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/groups/{groupid}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"groupid"}}`, encodeURIComponent(String(requestParameters.groupid))),
+            path: `/api/v1/organizations/{organizationID}/groups/{groupid}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"groupid"}}`, encodeURIComponent(String(requestParameters.groupid))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GroupFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => GroupReadFromJSON(jsonValue));
     }
 
     /**
      * Allows a single group to be polled.
      */
-    async apiV1OrganizationsOrganizationGroupsGroupidGet(requestParameters: ApiV1OrganizationsOrganizationGroupsGroupidGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Group> {
-        const response = await this.apiV1OrganizationsOrganizationGroupsGroupidGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDGroupsGroupidGet(requestParameters: ApiV1OrganizationsOrganizationIDGroupsGroupidGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GroupRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDGroupsGroupidGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Allows a group to be updated.
      */
-    async apiV1OrganizationsOrganizationGroupsGroupidPutRaw(requestParameters: ApiV1OrganizationsOrganizationGroupsGroupidPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationGroupsGroupidPut.');
+    async apiV1OrganizationsOrganizationIDGroupsGroupidPutRaw(requestParameters: ApiV1OrganizationsOrganizationIDGroupsGroupidPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDGroupsGroupidPut.');
         }
 
         if (requestParameters.groupid === null || requestParameters.groupid === undefined) {
-            throw new runtime.RequiredError('groupid','Required parameter requestParameters.groupid was null or undefined when calling apiV1OrganizationsOrganizationGroupsGroupidPut.');
+            throw new runtime.RequiredError('groupid','Required parameter requestParameters.groupid was null or undefined when calling apiV1OrganizationsOrganizationIDGroupsGroupidPut.');
         }
 
-        if (requestParameters.group === null || requestParameters.group === undefined) {
-            throw new runtime.RequiredError('group','Required parameter requestParameters.group was null or undefined when calling apiV1OrganizationsOrganizationGroupsGroupidPut.');
+        if (requestParameters.groupWrite === null || requestParameters.groupWrite === undefined) {
+            throw new runtime.RequiredError('groupWrite','Required parameter requestParameters.groupWrite was null or undefined when calling apiV1OrganizationsOrganizationIDGroupsGroupidPut.');
         }
 
         const queryParameters: any = {};
@@ -488,11 +494,11 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/groups/{groupid}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"groupid"}}`, encodeURIComponent(String(requestParameters.groupid))),
+            path: `/api/v1/organizations/{organizationID}/groups/{groupid}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"groupid"}}`, encodeURIComponent(String(requestParameters.groupid))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: GroupToJSON(requestParameters.group),
+            body: GroupWriteToJSON(requestParameters.groupWrite),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -501,20 +507,20 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Allows a group to be updated.
      */
-    async apiV1OrganizationsOrganizationGroupsGroupidPut(requestParameters: ApiV1OrganizationsOrganizationGroupsGroupidPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationGroupsGroupidPutRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDGroupsGroupidPut(requestParameters: ApiV1OrganizationsOrganizationIDGroupsGroupidPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDGroupsGroupidPutRaw(requestParameters, initOverrides);
     }
 
     /**
      * Allows creation of a new group.
      */
-    async apiV1OrganizationsOrganizationGroupsPostRaw(requestParameters: ApiV1OrganizationsOrganizationGroupsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationGroupsPost.');
+    async apiV1OrganizationsOrganizationIDGroupsPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDGroupsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDGroupsPost.');
         }
 
-        if (requestParameters.group === null || requestParameters.group === undefined) {
-            throw new runtime.RequiredError('group','Required parameter requestParameters.group was null or undefined when calling apiV1OrganizationsOrganizationGroupsPost.');
+        if (requestParameters.groupWrite === null || requestParameters.groupWrite === undefined) {
+            throw new runtime.RequiredError('groupWrite','Required parameter requestParameters.groupWrite was null or undefined when calling apiV1OrganizationsOrganizationIDGroupsPost.');
         }
 
         const queryParameters: any = {};
@@ -529,11 +535,11 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/groups`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            path: `/api/v1/organizations/{organizationID}/groups`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: GroupToJSON(requestParameters.group),
+            body: GroupWriteToJSON(requestParameters.groupWrite),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -542,16 +548,16 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Allows creation of a new group.
      */
-    async apiV1OrganizationsOrganizationGroupsPost(requestParameters: ApiV1OrganizationsOrganizationGroupsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationGroupsPostRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDGroupsPost(requestParameters: ApiV1OrganizationsOrganizationIDGroupsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDGroupsPostRaw(requestParameters, initOverrides);
     }
 
     /**
      * Lists an organization\'s identity providers.
      */
-    async apiV1OrganizationsOrganizationOauth2providersGetRaw(requestParameters: ApiV1OrganizationsOrganizationOauth2providersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Oauth2Providers>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationOauth2providersGet.');
+    async apiV1OrganizationsOrganizationIDOauth2providersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Oauth2Providers>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDOauth2providersGet.');
         }
 
         const queryParameters: any = {};
@@ -564,7 +570,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/oauth2providers`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            path: `/api/v1/organizations/{organizationID}/oauth2providers`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -576,21 +582,21 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists an organization\'s identity providers.
      */
-    async apiV1OrganizationsOrganizationOauth2providersGet(requestParameters: ApiV1OrganizationsOrganizationOauth2providersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Oauth2Providers> {
-        const response = await this.apiV1OrganizationsOrganizationOauth2providersGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDOauth2providersGet(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Oauth2Providers> {
+        const response = await this.apiV1OrganizationsOrganizationIDOauth2providersGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Create an organization\'s identity provider.
      */
-    async apiV1OrganizationsOrganizationOauth2providersPostRaw(requestParameters: ApiV1OrganizationsOrganizationOauth2providersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationOauth2providersPost.');
+    async apiV1OrganizationsOrganizationIDOauth2providersPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDOauth2providersPost.');
         }
 
-        if (requestParameters.oauth2ProviderCreate === null || requestParameters.oauth2ProviderCreate === undefined) {
-            throw new runtime.RequiredError('oauth2ProviderCreate','Required parameter requestParameters.oauth2ProviderCreate was null or undefined when calling apiV1OrganizationsOrganizationOauth2providersPost.');
+        if (requestParameters.oauth2ProviderWrite === null || requestParameters.oauth2ProviderWrite === undefined) {
+            throw new runtime.RequiredError('oauth2ProviderWrite','Required parameter requestParameters.oauth2ProviderWrite was null or undefined when calling apiV1OrganizationsOrganizationIDOauth2providersPost.');
         }
 
         const queryParameters: any = {};
@@ -605,11 +611,11 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/oauth2providers`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            path: `/api/v1/organizations/{organizationID}/oauth2providers`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: Oauth2ProviderCreateToJSON(requestParameters.oauth2ProviderCreate),
+            body: Oauth2ProviderWriteToJSON(requestParameters.oauth2ProviderWrite),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -618,20 +624,20 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Create an organization\'s identity provider.
      */
-    async apiV1OrganizationsOrganizationOauth2providersPost(requestParameters: ApiV1OrganizationsOrganizationOauth2providersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationOauth2providersPostRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDOauth2providersPost(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDOauth2providersPostRaw(requestParameters, initOverrides);
     }
 
     /**
      * Delete an organization\'s identity provider.
      */
-    async apiV1OrganizationsOrganizationOauth2providersProviderDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationOauth2providersProviderDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationOauth2providersProviderDelete.');
+    async apiV1OrganizationsOrganizationIDOauth2providersProviderIDDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersProviderIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDOauth2providersProviderIDDelete.');
         }
 
-        if (requestParameters.provider === null || requestParameters.provider === undefined) {
-            throw new runtime.RequiredError('provider','Required parameter requestParameters.provider was null or undefined when calling apiV1OrganizationsOrganizationOauth2providersProviderDelete.');
+        if (requestParameters.providerID === null || requestParameters.providerID === undefined) {
+            throw new runtime.RequiredError('providerID','Required parameter requestParameters.providerID was null or undefined when calling apiV1OrganizationsOrganizationIDOauth2providersProviderIDDelete.');
         }
 
         const queryParameters: any = {};
@@ -644,7 +650,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/oauth2providers/{provider}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"provider"}}`, encodeURIComponent(String(requestParameters.provider))),
+            path: `/api/v1/organizations/{organizationID}/oauth2providers/{providerID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"providerID"}}`, encodeURIComponent(String(requestParameters.providerID))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -656,24 +662,24 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Delete an organization\'s identity provider.
      */
-    async apiV1OrganizationsOrganizationOauth2providersProviderDelete(requestParameters: ApiV1OrganizationsOrganizationOauth2providersProviderDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationOauth2providersProviderDeleteRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDOauth2providersProviderIDDelete(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersProviderIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDOauth2providersProviderIDDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
      * Update an organization\'s identity provider.
      */
-    async apiV1OrganizationsOrganizationOauth2providersProviderPutRaw(requestParameters: ApiV1OrganizationsOrganizationOauth2providersProviderPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationOauth2providersProviderPut.');
+    async apiV1OrganizationsOrganizationIDOauth2providersProviderIDPutRaw(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersProviderIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDOauth2providersProviderIDPut.');
         }
 
-        if (requestParameters.provider === null || requestParameters.provider === undefined) {
-            throw new runtime.RequiredError('provider','Required parameter requestParameters.provider was null or undefined when calling apiV1OrganizationsOrganizationOauth2providersProviderPut.');
+        if (requestParameters.providerID === null || requestParameters.providerID === undefined) {
+            throw new runtime.RequiredError('providerID','Required parameter requestParameters.providerID was null or undefined when calling apiV1OrganizationsOrganizationIDOauth2providersProviderIDPut.');
         }
 
-        if (requestParameters.oauth2ProviderCreate === null || requestParameters.oauth2ProviderCreate === undefined) {
-            throw new runtime.RequiredError('oauth2ProviderCreate','Required parameter requestParameters.oauth2ProviderCreate was null or undefined when calling apiV1OrganizationsOrganizationOauth2providersProviderPut.');
+        if (requestParameters.oauth2ProviderWrite === null || requestParameters.oauth2ProviderWrite === undefined) {
+            throw new runtime.RequiredError('oauth2ProviderWrite','Required parameter requestParameters.oauth2ProviderWrite was null or undefined when calling apiV1OrganizationsOrganizationIDOauth2providersProviderIDPut.');
         }
 
         const queryParameters: any = {};
@@ -688,11 +694,11 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/oauth2providers/{provider}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"provider"}}`, encodeURIComponent(String(requestParameters.provider))),
+            path: `/api/v1/organizations/{organizationID}/oauth2providers/{providerID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"providerID"}}`, encodeURIComponent(String(requestParameters.providerID))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: Oauth2ProviderCreateToJSON(requestParameters.oauth2ProviderCreate),
+            body: Oauth2ProviderWriteToJSON(requestParameters.oauth2ProviderWrite),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -701,16 +707,16 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Update an organization\'s identity provider.
      */
-    async apiV1OrganizationsOrganizationOauth2providersProviderPut(requestParameters: ApiV1OrganizationsOrganizationOauth2providersProviderPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationOauth2providersProviderPutRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDOauth2providersProviderIDPut(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersProviderIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDOauth2providersProviderIDPutRaw(requestParameters, initOverrides);
     }
 
     /**
      * List all projects for the organization.
      */
-    async apiV1OrganizationsOrganizationProjectsGetRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Projects>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsGet.');
+    async apiV1OrganizationsOrganizationIDProjectsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Projects>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsGet.');
         }
 
         const queryParameters: any = {};
@@ -723,7 +729,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/projects`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            path: `/api/v1/organizations/{organizationID}/projects`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -735,21 +741,21 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * List all projects for the organization.
      */
-    async apiV1OrganizationsOrganizationProjectsGet(requestParameters: ApiV1OrganizationsOrganizationProjectsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Projects> {
-        const response = await this.apiV1OrganizationsOrganizationProjectsGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Projects> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Creates a new project resource for the user\'s organization.
      */
-    async apiV1OrganizationsOrganizationProjectsPostRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsPost.');
+    async apiV1OrganizationsOrganizationIDProjectsPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsPost.');
         }
 
-        if (requestParameters.projectSpec === null || requestParameters.projectSpec === undefined) {
-            throw new runtime.RequiredError('projectSpec','Required parameter requestParameters.projectSpec was null or undefined when calling apiV1OrganizationsOrganizationProjectsPost.');
+        if (requestParameters.projectWrite === null || requestParameters.projectWrite === undefined) {
+            throw new runtime.RequiredError('projectWrite','Required parameter requestParameters.projectWrite was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsPost.');
         }
 
         const queryParameters: any = {};
@@ -764,11 +770,11 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/projects`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            path: `/api/v1/organizations/{organizationID}/projects`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: ProjectSpecToJSON(requestParameters.projectSpec),
+            body: ProjectWriteToJSON(requestParameters.projectWrite),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -777,20 +783,20 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Creates a new project resource for the user\'s organization.
      */
-    async apiV1OrganizationsOrganizationProjectsPost(requestParameters: ApiV1OrganizationsOrganizationProjectsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationProjectsPostRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDProjectsPostRaw(requestParameters, initOverrides);
     }
 
     /**
      * Deletes the project associated with the authenticated user\'s scoped authorisation token. This is a cascading operation and will delete all contained cluster managers and clusters.
      */
-    async apiV1OrganizationsOrganizationProjectsProjectDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectDelete.');
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDDelete.');
         }
 
-        if (requestParameters.project === null || requestParameters.project === undefined) {
-            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectDelete.');
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDDelete.');
         }
 
         const queryParameters: any = {};
@@ -803,7 +809,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/projects/{project}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"project"}}`, encodeURIComponent(String(requestParameters.project))),
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -815,20 +821,20 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Deletes the project associated with the authenticated user\'s scoped authorisation token. This is a cascading operation and will delete all contained cluster managers and clusters.
      */
-    async apiV1OrganizationsOrganizationProjectsProjectDelete(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationProjectsProjectDeleteRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDDelete(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
      * Gets a project.
      */
-    async apiV1OrganizationsOrganizationProjectsProjectGetRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Project>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectGet.');
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ProjectRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDGet.');
         }
 
-        if (requestParameters.project === null || requestParameters.project === undefined) {
-            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectGet.');
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDGet.');
         }
 
         const queryParameters: any = {};
@@ -841,37 +847,37 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/projects/{project}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"project"}}`, encodeURIComponent(String(requestParameters.project))),
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ProjectFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ProjectReadFromJSON(jsonValue));
     }
 
     /**
      * Gets a project.
      */
-    async apiV1OrganizationsOrganizationProjectsProjectGet(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Project> {
-        const response = await this.apiV1OrganizationsOrganizationProjectsProjectGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ProjectRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Updates a project.
      */
-    async apiV1OrganizationsOrganizationProjectsProjectPutRaw(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectPut.');
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDPutRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDPut.');
         }
 
-        if (requestParameters.project === null || requestParameters.project === undefined) {
-            throw new runtime.RequiredError('project','Required parameter requestParameters.project was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectPut.');
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDPut.');
         }
 
-        if (requestParameters.projectSpec === null || requestParameters.projectSpec === undefined) {
-            throw new runtime.RequiredError('projectSpec','Required parameter requestParameters.projectSpec was null or undefined when calling apiV1OrganizationsOrganizationProjectsProjectPut.');
+        if (requestParameters.projectWrite === null || requestParameters.projectWrite === undefined) {
+            throw new runtime.RequiredError('projectWrite','Required parameter requestParameters.projectWrite was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDPut.');
         }
 
         const queryParameters: any = {};
@@ -886,11 +892,11 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/projects/{project}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))).replace(`{${"project"}}`, encodeURIComponent(String(requestParameters.project))),
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: ProjectSpecToJSON(requestParameters.projectSpec),
+            body: ProjectWriteToJSON(requestParameters.projectWrite),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -899,20 +905,20 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Updates a project.
      */
-    async apiV1OrganizationsOrganizationProjectsProjectPut(requestParameters: ApiV1OrganizationsOrganizationProjectsProjectPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationProjectsProjectPutRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDPut(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDPutRaw(requestParameters, initOverrides);
     }
 
     /**
      * Allows an organization to be updated.
      */
-    async apiV1OrganizationsOrganizationPutRaw(requestParameters: ApiV1OrganizationsOrganizationPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationPut.');
+    async apiV1OrganizationsOrganizationIDPutRaw(requestParameters: ApiV1OrganizationsOrganizationIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDPut.');
         }
 
-        if (requestParameters.organization2 === null || requestParameters.organization2 === undefined) {
-            throw new runtime.RequiredError('organization2','Required parameter requestParameters.organization2 was null or undefined when calling apiV1OrganizationsOrganizationPut.');
+        if (requestParameters.organizationWrite === null || requestParameters.organizationWrite === undefined) {
+            throw new runtime.RequiredError('organizationWrite','Required parameter requestParameters.organizationWrite was null or undefined when calling apiV1OrganizationsOrganizationIDPut.');
         }
 
         const queryParameters: any = {};
@@ -927,11 +933,11 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            path: `/api/v1/organizations/{organizationID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: OrganizationToJSON(requestParameters.organization2),
+            body: OrganizationWriteToJSON(requestParameters.organizationWrite),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -940,16 +946,16 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Allows an organization to be updated.
      */
-    async apiV1OrganizationsOrganizationPut(requestParameters: ApiV1OrganizationsOrganizationPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationPutRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDPut(requestParameters: ApiV1OrganizationsOrganizationIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDPutRaw(requestParameters, initOverrides);
     }
 
     /**
      * Returns roles that can be used by the organization.
      */
-    async apiV1OrganizationsOrganizationRolesGetRaw(requestParameters: ApiV1OrganizationsOrganizationRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RoleList>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsOrganizationRolesGet.');
+    async apiV1OrganizationsOrganizationIDRolesGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RoleList>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDRolesGet.');
         }
 
         const queryParameters: any = {};
@@ -962,7 +968,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organization}/roles`.replace(`{${"organization"}}`, encodeURIComponent(String(requestParameters.organization))),
+            path: `/api/v1/organizations/{organizationID}/roles`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -974,8 +980,8 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns roles that can be used by the organization.
      */
-    async apiV1OrganizationsOrganizationRolesGet(requestParameters: ApiV1OrganizationsOrganizationRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RoleList> {
-        const response = await this.apiV1OrganizationsOrganizationRolesGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDRolesGet(requestParameters: ApiV1OrganizationsOrganizationIDRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RoleList> {
+        const response = await this.apiV1OrganizationsOrganizationIDRolesGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -983,8 +989,8 @@ export class DefaultApi extends runtime.BaseAPI {
      * Allows creation of an organization.
      */
     async apiV1OrganizationsPostRaw(requestParameters: ApiV1OrganizationsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organization === null || requestParameters.organization === undefined) {
-            throw new runtime.RequiredError('organization','Required parameter requestParameters.organization was null or undefined when calling apiV1OrganizationsPost.');
+        if (requestParameters.organizationWrite === null || requestParameters.organizationWrite === undefined) {
+            throw new runtime.RequiredError('organizationWrite','Required parameter requestParameters.organizationWrite was null or undefined when calling apiV1OrganizationsPost.');
         }
 
         const queryParameters: any = {};
@@ -1003,7 +1009,7 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: OrganizationToJSON(requestParameters.organization),
+            body: OrganizationWriteToJSON(requestParameters.organizationWrite),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);

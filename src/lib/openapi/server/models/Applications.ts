@@ -13,19 +13,19 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Application } from './Application';
+import type { ApplicationRead } from './ApplicationRead';
 import {
-    ApplicationFromJSON,
-    ApplicationFromJSONTyped,
-    ApplicationToJSON,
-} from './Application';
+    ApplicationReadFromJSON,
+    ApplicationReadFromJSONTyped,
+    ApplicationReadToJSON,
+} from './ApplicationRead';
 
 /**
  * A list of appications.
  * @export
  * @interface Applications
  */
-export interface Applications extends Array<Application> {
+export interface Applications extends Array<ApplicationRead> {
 }
 
 /**

@@ -38,25 +38,25 @@
 				<!-- Application logo -->
 				<div class="w-16">
 					<!-- eslint-disable svelte/no-at-html-tags -->
-					{@html atob(application.icon)}
+					{@html atob(application.spec.icon)}
 				</div>
 
 				<!-- Application title -->
 				<div class="flex flex-col gap-2">
 					<div class="flex gap-2">
-						{#each application.tags || [] as tag}
+						{#each application.spec.tags || [] as tag}
 							<div class="badge variant-soft">{tag}</div>
 						{/each}
 					</div>
 
-					<h4 class="h4">{application.humanReadableName}</h4>
+					<h4 class="h4">{application.metadata.name}</h4>
 				</div>
 			</header>
 
 			<!-- Application details -->
 			<main>
 				<h6 class="h6">Description</h6>
-				<p>{application.description}</p>
+				<p>{application.metadata.description}</p>
 			</main>
 		</article>
 	{/each}

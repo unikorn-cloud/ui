@@ -13,19 +13,19 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { KubernetesCluster } from './KubernetesCluster';
+import type { KubernetesClusterRead } from './KubernetesClusterRead';
 import {
-    KubernetesClusterFromJSON,
-    KubernetesClusterFromJSONTyped,
-    KubernetesClusterToJSON,
-} from './KubernetesCluster';
+    KubernetesClusterReadFromJSON,
+    KubernetesClusterReadFromJSONTyped,
+    KubernetesClusterReadToJSON,
+} from './KubernetesClusterRead';
 
 /**
  * A list of Kubernetes clusters.
  * @export
  * @interface KubernetesClusters
  */
-export interface KubernetesClusters extends Array<KubernetesCluster> {
+export interface KubernetesClusters extends Array<KubernetesClusterRead> {
 }
 
 /**

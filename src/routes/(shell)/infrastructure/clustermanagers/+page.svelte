@@ -31,10 +31,10 @@
 
 	let resources: Models.ClusterManagers;
 
-	let organization: string;
+	let organizationID: string;
 
 	organizationStore.subscribe((value: string) => {
-		organization = value;
+		organizationID = value;
 		update();
 	});
 
@@ -47,34 +47,34 @@
 	});
 
 	function update(): void {
-		if (!at || !organization) return;
+		if (!at || !organizationID) return;
 
 		const parameters = {
-			organization: organization
+			organizationID: organizationID
 		};
 
 		client(toastStore, at)
-			.apiV1OrganizationsOrganizationClustermanagersGet(parameters)
+			.apiV1OrganizationsOrganizationIDClustermanagersGet(parameters)
 			.then((v: Models.ClusterManagers) => (resources = v))
 			.catch((e: Error) => error(e));
 	}
 
-	function remove(resource: Models.ClusterManager): void {
+	function remove(resource: Models.ClusterManagerRead): void {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
-			body: `Removing control plane "${resource.spec.name}" will remove all resources owned by it.`,
+			body: `Removing control plane "${resource.metadata.name}" will remove all resources owned by it.`,
 			response: (ok: boolean) => {
 				if (!ok) return;
 
 				const parameters = {
-					organization: organization,
-					project: resource.metadata.project,
-					clusterManager: resource.spec.name
+					organizationID: organizationID,
+					projectID: resource.metadata.projectId,
+					clusterManagerID: resource.metadata.id
 				};
 
 				client(toastStore, at)
-					.apiV1OrganizationsOrganizationProjectsProjectClustermanagersClusterManagerDelete(
+					.apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersClusterManagerIDDelete(
 						parameters
 					)
 					.catch((e: Error) => error(e));
@@ -83,19 +83,12 @@
 
 		modalStore.trigger(modal);
 	}
-
-	import StatusIcon from '$lib/StatusIcon.svelte';
 </script>
 
 <ShellPage {settings}>
 	<ShellList>
 		{#each resources || [] as resource}
-			<ShellListItem>
-				<header class="flex items-center gap-4">
-					<StatusIcon metadata={resource.metadata} />
-					<h6 class="h6">{resource.spec.name}</h6>
-				</header>
-
+			<ShellListItem metadata={resource.metadata} href="#">
 				<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
 					<iconify-icon icon="mdi:close" />
 				</button>
