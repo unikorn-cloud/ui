@@ -29,30 +29,30 @@
 	let at: InternalToken;
 
 	let name: string;
-	let displayName: string;
+	let description: string;
 	let issuer: string;
 	let clientID: string;
 	let clientSecret: string;
 
 	let providers: Models.Oauth2Providers;
 
-	let organization: string;
+	let organizationID: string;
 
-	organizationStore.subscribe((value: string) => (organization = value));
+	organizationStore.subscribe((value: string) => (organizationID = value));
 
 	token.subscribe((token: InternalToken) => {
 		/* Setup the token on load */
-		if (!token || !organization) return;
+		if (!token || !organizationID) return;
 
 		at = token;
 
 		/* Get top-level resources required for the first step */
 		const parameters = {
-			organization: organization
+			organizationID: organizationID
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationOauth2providersGet(parameters)
+			.apiV1OrganizationsOrganizationIDOauth2providersGet(parameters)
 			.then((v: Models.Oauth2Providers) => (providers = v))
 			.catch((e: Error) => Clients.error(e));
 	});
@@ -61,24 +61,28 @@
 	$: step1Valid =
 		Validation.kubernetesNameValid(name) &&
 		Validation.unique(name, Validation.namedResourceNames(providers)) &&
-		displayName &&
+		description &&
 		issuer &&
 		clientID;
 
 	function complete() {
 		const parameters = {
-			organization: organization,
-			oauth2ProviderCreate: {
-				name: name,
-				displayName: displayName,
-				issuer: issuer,
-				clientID: clientID,
-				clientSecret: clientSecret
+			organizationID: organizationID,
+			oauth2ProviderWrite: {
+				metadata: {
+					name: name,
+					description: description
+				},
+				spec: {
+					issuer: issuer,
+					clientID: clientID,
+					clientSecret: clientSecret
+				}
 			}
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationOauth2providersPost(parameters)
+			.apiV1OrganizationsOrganizationIDOauth2providersPost(parameters)
 			.then(() => window.location.assign('/identity/oauth2providers'))
 			.catch((e: Error) => Clients.error(e));
 	}
@@ -100,9 +104,10 @@
 				<input id="name" type="text" class="input" required bind:value={name} />
 
 				<label for="display-name">
-					Choose a verbose display name for the provider. This can contain any characters you like.
+					Optionally hoose a verbose description for the provider. This can contain any characters
+					you like.
 				</label>
-				<input id="display-name" type="text" class="input" required bind:value={displayName} />
+				<input id="display-name" type="text" class="input" required bind:value={description} />
 			</ShellSection>
 
 			<ShellSection title="OAuth2 Settings">

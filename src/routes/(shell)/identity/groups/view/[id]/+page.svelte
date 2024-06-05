@@ -26,53 +26,56 @@
 
 	token.subscribe((token: InternalToken) => (at = token));
 
-	let organization: string;
+	let organizationID: string;
 
-	organizationStore.subscribe((value: string) => (organization = value));
+	organizationStore.subscribe((value: string) => (organizationID = value));
 
-	let group: Models.Group;
+	let group: Models.GroupRead;
 
 	let availableRoles: string[];
 
 	let availableGroups: Models.AvailableGroups;
 
-	function update(at: InternalToken, organization: string) {
-		if (!at || !organization) return;
+	function update(at: InternalToken, organizationID: string) {
+		if (!at || !organizationID) return;
 
 		const parameters = {
-			organization: organization,
+			organizationID: organizationID,
 			groupid: $page.params.id
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationGroupsGroupidGet(parameters)
-			.then((v: Models.Group) => (group = v))
+			.apiV1OrganizationsOrganizationIDGroupsGroupidGet(parameters)
+			.then((v: Models.GroupRead) => {
+				if (!v.spec.providerGroups) v.spec.providerGroups = [];
+				group = v;
+			})
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationRolesGet(parameters)
+			.apiV1OrganizationsOrganizationIDRolesGet(parameters)
 			.then((v: Models.RoleList) => (availableRoles = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationAvailableGroupsGet(parameters)
+			.apiV1OrganizationsOrganizationIDAvailableGroupsGet(parameters)
 			.then((v: Models.AvailableGroups) => (availableGroups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: update(at, organization);
+	$: update(at, organizationID);
 
 	function submit() {
-		if (!at || !organization) return;
+		if (!at || !organizationID) return;
 
 		const parameters = {
-			organization: organization,
-			groupid: group.id,
-			group: group
+			organizationID: organizationID,
+			groupid: $page.params.id,
+			groupWrite: group
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationGroupsGroupidPut(parameters)
+			.apiV1OrganizationsOrganizationIDGroupsGroupidPut(parameters)
 			.then(() => window.location.assign('/identity/groups'))
 			.catch((e: Error) => Clients.error(e));
 	}
@@ -82,12 +85,12 @@
 
 <ShellPage {settings}>
 	{#if group}
-		<h2 class="h2">{group.name}</h2>
+		<h2 class="h2">{group.metadata.name}</h2>
 
 		<ShellSection title="Roles">
 			<label class="label">
 				<span>Roles for users in the group.</span>
-				<select class="select" multiple bind:value={group.roles}>
+				<select class="select" multiple bind:value={group.spec.roles}>
 					{#each availableRoles || [] as role}
 						<option value={role}>{role}</option>
 					{/each}
@@ -100,7 +103,7 @@
 				<label for="groups">
 					Select any groups from your identity provider that will implicitly include users.
 				</label>
-				<select id="groups" class="select" multiple bind:value={group.providerGroups}>
+				<select id="groups" class="select" multiple bind:value={group.spec.providerGroups}>
 					{#each availableGroups || [] as group}
 						<option value={group.name}>{group.displayName || group.name}</option>
 					{/each}
@@ -110,7 +113,7 @@
 
 		<ShellSection title="Explicit Users">
 			<label class="label" for="users"> Users that are part of the group. </label>
-			<InputChip name="users" bind:value={group.users} />
+			<InputChip name="users" bind:value={group.spec.users} />
 		</ShellSection>
 
 		<button

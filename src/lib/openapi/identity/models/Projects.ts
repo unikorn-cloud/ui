@@ -13,19 +13,19 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Project } from './Project';
+import type { ProjectRead } from './ProjectRead';
 import {
-    ProjectFromJSON,
-    ProjectFromJSONTyped,
-    ProjectToJSON,
-} from './Project';
+    ProjectReadFromJSON,
+    ProjectReadFromJSONTyped,
+    ProjectReadToJSON,
+} from './ProjectRead';
 
 /**
  * A list of projects.
  * @export
  * @interface Projects
  */
-export interface Projects extends Array<Project> {
+export interface Projects extends Array<ProjectRead> {
 }
 
 /**

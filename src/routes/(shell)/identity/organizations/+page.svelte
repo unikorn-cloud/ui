@@ -35,13 +35,10 @@
 <ShellPage {settings}>
 	<ShellList>
 		{#each organizations || [] as resource}
-			<ShellListItem>
-				<header class="flex items-center gap-4">
-					<a class="font-bold" href="/identity/organizations/view/{resource.name}"
-						>{resource.name}</a
-					>
-				</header>
-			</ShellListItem>
+			<ShellListItem
+				metadata={resource.metadata}
+				href="/identity/organizations/view/{resource.metadata.id}"
+			/>
 		{/each}
 	</ShellList>
 </ShellPage>

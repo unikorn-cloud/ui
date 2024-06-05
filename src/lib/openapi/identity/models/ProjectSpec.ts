@@ -28,12 +28,6 @@ import {
 export interface ProjectSpec {
     /**
      * 
-     * @type {string}
-     * @memberof ProjectSpec
-     */
-    name: string;
-    /**
-     * 
      * @type {GroupIDs}
      * @memberof ProjectSpec
      */
@@ -45,7 +39,6 @@ export interface ProjectSpec {
  */
 export function instanceOfProjectSpec(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "name" in value;
 
     return isInstance;
 }
@@ -60,7 +53,6 @@ export function ProjectSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean
     }
     return {
         
-        'name': json['name'],
         'groupIDs': !exists(json, 'groupIDs') ? undefined : GroupIDsFromJSON(json['groupIDs']),
     };
 }
@@ -74,7 +66,6 @@ export function ProjectSpecToJSON(value?: ProjectSpec | null): any {
     }
     return {
         
-        'name': value.name,
         'groupIDs': GroupIDsToJSON(value.groupIDs),
     };
 }

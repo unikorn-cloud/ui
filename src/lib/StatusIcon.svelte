@@ -1,19 +1,19 @@
 <script lang="ts">
-	import * as Models from '$lib/openapi/server/models';
+	import * as Identity from '$lib/openapi/identity';
 
-	export let metadata: Models.ResourceMetadata;
+	export let metadata: Identity.ResourceReadMetadata;
 
-	function getColor(metadata: Models.ResourceMetadata): string {
-		if (metadata.status == 'Provisioned') return 'text-success-500';
-		if (metadata.status == 'Errored') return 'text-error-500';
-		if (metadata.status == 'Unknown') return 'text-warning-500';
+	function getColor(metadata: Identity.ResourceReadMetadata): string {
+		if (metadata.provisioningStatus == 'provisioned') return 'text-success-500';
+		if (metadata.provisioningStatus == 'error') return 'text-error-500';
+		if (metadata.provisioningStatus == 'unknown') return 'text-warning-500';
 		return 'dark:text-surface-500';
 	}
 
-	function getIcon(metadata: Models.ResourceMetadata): string {
-		if (metadata.status == 'Provisioned') return 'mdi:tick-circle-outline';
-		if (metadata.status == 'Errored') return 'mdi:error-outline';
-		if (metadata.status == 'Unknown') return 'mdi:question-mark';
+	function getIcon(metadata: Identity.ResourceReadMetadata): string {
+		if (metadata.provisioningStatus == 'provisioned') return 'mdi:tick-circle-outline';
+		if (metadata.provisioningStatus == 'error') return 'mdi:error-outline';
+		if (metadata.provisioningStatus == 'unknown') return 'mdi:question-mark';
 		return 'svg-spinners:ring-resize';
 	}
 

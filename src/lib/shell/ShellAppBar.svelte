@@ -43,13 +43,13 @@
 	});
 
 	let organizations: Models.Organizations;
-	let organization: string;
+	let organizationID: string;
 
-	let currentOrganization: string;
+	let currentOrganizationID: string;
 
 	// Grab the organization out of session storage first.
 	organizationStore.subscribe((o: string) => {
-		currentOrganization = o;
+		currentOrganizationID = o;
 	});
 
 	token.subscribe((at: InternalToken) => {
@@ -61,14 +61,16 @@
 				organizations = v;
 
 				// Try reuse the current organization if we can.
-				const existingOrganization = v.find((o) => o.name == currentOrganization);
+				const existingOrganization = v.find((o) => o.metadata.id == currentOrganizationID);
 
-				organization = existingOrganization ? currentOrganization : organizations[0].name;
+				organizationID = existingOrganization
+					? currentOrganizationID
+					: organizations[0].metadata.id;
 			})
 			.catch((e: Error) => error(e));
 	});
 
-	$: if (organization) organizationStore.set(organization);
+	$: if (organizationID) organizationStore.set(organizationID);
 
 	function doLogout(): void {
 		logout();
@@ -96,9 +98,9 @@
 			<div class="input-group-shim">
 				<iconify-icon icon="mdi:office-building-outline" />
 			</div>
-			<select bind:value={organization}>
+			<select bind:value={organizationID}>
 				{#each organizations || [] as organization}
-					<option value={organization.name}>{organization.name}</option>
+					<option value={organization.metadata.id}>{organization.metadata.name}</option>
 				{/each}
 			</select>
 		</div>

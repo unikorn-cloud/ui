@@ -26,44 +26,44 @@
 
 	token.subscribe((token: InternalToken) => (at = token));
 
-	let organization: string;
+	let organizationID: string;
 
-	organizationStore.subscribe((value: string) => (organization = value));
+	organizationStore.subscribe((value: string) => (organizationID = value));
 
-	let project: Models.Project;
+	let project: Models.ProjectRead;
 
 	let groups: Models.Groups;
 
-	function update(at: InternalToken, organization: string) {
-		if (!at || !organization) return;
+	function update(at: InternalToken, organizationID: string) {
+		if (!at || !organizationID) return;
 
 		const parameters = {
-			organization: organization,
-			project: $page.params.id
+			organizationID: organizationID,
+			projectID: $page.params.id
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationProjectsProjectGet(parameters)
-			.then((v: Models.Project) => (project = v))
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDGet(parameters)
+			.then((v: Models.ProjectRead) => (project = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationGroupsGet(parameters)
+			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
 			.then((v: Models.Groups) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: update(at, organization);
+	$: update(at, organizationID);
 
 	function submit() {
 		const parameters = {
-			organization: organization,
-			project: project.spec.name,
-			projectSpec: project.spec
+			organizationID: organizationID,
+			projectID: $page.params.id,
+			projectWrite: project
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationProjectsProjectPut(parameters)
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDPut(parameters)
 			.then(() => window.location.assign('/identity/projects'))
 			.catch((e: Error) => Clients.error(e));
 	}
@@ -71,7 +71,7 @@
 
 <ShellPage {settings}>
 	{#if project}
-		<h2 class="h2">{project.spec.name}</h2>
+		<h2 class="h2">{project.metadata.name}</h2>
 
 		<ShellSection title="Groups">
 			<label for="groups">
@@ -80,7 +80,7 @@
 			</label>
 			<select id="groups" class="select" multiple bind:value={project.spec.groupIDs}>
 				{#each groups || [] as group}
-					<option value={group.id}>{group.name}</option>
+					<option value={group.metadata.id}>{group.metadata.name}</option>
 				{/each}
 			</select>
 		</ShellSection>

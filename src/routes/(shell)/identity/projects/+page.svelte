@@ -29,7 +29,7 @@
 
 	let at: InternalToken;
 
-	let organization: string;
+	let organizationID: string;
 
 	token.subscribe((token: InternalToken) => {
 		at = token;
@@ -40,48 +40,46 @@
 	});
 
 	organizationStore.subscribe((value: string) => {
-		organization = value;
+		organizationID = value;
 		update();
 	});
 
 	let resources: Models.Projects;
 
 	function update(): void {
-		if (!at || !organization) return;
+		if (!at || !organizationID) return;
 
 		const parameters = {
-			organization: organization
+			organizationID: organizationID
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationProjectsGet(parameters)
+			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
 			.then((v: Models.Projects) => (resources = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function remove(resource: Models.Project): void {
+	function remove(resource: Models.ProjectRead): void {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
-			body: `Removing project "${resource.spec.name}" will also remove all resources owned by it.`,
+			body: `Removing project "${resource.metadata.name}" will also remove all resources owned by it.`,
 			response: (ok: boolean) => {
 				if (!ok) return;
 
 				const parameters = {
-					organization: organization,
-					project: resource.spec.name
+					organizationID: organizationID,
+					projectID: resource.metadata.id
 				};
 
 				Clients.identityClient(toastStore, at)
-					.apiV1OrganizationsOrganizationProjectsProjectDelete(parameters)
+					.apiV1OrganizationsOrganizationIDProjectsProjectIDDelete(parameters)
 					.catch((e: Error) => Clients.error(e));
 			}
 		};
 
 		modalStore.trigger(modal);
 	}
-
-	import StatusIcon from '$lib/StatusIcon.svelte';
 </script>
 
 <ShellPage {settings}>
@@ -92,14 +90,10 @@
 
 	<ShellList>
 		{#each resources || [] as resource}
-			<ShellListItem>
-				<header class="flex items-center gap-4">
-					<StatusIcon metadata={resource.metadata} />
-					<a class="font-bold" href="/identity/projects/view/{resource.spec.name}"
-						>{resource.spec.name}</a
-					>
-				</header>
-
+			<ShellListItem
+				metadata={resource.metadata}
+				href="identity/projects/view/{resource.metadata.id}"
+			>
 				<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
 					<iconify-icon icon="mdi:close" />
 				</button>

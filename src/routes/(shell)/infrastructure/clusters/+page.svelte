@@ -34,10 +34,10 @@
 
 	let resources: Models.KubernetesClusters;
 
-	let organization: string;
+	let organizationID: string;
 
 	organizationStore.subscribe((value: string) => {
-		organization = value;
+		organizationID = value;
 		update();
 	});
 
@@ -50,35 +50,35 @@
 	});
 
 	function update(): void {
-		if (!at || !organization) return;
+		if (!at || !organizationID) return;
 
 		const parameters = {
-			organization: organization
+			organizationID: organizationID
 		};
 
 		Clients.client(toastStore, at)
-			.apiV1OrganizationsOrganizationClustersGet(parameters)
+			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
 			.then((v: Models.KubernetesClusters) => (resources = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function remove(resource: Models.KubernetesCluster): void {
+	function remove(resource: Models.KubernetesClusterRead): void {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
-			body: `Remove cluster "${resource.spec.name}".`,
+			body: `Remove cluster "${resource.metadata.name}".`,
 			response: (ok: boolean) => {
 				if (!ok) return;
 				if (!resource.metadata) return;
 
 				const parameters = {
-					organization: organization,
-					project: resource.metadata.project,
-					cluster: resource.spec.name
+					organizationID: organizationID,
+					projectID: resource.metadata.projectId,
+					clusterID: resource.metadata.id
 				};
 
 				Clients.client(toastStore, at)
-					.apiV1OrganizationsOrganizationProjectsProjectClustersClusterDelete(parameters)
+					.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDDelete(parameters)
 					.catch((e: Error) => Clients.error(e));
 			}
 		};
@@ -86,15 +86,17 @@
 		modalStore.trigger(modal);
 	}
 
-	function getKubeconfig(resource: Models.KubernetesCluster): void {
+	function getKubeconfig(resource: Models.KubernetesClusterRead): void {
 		const parameters = {
-			organization: organization,
-			project: resource.metadata.project,
-			cluster: resource.spec.name
+			organizationID: organizationID,
+			projectID: resource.metadata.projectId,
+			clusterID: resource.metadata.id
 		};
 
 		Clients.client(toastStore, at)
-			.apiV1OrganizationsOrganizationProjectsProjectClustersClusterKubeconfigGetRaw(parameters)
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDKubeconfigGetRaw(
+				parameters
+			)
 			.then((x) => x.raw.blob())
 			.then((x) => {
 				if (browser) {
@@ -103,7 +105,7 @@
 					const a = document.createElement('a');
 					a.style.display = 'none';
 					a.href = url;
-					a.download = `kubeconfig-${resource.spec.name}.yaml`;
+					a.download = `kubeconfig-${resource.metadata.name}.yaml`;
 
 					document.body.appendChild(a);
 					a.click();
@@ -113,8 +115,6 @@
 			})
 			.catch((e: Error) => Clients.error(e));
 	}
-
-	import StatusIcon from '$lib/StatusIcon.svelte';
 </script>
 
 <ShellPage {settings}>
@@ -128,12 +128,7 @@
 
 	<ShellList>
 		{#each resources || [] as resource}
-			<ShellListItem>
-				<header class="flex items-center gap-4">
-					<StatusIcon metadata={resource.metadata} />
-					<h6 class="h6">{resource.spec.name}</h6>
-				</header>
-
+			<ShellListItem metadata={resource.metadata} href="#">
 				<div class="flex items-center gap-4">
 					<button
 						on:click={() => getKubeconfig(resource)}

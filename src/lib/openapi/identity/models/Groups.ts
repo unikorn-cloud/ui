@@ -13,19 +13,19 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Group } from './Group';
+import type { GroupRead } from './GroupRead';
 import {
-    GroupFromJSON,
-    GroupFromJSONTyped,
-    GroupToJSON,
-} from './Group';
+    GroupReadFromJSON,
+    GroupReadFromJSONTyped,
+    GroupReadToJSON,
+} from './GroupRead';
 
 /**
  * A list of groups.
  * @export
  * @interface Groups
  */
-export interface Groups extends Array<Group> {
+export interface Groups extends Array<GroupRead> {
 }
 
 /**

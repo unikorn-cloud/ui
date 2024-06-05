@@ -13,19 +13,19 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Organization } from './Organization';
+import type { OrganizationRead } from './OrganizationRead';
 import {
-    OrganizationFromJSON,
-    OrganizationFromJSONTyped,
-    OrganizationToJSON,
-} from './Organization';
+    OrganizationReadFromJSON,
+    OrganizationReadFromJSONTyped,
+    OrganizationReadToJSON,
+} from './OrganizationRead';
 
 /**
  * A list of organizations.
  * @export
  * @interface Organizations
  */
-export interface Organizations extends Array<Organization> {
+export interface Organizations extends Array<OrganizationRead> {
 }
 
 /**

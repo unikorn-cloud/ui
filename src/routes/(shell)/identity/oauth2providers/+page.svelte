@@ -29,7 +29,7 @@
 
 	let at: InternalToken;
 
-	let organization: string;
+	let organizationID: string;
 
 	token.subscribe((token: InternalToken) => {
 		at = token;
@@ -40,26 +40,26 @@
 	});
 
 	organizationStore.subscribe((value: string) => {
-		organization = value;
+		organizationID = value;
 		update();
 	});
 
 	let resources: Models.Oauth2Providers;
 
 	function update(): void {
-		if (!at || !organization) return;
+		if (!at || !organizationID) return;
 
 		const parameters = {
-			organization: organization
+			organizationID: organizationID
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationOauth2providersGet(parameters)
+			.apiV1OrganizationsOrganizationIDOauth2providersGet(parameters)
 			.then((v: Models.Oauth2Providers) => (resources = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function remove(resource: Models.Oauth2Provider): void {
+	function remove(resource: Models.Oauth2ProviderRead): void {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
@@ -67,12 +67,12 @@
 				if (!ok) return;
 
 				const parameters = {
-					organization: organization,
-					provider: resource.name
+					organizationID: organizationID,
+					providerID: resource.metadata.id
 				};
 
 				Clients.identityClient(toastStore, at)
-					.apiV1OrganizationsOrganizationOauth2providersProviderDelete(parameters)
+					.apiV1OrganizationsOrganizationIDOauth2providersProviderIDDelete(parameters)
 					.catch((e: Error) => Clients.error(e));
 			}
 		};
@@ -92,14 +92,10 @@
 
 	<ShellList>
 		{#each resources || [] as resource}
-			<ShellListItem>
-				<header class="flex items-center gap-4">
-					<a class="font-bold" href="/identity/oauth2providers/view/{resource.name}"
-						>{resource.name}</a
-					>
-					<em>{resource.displayName}</em>
-				</header>
-
+			<ShellListItem
+				metadata={resource.metadata}
+				href="/identity/oauth2providers/view/{resource.metadata.id}"
+			>
 				<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
 					<iconify-icon icon="mdi:close" />
 				</button>

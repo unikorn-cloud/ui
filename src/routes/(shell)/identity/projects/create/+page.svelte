@@ -31,12 +31,12 @@
 	let project: string;
 	let projects: Models.Projects;
 
-	let organization: string;
+	let organizationID: string;
 
 	let groups: Models.Groups;
 	let groupIDs: string[] = [];
 
-	organizationStore.subscribe((value: string) => (organization = value));
+	organizationStore.subscribe((value: string) => (organizationID = value));
 
 	token.subscribe((token: InternalToken) => {
 		at = token;
@@ -45,24 +45,24 @@
 
 	function updateProjects() {
 		/* Setup the token on load */
-		if (!token || !organization) return;
+		if (!token || !organizationID) return;
 
 		/* Get top-level resources required for the first step */
 		const parameters = {
-			organization: organization
+			organizationID: organizationID
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationProjectsGet(parameters)
+			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
 			.then((v: Models.Projects) => (projects = v))
 			.catch((e: Error) => Clients.error(e));
 
 		const groupsParameters = {
-			organization: organization
+			organizationID: organizationID
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationGroupsGet(groupsParameters)
+			.apiV1OrganizationsOrganizationIDGroupsGet(groupsParameters)
 			.then((v: Models.Groups) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
@@ -74,15 +74,19 @@
 
 	function complete() {
 		const parameters = {
-			organization: organization,
-			projectSpec: {
-				name: project,
-				groupIDs: groupIDs
+			organizationID: organizationID,
+			projectWrite: {
+				metadata: {
+					name: project
+				},
+				spec: {
+					groupIDs: groupIDs
+				}
 			}
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationProjectsPost(parameters)
+			.apiV1OrganizationsOrganizationIDProjectsPost(parameters)
 			.then(() => window.location.assign('/identity/projects'))
 			.catch((e: Error) => Clients.error(e));
 	}
@@ -108,7 +112,7 @@
 				</label>
 				<select id="groups" class="select" multiple bind:value={groupIDs}>
 					{#each groups || [] as group}
-						<option value={group.id}>{group.name}</option>
+						<option value={group.metadata.id}>{group.metadata.name}</option>
 					{/each}
 				</select>
 			</ShellSection>

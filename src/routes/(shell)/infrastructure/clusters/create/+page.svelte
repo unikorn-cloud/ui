@@ -29,13 +29,13 @@
 	let at: InternalToken;
 
 	/* Variables that trigger reactive actions */
-	let region: string;
+	let regionID: string;
 	let regions: Models.Regions;
 
-	let project: string;
+	let projectID: string;
 	let projects: IdentityModels.Projects;
 
-	let clustermanager: string = 'default';
+	let clustermanagerID: string;
 	let clustermanagers: Models.ClusterManagers;
 
 	let cluster: string;
@@ -47,10 +47,10 @@
 	let version: string;
 	let versions: Array<string>;
 
-	let organization: string;
+	let organizationID: string;
 
 	organizationStore.subscribe((value: string) => {
-		organization = value;
+		organizationID = value;
 		updateRegions();
 	});
 
@@ -60,7 +60,7 @@
 	});
 
 	function updateRegions() {
-		if (!at || !organization) return;
+		if (!at || !organizationID) return;
 
 		/* Get top-level resources required for the first step */
 		/* TODO: parallelize with Promise.all */
@@ -70,56 +70,56 @@
 				if (v.length == 0) return;
 
 				regions = v;
-				region = regions[0].name;
+				regionID = regions[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
 
 		const parameters = {
-			organization: organization
+			organizationID: organizationID
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationProjectsGet(parameters)
+			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
 			.then((v: IdentityModels.Projects) => {
 				if (v.length == 0) return;
 
 				projects = v;
-				project = projects[0].spec.name;
+				projectID = projects[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function updateClusterManagers(at: InternalToken, project: string) {
-		if (!at || !project) return;
+	function updateClusterManagers(at: InternalToken, projectID: string) {
+		if (!at || !projectID) return;
 
 		const parameters = {
-			organization: organization
+			organizationID: organizationID
 		};
 
 		Clients.client(toastStore, at)
-			.apiV1OrganizationsOrganizationClustermanagersGet(parameters)
+			.apiV1OrganizationsOrganizationIDClustermanagersGet(parameters)
 			.then((v: Models.ClusterManagers) => {
 				if (v.length == 0) return;
 
 				// TODO: a possible excuse for request query parameters?
-				clustermanagers = v.filter((x) => x.metadata.project == project);
-				clustermanager = clustermanagers[0].spec.name;
+				clustermanagers = v.filter((x) => x.metadata.projectId == projectID);
+				clustermanagerID = clustermanagers[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateClusterManagers(at, project);
+	$: updateClusterManagers(at, projectID);
 
 	/* Clusters are scoped to control planes, so update this when the CP does */
 	function updateClusters(at: InternalToken, clustermanager: string): void {
 		if (!at || !clustermanager) return;
 
 		const parameters = {
-			organization: organization
+			organizationID: organizationID
 		};
 
 		Clients.client(toastStore, at)
-			.apiV1OrganizationsOrganizationClustersGet(parameters)
+			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
 			.then((v: Models.KubernetesClusters) => {
 				if (v.length == 0) return;
 
@@ -128,10 +128,10 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateClusters(at, clustermanager);
+	$: updateClusters(at, clustermanagerID);
 
 	/* Project must be set */
-	$: step1Valid = project;
+	$: step1Valid = projectID;
 
 	/* Cluster name must be valid, and it must be unique */
 	$: step2Valid =
@@ -140,34 +140,34 @@
 		Validation.unique(cluster, Validation.namedResourceNames(clusters));
 
 	/* Once the region has been selected we can poll the images and other resources */
-	function updateImages(at: InternalToken, region: string): void {
-		if (!at || !region) return;
+	function updateImages(at: InternalToken, regionID: string): void {
+		if (!at || !regionID) return;
 
 		const parameters = {
-			regionName: region
+			regionID: regionID
 		};
 
 		Clients.client(toastStore, at)
-			.apiV1RegionsRegionNameImagesGet(parameters)
+			.apiV1RegionsRegionIDImagesGet(parameters)
 			.then((v: Models.Images) => (images = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function updateFlavors(at: InternalToken, region: string): void {
-		if (!at || !region) return;
+	function updateFlavors(at: InternalToken, regionID: string): void {
+		if (!at || !regionID) return;
 
 		const parameters = {
-			regionName: region
+			regionID: regionID
 		};
 
 		Clients.client(toastStore, at)
-			.apiV1RegionsRegionNameFlavorsGet(parameters)
+			.apiV1RegionsRegionIDFlavorsGet(parameters)
 			.then((v: Models.Flavors) => (flavors = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateImages(at, region);
-	$: updateFlavors(at, region);
+	$: updateImages(at, regionID);
+	$: updateFlavors(at, regionID);
 
 	/* From the images, we can get a list of Kubernetes versions */
 	function updateVersions(at: InternalToken, images: Models.Images): void {
@@ -224,20 +224,29 @@
 		[...new Set(workloadPools.map((x) => x.model.name))].length == workloadPools.length;
 
 	function complete() {
+		const spec: Models.KubernetesClusterSpec = {
+			region: regionID,
+			version: version,
+			workloadPools: workloadPools.map((x) => x.model)
+		};
+
+		if (clustermanagerID) {
+			spec.clusterManager = clustermanagerID;
+		}
+
 		const parameters = {
-			organization: organization,
-			project: project,
-			kubernetesClusterSpec: {
-				name: cluster,
-				region: region,
-				clusterManager: clustermanager,
-				version: version,
-				workloadPools: workloadPools.map((x) => x.model)
+			organizationID: organizationID,
+			projectID: projectID,
+			kubernetesClusterWrite: {
+				metadata: {
+					name: cluster
+				},
+				spec: spec
 			}
 		};
 
 		Clients.client(toastStore, at)
-			.apiV1OrganizationsOrganizationProjectsProjectClustersPost(parameters)
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(parameters)
 			.then(() => window.location.assign('/infrastructure/clusters'))
 			.catch((e: Error) => Clients.error(e));
 	}
@@ -250,17 +259,17 @@
 
 			<h4 class="h4">Region Selection</h4>
 			<label for="region-name"> Select a region to provision in the cluster in. </label>
-			<select id="region-name" class="select" bind:value={region}>
+			<select id="region-name" class="select" bind:value={regionID}>
 				{#each regions || [] as region}
-					<option value={region.name}>{region.name}</option>
+					<option value={region.metadata.id}>{region.metadata.name}</option>
 				{/each}
 			</select>
 
 			<h4 class="h4">Project Selection</h4>
 			<label for="project-name"> Select a project to provision in the cluster in. </label>
-			<select id="project-name" class="select" bind:value={project}>
+			<select id="project-name" class="select" bind:value={projectID}>
 				{#each projects || [] as project}
-					<option value={project.spec.name}>{project.spec.name}</option>
+					<option value={project.metadata.id}>{project.metadata.name}</option>
 				{/each}
 			</select>
 
@@ -269,9 +278,9 @@
 				Select a life cycle manager to manage the cluster life-cycle. If none is selected, a default
 				will be created for you.
 			</label>
-			<select id="clustermanager-name" class="select" bind:value={clustermanager}>
+			<select id="clustermanager-name" class="select" bind:value={clustermanagerID}>
 				{#each clustermanagers || [] as clustermanager}
-					<option value={clustermanager.spec.name}>{clustermanager.spec.name}</option>
+					<option value={clustermanager.metadata.id}>{clustermanager.metadata.name}</option>
 				{/each}
 			</select>
 		</Step>

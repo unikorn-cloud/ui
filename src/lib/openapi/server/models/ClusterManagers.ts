@@ -13,19 +13,19 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ClusterManager } from './ClusterManager';
+import type { ClusterManagerRead } from './ClusterManagerRead';
 import {
-    ClusterManagerFromJSON,
-    ClusterManagerFromJSONTyped,
-    ClusterManagerToJSON,
-} from './ClusterManager';
+    ClusterManagerReadFromJSON,
+    ClusterManagerReadFromJSONTyped,
+    ClusterManagerReadToJSON,
+} from './ClusterManagerRead';
 
 /**
  * A list of cluster managers.
  * @export
  * @interface ClusterManagers
  */
-export interface ClusterManagers extends Array<ClusterManager> {
+export interface ClusterManagers extends Array<ClusterManagerRead> {
 }
 
 /**

@@ -28,7 +28,7 @@
 
 	let at: InternalToken;
 
-	let organization: string;
+	let organizationID: string;
 
 	let groups: Models.Groups;
 
@@ -44,56 +44,59 @@
 
 	let availableRoles: string[];
 
-	organizationStore.subscribe((value: string) => (organization = value));
+	organizationStore.subscribe((value: string) => (organizationID = value));
 
 	token.subscribe((token: InternalToken) => (at = token));
 
-	function update(at: InternalToken, organization: string) {
-		if (!at || !organization) return;
+	function update(at: InternalToken, organizationID: string) {
+		if (!at || !organizationID) return;
 
 		const parameters = {
-			organization: organization
+			organizationID: organizationID
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationGroupsGet(parameters)
+			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
 			.then((v: Models.Groups) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationRolesGet(parameters)
+			.apiV1OrganizationsOrganizationIDRolesGet(parameters)
 			.then((v: Models.RoleList) => (availableRoles = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationAvailableGroupsGet(parameters)
+			.apiV1OrganizationsOrganizationIDAvailableGroupsGet(parameters)
 			.then((v: Models.AvailableGroups) => (availableGroups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: update(at, organization);
+	$: update(at, organizationID);
 
 	/* Cluster name must be valid, and it must be unique */
 	$: step1Valid =
 		Validation.unique(
 			group,
-			(groups || []).map((group) => group.name)
+			(groups || []).map((group) => group.metadata.name)
 		) && roles.length > 0;
 
 	function complete() {
 		const parameters = {
-			organization: organization,
-			group: {
-				id: 'ignored',
-				name: group,
-				roles: roles,
-				users: users,
-				providerGroups: selectedGroups
+			organizationID: organizationID,
+			groupWrite: {
+				metadata: {
+					name: group
+				},
+				spec: {
+					roles: roles,
+					users: users,
+					providerGroups: selectedGroups
+				}
 			}
 		};
 
 		Clients.identityClient(toastStore, at)
-			.apiV1OrganizationsOrganizationGroupsPost(parameters)
+			.apiV1OrganizationsOrganizationIDGroupsPost(parameters)
 			.then(() => window.location.assign('/identity/groups'))
 			.catch((e: Error) => Clients.error(e));
 	}

@@ -13,19 +13,19 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Region } from './Region';
+import type { RegionRead } from './RegionRead';
 import {
-    RegionFromJSON,
-    RegionFromJSONTyped,
-    RegionToJSON,
-} from './Region';
+    RegionReadFromJSON,
+    RegionReadFromJSONTyped,
+    RegionReadToJSON,
+} from './RegionRead';
 
 /**
  * A list of regions.
  * @export
  * @interface Regions
  */
-export interface Regions extends Array<Region> {
+export interface Regions extends Array<RegionRead> {
 }
 
 /**

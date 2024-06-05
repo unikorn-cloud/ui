@@ -3,7 +3,7 @@ export type NamedResource = {
 };
 
 export type NamedResourceWithSpec = {
-	spec: NamedResource;
+	metadata: NamedResource;
 };
 
 export type NamedResourceUnion = NamedResource | NamedResourceWithSpec;
@@ -21,8 +21,8 @@ export function namedResourceNames(
 	if (!resources) return [];
 
 	return resources.map((x) => {
-		if ('spec' in x) {
-			return (x as NamedResourceWithSpec).spec.name;
+		if ('metadata' in x) {
+			return (x as NamedResourceWithSpec).metadata.name;
 		}
 
 		return x.name;
