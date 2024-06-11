@@ -1,3 +1,5 @@
+import * as Region from '$lib/openapi/region';
+
 export type NamedObject = {
 	name: string;
 };
@@ -6,13 +8,6 @@ export type ApplicationBundle = {
 	version: string;
 	preview?: string;
 	endOfLife?: string;
-};
-
-export type Flavor = {
-	name: string;
-	cpus: number;
-	memory: number;
-	gpus?: number;
 };
 
 export type Hour = number;
@@ -31,11 +26,11 @@ export function applicationBundleFormatter(b: ApplicationBundle) {
 	}
 }
 
-export function flavorFormatter(f: Flavor) {
-	if (f.gpus) {
-		return `${f.name} (${f.cpus} core, ${f.memory}Gi, ${f.gpus} GPU)`;
+export function flavorFormatter(f: Region.Flavor) {
+	if (f.spec.gpu) {
+		return `${f.metadata.name} (${f.spec.cpus} core, ${f.spec.memory}Gi, ${f.spec.gpu.count} GPU ${f.spec.gpu.vendor} ${f.spec.gpu.model})`;
 	} else {
-		return `${f.name} (${f.cpus} core, ${f.memory}Gi)`;
+		return `${f.metadata.name} (${f.spec.cpus} core, ${f.spec.memory}Gi)`;
 	}
 }
 

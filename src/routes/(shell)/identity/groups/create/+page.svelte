@@ -21,7 +21,7 @@
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/identity/models';
+	import * as Identity from '$lib/openapi/identity';
 
 	/* Input vaildation */
 	import * as Validation from '$lib/validation';
@@ -30,9 +30,9 @@
 
 	let organizationID: string;
 
-	let groups: Models.Groups;
+	let groups: Identity.Groups;
 
-	let availableGroups: Models.AvailableGroups;
+	let availableGroups: Identity.AvailableGroups;
 
 	let selectedGroups: string[] = [];
 
@@ -55,19 +55,19 @@
 			organizationID: organizationID
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
-			.then((v: Models.Groups) => (groups = v))
+			.then((v: Identity.Groups) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRolesGet(parameters)
-			.then((v: Models.RoleList) => (availableRoles = v))
+			.then((v: Identity.RoleList) => (availableRoles = v))
 			.catch((e: Error) => Clients.error(e));
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDAvailableGroupsGet(parameters)
-			.then((v: Models.AvailableGroups) => (availableGroups = v))
+			.then((v: Identity.AvailableGroups) => (availableGroups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -95,7 +95,7 @@
 			}
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDGroupsPost(parameters)
 			.then(() => window.location.assign('/identity/groups'))
 			.catch((e: Error) => Clients.error(e));

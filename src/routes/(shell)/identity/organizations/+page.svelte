@@ -18,16 +18,16 @@
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/identity/models';
+	import * as Identity from '$lib/openapi/identity';
 
-	let organizations: Models.Organizations;
+	let organizations: Identity.Organizations;
 
 	token.subscribe((at: InternalToken) => {
 		if (!at) return;
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsGet()
-			.then((v: Models.Organizations) => (organizations = v))
+			.then((v: Identity.Organizations) => (organizations = v))
 			.catch((e: Error) => Clients.error(e));
 	});
 </script>

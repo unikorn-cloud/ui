@@ -21,7 +21,7 @@
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/identity/models';
+	import * as Identity from '$lib/openapi/identity';
 
 	/* Input vaildation */
 	import * as Validation from '$lib/validation';
@@ -34,7 +34,7 @@
 	let clientID: string;
 	let clientSecret: string;
 
-	let providers: Models.Oauth2Providers;
+	let providers: Identity.Oauth2Providers;
 
 	let organizationID: string;
 
@@ -51,9 +51,9 @@
 			organizationID: organizationID
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDOauth2providersGet(parameters)
-			.then((v: Models.Oauth2Providers) => (providers = v))
+			.then((v: Identity.Oauth2Providers) => (providers = v))
 			.catch((e: Error) => Clients.error(e));
 	});
 
@@ -81,7 +81,7 @@
 			}
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDOauth2providersPost(parameters)
 			.then(() => window.location.assign('/identity/oauth2providers'))
 			.catch((e: Error) => Clients.error(e));

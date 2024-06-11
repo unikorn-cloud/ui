@@ -20,8 +20,9 @@
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/server/models';
-	import * as IdentityModels from '$lib/openapi/identity/models';
+	import * as Kubernetes from '$lib/openapi/kubernetes';
+	import * as Identity from '$lib/openapi/identity';
+	import * as Region from '$lib/openapi/region';
 
 	/* Input vaildation */
 	import * as Validation from '$lib/validation';
@@ -30,19 +31,19 @@
 
 	/* Variables that trigger reactive actions */
 	let regionID: string;
-	let regions: Models.Regions;
+	let regions: Region.Regions;
 
 	let projectID: string;
-	let projects: IdentityModels.Projects;
+	let projects: Identity.Projects;
 
 	let clustermanagerID: string;
-	let clustermanagers: Models.ClusterManagers;
+	let clustermanagers: Kubernetes.ClusterManagers;
 
 	let cluster: string;
-	let clusters: Models.KubernetesClusters;
+	let clusters: Kubernetes.KubernetesClusters;
 
-	let images: Models.Images;
-	let flavors: Models.Flavors;
+	let images: Region.Images;
+	let flavors: Region.Flavors;
 
 	let version: string;
 	let versions: Array<string>;
@@ -64,9 +65,9 @@
 
 		/* Get top-level resources required for the first step */
 		/* TODO: parallelize with Promise.all */
-		Clients.client(toastStore, at)
+		Clients.region(toastStore, at)
 			.apiV1RegionsGet()
-			.then((v: Models.Regions) => {
+			.then((v: Region.Regions) => {
 				if (v.length == 0) return;
 
 				regions = v;
@@ -78,9 +79,9 @@
 			organizationID: organizationID
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
-			.then((v: IdentityModels.Projects) => {
+			.then((v: Identity.Projects) => {
 				if (v.length == 0) return;
 
 				projects = v;
@@ -96,9 +97,9 @@
 			organizationID: organizationID
 		};
 
-		Clients.client(toastStore, at)
+		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustermanagersGet(parameters)
-			.then((v: Models.ClusterManagers) => {
+			.then((v: Kubernetes.ClusterManagers) => {
 				if (v.length == 0) return;
 
 				// TODO: a possible excuse for request query parameters?
@@ -118,9 +119,9 @@
 			organizationID: organizationID
 		};
 
-		Clients.client(toastStore, at)
+		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
-			.then((v: Models.KubernetesClusters) => {
+			.then((v: Kubernetes.KubernetesClusters) => {
 				if (v.length == 0) return;
 
 				clusters = v;
@@ -147,9 +148,9 @@
 			regionID: regionID
 		};
 
-		Clients.client(toastStore, at)
+		Clients.region(toastStore, at)
 			.apiV1RegionsRegionIDImagesGet(parameters)
-			.then((v: Models.Images) => (images = v))
+			.then((v: Region.Images) => (images = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -160,9 +161,9 @@
 			regionID: regionID
 		};
 
-		Clients.client(toastStore, at)
+		Clients.region(toastStore, at)
 			.apiV1RegionsRegionIDFlavorsGet(parameters)
-			.then((v: Models.Flavors) => (flavors = v))
+			.then((v: Region.Flavors) => (flavors = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -170,13 +171,14 @@
 	$: updateFlavors(at, regionID);
 
 	/* From the images, we can get a list of Kubernetes versions */
-	function updateVersions(at: InternalToken, images: Models.Images): void {
+	function updateVersions(at: InternalToken, images: Region.Images): void {
 		if (!at || !images) return;
 
 		versions = [
 			...new Set(
 				(images || []).map((x) => {
-					return x.versions.kubernetes;
+					if (!x.spec.softwareVersions || !x.spec.softwareVersions.kubernetes) return '';
+					return x.spec.softwareVersions.kubernetes;
 				})
 			)
 		].reverse();
@@ -187,7 +189,7 @@
 	$: updateVersions(at, images);
 
 	/* Define a types we can manage, but also bind the configuration dialog to */
-	type WorkloadPool = { model: Models.KubernetesClusterWorkloadPool; valid: boolean };
+	type WorkloadPool = { model: Kubernetes.KubernetesClusterWorkloadPool; valid: boolean };
 	type WorkloadPools = Array<WorkloadPool>;
 
 	/* Workload pools you need at lea<st one */
@@ -195,7 +197,7 @@
 	addPool();
 
 	function addPool(): void {
-		let model: Models.KubernetesClusterWorkloadPool = {
+		let model: Kubernetes.KubernetesClusterWorkloadPool = {
 			name: '',
 			machine: {}
 		};
@@ -224,8 +226,8 @@
 		[...new Set(workloadPools.map((x) => x.model.name))].length == workloadPools.length;
 
 	function complete() {
-		const spec: Models.KubernetesClusterSpec = {
-			region: regionID,
+		const spec: Kubernetes.KubernetesClusterSpec = {
+			regionId: regionID,
 			version: version,
 			workloadPools: workloadPools.map((x) => x.model)
 		};
@@ -245,7 +247,7 @@
 			}
 		};
 
-		Clients.client(toastStore, at)
+		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(parameters)
 			.then(() => window.location.assign('/infrastructure/clusters'))
 			.catch((e: Error) => Clients.error(e));

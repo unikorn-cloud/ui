@@ -1,5 +1,6 @@
 <script lang="ts">
-	import * as Models from '$lib/openapi/server/models';
+	import * as Kubernetes from '$lib/openapi/kubernetes';
+	import * as Region from '$lib/openapi/region';
 
 	import { SlideToggle, RangeSlider } from '@skeletonlabs/skeleton';
 
@@ -7,20 +8,20 @@
 	import * as Validation from '$lib/validation';
 
 	/* The pool should be bound to expose the built configuration */
-	export let pool: Models.KubernetesClusterWorkloadPool;
+	export let pool: Kubernetes.KubernetesClusterWorkloadPool;
 
 	/* Whether the configuration is valid */
 	export let valid: boolean;
 
 	/* Flavors allows the pool type to be populated */
-	export let flavors: Models.Flavors;
+	export let flavors: Region.Flavors;
 
-	let flavor: string;
+	let flavorID: string;
 
-	function updateFlavors(flavors: Models.Flavors): void {
+	function updateFlavors(flavors: Region.Flavors): void {
 		/* Bizarrely this triggers when the select is interacted with :shrug: */
-		if (!flavors || flavor) return;
-		flavor = flavors[0].name;
+		if (!flavors || flavorID) return;
+		flavorID = flavors[0].metadata.id;
 	}
 
 	$: updateFlavors(flavors);
@@ -36,7 +37,7 @@
 	$: valid = Validation.kubernetesNameValid(pool.name);
 
 	/* Update the model as we update the inputs */
-	$: pool.machine.flavorName = flavor;
+	$: pool.machine.flavorId = flavorID;
 
 	$: {
 		if (pool.machine.disk) {
@@ -64,9 +65,9 @@
 	The pool type allows the selection of the pool's available resources to be used by workloads per
 	pool member. This includes CPU, GPU and memory.
 </p>
-<select class="select" bind:value={flavor}>
+<select class="select" bind:value={flavorID}>
 	{#each flavors || [] as flavor}
-		<option value={flavor.name}>{Formatters.flavorFormatter(flavor)}</option>
+		<option value={flavor.metadata.id}>{Formatters.flavorFormatter(flavor)}</option>
 	{/each}
 </select>
 

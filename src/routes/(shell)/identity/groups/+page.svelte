@@ -24,7 +24,7 @@
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/identity/models';
+	import * as Identity from '$lib/openapi/identity';
 
 	let at: InternalToken;
 
@@ -34,7 +34,7 @@
 
 	organizationStore.subscribe((value: string) => (organizationID = value));
 
-	let groups: Models.Groups;
+	let groups: Identity.Groups;
 
 	function update(at: InternalToken, organizationID: string) {
 		if (!at || !organizationID) return;
@@ -43,15 +43,15 @@
 			organizationID: organizationID
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
-			.then((v: Models.Groups) => (groups = v))
+			.then((v: Identity.Groups) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
 	$: update(at, organizationID);
 
-	function remove(resource: Models.GroupRead) {
+	function remove(resource: Identity.GroupRead) {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
@@ -64,7 +64,7 @@
 					groupid: resource.metadata.id
 				};
 
-				Clients.identityClient(toastStore, at)
+				Clients.identity(toastStore, at)
 					.apiV1OrganizationsOrganizationIDGroupsGroupidDelete(parameters)
 					.then(() => update(at, organizationID))
 					.catch((e: Error) => Clients.error(e));

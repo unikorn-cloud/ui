@@ -22,14 +22,14 @@
 	import { organizationStore } from '$lib/stores';
 
 	/* Client setup */
-	import { client, error } from '$lib/clients';
+	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/server/models';
+	import * as Kubernetes from '$lib/openapi/kubernetes';
 
 	let at: InternalToken;
 
-	let resources: Models.ClusterManagers;
+	let resources: Kubernetes.ClusterManagers;
 
 	let organizationID: string;
 
@@ -53,13 +53,13 @@
 			organizationID: organizationID
 		};
 
-		client(toastStore, at)
+		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustermanagersGet(parameters)
-			.then((v: Models.ClusterManagers) => (resources = v))
-			.catch((e: Error) => error(e));
+			.then((v: Kubernetes.ClusterManagers) => (resources = v))
+			.catch((e: Error) => Clients.error(e));
 	}
 
-	function remove(resource: Models.ClusterManagerRead): void {
+	function remove(resource: Kubernetes.ClusterManagerRead): void {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
@@ -73,11 +73,11 @@
 					clusterManagerID: resource.metadata.id
 				};
 
-				client(toastStore, at)
+				Clients.kubernetes(toastStore, at)
 					.apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersClusterManagerIDDelete(
 						parameters
 					)
-					.catch((e: Error) => error(e));
+					.catch((e: Error) => Clients.error(e));
 			}
 		};
 

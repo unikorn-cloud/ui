@@ -25,7 +25,7 @@
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/identity/models';
+	import * as Identity from '$lib/openapi/identity';
 
 	let at: InternalToken;
 
@@ -44,7 +44,7 @@
 		update();
 	});
 
-	let resources: Models.Oauth2Providers;
+	let resources: Identity.Oauth2Providers;
 
 	function update(): void {
 		if (!at || !organizationID) return;
@@ -53,13 +53,13 @@
 			organizationID: organizationID
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDOauth2providersGet(parameters)
-			.then((v: Models.Oauth2Providers) => (resources = v))
+			.then((v: Identity.Oauth2Providers) => (resources = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function remove(resource: Models.Oauth2ProviderRead): void {
+	function remove(resource: Identity.Oauth2ProviderRead): void {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
@@ -71,7 +71,7 @@
 					providerID: resource.metadata.id
 				};
 
-				Clients.identityClient(toastStore, at)
+				Clients.identity(toastStore, at)
 					.apiV1OrganizationsOrganizationIDOauth2providersProviderIDDelete(parameters)
 					.catch((e: Error) => Clients.error(e));
 			}

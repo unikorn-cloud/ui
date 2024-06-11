@@ -22,8 +22,8 @@
 
 	import type { InternalToken } from '$lib/oauth2';
 	import { profile, token, logout } from '$lib/credentials';
-	import { identityClient, error } from '$lib/clients';
-	import * as Models from '$lib/openapi/identity/models';
+	import * as Clients from '$lib/clients';
+	import * as Identity from '$lib/openapi/identity';
 	import * as OIDC from '$lib/oidc';
 
 	let initials: string;
@@ -42,7 +42,7 @@
 		}
 	});
 
-	let organizations: Models.Organizations;
+	let organizations: Identity.Organizations;
 	let organizationID: string;
 
 	let currentOrganizationID: string;
@@ -55,9 +55,9 @@
 	token.subscribe((at: InternalToken) => {
 		if (!at) return;
 
-		identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsGet()
-			.then((v: Models.Organizations) => {
+			.then((v: Identity.Organizations) => {
 				organizations = v;
 
 				// Try reuse the current organization if we can.
@@ -67,7 +67,7 @@
 					? currentOrganizationID
 					: organizations[0].metadata.id;
 			})
-			.catch((e: Error) => error(e));
+			.catch((e: Error) => Clients.error(e));
 	});
 
 	$: if (organizationID) organizationStore.set(organizationID);

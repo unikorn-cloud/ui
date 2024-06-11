@@ -21,7 +21,7 @@
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/identity/models';
+	import * as Identity from '$lib/openapi/identity';
 
 	/* Input vaildation */
 	import * as Validation from '$lib/validation';
@@ -29,11 +29,11 @@
 	let at: InternalToken;
 
 	let project: string;
-	let projects: Models.Projects;
+	let projects: Identity.Projects;
 
 	let organizationID: string;
 
-	let groups: Models.Groups;
+	let groups: Identity.Groups;
 	let groupIDs: string[] = [];
 
 	organizationStore.subscribe((value: string) => (organizationID = value));
@@ -52,18 +52,18 @@
 			organizationID: organizationID
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
-			.then((v: Models.Projects) => (projects = v))
+			.then((v: Identity.Projects) => (projects = v))
 			.catch((e: Error) => Clients.error(e));
 
 		const groupsParameters = {
 			organizationID: organizationID
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDGroupsGet(groupsParameters)
-			.then((v: Models.Groups) => (groups = v))
+			.then((v: Identity.Groups) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -85,7 +85,7 @@
 			}
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsPost(parameters)
 			.then(() => window.location.assign('/identity/projects'))
 			.catch((e: Error) => Clients.error(e));
