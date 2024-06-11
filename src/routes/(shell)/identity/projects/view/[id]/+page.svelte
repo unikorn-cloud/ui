@@ -20,7 +20,7 @@
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/identity/models';
+	import * as Identity from '$lib/openapi/identity';
 
 	let at: InternalToken;
 
@@ -30,9 +30,9 @@
 
 	organizationStore.subscribe((value: string) => (organizationID = value));
 
-	let project: Models.ProjectRead;
+	let project: Identity.ProjectRead;
 
-	let groups: Models.Groups;
+	let groups: Identity.Groups;
 
 	function update(at: InternalToken, organizationID: string) {
 		if (!at || !organizationID) return;
@@ -42,14 +42,14 @@
 			projectID: $page.params.id
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDGet(parameters)
-			.then((v: Models.ProjectRead) => (project = v))
+			.then((v: Identity.ProjectRead) => (project = v))
 			.catch((e: Error) => Clients.error(e));
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
-			.then((v: Models.Groups) => (groups = v))
+			.then((v: Identity.Groups) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -62,7 +62,7 @@
 			projectWrite: project
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDPut(parameters)
 			.then(() => window.location.assign('/identity/projects'))
 			.catch((e: Error) => Clients.error(e));

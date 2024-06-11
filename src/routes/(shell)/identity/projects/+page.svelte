@@ -25,7 +25,7 @@
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/identity/models';
+	import * as Identity from '$lib/openapi/identity';
 
 	let at: InternalToken;
 
@@ -44,7 +44,7 @@
 		update();
 	});
 
-	let resources: Models.Projects;
+	let resources: Identity.Projects;
 
 	function update(): void {
 		if (!at || !organizationID) return;
@@ -53,13 +53,13 @@
 			organizationID: organizationID
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
-			.then((v: Models.Projects) => (resources = v))
+			.then((v: Identity.Projects) => (resources = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function remove(resource: Models.ProjectRead): void {
+	function remove(resource: Identity.ProjectRead): void {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
@@ -72,7 +72,7 @@
 					projectID: resource.metadata.id
 				};
 
-				Clients.identityClient(toastStore, at)
+				Clients.identity(toastStore, at)
 					.apiV1OrganizationsOrganizationIDProjectsProjectIDDelete(parameters)
 					.catch((e: Error) => Clients.error(e));
 			}

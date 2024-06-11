@@ -20,7 +20,7 @@
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/identity/models';
+	import * as Identity from '$lib/openapi/identity';
 
 	let at: InternalToken;
 
@@ -30,11 +30,11 @@
 
 	organizationStore.subscribe((value: string) => (organizationID = value));
 
-	let group: Models.GroupRead;
+	let group: Identity.GroupRead;
 
 	let availableRoles: string[];
 
-	let availableGroups: Models.AvailableGroups;
+	let availableGroups: Identity.AvailableGroups;
 
 	function update(at: InternalToken, organizationID: string) {
 		if (!at || !organizationID) return;
@@ -44,22 +44,22 @@
 			groupid: $page.params.id
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDGroupsGroupidGet(parameters)
-			.then((v: Models.GroupRead) => {
+			.then((v: Identity.GroupRead) => {
 				if (!v.spec.providerGroups) v.spec.providerGroups = [];
 				group = v;
 			})
 			.catch((e: Error) => Clients.error(e));
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRolesGet(parameters)
-			.then((v: Models.RoleList) => (availableRoles = v))
+			.then((v: Identity.RoleList) => (availableRoles = v))
 			.catch((e: Error) => Clients.error(e));
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDAvailableGroupsGet(parameters)
-			.then((v: Models.AvailableGroups) => (availableGroups = v))
+			.then((v: Identity.AvailableGroups) => (availableGroups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -74,7 +74,7 @@
 			groupWrite: group
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDGroupsGroupidPut(parameters)
 			.then(() => window.location.assign('/identity/groups'))
 			.catch((e: Error) => Clients.error(e));

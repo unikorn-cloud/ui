@@ -21,9 +21,9 @@
 
 	/* Client setup */
 	import * as Clients from '$lib/clients';
+	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Models from '$lib/openapi/server/models';
 
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
@@ -32,7 +32,7 @@
 
 	let at: InternalToken;
 
-	let resources: Models.KubernetesClusters;
+	let resources: Kubernetes.KubernetesClusters;
 
 	let organizationID: string;
 
@@ -56,13 +56,13 @@
 			organizationID: organizationID
 		};
 
-		Clients.client(toastStore, at)
+		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
-			.then((v: Models.KubernetesClusters) => (resources = v))
+			.then((v: Kubernetes.KubernetesClusters) => (resources = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function remove(resource: Models.KubernetesClusterRead): void {
+	function remove(resource: Kubernetes.KubernetesClusterRead): void {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
@@ -77,7 +77,7 @@
 					clusterID: resource.metadata.id
 				};
 
-				Clients.client(toastStore, at)
+				Clients.kubernetes(toastStore, at)
 					.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDDelete(parameters)
 					.catch((e: Error) => Clients.error(e));
 			}
@@ -86,14 +86,14 @@
 		modalStore.trigger(modal);
 	}
 
-	function getKubeconfig(resource: Models.KubernetesClusterRead): void {
+	function getKubeconfig(resource: Kubernetes.KubernetesClusterRead): void {
 		const parameters = {
 			organizationID: organizationID,
 			projectID: resource.metadata.projectId,
 			clusterID: resource.metadata.id
 		};
 
-		Clients.client(toastStore, at)
+		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDKubeconfigGetRaw(
 				parameters
 			)

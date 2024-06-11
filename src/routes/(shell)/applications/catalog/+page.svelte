@@ -15,18 +15,18 @@
 	/* Client setup */
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import { client, error } from '$lib/clients';
-	import * as Models from '$lib/openapi/server/models';
+	import * as Clients from '$lib/clients';
+	import * as Kubernetes from '$lib/openapi/kubernetes';
 
-	let applications: Models.Applications;
+	let applications: Kubernetes.Applications;
 
 	token.subscribe((at: InternalToken): void => {
 		if (!at) return;
 
-		client(toastStore, at)
+		Clients.kubernetes(toastStore, at)
 			.apiV1ApplicationsGet()
-			.then((v: Models.Applications) => (applications = v))
-			.catch((e: Error) => error(e));
+			.then((v: Kubernetes.Applications) => (applications = v))
+			.catch((e: Error) => Clients.error(e));
 	});
 </script>
 

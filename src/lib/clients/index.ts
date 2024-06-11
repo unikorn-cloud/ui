@@ -3,8 +3,9 @@ import { env } from '$env/dynamic/public';
 import * as OIDC from '$lib/oidc';
 import type { InternalToken } from '$lib/oauth2';
 
-import * as ServerApi from '$lib/openapi/server';
+import * as KubernetesApi from '$lib/openapi/kubernetes';
 import * as IdentityApi from '$lib/openapi/identity';
+import * as RegionApi from '$lib/openapi/region';
 import { removeCredentials } from '$lib/credentials';
 import type { ToastSettings } from '@skeletonlabs/skeleton';
 
@@ -13,9 +14,9 @@ import type { Span } from '@opentelemetry/api';
 import { W3CTraceContextPropagator } from '@opentelemetry/core';
 
 // authenticationMiddleware performs logout if the request is unauthorized.
-function authenticationMiddleware(): ServerApi.Middleware {
+function authenticationMiddleware(): IdentityApi.Middleware {
 	return {
-		post: (ctx: ServerApi.ResponseContext): Promise<void | Response> => {
+		post: (ctx: IdentityApi.ResponseContext): Promise<void | Response> => {
 			return new Promise((resolve) => {
 				if (ctx.response.status == 401) removeCredentials();
 				resolve();
@@ -26,13 +27,13 @@ function authenticationMiddleware(): ServerApi.Middleware {
 
 // traceContextMiddleware injects w3c trace context to support request tracing and simple
 // handling of support requests.
-function traceContextMiddleware(toastStore: any): ServerApi.Middleware {
+function traceContextMiddleware(toastStore: any): IdentityApi.Middleware {
 	// Cache the span across the call so we can get at the trace
 	// context, in particular the trace ID, after the call completes.
 	let span: Span;
 
 	return {
-		pre: (ctx: ServerApi.RequestContext): Promise<ServerApi.FetchParams | void> => {
+		pre: (ctx: IdentityApi.RequestContext): Promise<IdentityApi.FetchParams | void> => {
 			return new Promise((resolve) => {
 				const tracer = trace.getTracer('unikorn-ui');
 				span = tracer.startSpan(ctx.url);
@@ -48,7 +49,7 @@ function traceContextMiddleware(toastStore: any): ServerApi.Middleware {
 				resolve();
 			});
 		},
-		post: (ctx: ServerApi.ResponseContext): Promise<Response | void> => {
+		post: (ctx: IdentityApi.ResponseContext): Promise<Response | void> => {
 			return new Promise((resolve) => {
 				span.end();
 
@@ -115,17 +116,17 @@ async function accessToken(token: InternalToken): Promise<string> {
 // client gets a new initialized client with auth and any additional middlewares.
 // NOTE: the toast store must be initialized in a svelte compenent or the context
 // lookup for the store will fail, hence we have to pass it in.
-export function client(toastStore: any, token: InternalToken): ServerApi.DefaultApi {
-	const config = new ServerApi.Configuration({
-		basePath: env.PUBLIC_API_HOST,
+export function kubernetes(toastStore: any, token: InternalToken): KubernetesApi.DefaultApi {
+	const config = new KubernetesApi.Configuration({
+		basePath: env.PUBLIC_KUBERNETES_HOST,
 		accessToken: async () => accessToken(token),
 		middleware: [authenticationMiddleware(), traceContextMiddleware(toastStore)]
 	});
 
-	return new ServerApi.DefaultApi(config);
+	return new KubernetesApi.DefaultApi(config);
 }
 
-export function identityClient(toastStore: any, token: InternalToken): IdentityApi.DefaultApi {
+export function identity(toastStore: any, token: InternalToken): IdentityApi.DefaultApi {
 	const config = new IdentityApi.Configuration({
 		basePath: env.PUBLIC_OAUTH2_ISSUER,
 		accessToken: async () => accessToken(token),
@@ -133,6 +134,16 @@ export function identityClient(toastStore: any, token: InternalToken): IdentityA
 	});
 
 	return new IdentityApi.DefaultApi(config);
+}
+
+export function region(toastStore: any, token: InternalToken): RegionApi.DefaultApi {
+	const config = new RegionApi.Configuration({
+		basePath: env.PUBLIC_REGION_HOST,
+		accessToken: async () => accessToken(token),
+		middleware: [authenticationMiddleware(), traceContextMiddleware(toastStore)]
+	});
+
+	return new RegionApi.DefaultApi(config);
 }
 
 // error is a generic fallback when an exception occurs, everything else should

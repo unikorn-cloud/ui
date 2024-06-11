@@ -30,6 +30,10 @@ api:
   # The API's hostname.
   host: https://api.unikorn-cloud.org
 
+region:
+  # The API's hostname.
+  host: https://region.unikorn-cloud.org
+
 # Authentication settings.
 oauth2:
   # The identity provider's name (and OIDC discovery endpoint).

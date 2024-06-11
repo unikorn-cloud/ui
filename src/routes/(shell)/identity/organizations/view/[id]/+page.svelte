@@ -38,17 +38,17 @@
 			organizationID: $page.params.id
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDGet(parameters)
 			.then((v: Identity.OrganizationRead) => (organization = v))
 			.catch((e: Error) => Clients.error(e));
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1Oauth2providersGet()
 			.then((v: Identity.Oauth2Providers) => (providers = v))
 			.catch((e: Error) => Clients.error(e));
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDOauth2providersGet(parameters)
 			.then((v: Identity.Oauth2Providers) => (organizationProviders = v))
 			.catch((e: Error) => Clients.error(e));
@@ -64,7 +64,7 @@
 			organizationWrite: organization
 		};
 
-		Clients.identityClient(toastStore, at)
+		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDPut(parameters)
 			.then(() => window.location.assign('/identity/organizations'))
 			.catch((e: Error) => Clients.error(e));
