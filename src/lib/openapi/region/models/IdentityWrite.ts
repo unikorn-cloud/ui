@@ -20,18 +20,6 @@ import { exists, mapValues } from '../runtime';
  */
 export interface IdentityWrite {
     /**
-     * Organization that owns the resource.
-     * @type {string}
-     * @memberof IdentityWrite
-     */
-    organizationId: string;
-    /**
-     * Project that owns the resource.
-     * @type {string}
-     * @memberof IdentityWrite
-     */
-    projectId: string;
-    /**
      * Cluster the owns the resource.
      * @type {string}
      * @memberof IdentityWrite
@@ -44,8 +32,6 @@ export interface IdentityWrite {
  */
 export function instanceOfIdentityWrite(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "organizationId" in value;
-    isInstance = isInstance && "projectId" in value;
     isInstance = isInstance && "clusterId" in value;
 
     return isInstance;
@@ -61,8 +47,6 @@ export function IdentityWriteFromJSONTyped(json: any, ignoreDiscriminator: boole
     }
     return {
         
-        'organizationId': json['organizationId'],
-        'projectId': json['projectId'],
         'clusterId': json['clusterId'],
     };
 }
@@ -76,8 +60,6 @@ export function IdentityWriteToJSON(value?: IdentityWrite | null): any {
     }
     return {
         
-        'organizationId': value.organizationId,
-        'projectId': value.projectId,
         'clusterId': value.clusterId,
     };
 }

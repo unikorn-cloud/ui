@@ -52,28 +52,16 @@
 
 	organizationStore.subscribe((value: string) => {
 		organizationID = value;
-		updateRegions();
+		updateProjects();
 	});
 
 	token.subscribe((value: InternalToken) => {
 		at = value;
-		updateRegions();
+		updateProjects();
 	});
 
-	function updateRegions() {
+	function updateProjects() {
 		if (!at || !organizationID) return;
-
-		/* Get top-level resources required for the first step */
-		/* TODO: parallelize with Promise.all */
-		Clients.region(toastStore, at)
-			.apiV1RegionsGet()
-			.then((v: Region.Regions) => {
-				if (v.length == 0) return;
-
-				regions = v;
-				regionID = regions[0].metadata.id;
-			})
-			.catch((e: Error) => Clients.error(e));
 
 		const parameters = {
 			organizationID: organizationID
@@ -89,6 +77,29 @@
 			})
 			.catch((e: Error) => Clients.error(e));
 	}
+
+	function updateRegions(at: InternalToken, organizationID: string, projectID: string) {
+		if (!at || !organizationID || !projectID) return;
+
+		const parameters = {
+			organizationID: organizationID,
+			projectID: projectID
+		};
+
+		/* Get top-level resources required for the first step */
+		/* TODO: parallelize with Promise.all */
+		Clients.region(toastStore, at)
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsGet(parameters)
+			.then((v: Region.Regions) => {
+				if (v.length == 0) return;
+
+				regions = v;
+				regionID = regions[0].metadata.id;
+			})
+			.catch((e: Error) => Clients.error(e));
+	}
+
+	$: updateRegions(at, organizationID, projectID);
 
 	function updateClusterManagers(at: InternalToken, projectID: string) {
 		if (!at || !projectID) return;
@@ -141,34 +152,48 @@
 		Validation.unique(cluster, Validation.namedResourceNames(clusters));
 
 	/* Once the region has been selected we can poll the images and other resources */
-	function updateImages(at: InternalToken, regionID: string): void {
-		if (!at || !regionID) return;
+	function updateImages(
+		at: InternalToken,
+		organizationID: string,
+		projectID: string,
+		regionID: string
+	): void {
+		if (!at || !organizationID || !projectID || !regionID) return;
 
 		const parameters = {
+			organizationID: organizationID,
+			projectID: projectID,
 			regionID: regionID
 		};
 
 		Clients.region(toastStore, at)
-			.apiV1RegionsRegionIDImagesGet(parameters)
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGet(parameters)
 			.then((v: Region.Images) => (images = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function updateFlavors(at: InternalToken, regionID: string): void {
-		if (!at || !regionID) return;
+	function updateFlavors(
+		at: InternalToken,
+		organizationID: string,
+		projectID: string,
+		regionID: string
+	): void {
+		if (!at || !organizationID || !projectID || !regionID) return;
 
 		const parameters = {
+			organizationID: organizationID,
+			projectID: projectID,
 			regionID: regionID
 		};
 
 		Clients.region(toastStore, at)
-			.apiV1RegionsRegionIDFlavorsGet(parameters)
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGet(parameters)
 			.then((v: Region.Flavors) => (flavors = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateImages(at, regionID);
-	$: updateFlavors(at, regionID);
+	$: updateImages(at, organizationID, projectID, regionID);
+	$: updateFlavors(at, organizationID, projectID, regionID);
 
 	/* From the images, we can get a list of Kubernetes versions */
 	function updateVersions(at: InternalToken, images: Region.Images): void {
