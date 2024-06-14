@@ -40,25 +40,33 @@ import {
     RegionsToJSON,
 } from '../models/index';
 
-export interface ApiV1RegionsRegionIDExternalnetworksGetRequest {
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsGetRequest {
+    organizationID: string;
+    projectID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDExternalnetworksGetRequest {
+    organizationID: string;
+    projectID: string;
     regionID: string;
 }
 
-export interface ApiV1RegionsRegionIDFlavorsGetRequest {
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGetRequest {
+    organizationID: string;
+    projectID: string;
     regionID: string;
 }
 
-export interface ApiV1RegionsRegionIDIdentitiesIdentityIDDeleteRequest {
-    regionID: string;
-    identityID: string;
-}
-
-export interface ApiV1RegionsRegionIDIdentitiesPostRequest {
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesPostRequest {
+    organizationID: string;
+    projectID: string;
     regionID: string;
     identityWrite: IdentityWrite;
 }
 
-export interface ApiV1RegionsRegionIDImagesGetRequest {
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGetRequest {
+    organizationID: string;
+    projectID: string;
     regionID: string;
 }
 
@@ -70,7 +78,15 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * List all regions.
      */
-    async apiV1RegionsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Regions>> {
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Regions>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsGet.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsGet.');
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -81,7 +97,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/regions`,
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/regions`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -93,17 +109,25 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * List all regions.
      */
-    async apiV1RegionsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Regions> {
-        const response = await this.apiV1RegionsGetRaw(initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Regions> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Get a list of external networks.
      */
-    async apiV1RegionsRegionIDExternalnetworksGetRaw(requestParameters: ApiV1RegionsRegionIDExternalnetworksGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExternalNetworks>> {
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDExternalnetworksGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDExternalnetworksGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExternalNetworks>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDExternalnetworksGet.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDExternalnetworksGet.');
+        }
+
         if (requestParameters.regionID === null || requestParameters.regionID === undefined) {
-            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1RegionsRegionIDExternalnetworksGet.');
+            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDExternalnetworksGet.');
         }
 
         const queryParameters: any = {};
@@ -116,7 +140,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/regions/{regionID}/externalnetworks`.replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))),
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/regions/{regionID}/externalnetworks`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -128,17 +152,25 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Get a list of external networks.
      */
-    async apiV1RegionsRegionIDExternalnetworksGet(requestParameters: ApiV1RegionsRegionIDExternalnetworksGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ExternalNetworks> {
-        const response = await this.apiV1RegionsRegionIDExternalnetworksGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDExternalnetworksGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDExternalnetworksGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ExternalNetworks> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDExternalnetworksGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Lists all compute flavors that the authenticated user has access to
      */
-    async apiV1RegionsRegionIDFlavorsGetRaw(requestParameters: ApiV1RegionsRegionIDFlavorsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Flavors>> {
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Flavors>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGet.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGet.');
+        }
+
         if (requestParameters.regionID === null || requestParameters.regionID === undefined) {
-            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1RegionsRegionIDFlavorsGet.');
+            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGet.');
         }
 
         const queryParameters: any = {};
@@ -151,7 +183,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/regions/{regionID}/flavors`.replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))),
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/regions/{regionID}/flavors`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -163,59 +195,29 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists all compute flavors that the authenticated user has access to
      */
-    async apiV1RegionsRegionIDFlavorsGet(requestParameters: ApiV1RegionsRegionIDFlavorsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Flavors> {
-        const response = await this.apiV1RegionsRegionIDFlavorsGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Flavors> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGetRaw(requestParameters, initOverrides);
         return await response.value();
-    }
-
-    /**
-     * Delete an identity from the region.
-     */
-    async apiV1RegionsRegionIDIdentitiesIdentityIDDeleteRaw(requestParameters: ApiV1RegionsRegionIDIdentitiesIdentityIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.regionID === null || requestParameters.regionID === undefined) {
-            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1RegionsRegionIDIdentitiesIdentityIDDelete.');
-        }
-
-        if (requestParameters.identityID === null || requestParameters.identityID === undefined) {
-            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1RegionsRegionIDIdentitiesIdentityIDDelete.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/regions/{regionID}/identities/{identityID}`.replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))),
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Delete an identity from the region.
-     */
-    async apiV1RegionsRegionIDIdentitiesIdentityIDDelete(requestParameters: ApiV1RegionsRegionIDIdentitiesIdentityIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1RegionsRegionIDIdentitiesIdentityIDDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
      * Create a new identity in the region.
      */
-    async apiV1RegionsRegionIDIdentitiesPostRaw(requestParameters: ApiV1RegionsRegionIDIdentitiesPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IdentityRead>> {
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IdentityRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesPost.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesPost.');
+        }
+
         if (requestParameters.regionID === null || requestParameters.regionID === undefined) {
-            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1RegionsRegionIDIdentitiesPost.');
+            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesPost.');
         }
 
         if (requestParameters.identityWrite === null || requestParameters.identityWrite === undefined) {
-            throw new runtime.RequiredError('identityWrite','Required parameter requestParameters.identityWrite was null or undefined when calling apiV1RegionsRegionIDIdentitiesPost.');
+            throw new runtime.RequiredError('identityWrite','Required parameter requestParameters.identityWrite was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesPost.');
         }
 
         const queryParameters: any = {};
@@ -230,7 +232,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/regions/{regionID}/identities`.replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))),
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/regions/{regionID}/identities`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -243,17 +245,25 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Create a new identity in the region.
      */
-    async apiV1RegionsRegionIDIdentitiesPost(requestParameters: ApiV1RegionsRegionIDIdentitiesPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IdentityRead> {
-        const response = await this.apiV1RegionsRegionIDIdentitiesPostRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IdentityRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Lists all compute images that the authenticated user has access to.
      */
-    async apiV1RegionsRegionIDImagesGetRaw(requestParameters: ApiV1RegionsRegionIDImagesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Images>> {
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Images>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGet.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGet.');
+        }
+
         if (requestParameters.regionID === null || requestParameters.regionID === undefined) {
-            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1RegionsRegionIDImagesGet.');
+            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGet.');
         }
 
         const queryParameters: any = {};
@@ -266,7 +276,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/regions/{regionID}/images`.replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))),
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/regions/{regionID}/images`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -278,8 +288,8 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists all compute images that the authenticated user has access to.
      */
-    async apiV1RegionsRegionIDImagesGet(requestParameters: ApiV1RegionsRegionIDImagesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Images> {
-        const response = await this.apiV1RegionsRegionIDImagesGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Images> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

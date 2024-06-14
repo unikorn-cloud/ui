@@ -31,18 +31,18 @@ spec:
         - name: PUBLIC_APPLICATION_VERSION
           value: {{ .Chart.Version }}
         - name: PUBLIC_KUBERNETES_HOST
-          value: {{ .Values.api.host }}
+          value: {{ .Values.kubernetes.host }}
         - name: PUBLIC_REGION_HOST
           value: {{ .Values.region.host }}
         - name: PUBLIC_OAUTH2_ISSUER
-          value: {{ .Values.oauth2.issuer }}
+          value: {{ .Values.identity.host }}
         # TODO: implement OIDC discovery protocol.
         - name: PUBLIC_OAUTH2_AUTHORIZATION_ENDPOINT
-          value: {{ .Values.oauth2.issuer }}/oauth2/v2/authorization
+          value: {{ .Values.identity.host }}/oauth2/v2/authorization
         - name: PUBLIC_OAUTH2_TOKEN_ENDPOINT
-          value: {{ .Values.oauth2.issuer }}/oauth2/v2/token
+          value: {{ .Values.identity.host }}/oauth2/v2/token
         - name: PUBLIC_OAUTH2_JWKS_ENDPOINT
-          value: {{ .Values.oauth2.issuer }}/oauth2/v2/jwks
+          value: {{ .Values.identity.host }}/oauth2/v2/jwks
         - name: PUBLIC_OAUTH2_CLIENT_ID
           value: {{ .Values.oauth2.clientID }}
         securityContext:
