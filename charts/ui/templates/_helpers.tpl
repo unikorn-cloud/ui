@@ -87,3 +87,57 @@ Create image pull secrets
 - name: unikorn-ui-docker-config
 {{- end }}
 {{- end }}
+
+{{/*
+Creates predicatable Kubernetes name compatible UUIDs from name.
+Note we always start with a letter (kubernetes DNS label requirement),
+group 3 starts with "4" (UUIDv4 aka "random") and group 4 with "8"
+(the variant aka RFC9562).
+*/}}
+{{ define "resource.id" -}}
+{{- $sum := sha256sum . -}}
+{{ printf "f%s-%s-4%s-8%s-%s" (substr 1 8 $sum) (substr 8 12 $sum) (substr 13 16 $sum) (substr 17 20 $sum) (substr 20 32 $sum) }}
+{{- end }}
+
+{{/*
+Abstractions to allow an all-in-one chart
+*/}}
+{{- define "unikorn.identity.host" -}}
+{{- if (and .Values.global .Values.global.identity .Values.global.identity.host) -}}
+{{- .Values.global.identity.host }}
+{{- else }}
+{{- .Values.identity.host }}
+{{- end }}
+{{- end }}
+
+{{- define "unikorn.region.host" -}}
+{{- if (and .Values.global .Values.global.region .Values.global.region.host) -}}
+{{- .Values.global.region.host }}
+{{- else }}
+{{- .Values.region.host }}
+{{- end }}
+{{- end }}
+
+{{- define "unikorn.kubernetes.host" -}}
+{{- if (and .Values.global .Values.global.kubernetes .Values.global.kubernetes.host) -}}
+{{- .Values.global.kubernetes.host }}
+{{- else }}
+{{- .Values.kubernetes.host }}
+{{- end }}
+{{- end }}
+
+{{- define "unikorn.ui.host" -}}
+{{- if (and .Values.global .Values.global.ui .Values.global.ui.host) -}}
+{{- .Values.global.ui.host }}
+{{- else }}
+{{- .Values.host }}
+{{- end }}
+{{- end }}
+
+{{- define "unikorn.ingress.clusterIssuer" -}}
+{{- if (and .Values.global .Values.global.ingress .Values.global.ingress.clusterIssuer) -}}
+{{- .Values.global.ingress.clusterIssuer }}
+{{- else if .Values.ingress.clusterIssuer }}
+{{- .Values.ingress.clusterIssuer }}
+{{- end }}
+{{- end }}
