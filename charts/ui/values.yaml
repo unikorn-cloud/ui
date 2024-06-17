@@ -27,19 +27,22 @@ host: console.unikorn-cloud.org
 
 identity:
   # The API's hostname.
-  issuer: https://identity.unikorn-cloud.org
+  host: identity.unikorn-cloud.org
 
 region:
   # The API's hostname.
-  host: https://region.unikorn-cloud.org
+  host: region.unikorn-cloud.org
 
 kubernetes:
   # The API's hostname.
-  host: https://api.unikorn-cloud.org
+  host: kubernetes.unikorn-cloud.org
 
 oauth2:
   # The client identifier assigned to this application.
   clientID: 3fc34852-9186-4884-b580-78bf4bcf628a
+  # The client name, which can be shared with the identity configuration
+  # and then hashed into a predictlable ID.  Overrides the ID.
+  # clientName: foo
 
 ingress:
   # Sets the ingress class to use.
