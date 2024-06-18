@@ -10,20 +10,26 @@ jobs:
   Lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 21
-          cache: 'npm'
-      - name: Node Clean Install
-        run: npm ci
-      - name: Lint
-        run: make lint
+    - name: Checkout
+      uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 21
+        cache: 'npm'
+    - name: Install Helm
+      uses: azure/setup-helm@v3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build Helm Chart
+      run: helm dependency update charts/ui
+    - name: Node Clean Install
+      run: npm ci
+    - name: Lint
+      run: make lint
   Build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Build Images
-        run: make images
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Build Images
+      run: make images

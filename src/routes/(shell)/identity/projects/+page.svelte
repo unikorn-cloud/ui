@@ -92,7 +92,7 @@
 		{#each resources || [] as resource}
 			<ShellListItem
 				metadata={resource.metadata}
-				href="identity/projects/view/{resource.metadata.id}"
+				href="/identity/projects/view/{resource.metadata.id}"
 			>
 				<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
 					<iconify-icon icon="mdi:close" />
