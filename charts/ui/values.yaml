@@ -23,7 +23,8 @@ imagePullSecret:
 image:
 
 # What DNS name I have.
-host: console.unikorn-cloud.org
+ui:
+  host: console.unikorn-cloud.org
 
 identity:
   # The API's hostname.

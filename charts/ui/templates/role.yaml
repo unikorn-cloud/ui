@@ -3,4 +3,4 @@ kind: Role
 metadata:
   name: unikorn-ui
   labels:
-    {{- include "unikorn-ui.labels" . | nindent 4 }}
+    {{- include "unikorn.labels" . | nindent 4 }}
