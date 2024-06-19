@@ -1,7 +1,10 @@
 {
 	"name": "unikorn-ui",
 	"version": "0.1.0",
-	"private": true,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/unikorn-cloud/ui"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
