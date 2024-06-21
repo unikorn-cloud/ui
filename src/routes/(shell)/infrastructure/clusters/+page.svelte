@@ -22,6 +22,7 @@
 	/* Client setup */
 	import * as Clients from '$lib/clients';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
+	import * as Identity from '$lib/openapi/identity';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 
@@ -33,6 +34,8 @@
 	let at: InternalToken;
 
 	let resources: Kubernetes.KubernetesClusters;
+
+	let projects: Identity.Projects;
 
 	let organizationID: string;
 
@@ -59,6 +62,11 @@
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
 			.then((v: Kubernetes.KubernetesClusters) => (resources = v))
+			.catch((e: Error) => Clients.error(e));
+
+		Clients.identity(toastStore, at)
+			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
+			.then((v: Identity.Projects) => (projects = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -128,7 +136,7 @@
 
 	<ShellList>
 		{#each resources || [] as resource}
-			<ShellListItem metadata={resource.metadata} href="#">
+			<ShellListItem metadata={resource.metadata} {projects} href="#">
 				<div class="flex items-center gap-4">
 					<button
 						on:click={() => getKubeconfig(resource)}
