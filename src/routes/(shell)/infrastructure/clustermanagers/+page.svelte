@@ -26,10 +26,13 @@
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
+	import * as Identity from '$lib/openapi/identity';
 
 	let at: InternalToken;
 
 	let resources: Kubernetes.ClusterManagers;
+
+	let projects: Identity.Projects;
 
 	let organizationID: string;
 
@@ -56,6 +59,11 @@
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustermanagersGet(parameters)
 			.then((v: Kubernetes.ClusterManagers) => (resources = v))
+			.catch((e: Error) => Clients.error(e));
+
+		Clients.identity(toastStore, at)
+			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
+			.then((v: Identity.Projects) => (projects = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -88,7 +96,7 @@
 <ShellPage {settings}>
 	<ShellList>
 		{#each resources || [] as resource}
-			<ShellListItem metadata={resource.metadata} href="#">
+			<ShellListItem metadata={resource.metadata} {projects} href="#">
 				<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
 					<iconify-icon icon="mdi:close" />
 				</button>
