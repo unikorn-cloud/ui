@@ -32,7 +32,7 @@
 
 	let project: Identity.ProjectRead;
 
-	let groups: Identity.Groups;
+	let groups: Array<Identity.GroupRead>;
 
 	function update(at: InternalToken, organizationID: string) {
 		if (!at || !organizationID) return;
@@ -49,7 +49,7 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
-			.then((v: Identity.Groups) => (groups = v))
+			.then((v: Array<Identity.GroupRead>) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 

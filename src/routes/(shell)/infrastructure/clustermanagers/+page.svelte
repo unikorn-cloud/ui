@@ -30,9 +30,9 @@
 
 	let at: InternalToken;
 
-	let resources: Kubernetes.ClusterManagers;
+	let resources: Array<Kubernetes.ClusterManagerRead>;
 
-	let projects: Identity.Projects;
+	let projects: Array<Identity.ProjectRead>;
 
 	let organizationID: string;
 
@@ -58,12 +58,12 @@
 
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustermanagersGet(parameters)
-			.then((v: Kubernetes.ClusterManagers) => (resources = v))
+			.then((v: Array<Kubernetes.ClusterManagerRead>) => (resources = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
-			.then((v: Identity.Projects) => (projects = v))
+			.then((v: Array<Identity.ProjectRead>) => (projects = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 

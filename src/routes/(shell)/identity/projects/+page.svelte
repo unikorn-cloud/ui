@@ -44,7 +44,7 @@
 		update();
 	});
 
-	let resources: Identity.Projects;
+	let resources: Array<Identity.ProjectRead>;
 
 	function update(): void {
 		if (!at || !organizationID) return;
@@ -55,7 +55,7 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
-			.then((v: Identity.Projects) => (resources = v))
+			.then((v: Array<Identity.ProjectRead>) => (resources = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 

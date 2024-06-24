@@ -16,63 +16,51 @@
 import * as runtime from '../runtime';
 import type {
   Acl,
-  AvailableGroups,
+  AvailableGroup,
   GroupRead,
   GroupWrite,
-  Groups,
   JsonWebKeySet,
   LoginRequestOptions,
   ModelError,
+  Oauth2ProviderRead,
   Oauth2ProviderWrite,
-  Oauth2Providers,
   OpenidConfiguration,
   OrganizationRead,
   OrganizationWrite,
-  Organizations,
   ProjectRead,
   ProjectWrite,
-  Projects,
-  RoleList,
   Token,
   TokenRequestOptions,
 } from '../models/index';
 import {
     AclFromJSON,
     AclToJSON,
-    AvailableGroupsFromJSON,
-    AvailableGroupsToJSON,
+    AvailableGroupFromJSON,
+    AvailableGroupToJSON,
     GroupReadFromJSON,
     GroupReadToJSON,
     GroupWriteFromJSON,
     GroupWriteToJSON,
-    GroupsFromJSON,
-    GroupsToJSON,
     JsonWebKeySetFromJSON,
     JsonWebKeySetToJSON,
     LoginRequestOptionsFromJSON,
     LoginRequestOptionsToJSON,
     ModelErrorFromJSON,
     ModelErrorToJSON,
+    Oauth2ProviderReadFromJSON,
+    Oauth2ProviderReadToJSON,
     Oauth2ProviderWriteFromJSON,
     Oauth2ProviderWriteToJSON,
-    Oauth2ProvidersFromJSON,
-    Oauth2ProvidersToJSON,
     OpenidConfigurationFromJSON,
     OpenidConfigurationToJSON,
     OrganizationReadFromJSON,
     OrganizationReadToJSON,
     OrganizationWriteFromJSON,
     OrganizationWriteToJSON,
-    OrganizationsFromJSON,
-    OrganizationsToJSON,
     ProjectReadFromJSON,
     ProjectReadToJSON,
     ProjectWriteFromJSON,
     ProjectWriteToJSON,
-    ProjectsFromJSON,
-    ProjectsToJSON,
-    RoleListFromJSON,
-    RoleListToJSON,
     TokenFromJSON,
     TokenToJSON,
     TokenRequestOptionsFromJSON,
@@ -190,7 +178,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists system identity providers.
      */
-    async apiV1Oauth2providersGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Oauth2Providers>> {
+    async apiV1Oauth2providersGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Oauth2ProviderRead>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -207,13 +195,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => Oauth2ProvidersFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(Oauth2ProviderReadFromJSON));
     }
 
     /**
      * Lists system identity providers.
      */
-    async apiV1Oauth2providersGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Oauth2Providers> {
+    async apiV1Oauth2providersGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Oauth2ProviderRead>> {
         const response = await this.apiV1Oauth2providersGetRaw(initOverrides);
         return await response.value();
     }
@@ -221,7 +209,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns a list of organizations that are owned/managed by the user.
      */
-    async apiV1OrganizationsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Organizations>> {
+    async apiV1OrganizationsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<OrganizationRead>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -238,13 +226,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => OrganizationsFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(OrganizationReadFromJSON));
     }
 
     /**
      * Returns a list of organizations that are owned/managed by the user.
      */
-    async apiV1OrganizationsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Organizations> {
+    async apiV1OrganizationsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<OrganizationRead>> {
         const response = await this.apiV1OrganizationsGetRaw(initOverrides);
         return await response.value();
     }
@@ -287,7 +275,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns a list of groups that are defined for the organization in the domain provider.
      */
-    async apiV1OrganizationsOrganizationIDAvailableGroupsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDAvailableGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AvailableGroups>> {
+    async apiV1OrganizationsOrganizationIDAvailableGroupsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDAvailableGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<AvailableGroup>>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDAvailableGroupsGet.');
         }
@@ -308,13 +296,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => AvailableGroupsFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(AvailableGroupFromJSON));
     }
 
     /**
      * Returns a list of groups that are defined for the organization in the domain provider.
      */
-    async apiV1OrganizationsOrganizationIDAvailableGroupsGet(requestParameters: ApiV1OrganizationsOrganizationIDAvailableGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AvailableGroups> {
+    async apiV1OrganizationsOrganizationIDAvailableGroupsGet(requestParameters: ApiV1OrganizationsOrganizationIDAvailableGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<AvailableGroup>> {
         const response = await this.apiV1OrganizationsOrganizationIDAvailableGroupsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -357,7 +345,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns a list of groups that are defined for the organization.
      */
-    async apiV1OrganizationsOrganizationIDGroupsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Groups>> {
+    async apiV1OrganizationsOrganizationIDGroupsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<GroupRead>>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDGroupsGet.');
         }
@@ -378,13 +366,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GroupsFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(GroupReadFromJSON));
     }
 
     /**
      * Returns a list of groups that are defined for the organization.
      */
-    async apiV1OrganizationsOrganizationIDGroupsGet(requestParameters: ApiV1OrganizationsOrganizationIDGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Groups> {
+    async apiV1OrganizationsOrganizationIDGroupsGet(requestParameters: ApiV1OrganizationsOrganizationIDGroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<GroupRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDGroupsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -555,7 +543,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists an organization\'s identity providers.
      */
-    async apiV1OrganizationsOrganizationIDOauth2providersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Oauth2Providers>> {
+    async apiV1OrganizationsOrganizationIDOauth2providersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Oauth2ProviderRead>>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDOauth2providersGet.');
         }
@@ -576,13 +564,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => Oauth2ProvidersFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(Oauth2ProviderReadFromJSON));
     }
 
     /**
      * Lists an organization\'s identity providers.
      */
-    async apiV1OrganizationsOrganizationIDOauth2providersGet(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Oauth2Providers> {
+    async apiV1OrganizationsOrganizationIDOauth2providersGet(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Oauth2ProviderRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDOauth2providersGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -714,7 +702,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * List all projects for the organization.
      */
-    async apiV1OrganizationsOrganizationIDProjectsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Projects>> {
+    async apiV1OrganizationsOrganizationIDProjectsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ProjectRead>>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsGet.');
         }
@@ -735,13 +723,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ProjectsFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ProjectReadFromJSON));
     }
 
     /**
      * List all projects for the organization.
      */
-    async apiV1OrganizationsOrganizationIDProjectsGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Projects> {
+    async apiV1OrganizationsOrganizationIDProjectsGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ProjectRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDProjectsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -953,7 +941,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns roles that can be used by the organization.
      */
-    async apiV1OrganizationsOrganizationIDRolesGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RoleList>> {
+    async apiV1OrganizationsOrganizationIDRolesGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<string>>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDRolesGet.');
         }
@@ -974,13 +962,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RoleListFromJSON(jsonValue));
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
      * Returns roles that can be used by the organization.
      */
-    async apiV1OrganizationsOrganizationIDRolesGet(requestParameters: ApiV1OrganizationsOrganizationIDRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RoleList> {
+    async apiV1OrganizationsOrganizationIDRolesGet(requestParameters: ApiV1OrganizationsOrganizationIDRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<string>> {
         const response = await this.apiV1OrganizationsOrganizationIDRolesGetRaw(requestParameters, initOverrides);
         return await response.value();
     }

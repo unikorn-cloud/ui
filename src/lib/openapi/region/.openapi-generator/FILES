@@ -1,11 +1,10 @@
+.openapi-generator-ignore
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
 models/ExternalNetwork.ts
-models/ExternalNetworks.ts
 models/Flavor.ts
 models/FlavorSpec.ts
-models/Flavors.ts
 models/GpuDriver.ts
 models/GpuSpec.ts
 models/GpuVendor.ts
@@ -15,14 +14,12 @@ models/IdentitySpecOpenStack.ts
 models/IdentityWrite.ts
 models/Image.ts
 models/ImageSpec.ts
-models/Images.ts
 models/ModelError.ts
 models/OrganizationScopedResourceReadMetadata.ts
 models/ProjectScopedResourceReadMetadata.ts
 models/RegionRead.ts
 models/RegionSpec.ts
 models/RegionType.ts
-models/Regions.ts
 models/ResourceMetadata.ts
 models/ResourceProvisioningStatus.ts
 models/ResourceReadMetadata.ts

@@ -29,11 +29,11 @@
 	let at: InternalToken;
 
 	let project: string;
-	let projects: Identity.Projects;
+	let projects: Array<Identity.ProjectRead>;
 
 	let organizationID: string;
 
-	let groups: Identity.Groups;
+	let groups: Array<Identity.GroupRead>;
 	let groupIDs: string[] = [];
 
 	organizationStore.subscribe((value: string) => (organizationID = value));
@@ -54,7 +54,7 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
-			.then((v: Identity.Projects) => (projects = v))
+			.then((v: Array<Identity.ProjectRead>) => (projects = v))
 			.catch((e: Error) => Clients.error(e));
 
 		const groupsParameters = {
@@ -63,7 +63,7 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDGroupsGet(groupsParameters)
-			.then((v: Identity.Groups) => (groups = v))
+			.then((v: Array<Identity.GroupRead>) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 

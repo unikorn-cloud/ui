@@ -33,9 +33,9 @@
 
 	let at: InternalToken;
 
-	let resources: Kubernetes.KubernetesClusters;
+	let resources: Array<Kubernetes.KubernetesClusterRead>;
 
-	let projects: Identity.Projects;
+	let projects: Array<Identity.ProjectRead>;
 
 	let organizationID: string;
 
@@ -61,12 +61,12 @@
 
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
-			.then((v: Kubernetes.KubernetesClusters) => (resources = v))
+			.then((v: Array<Kubernetes.KubernetesClusterRead>) => (resources = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
-			.then((v: Identity.Projects) => (projects = v))
+			.then((v: Array<Identity.ProjectRead>) => (projects = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -137,7 +137,7 @@
 	<ShellList>
 		{#each resources || [] as resource}
 			<ShellListItem metadata={resource.metadata} {projects} href="#">
-				<div class="flex items-center gap-4">
+				<div class="flex gap-4">
 					<button
 						on:click={() => getKubeconfig(resource)}
 						on:keypress={() => getKubeconfig(resource)}

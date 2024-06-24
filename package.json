@@ -17,9 +17,9 @@
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
 		"openapi": "openapi-generator-cli",
-		"openapi:identity": "openapi-generator-cli generate -g typescript-fetch --generate-alias-as-model --global-property skipFormModel=false -i https://raw.githubusercontent.com/unikorn-cloud/identity/main/pkg/openapi/server.spec.yaml -o src/lib/openapi/identity",
-		"openapi:kubernetes": "openapi-generator-cli generate -g typescript-fetch --generate-alias-as-model -i https://raw.githubusercontent.com/unikorn-cloud/kubernetes/main/pkg/openapi/server.spec.yaml -o src/lib/openapi/kubernetes",
-		"openapi:region": "openapi-generator-cli generate -g typescript-fetch --generate-alias-as-model -i https://raw.githubusercontent.com/unikorn-cloud/region/main/pkg/openapi/server.spec.yaml -o src/lib/openapi/region"
+		"openapi:identity": "openapi-generator-cli generate -g typescript-fetch --global-property skipFormModel=false -i https://raw.githubusercontent.com/unikorn-cloud/identity/main/pkg/openapi/server.spec.yaml -o src/lib/openapi/identity",
+		"openapi:kubernetes": "openapi-generator-cli generate -g typescript-fetch -i https://raw.githubusercontent.com/unikorn-cloud/kubernetes/main/pkg/openapi/server.spec.yaml -o src/lib/openapi/kubernetes",
+		"openapi:region": "openapi-generator-cli generate -g typescript-fetch -i https://raw.githubusercontent.com/unikorn-cloud/region/main/pkg/openapi/server.spec.yaml -o src/lib/openapi/region"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",

@@ -13,13 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { JsonWebKey } from './JsonWebKey';
-import {
-    JsonWebKeyFromJSON,
-    JsonWebKeyFromJSONTyped,
-    JsonWebKeyToJSON,
-} from './JsonWebKey';
-
 /**
  * JSON web key set. This data type is defined by an external 3rd party standards
  * committee. Consult the relevant documentation for further details.
@@ -29,10 +22,10 @@ import {
 export interface JsonWebKeySet {
     /**
      * 
-     * @type {Array<JsonWebKey>}
+     * @type {Array<Array<object>>}
      * @memberof JsonWebKeySet
      */
-    keys?: Array<JsonWebKey>;
+    keys?: Array<Array<object>>;
 }
 
 /**
@@ -54,7 +47,7 @@ export function JsonWebKeySetFromJSONTyped(json: any, ignoreDiscriminator: boole
     }
     return {
         
-        'keys': !exists(json, 'keys') ? undefined : ((json['keys'] as Array<any>).map(JsonWebKeyFromJSON)),
+        'keys': !exists(json, 'keys') ? undefined : json['keys'],
     };
 }
 
@@ -67,7 +60,7 @@ export function JsonWebKeySetToJSON(value?: JsonWebKeySet | null): any {
     }
     return {
         
-        'keys': value.keys === undefined ? undefined : ((value.keys as Array<any>).map(JsonWebKeyToJSON)),
+        'keys': value.keys,
     };
 }
 

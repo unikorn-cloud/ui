@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { KubernetesClusterWorkloadPools } from './KubernetesClusterWorkloadPools';
+import type { KubernetesClusterWorkloadPool } from './KubernetesClusterWorkloadPool';
 import {
-    KubernetesClusterWorkloadPoolsFromJSON,
-    KubernetesClusterWorkloadPoolsFromJSONTyped,
-    KubernetesClusterWorkloadPoolsToJSON,
-} from './KubernetesClusterWorkloadPools';
+    KubernetesClusterWorkloadPoolFromJSON,
+    KubernetesClusterWorkloadPoolFromJSONTyped,
+    KubernetesClusterWorkloadPoolToJSON,
+} from './KubernetesClusterWorkloadPool';
 
 /**
  * Kubernetes cluster creation parameters.
@@ -38,7 +38,7 @@ export interface KubernetesClusterSpec {
      * @type {string}
      * @memberof KubernetesClusterSpec
      */
-    clusterManager?: string;
+    clusterManagerId?: string;
     /**
      * The Kuebernetes version.  This should be derived from image metadata.
      * @type {string}
@@ -46,11 +46,11 @@ export interface KubernetesClusterSpec {
      */
     version: string;
     /**
-     * 
-     * @type {KubernetesClusterWorkloadPools}
+     * A list of Kubernetes cluster workload pools.
+     * @type {Array<KubernetesClusterWorkloadPool>}
      * @memberof KubernetesClusterSpec
      */
-    workloadPools: KubernetesClusterWorkloadPools;
+    workloadPools: Array<KubernetesClusterWorkloadPool>;
 }
 
 /**
@@ -76,9 +76,9 @@ export function KubernetesClusterSpecFromJSONTyped(json: any, ignoreDiscriminato
     return {
         
         'regionId': json['regionId'],
-        'clusterManager': !exists(json, 'clusterManager') ? undefined : json['clusterManager'],
+        'clusterManagerId': !exists(json, 'clusterManagerId') ? undefined : json['clusterManagerId'],
         'version': json['version'],
-        'workloadPools': KubernetesClusterWorkloadPoolsFromJSON(json['workloadPools']),
+        'workloadPools': ((json['workloadPools'] as Array<any>).map(KubernetesClusterWorkloadPoolFromJSON)),
     };
 }
 
@@ -92,9 +92,9 @@ export function KubernetesClusterSpecToJSON(value?: KubernetesClusterSpec | null
     return {
         
         'regionId': value.regionId,
-        'clusterManager': value.clusterManager,
+        'clusterManagerId': value.clusterManagerId,
         'version': value.version,
-        'workloadPools': KubernetesClusterWorkloadPoolsToJSON(value.workloadPools),
+        'workloadPools': ((value.workloadPools as Array<any>).map(KubernetesClusterWorkloadPoolToJSON)),
     };
 }
 

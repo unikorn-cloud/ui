@@ -13,18 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ApplicationTags } from './ApplicationTags';
+import type { ApplicationVersion } from './ApplicationVersion';
 import {
-    ApplicationTagsFromJSON,
-    ApplicationTagsFromJSONTyped,
-    ApplicationTagsToJSON,
-} from './ApplicationTags';
-import type { ApplicationVersions } from './ApplicationVersions';
-import {
-    ApplicationVersionsFromJSON,
-    ApplicationVersionsFromJSONTyped,
-    ApplicationVersionsToJSON,
-} from './ApplicationVersions';
+    ApplicationVersionFromJSON,
+    ApplicationVersionFromJSONTyped,
+    ApplicationVersionToJSON,
+} from './ApplicationVersion';
 
 /**
  * An application.
@@ -57,17 +51,17 @@ export interface ApplicationSpec {
      */
     icon: string;
     /**
-     * 
-     * @type {ApplicationVersions}
+     * A set of application versions.
+     * @type {Array<ApplicationVersion>}
      * @memberof ApplicationSpec
      */
-    versions: ApplicationVersions;
+    versions: Array<ApplicationVersion>;
     /**
-     * 
-     * @type {ApplicationTags}
+     * A set of tags for filtering applications.
+     * @type {Array<string>}
      * @memberof ApplicationSpec
      */
-    tags?: ApplicationTags;
+    tags?: Array<string>;
 }
 
 /**
@@ -98,8 +92,8 @@ export function ApplicationSpecFromJSONTyped(json: any, ignoreDiscriminator: boo
         'documentation': json['documentation'],
         'license': json['license'],
         'icon': json['icon'],
-        'versions': ApplicationVersionsFromJSON(json['versions']),
-        'tags': !exists(json, 'tags') ? undefined : ApplicationTagsFromJSON(json['tags']),
+        'versions': ((json['versions'] as Array<any>).map(ApplicationVersionFromJSON)),
+        'tags': !exists(json, 'tags') ? undefined : json['tags'],
     };
 }
 
@@ -116,8 +110,8 @@ export function ApplicationSpecToJSON(value?: ApplicationSpec | null): any {
         'documentation': value.documentation,
         'license': value.license,
         'icon': value.icon,
-        'versions': ApplicationVersionsToJSON(value.versions),
-        'tags': ApplicationTagsToJSON(value.tags),
+        'versions': ((value.versions as Array<any>).map(ApplicationVersionToJSON)),
+        'tags': value.tags,
     };
 }
 

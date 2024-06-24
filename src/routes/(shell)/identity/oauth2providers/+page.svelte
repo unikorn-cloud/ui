@@ -44,7 +44,7 @@
 		update();
 	});
 
-	let resources: Identity.Oauth2Providers;
+	let resources: Array<Identity.Oauth2ProviderRead>;
 
 	function update(): void {
 		if (!at || !organizationID) return;
@@ -55,7 +55,7 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDOauth2providersGet(parameters)
-			.then((v: Identity.Oauth2Providers) => (resources = v))
+			.then((v: Array<Identity.Oauth2ProviderRead>) => (resources = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 

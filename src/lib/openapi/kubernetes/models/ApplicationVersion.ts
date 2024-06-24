@@ -13,18 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ApplicationDependencies } from './ApplicationDependencies';
+import type { ApplicationDependency } from './ApplicationDependency';
 import {
-    ApplicationDependenciesFromJSON,
-    ApplicationDependenciesFromJSONTyped,
-    ApplicationDependenciesToJSON,
-} from './ApplicationDependencies';
-import type { ApplicationRecommends } from './ApplicationRecommends';
-import {
-    ApplicationRecommendsFromJSON,
-    ApplicationRecommendsFromJSONTyped,
-    ApplicationRecommendsToJSON,
-} from './ApplicationRecommends';
+    ApplicationDependencyFromJSON,
+    ApplicationDependencyFromJSONTyped,
+    ApplicationDependencyToJSON,
+} from './ApplicationDependency';
 
 /**
  * An application version.
@@ -39,17 +33,17 @@ export interface ApplicationVersion {
      */
     version: string;
     /**
-     * 
-     * @type {ApplicationDependencies}
+     * A set of applications that will be installed before this application.
+     * @type {Array<ApplicationDependency>}
      * @memberof ApplicationVersion
      */
-    dependencies?: ApplicationDependencies;
+    dependencies?: Array<ApplicationDependency>;
     /**
-     * 
-     * @type {ApplicationRecommends}
+     * A set of recommended application that may be installed after this application.
+     * @type {Array<ApplicationDependency>}
      * @memberof ApplicationVersion
      */
-    recommends?: ApplicationRecommends;
+    recommends?: Array<ApplicationDependency>;
 }
 
 /**
@@ -73,8 +67,8 @@ export function ApplicationVersionFromJSONTyped(json: any, ignoreDiscriminator: 
     return {
         
         'version': json['version'],
-        'dependencies': !exists(json, 'dependencies') ? undefined : ApplicationDependenciesFromJSON(json['dependencies']),
-        'recommends': !exists(json, 'recommends') ? undefined : ApplicationRecommendsFromJSON(json['recommends']),
+        'dependencies': !exists(json, 'dependencies') ? undefined : ((json['dependencies'] as Array<any>).map(ApplicationDependencyFromJSON)),
+        'recommends': !exists(json, 'recommends') ? undefined : ((json['recommends'] as Array<any>).map(ApplicationDependencyFromJSON)),
     };
 }
 
@@ -88,8 +82,8 @@ export function ApplicationVersionToJSON(value?: ApplicationVersion | null): any
     return {
         
         'version': value.version,
-        'dependencies': ApplicationDependenciesToJSON(value.dependencies),
-        'recommends': ApplicationRecommendsToJSON(value.recommends),
+        'dependencies': value.dependencies === undefined ? undefined : ((value.dependencies as Array<any>).map(ApplicationDependencyToJSON)),
+        'recommends': value.recommends === undefined ? undefined : ((value.recommends as Array<any>).map(ApplicationDependencyToJSON)),
     };
 }
 

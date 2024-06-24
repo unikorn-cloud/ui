@@ -1,10 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export * from './ExternalNetwork';
-export * from './ExternalNetworks';
 export * from './Flavor';
 export * from './FlavorSpec';
-export * from './Flavors';
 export * from './GpuDriver';
 export * from './GpuSpec';
 export * from './GpuVendor';
@@ -14,14 +12,12 @@ export * from './IdentitySpecOpenStack';
 export * from './IdentityWrite';
 export * from './Image';
 export * from './ImageSpec';
-export * from './Images';
 export * from './ModelError';
 export * from './OrganizationScopedResourceReadMetadata';
 export * from './ProjectScopedResourceReadMetadata';
 export * from './RegionRead';
 export * from './RegionSpec';
 export * from './RegionType';
-export * from './Regions';
 export * from './ResourceMetadata';
 export * from './ResourceProvisioningStatus';
 export * from './ResourceReadMetadata';
