@@ -13,13 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { AclPermissions } from './AclPermissions';
-import {
-    AclPermissionsFromJSON,
-    AclPermissionsFromJSONTyped,
-    AclPermissionsToJSON,
-} from './AclPermissions';
-
 /**
  * An access control scope.
  * @export
@@ -33,12 +26,25 @@ export interface AclScope {
      */
     name: string;
     /**
-     * 
-     * @type {AclPermissions}
+     * A list of access control permissions.
+     * @type {Array<string>}
      * @memberof AclScope
      */
-    permissions: AclPermissions;
+    permissions: Array<AclScopePermissionsEnum>;
 }
+
+
+/**
+ * @export
+ */
+export const AclScopePermissionsEnum = {
+    Create: 'create',
+    Read: 'read',
+    Update: 'update',
+    Delete: 'delete'
+} as const;
+export type AclScopePermissionsEnum = typeof AclScopePermissionsEnum[keyof typeof AclScopePermissionsEnum];
+
 
 /**
  * Check if a given object implements the AclScope interface.
@@ -62,7 +68,7 @@ export function AclScopeFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     return {
         
         'name': json['name'],
-        'permissions': AclPermissionsFromJSON(json['permissions']),
+        'permissions': json['permissions'],
     };
 }
 
@@ -76,7 +82,7 @@ export function AclScopeToJSON(value?: AclScope | null): any {
     return {
         
         'name': value.name,
-        'permissions': AclPermissionsToJSON(value.permissions),
+        'permissions': value.permissions,
     };
 }
 

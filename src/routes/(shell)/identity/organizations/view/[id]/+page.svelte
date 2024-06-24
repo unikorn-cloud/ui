@@ -27,9 +27,9 @@
 
 	let organization: Identity.OrganizationRead;
 
-	let providers: Identity.Oauth2Providers;
+	let providers: Array<Identity.Oauth2ProviderRead>;
 
-	let organizationProviders: Identity.Oauth2Providers;
+	let organizationProviders: Array<Identity.Oauth2ProviderRead>;
 
 	function update(at: InternalToken) {
 		if (!at) return;
@@ -45,12 +45,12 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1Oauth2providersGet()
-			.then((v: Identity.Oauth2Providers) => (providers = v))
+			.then((v: Array<Identity.Oauth2ProviderRead>) => (providers = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDOauth2providersGet(parameters)
-			.then((v: Identity.Oauth2Providers) => (organizationProviders = v))
+			.then((v: Array<Identity.Oauth2ProviderRead>) => (organizationProviders = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -71,7 +71,7 @@
 	}
 
 	function getOauth2ProviderType(
-		providers: Identity.Oauth2Providers,
+		providers: Array<Identity.Oauth2ProviderRead>,
 		organization: Identity.OrganizationRead
 	): Identity.Oauth2ProviderType | undefined {
 		if (!providers || !organization) return undefined;

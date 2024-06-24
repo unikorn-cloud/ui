@@ -14,11 +14,11 @@
 	export let valid: boolean;
 
 	/* Flavors allows the pool type to be populated */
-	export let flavors: Region.Flavors;
+	export let flavors: Array<Region.Flavor>;
 
 	let flavorID: string;
 
-	function updateFlavors(flavors: Region.Flavors): void {
+	function updateFlavors(flavors: Array<Region.Flavor>): void {
 		/* Bizarrely this triggers when the select is interacted with :shrug: */
 		if (!flavors || flavorID) return;
 		flavorID = flavors[0].metadata.id;

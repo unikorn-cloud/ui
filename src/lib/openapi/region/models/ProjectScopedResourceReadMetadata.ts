@@ -70,11 +70,23 @@ export interface ProjectScopedResourceReadMetadata {
      */
     organizationId: string;
     /**
+     * The organization name the resource belongs to.
+     * @type {string}
+     * @memberof ProjectScopedResourceReadMetadata
+     */
+    organizationName?: string;
+    /**
      * The project identifier the resource belongs to.
      * @type {string}
      * @memberof ProjectScopedResourceReadMetadata
      */
     projectId: string;
+    /**
+     * The project name the resource belongs to.
+     * @type {string}
+     * @memberof ProjectScopedResourceReadMetadata
+     */
+    projectName?: string;
 }
 
 /**
@@ -109,7 +121,9 @@ export function ProjectScopedResourceReadMetadataFromJSONTyped(json: any, ignore
         'deletionTime': !exists(json, 'deletionTime') ? undefined : (new Date(json['deletionTime'])),
         'provisioningStatus': ResourceProvisioningStatusFromJSON(json['provisioningStatus']),
         'organizationId': json['organizationId'],
+        'organizationName': !exists(json, 'organizationName') ? undefined : json['organizationName'],
         'projectId': json['projectId'],
+        'projectName': !exists(json, 'projectName') ? undefined : json['projectName'],
     };
 }
 
@@ -129,7 +143,9 @@ export function ProjectScopedResourceReadMetadataToJSON(value?: ProjectScopedRes
         'deletionTime': value.deletionTime === undefined ? undefined : (value.deletionTime.toISOString()),
         'provisioningStatus': ResourceProvisioningStatusToJSON(value.provisioningStatus),
         'organizationId': value.organizationId,
+        'organizationName': value.organizationName,
         'projectId': value.projectId,
+        'projectName': value.projectName,
     };
 }
 

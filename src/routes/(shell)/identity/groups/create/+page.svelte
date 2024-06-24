@@ -30,9 +30,9 @@
 
 	let organizationID: string;
 
-	let groups: Identity.Groups;
+	let groups: Array<Identity.GroupRead>;
 
-	let availableGroups: Identity.AvailableGroups;
+	let availableGroups: Array<Identity.AvailableGroup>;
 
 	let selectedGroups: string[] = [];
 
@@ -57,17 +57,17 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
-			.then((v: Identity.Groups) => (groups = v))
+			.then((v: Array<Identity.GroupRead>) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRolesGet(parameters)
-			.then((v: Identity.RoleList) => (availableRoles = v))
+			.then((v: Array<string>) => (availableRoles = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDAvailableGroupsGet(parameters)
-			.then((v: Identity.AvailableGroups) => (availableGroups = v))
+			.then((v: Array<Identity.AvailableGroup>) => (availableGroups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 

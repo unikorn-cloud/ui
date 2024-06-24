@@ -13,25 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ProviderGroupList } from './ProviderGroupList';
-import {
-    ProviderGroupListFromJSON,
-    ProviderGroupListFromJSONTyped,
-    ProviderGroupListToJSON,
-} from './ProviderGroupList';
-import type { RoleList } from './RoleList';
-import {
-    RoleListFromJSON,
-    RoleListFromJSONTyped,
-    RoleListToJSON,
-} from './RoleList';
-import type { UserList } from './UserList';
-import {
-    UserListFromJSON,
-    UserListFromJSONTyped,
-    UserListToJSON,
-} from './UserList';
-
 /**
  * A group.
  * @export
@@ -39,23 +20,23 @@ import {
  */
 export interface GroupSpec {
     /**
-     * 
-     * @type {UserList}
+     * A list of users.
+     * @type {Array<string>}
      * @memberof GroupSpec
      */
-    users?: UserList;
+    users?: Array<string>;
     /**
-     * 
-     * @type {RoleList}
+     * A list of roles.
+     * @type {Array<string>}
      * @memberof GroupSpec
      */
-    roles: RoleList;
+    roles: Array<string>;
     /**
-     * 
-     * @type {ProviderGroupList}
+     * A list of provider groups.
+     * @type {Array<string>}
      * @memberof GroupSpec
      */
-    providerGroups?: ProviderGroupList;
+    providerGroups?: Array<string>;
 }
 
 /**
@@ -78,9 +59,9 @@ export function GroupSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
-        'users': !exists(json, 'users') ? undefined : UserListFromJSON(json['users']),
-        'roles': RoleListFromJSON(json['roles']),
-        'providerGroups': !exists(json, 'providerGroups') ? undefined : ProviderGroupListFromJSON(json['providerGroups']),
+        'users': !exists(json, 'users') ? undefined : json['users'],
+        'roles': json['roles'],
+        'providerGroups': !exists(json, 'providerGroups') ? undefined : json['providerGroups'],
     };
 }
 
@@ -93,9 +74,9 @@ export function GroupSpecToJSON(value?: GroupSpec | null): any {
     }
     return {
         
-        'users': UserListToJSON(value.users),
-        'roles': RoleListToJSON(value.roles),
-        'providerGroups': ProviderGroupListToJSON(value.providerGroups),
+        'users': value.users,
+        'roles': value.roles,
+        'providerGroups': value.providerGroups,
     };
 }
 

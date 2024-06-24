@@ -42,7 +42,7 @@
 		}
 	});
 
-	let organizations: Identity.Organizations;
+	let organizations: Array<Identity.OrganizationRead>;
 	let organizationID: string;
 
 	let currentOrganizationID: string;
@@ -57,7 +57,7 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsGet()
-			.then((v: Identity.Organizations) => {
+			.then((v: Array<Identity.OrganizationRead>) => {
 				organizations = v;
 
 				// Try reuse the current organization if we can.

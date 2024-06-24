@@ -34,7 +34,7 @@
 
 	let availableRoles: string[];
 
-	let availableGroups: Identity.AvailableGroups;
+	let availableGroups: Array<Identity.AvailableGroup>;
 
 	function update(at: InternalToken, organizationID: string) {
 		if (!at || !organizationID) return;
@@ -54,12 +54,12 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRolesGet(parameters)
-			.then((v: Identity.RoleList) => (availableRoles = v))
+			.then((v: Array<string>) => (availableRoles = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDAvailableGroupsGet(parameters)
-			.then((v: Identity.AvailableGroups) => (availableGroups = v))
+			.then((v: Array<Identity.AvailableGroup>) => (availableGroups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 

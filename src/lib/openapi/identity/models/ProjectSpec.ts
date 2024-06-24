@@ -13,13 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { GroupIDs } from './GroupIDs';
-import {
-    GroupIDsFromJSON,
-    GroupIDsFromJSONTyped,
-    GroupIDsToJSON,
-} from './GroupIDs';
-
 /**
  * A project.
  * @export
@@ -27,11 +20,11 @@ import {
  */
 export interface ProjectSpec {
     /**
-     * 
-     * @type {GroupIDs}
+     * A list of group IDs.
+     * @type {Array<string>}
      * @memberof ProjectSpec
      */
-    groupIDs?: GroupIDs;
+    groupIDs?: Array<string>;
 }
 
 /**
@@ -53,7 +46,7 @@ export function ProjectSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean
     }
     return {
         
-        'groupIDs': !exists(json, 'groupIDs') ? undefined : GroupIDsFromJSON(json['groupIDs']),
+        'groupIDs': !exists(json, 'groupIDs') ? undefined : json['groupIDs'],
     };
 }
 
@@ -66,7 +59,7 @@ export function ProjectSpecToJSON(value?: ProjectSpec | null): any {
     }
     return {
         
-        'groupIDs': GroupIDsToJSON(value.groupIDs),
+        'groupIDs': value.groupIDs,
     };
 }
 

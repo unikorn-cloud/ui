@@ -31,19 +31,19 @@
 
 	/* Variables that trigger reactive actions */
 	let regionID: string;
-	let regions: Region.Regions;
+	let regions: Array<Region.RegionRead>;
 
 	let projectID: string;
-	let projects: Identity.Projects;
+	let projects: Array<Identity.ProjectRead>;
 
 	let clustermanagerID: string;
-	let clustermanagers: Kubernetes.ClusterManagers;
+	let clustermanagers: Array<Kubernetes.ClusterManagerRead>;
 
 	let cluster: string;
-	let clusters: Kubernetes.KubernetesClusters;
+	let clusters: Array<Kubernetes.KubernetesClusterRead>;
 
-	let images: Region.Images;
-	let flavors: Region.Flavors;
+	let images: Array<Region.Image>;
+	let flavors: Array<Region.Flavor>;
 
 	let version: string;
 	let versions: Array<string>;
@@ -69,7 +69,7 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
-			.then((v: Identity.Projects) => {
+			.then((v: Array<Identity.ProjectRead>) => {
 				if (v.length == 0) return;
 
 				projects = v;
@@ -90,7 +90,7 @@
 		/* TODO: parallelize with Promise.all */
 		Clients.region(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsGet(parameters)
-			.then((v: Region.Regions) => {
+			.then((v: Array<Region.RegionRead>) => {
 				if (v.length == 0) return;
 
 				regions = v;
@@ -110,7 +110,7 @@
 
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustermanagersGet(parameters)
-			.then((v: Kubernetes.ClusterManagers) => {
+			.then((v: Array<Kubernetes.ClusterManagerRead>) => {
 				if (v.length == 0) return;
 
 				// TODO: a possible excuse for request query parameters?
@@ -132,7 +132,7 @@
 
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
-			.then((v: Kubernetes.KubernetesClusters) => {
+			.then((v: Array<Kubernetes.KubernetesClusterRead>) => {
 				if (v.length == 0) return;
 
 				clusters = v;
@@ -168,7 +168,7 @@
 
 		Clients.region(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGet(parameters)
-			.then((v: Region.Images) => (images = v))
+			.then((v: Array<Region.Image>) => (images = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -188,7 +188,7 @@
 
 		Clients.region(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGet(parameters)
-			.then((v: Region.Flavors) => (flavors = v))
+			.then((v: Array<Region.Flavor>) => (flavors = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -196,7 +196,7 @@
 	$: updateFlavors(at, organizationID, projectID, regionID);
 
 	/* From the images, we can get a list of Kubernetes versions */
-	function updateVersions(at: InternalToken, images: Region.Images): void {
+	function updateVersions(at: InternalToken, images: Array<Region.Image>): void {
 		if (!at || !images) return;
 
 		versions = [
@@ -258,7 +258,7 @@
 		};
 
 		if (clustermanagerID) {
-			spec.clusterManager = clustermanagerID;
+			spec.clusterManagerId = clustermanagerID;
 		}
 
 		const parameters = {

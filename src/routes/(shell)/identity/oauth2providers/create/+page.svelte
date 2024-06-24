@@ -34,7 +34,7 @@
 	let clientID: string;
 	let clientSecret: string;
 
-	let providers: Identity.Oauth2Providers;
+	let providers: Array<Identity.Oauth2ProviderRead>;
 
 	let organizationID: string;
 
@@ -53,7 +53,7 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDOauth2providersGet(parameters)
-			.then((v: Identity.Oauth2Providers) => (providers = v))
+			.then((v: Array<Identity.Oauth2ProviderRead>) => (providers = v))
 			.catch((e: Error) => Clients.error(e));
 	});
 

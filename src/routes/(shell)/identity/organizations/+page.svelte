@@ -20,14 +20,14 @@
 	import { token } from '$lib/credentials';
 	import * as Identity from '$lib/openapi/identity';
 
-	let organizations: Identity.Organizations;
+	let organizations: Array<Identity.OrganizationRead>;
 
 	token.subscribe((at: InternalToken) => {
 		if (!at) return;
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsGet()
-			.then((v: Identity.Organizations) => (organizations = v))
+			.then((v: Array<Identity.OrganizationRead>) => (organizations = v))
 			.catch((e: Error) => Clients.error(e));
 	});
 </script>

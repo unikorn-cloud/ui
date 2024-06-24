@@ -15,24 +15,24 @@
 
 import * as runtime from '../runtime';
 import type {
-  Applications,
+  ApplicationRead,
+  ClusterManagerRead,
   ClusterManagerWrite,
-  ClusterManagers,
+  KubernetesClusterRead,
   KubernetesClusterWrite,
-  KubernetesClusters,
   ModelError,
 } from '../models/index';
 import {
-    ApplicationsFromJSON,
-    ApplicationsToJSON,
+    ApplicationReadFromJSON,
+    ApplicationReadToJSON,
+    ClusterManagerReadFromJSON,
+    ClusterManagerReadToJSON,
     ClusterManagerWriteFromJSON,
     ClusterManagerWriteToJSON,
-    ClusterManagersFromJSON,
-    ClusterManagersToJSON,
+    KubernetesClusterReadFromJSON,
+    KubernetesClusterReadToJSON,
     KubernetesClusterWriteFromJSON,
     KubernetesClusterWriteToJSON,
-    KubernetesClustersFromJSON,
-    KubernetesClustersToJSON,
     ModelErrorFromJSON,
     ModelErrorToJSON,
 } from '../models/index';
@@ -97,7 +97,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists applications available to be installed on clusters.
      */
-    async apiV1ApplicationsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Applications>> {
+    async apiV1ApplicationsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ApplicationRead>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -114,13 +114,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ApplicationsFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ApplicationReadFromJSON));
     }
 
     /**
      * Lists applications available to be installed on clusters.
      */
-    async apiV1ApplicationsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Applications> {
+    async apiV1ApplicationsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ApplicationRead>> {
         const response = await this.apiV1ApplicationsGetRaw(initOverrides);
         return await response.value();
     }
@@ -128,7 +128,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists cluster managers within the organization.
      */
-    async apiV1OrganizationsOrganizationIDClustermanagersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDClustermanagersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ClusterManagers>> {
+    async apiV1OrganizationsOrganizationIDClustermanagersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDClustermanagersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ClusterManagerRead>>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDClustermanagersGet.');
         }
@@ -149,13 +149,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ClusterManagersFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ClusterManagerReadFromJSON));
     }
 
     /**
      * Lists cluster managers within the organization.
      */
-    async apiV1OrganizationsOrganizationIDClustermanagersGet(requestParameters: ApiV1OrganizationsOrganizationIDClustermanagersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ClusterManagers> {
+    async apiV1OrganizationsOrganizationIDClustermanagersGet(requestParameters: ApiV1OrganizationsOrganizationIDClustermanagersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ClusterManagerRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDClustermanagersGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -163,7 +163,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * List all clusters within the organization.
      */
-    async apiV1OrganizationsOrganizationIDClustersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDClustersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<KubernetesClusters>> {
+    async apiV1OrganizationsOrganizationIDClustersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDClustersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<KubernetesClusterRead>>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDClustersGet.');
         }
@@ -184,13 +184,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => KubernetesClustersFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(KubernetesClusterReadFromJSON));
     }
 
     /**
      * List all clusters within the organization.
      */
-    async apiV1OrganizationsOrganizationIDClustersGet(requestParameters: ApiV1OrganizationsOrganizationIDClustersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<KubernetesClusters> {
+    async apiV1OrganizationsOrganizationIDClustersGet(requestParameters: ApiV1OrganizationsOrganizationIDClustersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<KubernetesClusterRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDClustersGetRaw(requestParameters, initOverrides);
         return await response.value();
     }

@@ -18,14 +18,14 @@
 	import * as Clients from '$lib/clients';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 
-	let applications: Kubernetes.Applications;
+	let applications: Array<Kubernetes.ApplicationRead>;
 
 	token.subscribe((at: InternalToken): void => {
 		if (!at) return;
 
 		Clients.kubernetes(toastStore, at)
 			.apiV1ApplicationsGet()
-			.then((v: Kubernetes.Applications) => (applications = v))
+			.then((v: Array<Kubernetes.ApplicationRead>) => (applications = v))
 			.catch((e: Error) => Clients.error(e));
 	});
 </script>

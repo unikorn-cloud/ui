@@ -69,6 +69,12 @@ export interface OrganizationScopedResourceReadMetadata {
      * @memberof OrganizationScopedResourceReadMetadata
      */
     organizationId: string;
+    /**
+     * The organization name the resource belongs to.
+     * @type {string}
+     * @memberof OrganizationScopedResourceReadMetadata
+     */
+    organizationName?: string;
 }
 
 /**
@@ -102,6 +108,7 @@ export function OrganizationScopedResourceReadMetadataFromJSONTyped(json: any, i
         'deletionTime': !exists(json, 'deletionTime') ? undefined : (new Date(json['deletionTime'])),
         'provisioningStatus': ResourceProvisioningStatusFromJSON(json['provisioningStatus']),
         'organizationId': json['organizationId'],
+        'organizationName': !exists(json, 'organizationName') ? undefined : json['organizationName'],
     };
 }
 
@@ -121,6 +128,7 @@ export function OrganizationScopedResourceReadMetadataToJSON(value?: Organizatio
         'deletionTime': value.deletionTime === undefined ? undefined : (value.deletionTime.toISOString()),
         'provisioningStatus': ResourceProvisioningStatusToJSON(value.provisioningStatus),
         'organizationId': value.organizationId,
+        'organizationName': value.organizationName,
     };
 }
 

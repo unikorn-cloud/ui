@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { AclScopes } from './AclScopes';
+import type { AclScope } from './AclScope';
 import {
-    AclScopesFromJSON,
-    AclScopesFromJSONTyped,
-    AclScopesToJSON,
-} from './AclScopes';
+    AclScopeFromJSON,
+    AclScopeFromJSONTyped,
+    AclScopeToJSON,
+} from './AclScope';
 
 /**
  * A list of access control scopes and permissions.
@@ -33,11 +33,11 @@ export interface Acl {
      */
     isSuperAdmin?: boolean;
     /**
-     * 
-     * @type {AclScopes}
+     * A list of access control scopes.
+     * @type {Array<AclScope>}
      * @memberof Acl
      */
-    scopes?: AclScopes;
+    scopes?: Array<AclScope>;
 }
 
 /**
@@ -60,7 +60,7 @@ export function AclFromJSONTyped(json: any, ignoreDiscriminator: boolean): Acl {
     return {
         
         'isSuperAdmin': !exists(json, 'isSuperAdmin') ? undefined : json['isSuperAdmin'],
-        'scopes': !exists(json, 'scopes') ? undefined : AclScopesFromJSON(json['scopes']),
+        'scopes': !exists(json, 'scopes') ? undefined : ((json['scopes'] as Array<any>).map(AclScopeFromJSON)),
     };
 }
 
@@ -74,7 +74,7 @@ export function AclToJSON(value?: Acl | null): any {
     return {
         
         'isSuperAdmin': value.isSuperAdmin,
-        'scopes': AclScopesToJSON(value.scopes),
+        'scopes': value.scopes === undefined ? undefined : ((value.scopes as Array<any>).map(AclScopeToJSON)),
     };
 }
 
