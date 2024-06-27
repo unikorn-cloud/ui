@@ -3,6 +3,7 @@
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
@@ -71,7 +72,7 @@
 
 <ShellPage {settings}>
 	{#if project}
-		<h2 class="h2">{project.metadata.name}</h2>
+		<ShellViewHeader metadata={project.metadata} />
 
 		<ShellSection title="Groups">
 			<label for="groups">

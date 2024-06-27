@@ -13,6 +13,5 @@
 
 	<main class="flex flex-col gap-8">
 		<slot />
-		<main />
 	</main>
 </div>

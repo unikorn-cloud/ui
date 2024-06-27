@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as Identity from '$lib/openapi/identity';
+	import * as Formatters from '$lib/formatters';
 	import StatusIcon from '$lib/StatusIcon.svelte';
 
 	export let metadata: Kubernetes.ResourceReadMetadata;
@@ -24,30 +25,6 @@
 		const projectMeta = metadata as Kubernetes.ProjectScopedResourceReadMetadata;
 		scope = lookupProject(projectMeta.projectId);
 	}
-
-	function age(metadata: Kubernetes.ResourceReadMetadata): string {
-		// Get age of the instance in seconds.
-		const now = Date.now();
-
-		let age = Math.round((now - metadata.creationTime.valueOf()) / 1000);
-
-		const seconds = age % 60;
-		age = Math.round(age / 60);
-
-		if (!age) return `${seconds}s`;
-
-		const minutes = age % 60;
-		age = Math.round(age / 60);
-
-		if (!age) return `${minutes}m ${seconds}s`;
-
-		const hours = age % 24;
-		age = Math.round(age / 24);
-
-		if (!age) return `${hours}h ${minutes}m ${seconds}s`;
-
-		return `${age}d ${hours}h ${minutes}m ${seconds}s`;
-	}
 </script>
 
 <div class="flex flex-col lg:flex-row gap-4 items-top justify-between variant-glass rounded-lg p-4">
@@ -65,15 +42,15 @@
 			{:else}
 				<a class="font-bold" {href}>{metadata.name}</a>
 			{/if}
+			{#if metadata.description}
+				<div class="text-sm italic">{metadata.description}</div>
+			{/if}
 		</div>
-		{#if metadata.description}
-			<em>{metadata.description}</em>
-		{/if}
 
 		<div class="flex flex-col gap-2 text-sm">
 			<div class="flex gap-2 items-center text-sm">
 				<iconify-icon icon="mdi:clock-time-five-outline"></iconify-icon>
-				{age(metadata)}
+				{Formatters.ageFormatter(metadata.creationTime)}
 			</div>
 
 			{#if metadata.createdBy}
