@@ -33,6 +33,12 @@ export interface FlavorSpec {
      */
     cpus: number;
     /**
+     * A free form CPU family description e.g. model number, architecture.
+     * @type {string}
+     * @memberof FlavorSpec
+     */
+    cpuFamily?: string;
+    /**
      * The amount of memory in GiB.
      * @type {number}
      * @memberof FlavorSpec
@@ -75,6 +81,7 @@ export function FlavorSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     return {
         
         'cpus': json['cpus'],
+        'cpuFamily': !exists(json, 'cpuFamily') ? undefined : json['cpuFamily'],
         'memory': json['memory'],
         'disk': json['disk'],
         'gpu': !exists(json, 'gpu') ? undefined : GpuSpecFromJSON(json['gpu']),
@@ -91,6 +98,7 @@ export function FlavorSpecToJSON(value?: FlavorSpec | null): any {
     return {
         
         'cpus': value.cpus,
+        'cpuFamily': value.cpuFamily,
         'memory': value.memory,
         'disk': value.disk,
         'gpu': GpuSpecToJSON(value.gpu),

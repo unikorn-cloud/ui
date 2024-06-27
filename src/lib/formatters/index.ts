@@ -27,11 +27,16 @@ export function applicationBundleFormatter(b: ApplicationBundle) {
 }
 
 export function flavorFormatter(f: Region.Flavor) {
-	if (f.spec.gpu) {
-		return `${f.metadata.name} (${f.spec.cpus} core, ${f.spec.memory}Gi, ${f.spec.gpu.count} GPU ${f.spec.gpu.vendor} ${f.spec.gpu.model})`;
-	} else {
-		return `${f.metadata.name} (${f.spec.cpus} core, ${f.spec.memory}Gi)`;
-	}
+	let family = '';
+
+	if (f.spec.cpuFamily) family = ' ' + f.spec.cpuFamily;
+
+	let gpu = '';
+
+	if (f.spec.gpu)
+		gpu = `, ${f.spec.gpu.count} GPU ${f.spec.gpu.vendor} ${f.spec.gpu.model} ${f.spec.gpu.memory}Gi`;
+
+	return `${f.metadata.name} ${f.spec.cpus} core${family}, ${f.spec.memory}Gi${gpu}`;
 }
 
 export function timeOfDayFormatter(x: Hour) {

@@ -18,8 +18,8 @@
  * @export
  */
 export const GpuVendor = {
-    Nvidia: 'nvidia',
-    Amd: 'amd'
+    Nvidia: 'NVIDIA',
+    Amd: 'AMD'
 } as const;
 export type GpuVendor = typeof GpuVendor[keyof typeof GpuVendor];
 

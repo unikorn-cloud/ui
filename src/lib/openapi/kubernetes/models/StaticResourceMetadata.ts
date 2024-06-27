@@ -47,6 +47,12 @@ export interface StaticResourceMetadata {
      * @memberof StaticResourceMetadata
      */
     creationTime: Date;
+    /**
+     * The user who created the resource.
+     * @type {string}
+     * @memberof StaticResourceMetadata
+     */
+    createdBy?: string;
 }
 
 /**
@@ -75,6 +81,7 @@ export function StaticResourceMetadataFromJSONTyped(json: any, ignoreDiscriminat
         'description': !exists(json, 'description') ? undefined : json['description'],
         'id': json['id'],
         'creationTime': (new Date(json['creationTime'])),
+        'createdBy': !exists(json, 'createdBy') ? undefined : json['createdBy'],
     };
 }
 
@@ -91,6 +98,7 @@ export function StaticResourceMetadataToJSON(value?: StaticResourceMetadata | nu
         'description': value.description,
         'id': value.id,
         'creationTime': (value.creationTime.toISOString()),
+        'createdBy': value.createdBy,
     };
 }
 
