@@ -3,6 +3,7 @@
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
@@ -85,7 +86,7 @@
 
 <ShellPage {settings}>
 	{#if group}
-		<h2 class="h2">{group.metadata.name}</h2>
+		<ShellViewHeader metadata={group.metadata} />
 
 		<ShellSection title="Roles">
 			<label class="label">
