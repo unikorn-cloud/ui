@@ -52,6 +52,12 @@ export interface OrganizationScopedResourceReadMetadata {
      */
     creationTime: Date;
     /**
+     * The user who created the resource.
+     * @type {string}
+     * @memberof OrganizationScopedResourceReadMetadata
+     */
+    createdBy?: string;
+    /**
      * The time the resource was deleted.
      * @type {Date}
      * @memberof OrganizationScopedResourceReadMetadata
@@ -69,12 +75,6 @@ export interface OrganizationScopedResourceReadMetadata {
      * @memberof OrganizationScopedResourceReadMetadata
      */
     organizationId: string;
-    /**
-     * The organization name the resource belongs to.
-     * @type {string}
-     * @memberof OrganizationScopedResourceReadMetadata
-     */
-    organizationName?: string;
 }
 
 /**
@@ -105,10 +105,10 @@ export function OrganizationScopedResourceReadMetadataFromJSONTyped(json: any, i
         'description': !exists(json, 'description') ? undefined : json['description'],
         'id': json['id'],
         'creationTime': (new Date(json['creationTime'])),
+        'createdBy': !exists(json, 'createdBy') ? undefined : json['createdBy'],
         'deletionTime': !exists(json, 'deletionTime') ? undefined : (new Date(json['deletionTime'])),
         'provisioningStatus': ResourceProvisioningStatusFromJSON(json['provisioningStatus']),
         'organizationId': json['organizationId'],
-        'organizationName': !exists(json, 'organizationName') ? undefined : json['organizationName'],
     };
 }
 
@@ -125,10 +125,10 @@ export function OrganizationScopedResourceReadMetadataToJSON(value?: Organizatio
         'description': value.description,
         'id': value.id,
         'creationTime': (value.creationTime.toISOString()),
+        'createdBy': value.createdBy,
         'deletionTime': value.deletionTime === undefined ? undefined : (value.deletionTime.toISOString()),
         'provisioningStatus': ResourceProvisioningStatusToJSON(value.provisioningStatus),
         'organizationId': value.organizationId,
-        'organizationName': value.organizationName,
     };
 }
 

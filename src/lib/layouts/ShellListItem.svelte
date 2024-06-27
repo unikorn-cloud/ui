@@ -54,21 +54,35 @@
 	<div class="flex flex-col gap-4">
 		<div class="flex gap-4 items-center">
 			<StatusIcon {metadata} />
-			<div class="badge variant-soft self-start">{metadata.provisioningStatus}</div>
+			<div class="badge variant-soft">
+				{metadata.provisioningStatus}
+			</div>
 		</div>
+
 		<div class="flex gap-4 items-center">
 			{#if scope}
 				<a class="font-bold" {href}>{scope}/{metadata.name}</a>
 			{:else}
 				<a class="font-bold" {href}>{metadata.name}</a>
 			{/if}
-			<div class="text-sm">
-				{age(metadata)}
-			</div>
 		</div>
 		{#if metadata.description}
 			<em>{metadata.description}</em>
 		{/if}
+
+		<div class="flex flex-col gap-2 text-sm">
+			<div class="flex gap-2 items-center text-sm">
+				<iconify-icon icon="mdi:clock-time-five-outline"></iconify-icon>
+				{age(metadata)}
+			</div>
+
+			{#if metadata.createdBy}
+				<div class="flex gap-2 items-center">
+					<iconify-icon icon="mdi:user-outline"></iconify-icon>
+					{metadata.createdBy}
+				</div>
+			{/if}
+		</div>
 	</div>
 
 	<slot />

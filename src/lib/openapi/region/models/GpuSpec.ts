@@ -39,6 +39,12 @@ export interface GpuSpec {
      */
     model: string;
     /**
+     * GPU memory in GiB.
+     * @type {number}
+     * @memberof GpuSpec
+     */
+    memory: number;
+    /**
      * The number of GPUs available.
      * @type {number}
      * @memberof GpuSpec
@@ -53,6 +59,7 @@ export function instanceOfGpuSpec(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "vendor" in value;
     isInstance = isInstance && "model" in value;
+    isInstance = isInstance && "memory" in value;
     isInstance = isInstance && "count" in value;
 
     return isInstance;
@@ -70,6 +77,7 @@ export function GpuSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean): G
         
         'vendor': GpuVendorFromJSON(json['vendor']),
         'model': json['model'],
+        'memory': json['memory'],
         'count': json['count'],
     };
 }
@@ -85,6 +93,7 @@ export function GpuSpecToJSON(value?: GpuSpec | null): any {
         
         'vendor': GpuVendorToJSON(value.vendor),
         'model': value.model,
+        'memory': value.memory,
         'count': value.count,
     };
 }

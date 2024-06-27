@@ -52,6 +52,12 @@ export interface ResourceReadMetadata {
      */
     creationTime: Date;
     /**
+     * The user who created the resource.
+     * @type {string}
+     * @memberof ResourceReadMetadata
+     */
+    createdBy?: string;
+    /**
      * The time the resource was deleted.
      * @type {Date}
      * @memberof ResourceReadMetadata
@@ -92,6 +98,7 @@ export function ResourceReadMetadataFromJSONTyped(json: any, ignoreDiscriminator
         'description': !exists(json, 'description') ? undefined : json['description'],
         'id': json['id'],
         'creationTime': (new Date(json['creationTime'])),
+        'createdBy': !exists(json, 'createdBy') ? undefined : json['createdBy'],
         'deletionTime': !exists(json, 'deletionTime') ? undefined : (new Date(json['deletionTime'])),
         'provisioningStatus': ResourceProvisioningStatusFromJSON(json['provisioningStatus']),
     };
@@ -110,6 +117,7 @@ export function ResourceReadMetadataToJSON(value?: ResourceReadMetadata | null):
         'description': value.description,
         'id': value.id,
         'creationTime': (value.creationTime.toISOString()),
+        'createdBy': value.createdBy,
         'deletionTime': value.deletionTime === undefined ? undefined : (value.deletionTime.toISOString()),
         'provisioningStatus': ResourceProvisioningStatusToJSON(value.provisioningStatus),
     };
