@@ -29,7 +29,7 @@ export function namedResourceNames(
 	});
 }
 
-export function unique(needle: string, haystack: Array<string>): boolean {
-	if (haystack == null) return true;
+export function unique(needle: string, haystack: Array<string> | undefined): boolean {
+	if (!haystack) return true;
 	return !haystack.includes(needle);
 }

@@ -2,6 +2,7 @@
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
@@ -23,9 +24,6 @@
 	import { token } from '$lib/credentials';
 	import * as Identity from '$lib/openapi/identity';
 
-	/* Input vaildation */
-	import * as Validation from '$lib/validation';
-
 	let at: InternalToken;
 
 	let organizationID: string;
@@ -36,7 +34,7 @@
 
 	let selectedGroups: string[] = [];
 
-	let group: string;
+	let metadata: Identity.ResourceMetadata = { name: '' };
 
 	let users: string[] = [];
 
@@ -73,20 +71,20 @@
 
 	$: update(at, organizationID);
 
+	let names: Array<string>;
+
+	$: names = (groups || []).map((x) => x.metadata.name);
+
+	let metadataValid = false;
+
 	/* Cluster name must be valid, and it must be unique */
-	$: step1Valid =
-		Validation.unique(
-			group,
-			(groups || []).map((group) => group.metadata.name)
-		) && roles.length > 0;
+	$: step1Valid = metadataValid && roles.length > 0;
 
 	function complete() {
 		const parameters = {
 			organizationID: organizationID,
 			groupWrite: {
-				metadata: {
-					name: group
-				},
+				metadata: metadata,
 				spec: {
 					roles: roles,
 					users: users,
@@ -109,12 +107,7 @@
 		<Step locked={!step1Valid}>
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 
-			<ShellSection title="Group Name">
-				<label for="group">
-					Choose a name for the group. The name must be unique within the organization.
-				</label>
-				<input id="group" type="text" class="input" required bind:value={group} />
-			</ShellSection>
+			<ShellMetadataSection {metadata} {names} bind:valid={metadataValid} />
 
 			<ShellSection title="Roles">
 				<label for="roles"> Select the roles members of this group have.</label>
@@ -149,7 +142,7 @@
 		<Step>
 			<svelte:fragment slot="header">Confirmation</svelte:fragment>
 
-			<p>Create group "{group}"?</p>
+			<p>Create group "{metadata.name}"?</p>
 		</Step>
 	</Stepper>
 </ShellPage>

@@ -2,7 +2,6 @@
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as Formatters from '$lib/formatters';
 	import StatusIcon from '$lib/StatusIcon.svelte';
-	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	export let metadata: Kubernetes.ResourceReadMetadata;
 </script>
@@ -31,11 +30,3 @@
 		{/if}
 	</div>
 </div>
-
-<ShellSection title="Resource Metadata">
-	<label for="name">Display name.</label>
-	<input id="name" class="input" type="text" bind:value={metadata.name} />
-
-	<label for="name">Optional description.</label>
-	<input id="description" class="input" type="text" bind:value={metadata.description} />
-</ShellSection>

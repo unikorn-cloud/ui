@@ -2,6 +2,7 @@
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -24,9 +25,6 @@
 	import * as Identity from '$lib/openapi/identity';
 	import * as Region from '$lib/openapi/region';
 
-	/* Input vaildation */
-	import * as Validation from '$lib/validation';
-
 	let at: InternalToken;
 
 	/* Variables that trigger reactive actions */
@@ -39,7 +37,7 @@
 	let clustermanagerID: string;
 	let clustermanagers: Array<Kubernetes.ClusterManagerRead>;
 
-	let cluster: string;
+	let metadata: Identity.ResourceMetadata = { name: '' };
 	let clusters: Array<Kubernetes.KubernetesClusterRead>;
 
 	let images: Array<Region.Image>;
@@ -145,11 +143,14 @@
 	/* Project must be set */
 	$: step1Valid = projectID;
 
+	let names: Array<string>;
+
+	$: names = (clusters || []).map((x) => x.metadata.name);
+
+	let metadataValid = false;
+
 	/* Cluster name must be valid, and it must be unique */
-	$: step2Valid =
-		cluster &&
-		Validation.kubernetesNameValid(cluster) &&
-		Validation.unique(cluster, Validation.namedResourceNames(clusters));
+	$: step2Valid = metadataValid;
 
 	/* Once the region has been selected we can poll the images and other resources */
 	function updateImages(
@@ -265,9 +266,7 @@
 			organizationID: organizationID,
 			projectID: projectID,
 			kubernetesClusterWrite: {
-				metadata: {
-					name: cluster
-				},
+				metadata: metadata,
 				spec: spec
 			}
 		};
@@ -315,12 +314,7 @@
 		<Step locked={!step2Valid}>
 			<svelte:fragment slot="header">Basic Cluster Setup</svelte:fragment>
 
-			<h4 class="h4">Cluster Name</h4>
-			<label for="cluster-name">
-				Choose a name for the cluster. The name must be unique within the project, contain no more
-				than 63 characters, and contain only letters, numbers and hyphens.
-			</label>
-			<input type="text" class="input" required bind:value={cluster} />
+			<ShellMetadataSection {metadata} {names} bind:valid={metadataValid} />
 
 			<h4 class="h4">Kubernetes Version</h4>
 			<label for="kubernetes-version">
