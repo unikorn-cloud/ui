@@ -136,7 +136,11 @@
 
 	<ShellList>
 		{#each resources || [] as resource}
-			<ShellListItem metadata={resource.metadata} {projects} href="#">
+			<ShellListItem
+				metadata={resource.metadata}
+				{projects}
+				href="/infrastructure/clusters/view/{resource.metadata.id}"
+			>
 				<div class="flex gap-4">
 					<button
 						on:click={() => getKubeconfig(resource)}

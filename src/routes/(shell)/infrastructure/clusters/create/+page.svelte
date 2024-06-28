@@ -251,6 +251,7 @@
 
 		// Array so trigger an update.
 		resource.spec.workloadPools = resource.spec.workloadPools;
+		poolValid = poolValid;
 	}
 
 	function removePool(index: number): void {
@@ -259,6 +260,7 @@
 
 		// Array so trigger an update.
 		resource.spec.workloadPools = resource.spec.workloadPools;
+		poolValid = poolValid;
 	}
 
 	import WorkloadPoolCreate from '$lib/WorkloadPoolCreate.svelte';
