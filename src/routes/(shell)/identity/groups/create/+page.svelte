@@ -25,22 +25,21 @@
 	import * as Identity from '$lib/openapi/identity';
 
 	let at: InternalToken;
-
 	let organizationID: string;
-
 	let groups: Array<Identity.GroupRead>;
-
+	let availableRoles: string[];
 	let availableGroups: Array<Identity.AvailableGroup>;
 
-	let selectedGroups: string[] = [];
-
-	let metadata: Identity.ResourceMetadata = { name: '' };
-
-	let users: string[] = [];
-
-	let roles: string[] = [];
-
-	let availableRoles: string[];
+	let resource: Identity.GroupWrite = {
+		metadata: {
+			name: ''
+		},
+		spec: {
+			roles: [],
+			users: [],
+			providerGroups: []
+		}
+	};
 
 	organizationStore.subscribe((value: string) => (organizationID = value));
 
@@ -71,26 +70,17 @@
 
 	$: update(at, organizationID);
 
-	let names: Array<string>;
-
 	$: names = (groups || []).map((x) => x.metadata.name);
 
 	let metadataValid = false;
 
 	/* Cluster name must be valid, and it must be unique */
-	$: step1Valid = metadataValid && roles.length > 0;
+	$: step1Valid = metadataValid && resource.spec.roles.length > 0;
 
 	function complete() {
 		const parameters = {
 			organizationID: organizationID,
-			groupWrite: {
-				metadata: metadata,
-				spec: {
-					roles: roles,
-					users: users,
-					providerGroups: selectedGroups
-				}
-			}
+			groupWrite: resource
 		};
 
 		Clients.identity(toastStore, at)
@@ -107,11 +97,11 @@
 		<Step locked={!step1Valid}>
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 
-			<ShellMetadataSection {metadata} {names} bind:valid={metadataValid} />
+			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
 			<ShellSection title="Roles">
 				<label for="roles"> Select the roles members of this group have.</label>
-				<select id="roles" class="select" multiple bind:value={roles}>
+				<select id="roles" class="select" multiple bind:value={resource.spec.roles}>
 					{#each availableRoles || [] as role}
 						<option value={role}>{role}</option>
 					{/each}
@@ -123,7 +113,7 @@
 					<label for="groups">
 						Select any groups from your identity provider that will implicitly include users.
 					</label>
-					<select id="groups" class="select" multiple bind:value={selectedGroups}>
+					<select id="groups" class="select" multiple bind:value={resource.spec.providerGroups}>
 						{#each availableGroups || [] as group}
 							<option value={group.name}>{group.displayName || group.name}</option>
 						{/each}
@@ -136,13 +126,13 @@
 					>Add any explicit users that are members of this group. These may be from outside the
 					organization.</label
 				>
-				<InputChip name="users" bind:value={users} />
+				<InputChip name="users" bind:value={resource.spec.users} />
 			</ShellSection>
 		</Step>
 		<Step>
 			<svelte:fragment slot="header">Confirmation</svelte:fragment>
 
-			<p>Create group "{metadata.name}"?</p>
+			<p>Create group "{resource.metadata.name}"?</p>
 		</Step>
 	</Stepper>
 </ShellPage>

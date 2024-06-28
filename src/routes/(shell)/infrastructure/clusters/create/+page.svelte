@@ -3,6 +3,7 @@
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
+	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -26,27 +27,26 @@
 	import * as Region from '$lib/openapi/region';
 
 	let at: InternalToken;
-
-	/* Variables that trigger reactive actions */
-	let regionID: string;
-	let regions: Array<Region.RegionRead>;
-
+	let organizationID: string;
 	let projectID: string;
+	let regions: Array<Region.RegionRead>;
 	let projects: Array<Identity.ProjectRead>;
-
-	let clustermanagerID: string;
 	let clustermanagers: Array<Kubernetes.ClusterManagerRead>;
-
-	let metadata: Identity.ResourceMetadata = { name: '' };
 	let clusters: Array<Kubernetes.KubernetesClusterRead>;
-
 	let images: Array<Region.Image>;
 	let flavors: Array<Region.Flavor>;
-
-	let version: string;
 	let versions: Array<string>;
 
-	let organizationID: string;
+	let resource: Kubernetes.KubernetesClusterWrite = {
+		metadata: {
+			name: ''
+		},
+		spec: {
+			regionId: '',
+			version: '',
+			workloadPools: []
+		}
+	};
 
 	organizationStore.subscribe((value: string) => {
 		organizationID = value;
@@ -92,7 +92,7 @@
 				if (v.length == 0) return;
 
 				regions = v;
-				regionID = regions[0].metadata.id;
+				resource.spec.regionId = regions[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
 	}
@@ -113,7 +113,7 @@
 
 				// TODO: a possible excuse for request query parameters?
 				clustermanagers = v.filter((x) => x.metadata.projectId == projectID);
-				clustermanagerID = clustermanagers[0].metadata.id;
+				resource.spec.clusterManagerId = clustermanagers[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
 	}
@@ -121,8 +121,8 @@
 	$: updateClusterManagers(at, projectID);
 
 	/* Clusters are scoped to control planes, so update this when the CP does */
-	function updateClusters(at: InternalToken, clustermanager: string): void {
-		if (!at || !clustermanager) return;
+	function updateClusters(at: InternalToken, projectID: string): void {
+		if (!at || !projectID) return;
 
 		const parameters = {
 			organizationID: organizationID
@@ -131,19 +131,19 @@
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
 			.then((v: Array<Kubernetes.KubernetesClusterRead>) => {
-				if (v.length == 0) return;
+				// As we are only chekcing names, then scope to the project.
+				const temp = v.filter((x) => x.metadata.projectId == projectID);
+				if (!temp) return;
 
-				clusters = v;
+				clusters = temp;
 			})
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateClusters(at, clustermanagerID);
+	$: updateClusters(at, projectID);
 
 	/* Project must be set */
 	$: step1Valid = projectID;
-
-	let names: Array<string>;
 
 	$: names = (clusters || []).map((x) => x.metadata.name);
 
@@ -193,8 +193,8 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateImages(at, organizationID, projectID, regionID);
-	$: updateFlavors(at, organizationID, projectID, regionID);
+	$: updateImages(at, organizationID, projectID, resource.spec.regionId);
+	$: updateFlavors(at, organizationID, projectID, resource.spec.regionId);
 
 	/* From the images, we can get a list of Kubernetes versions */
 	function updateVersions(at: InternalToken, images: Array<Region.Image>): void {
@@ -209,7 +209,7 @@
 			)
 		].reverse();
 
-		version = versions[0];
+		resource.spec.version = versions[0];
 	}
 
 	$: updateVersions(at, images);
@@ -252,24 +252,13 @@
 		[...new Set(workloadPools.map((x) => x.model.name))].length == workloadPools.length;
 
 	function complete() {
-		const spec: Kubernetes.KubernetesClusterSpec = {
-			regionId: regionID,
-			version: version,
-			workloadPools: workloadPools.map((x) => x.model)
-		};
-
-		if (clustermanagerID) {
-			spec.clusterManagerId = clustermanagerID;
-		}
-
 		const parameters = {
 			organizationID: organizationID,
 			projectID: projectID,
-			kubernetesClusterWrite: {
-				metadata: metadata,
-				spec: spec
-			}
+			kubernetesClusterWrite: resource
 		};
+
+		resource.spec.workloadPools = workloadPools.map((x) => x.model);
 
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(parameters)
@@ -283,86 +272,87 @@
 		<Step locked={!step1Valid}>
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 
-			<h4 class="h4">Region Selection</h4>
-			<label for="region-name"> Select a region to provision in the cluster in. </label>
-			<select id="region-name" class="select" bind:value={regionID}>
-				{#each regions || [] as region}
-					<option value={region.metadata.id}>{region.metadata.name}</option>
-				{/each}
-			</select>
+			<ShellSection title="Environment Configuration">
+				<label for="project-name"> Select a project to provision in the cluster in. </label>
+				<select id="project-name" class="select" bind:value={projectID}>
+					{#each projects || [] as project}
+						<option value={project.metadata.id}>{project.metadata.name}</option>
+					{/each}
+				</select>
 
-			<h4 class="h4">Project Selection</h4>
-			<label for="project-name"> Select a project to provision in the cluster in. </label>
-			<select id="project-name" class="select" bind:value={projectID}>
-				{#each projects || [] as project}
-					<option value={project.metadata.id}>{project.metadata.name}</option>
-				{/each}
-			</select>
+				<label for="region-name"> Select a region to provision in the cluster in. </label>
+				<select id="region-name" class="select" bind:value={resource.spec.regionId}>
+					{#each regions || [] as region}
+						<option value={region.metadata.id}>{region.metadata.name}</option>
+					{/each}
+				</select>
 
-			<h4 class="h4">Life-Cycle Manager Selection</h4>
-			<label for="clustermanager-name">
-				Select a life cycle manager to manage the cluster life-cycle. If none is selected, a default
-				will be created for you.
-			</label>
-			<select id="clustermanager-name" class="select" bind:value={clustermanagerID}>
-				{#each clustermanagers || [] as clustermanager}
-					<option value={clustermanager.metadata.id}>{clustermanager.metadata.name}</option>
-				{/each}
-			</select>
+				<label for="clustermanager-name">
+					Select a life cycle manager to manage the cluster life-cycle. If none is selected, a
+					default will be created for you.
+				</label>
+				<select id="clustermanager-name" class="select" bind:value={resource.spec.clusterManagerId}>
+					{#each clustermanagers || [] as clustermanager}
+						<option value={clustermanager.metadata.id}>{clustermanager.metadata.name}</option>
+					{/each}
+				</select>
+			</ShellSection>
 		</Step>
 
 		<Step locked={!step2Valid}>
 			<svelte:fragment slot="header">Basic Cluster Setup</svelte:fragment>
 
-			<ShellMetadataSection {metadata} {names} bind:valid={metadataValid} />
+			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
-			<h4 class="h4">Kubernetes Version</h4>
-			<label for="kubernetes-version">
-				Select a Kubernetes version to provision. Kubernetes provides guarantees backward
-				compatibility so choosing the newest is usually the right choice as that provides a rich
-				feature set and enhanced security. Certain applications &mdash; e.g. Kubeflow &mdash; may
-				require a specific version.
-			</label>
-			<select id="kubernetes-version" class="select" value={version}>
-				{#each versions || [] as version}
-					<option value={version}>{version}</option>
-				{/each}
-			</select>
+			<ShellSection title="Platform Configuration">
+				<label for="kubernetes-version">
+					Select a Kubernetes version to provision. Kubernetes provides guarantees backward
+					compatibility so choosing the newest is usually the right choice as that provides a rich
+					feature set and enhanced security. Certain applications &mdash; e.g. Kubeflow &mdash; may
+					require a specific version.
+				</label>
+				<select id="kubernetes-version" class="select" value={resource.spec.version}>
+					{#each versions || [] as version}
+						<option value={version}>{version}</option>
+					{/each}
+				</select>
+			</ShellSection>
 		</Step>
 		<Step locked={!step3Valid}>
 			<svelte:fragment slot="header">Worker Setup</svelte:fragment>
 
-			<h4 class="h4">Workload Pools</h4>
-			<p>
-				Workload pools provide compute resouce for your cluster. You may have as many as required
-				for your workload. Each pool has a set of CPU, GPU and memory that can be selected from a
-				defined set of flavours. Workload pools support automatic scaling, thus reducing overall
-				operational cost when not in use.
-			</p>
+			<ShellSection title="Workload Pool Configuration">
+				<p>
+					Workload pools provide compute resouce for your cluster. You may have as many as required
+					for your workload. Each pool has a set of CPU, GPU and memory that can be selected from a
+					defined set of flavours. Workload pools support automatic scaling, thus reducing overall
+					operational cost when not in use.
+				</p>
 
-			{#each workloadPools as pool, i}
-				<article class="bg-surface-50-900-token rounded-lg p-8 flex flex-col gap-8">
-					<WorkloadPoolCreate {flavors} bind:pool={pool.model} bind:valid={pool.valid} />
+				{#each workloadPools as pool, i}
+					<article class="bg-surface-50-900-token rounded-lg p-8 flex flex-col gap-8">
+						<WorkloadPoolCreate {flavors} bind:pool={pool.model} bind:valid={pool.valid} />
 
-					<button
-						class="btn flex variant-ghost-primary gap-2 items-center self-start"
-						on:click={() => removePool(i)}
-						on:keypress={() => removePool(i)}
-					>
-						<iconify-icon icon="mdi:minus" />
-						<span>Remove Pool</span>
-					</button>
-				</article>
-			{/each}
+						<button
+							class="btn flex variant-ghost-primary gap-2 items-center self-start"
+							on:click={() => removePool(i)}
+							on:keypress={() => removePool(i)}
+						>
+							<iconify-icon icon="mdi:minus" />
+							<span>Remove Pool</span>
+						</button>
+					</article>
+				{/each}
 
-			<button
-				class="btn variant-ghost-primary flex gap-2 items-center"
-				on:click={addPool}
-				on:keypress={addPool}
-			>
-				<iconify-icon icon="mdi:add" />
-				<span>Add New Pool</span>
-			</button>
+				<button
+					class="btn variant-ghost-primary flex gap-2 items-center"
+					on:click={addPool}
+					on:keypress={addPool}
+				>
+					<iconify-icon icon="mdi:add" />
+					<span>Add New Pool</span>
+				</button>
+			</ShellSection>
 		</Step>
 		<Step>
 			<svelte:fragment slot="header">Confirmation</svelte:fragment>

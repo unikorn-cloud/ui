@@ -25,15 +25,18 @@
 	import * as Identity from '$lib/openapi/identity';
 
 	let at: InternalToken;
-
-	let metadata: Identity.ResourceMetadata = { name: '' };
-	let issuer: string;
-	let clientID: string;
-	let clientSecret: string;
-
+	let organizationID: string;
 	let providers: Array<Identity.Oauth2ProviderRead>;
 
-	let organizationID: string;
+	let resource: Identity.Oauth2ProviderWrite = {
+		metadata: {
+			name: ''
+		},
+		spec: {
+			issuer: '',
+			clientID: ''
+		}
+	};
 
 	organizationStore.subscribe((value: string) => (organizationID = value));
 
@@ -54,26 +57,17 @@
 			.catch((e: Error) => Clients.error(e));
 	});
 
-	let names: Array<string>;
-
 	$: names = (providers || []).map((x) => x.metadata.name);
 
 	let metadataValid = false;
 
 	/* Cluster name must be valid, and it must be unique */
-	$: step1Valid = metadataValid && issuer && clientID;
+	$: step1Valid = metadataValid && resource.spec.issuer && resource.spec.clientID;
 
 	function complete() {
 		const parameters = {
 			organizationID: organizationID,
-			oauth2ProviderWrite: {
-				metadata: metadata,
-				spec: {
-					issuer: issuer,
-					clientID: clientID,
-					clientSecret: clientSecret
-				}
-			}
+			oauth2ProviderWrite: resource
 		};
 
 		Clients.identity(toastStore, at)
@@ -91,7 +85,7 @@
 		<Step locked={!step1Valid}>
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 
-			<ShellMetadataSection {metadata} {names} bind:valid={metadataValid} />
+			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
 			<ShellSection title="OAuth2 Settings">
 				<label for="callback"
@@ -127,7 +121,7 @@
 					type="url"
 					placeholder="https://identity.domain.com"
 					required
-					bind:value={issuer}
+					bind:value={resource.spec.issuer}
 				/>
 
 				<label for="client-id">Client Identifier</label>
@@ -137,7 +131,7 @@
 					type="text"
 					placeholder="73458e95-1d2c-481b-81e8-7225fd089060"
 					required
-					bind:value={clientID}
+					bind:value={resource.spec.clientID}
 				/>
 
 				<label for="client-secret">Client Secret</label>
@@ -147,14 +141,14 @@
 					type="text"
 					placeholder="ooHovOvanogyisAvChuOvbyctoffOdloidKuAlsyemgosJias3twanechorjIdCo"
 					required
-					bind:value={clientSecret}
+					bind:value={resource.spec.clientSecret}
 				/>
 			</ShellSection>
 		</Step>
 		<Step>
 			<svelte:fragment slot="header">Confirmation</svelte:fragment>
 
-			<p>Create provider "{metadata.name}"?</p>
+			<p>Create provider "{resource.metadata.name}"?</p>
 		</Step>
 	</Stepper>
 </ShellPage>
