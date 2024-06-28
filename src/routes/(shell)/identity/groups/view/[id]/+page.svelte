@@ -4,6 +4,7 @@
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
+	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
@@ -31,6 +32,7 @@
 
 	organizationStore.subscribe((value: string) => (organizationID = value));
 
+	let groups: Array<Identity.GroupRead>;
 	let group: Identity.GroupRead;
 
 	let availableRoles: string[];
@@ -41,16 +43,12 @@
 		if (!at || !organizationID) return;
 
 		const parameters = {
-			organizationID: organizationID,
-			groupid: $page.params.id
+			organizationID: organizationID
 		};
 
 		Clients.identity(toastStore, at)
-			.apiV1OrganizationsOrganizationIDGroupsGroupidGet(parameters)
-			.then((v: Identity.GroupRead) => {
-				if (!v.spec.providerGroups) v.spec.providerGroups = [];
-				group = v;
-			})
+			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
+			.then((v: Array<Identity.GroupRead>) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
@@ -65,6 +63,31 @@
 	}
 
 	$: update(at, organizationID);
+
+	function updateGroup(groups: Array<Identity.GroupRead>) {
+		if (!groups) return;
+
+		// Find our group based on ID.
+		const temp = groups.find((x) => x.metadata.id == $page.params.id);
+		if (!temp) return;
+
+		// Add a provider groups array so the multiselet bind doesn't barf.
+		if (!temp.spec.providerGroups) temp.spec.providerGroups = [];
+
+		group = temp;
+	}
+
+	$: updateGroup(groups);
+
+	let names: Array<string>;
+
+	$: names = (groups || [])
+		.filter((x) => x.metadata.id != $page.params.id)
+		.map((x) => x.metadata.name);
+
+	let metadataValid = false;
+
+	$: valid = metadataValid && group.spec.roles.length != 0;
 
 	function submit() {
 		if (!at || !organizationID) return;
@@ -87,6 +110,7 @@
 <ShellPage {settings}>
 	{#if group}
 		<ShellViewHeader metadata={group.metadata} />
+		<ShellMetadataSection metadata={group.metadata} {names} bind:valid={metadataValid} />
 
 		<ShellSection title="Roles">
 			<label class="label">
@@ -119,6 +143,7 @@
 
 		<button
 			class="btn variant-ghost-primary flex gap-2 items-center"
+			disabled={!valid}
 			on:click={submit}
 			on:keypress={submit}
 		>

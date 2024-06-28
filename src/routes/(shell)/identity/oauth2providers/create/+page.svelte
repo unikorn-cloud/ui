@@ -2,6 +2,7 @@
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
@@ -23,13 +24,9 @@
 	import { token } from '$lib/credentials';
 	import * as Identity from '$lib/openapi/identity';
 
-	/* Input vaildation */
-	import * as Validation from '$lib/validation';
-
 	let at: InternalToken;
 
-	let name: string;
-	let description: string;
+	let metadata: Identity.ResourceMetadata = { name: '' };
 	let issuer: string;
 	let clientID: string;
 	let clientSecret: string;
@@ -57,22 +54,20 @@
 			.catch((e: Error) => Clients.error(e));
 	});
 
+	let names: Array<string>;
+
+	$: names = (providers || []).map((x) => x.metadata.name);
+
+	let metadataValid = false;
+
 	/* Cluster name must be valid, and it must be unique */
-	$: step1Valid =
-		Validation.kubernetesNameValid(name) &&
-		Validation.unique(name, Validation.namedResourceNames(providers)) &&
-		description &&
-		issuer &&
-		clientID;
+	$: step1Valid = metadataValid && issuer && clientID;
 
 	function complete() {
 		const parameters = {
 			organizationID: organizationID,
 			oauth2ProviderWrite: {
-				metadata: {
-					name: name,
-					description: description
-				},
+				metadata: metadata,
 				spec: {
 					issuer: issuer,
 					clientID: clientID,
@@ -96,19 +91,7 @@
 		<Step locked={!step1Valid}>
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 
-			<ShellSection title="Provider Name">
-				<label for="name">
-					Choose a name for the provider. The name must be unique within the organiation, contain no
-					more than 63 characters, and contain only letters, numbers and hyphens.
-				</label>
-				<input id="name" type="text" class="input" required bind:value={name} />
-
-				<label for="display-name">
-					Optionally hoose a verbose description for the provider. This can contain any characters
-					you like.
-				</label>
-				<input id="display-name" type="text" class="input" required bind:value={description} />
-			</ShellSection>
+			<ShellMetadataSection {metadata} {names} bind:valid={metadataValid} />
 
 			<ShellSection title="OAuth2 Settings">
 				<label for="callback"
@@ -171,7 +154,7 @@
 		<Step>
 			<svelte:fragment slot="header">Confirmation</svelte:fragment>
 
-			<p>Create provider "{name}"?</p>
+			<p>Create provider "{metadata.name}"?</p>
 		</Step>
 	</Stepper>
 </ShellPage>

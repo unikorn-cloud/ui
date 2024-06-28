@@ -92,10 +92,7 @@
 
 	<ShellList>
 		{#each resources || [] as resource}
-			<ShellListItem
-				metadata={resource.metadata}
-				href="/identity/oauth2providers/view/{resource.metadata.id}"
-			>
+			<ShellListItem metadata={resource.metadata} href="#">
 				<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
 					<iconify-icon icon="mdi:close" />
 				</button>

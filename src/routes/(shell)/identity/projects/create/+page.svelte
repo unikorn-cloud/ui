@@ -2,6 +2,7 @@
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
@@ -23,18 +24,15 @@
 	import { token } from '$lib/credentials';
 	import * as Identity from '$lib/openapi/identity';
 
-	/* Input vaildation */
-	import * as Validation from '$lib/validation';
-
 	let at: InternalToken;
 
-	let project: string;
+	let metadata: Identity.ResourceMetadata = { name: '' };
 	let projects: Array<Identity.ProjectRead>;
 
 	let organizationID: string;
 
 	let groups: Array<Identity.GroupRead>;
-	let groupIDs: string[] = [];
+	let groupIDs: Array<string> = [];
 
 	organizationStore.subscribe((value: string) => (organizationID = value));
 
@@ -67,18 +65,20 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
+	let names: Array<string>;
+
+	$: names = (projects || []).map((x) => x.metadata.name);
+
+	let metadataValid = false;
+
 	/* Cluster name must be valid, and it must be unique */
-	$: step1Valid =
-		Validation.kubernetesNameValid(project) &&
-		Validation.unique(project, Validation.namedResourceNames(projects));
+	$: step1Valid = metadataValid && groupIDs.length != 0;
 
 	function complete() {
 		const parameters = {
 			organizationID: organizationID,
 			projectWrite: {
-				metadata: {
-					name: project
-				},
+				metadata: metadata,
 				spec: {
 					groupIDs: groupIDs
 				}
@@ -97,13 +97,7 @@
 		<Step locked={!step1Valid}>
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 
-			<ShellSection title="Project Name">
-				<label for="cluster-name">
-					Choose a name for the project. The name must be unique within the organiation, contain no
-					more than 63 characters, and contain only letters, numbers and hyphens.
-				</label>
-				<input type="text" class="input" required bind:value={project} />
-			</ShellSection>
+			<ShellMetadataSection {metadata} {names} bind:valid={metadataValid} />
 
 			<ShellSection title="Groups">
 				<label for="groups">
@@ -120,7 +114,7 @@
 		<Step>
 			<svelte:fragment slot="header">Confirmation</svelte:fragment>
 
-			<p>Create project "{project}"?</p>
+			<p>Create project "{metadata.name}"?</p>
 		</Step>
 	</Stepper>
 </ShellPage>

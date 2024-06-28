@@ -5,6 +5,7 @@
 
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
+	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
@@ -89,6 +90,7 @@
 <ShellPage {settings}>
 	{#if organization}
 		<ShellViewHeader metadata={organization.metadata} />
+		<ShellMetadataSection metadata={organization.metadata} names={[]} />
 
 		<ShellSection title="Authentication Type">
 			<label for="organization-type"
