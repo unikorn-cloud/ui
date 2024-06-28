@@ -25,14 +25,18 @@
 	import * as Identity from '$lib/openapi/identity';
 
 	let at: InternalToken;
-
-	let metadata: Identity.ResourceMetadata = { name: '' };
-	let projects: Array<Identity.ProjectRead>;
-
 	let organizationID: string;
-
+	let projects: Array<Identity.ProjectRead>;
 	let groups: Array<Identity.GroupRead>;
-	let groupIDs: Array<string> = [];
+
+	let resource: Identity.ProjectWrite = {
+		metadata: {
+			name: ''
+		},
+		spec: {
+			groupIDs: []
+		}
+	};
 
 	organizationStore.subscribe((value: string) => (organizationID = value));
 
@@ -72,17 +76,12 @@
 	let metadataValid = false;
 
 	/* Cluster name must be valid, and it must be unique */
-	$: step1Valid = metadataValid && groupIDs.length != 0;
+	$: step1Valid = metadataValid && resource.spec.groupIDs && resource.spec.groupIDs.length != 0;
 
 	function complete() {
 		const parameters = {
 			organizationID: organizationID,
-			projectWrite: {
-				metadata: metadata,
-				spec: {
-					groupIDs: groupIDs
-				}
-			}
+			projectWrite: resource
 		};
 
 		Clients.identity(toastStore, at)
@@ -97,14 +96,14 @@
 		<Step locked={!step1Valid}>
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 
-			<ShellMetadataSection {metadata} {names} bind:valid={metadataValid} />
+			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
 			<ShellSection title="Groups">
 				<label for="groups">
 					Choose one or more groups of users that can access this project and all resources that it
 					contains.
 				</label>
-				<select id="groups" class="select" multiple bind:value={groupIDs}>
+				<select id="groups" class="select" multiple bind:value={resource.spec.groupIDs}>
 					{#each groups || [] as group}
 						<option value={group.metadata.id}>{group.metadata.name}</option>
 					{/each}
@@ -114,7 +113,7 @@
 		<Step>
 			<svelte:fragment slot="header">Confirmation</svelte:fragment>
 
-			<p>Create project "{metadata.name}"?</p>
+			<p>Create project "{resource.metadata.name}"?</p>
 		</Step>
 	</Stepper>
 </ShellPage>
