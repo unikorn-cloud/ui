@@ -29,6 +29,7 @@
 	let at: InternalToken;
 	let organizationID: string;
 	let projectID: string;
+	let regionID: string;
 	let regions: Array<Region.RegionRead>;
 	let projects: Array<Identity.ProjectRead>;
 	let clustermanagers: Array<Kubernetes.ClusterManagerRead>;
@@ -44,9 +45,24 @@
 		spec: {
 			regionId: '',
 			version: '',
-			workloadPools: []
+			workloadPools: [
+				{
+					name: 'default',
+					machine: {
+						replicas: 3,
+						disk: {
+							size: 50
+						}
+					},
+					autoscaling: {
+						minimumReplicas: 0
+					}
+				}
+			]
 		}
 	};
+
+	let poolValid: Array<boolean> = [false];
 
 	organizationStore.subscribe((value: string) => {
 		organizationID = value;
@@ -92,7 +108,7 @@
 				if (v.length == 0) return;
 
 				regions = v;
-				resource.spec.regionId = regions[0].metadata.id;
+				regionID = regions[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
 	}
@@ -193,8 +209,10 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateImages(at, organizationID, projectID, resource.spec.regionId);
-	$: updateFlavors(at, organizationID, projectID, resource.spec.regionId);
+	$: updateImages(at, organizationID, projectID, regionID);
+	$: updateFlavors(at, organizationID, projectID, regionID);
+
+	$: resource.spec.regionId = regionID;
 
 	/* From the images, we can get a list of Kubernetes versions */
 	function updateVersions(at: InternalToken, images: Array<Region.Image>): void {
@@ -214,42 +232,43 @@
 
 	$: updateVersions(at, images);
 
-	/* Define a types we can manage, but also bind the configuration dialog to */
-	type WorkloadPool = { model: Kubernetes.KubernetesClusterWorkloadPool; valid: boolean };
-	type WorkloadPools = Array<WorkloadPool>;
-
-	/* Workload pools you need at lea<st one */
-	let workloadPools: WorkloadPools = [];
-	addPool();
-
 	function addPool(): void {
-		let model: Kubernetes.KubernetesClusterWorkloadPool = {
+		let pool: Kubernetes.KubernetesClusterWorkloadPool = {
 			name: '',
-			machine: {}
+			machine: {
+				replicas: 3,
+				disk: {
+					size: 50
+				}
+			},
+			autoscaling: {
+				minimumReplicas: 0
+			}
 		};
-		let valid: boolean = false;
 
-		let pool: WorkloadPool = {
-			model: model,
-			valid: valid
-		};
+		resource.spec.workloadPools.push(pool);
+		poolValid.push(false);
 
-		workloadPools.push(pool);
-		workloadPools = workloadPools;
+		// Array so trigger an update.
+		resource.spec.workloadPools = resource.spec.workloadPools;
 	}
 
 	function removePool(index: number): void {
-		workloadPools.splice(index, 1);
-		workloadPools = workloadPools;
+		resource.spec.workloadPools.splice(index, 1);
+		poolValid.splice(index, 1);
+
+		// Array so trigger an update.
+		resource.spec.workloadPools = resource.spec.workloadPools;
 	}
 
 	import WorkloadPoolCreate from '$lib/WorkloadPoolCreate.svelte';
 
 	/* There must be at least one workload pool, all of them must be valid and every pool must have a unique name */
 	$: step3Valid =
-		workloadPools.length > 0 &&
-		workloadPools.every((x) => x.valid) &&
-		[...new Set(workloadPools.map((x) => x.model.name))].length == workloadPools.length;
+		resource.spec.workloadPools.length > 0 &&
+		poolValid.every((x) => x) &&
+		[...new Set(resource.spec.workloadPools.map((x) => x.name))].length ==
+			resource.spec.workloadPools.length;
 
 	function complete() {
 		const parameters = {
@@ -257,8 +276,6 @@
 			projectID: projectID,
 			kubernetesClusterWrite: resource
 		};
-
-		resource.spec.workloadPools = workloadPools.map((x) => x.model);
 
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(parameters)
@@ -329,9 +346,9 @@
 					operational cost when not in use.
 				</p>
 
-				{#each workloadPools as pool, i}
+				{#each resource.spec.workloadPools as pool, i}
 					<article class="bg-surface-50-900-token rounded-lg p-8 flex flex-col gap-8">
-						<WorkloadPoolCreate {flavors} bind:pool={pool.model} bind:valid={pool.valid} />
+						<WorkloadPoolCreate {flavors} bind:pool bind:valid={poolValid[i]} />
 
 						<button
 							class="btn flex variant-ghost-primary gap-2 items-center self-start"
