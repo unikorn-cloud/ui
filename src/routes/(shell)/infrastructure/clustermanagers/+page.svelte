@@ -3,6 +3,7 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
+	import ShellListTray from '$lib/layouts/ShellListTray.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -97,9 +98,11 @@
 	<ShellList>
 		{#each resources || [] as resource}
 			<ShellListItem metadata={resource.metadata} {projects} href="#">
-				<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
-					<iconify-icon icon="mdi:close" />
-				</button>
+				<ShellListTray>
+					<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
+						<iconify-icon icon="mdi:close" />
+					</button>
+				</ShellListTray>
 			</ShellListItem>
 		{/each}
 	</ShellList>

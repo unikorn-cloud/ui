@@ -4,6 +4,7 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
+	import ShellListTray from '$lib/layouts/ShellListTray.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -129,6 +130,7 @@
 	<a
 		href="/infrastructure/clusters/create"
 		class="btn variant-ghost-primary flex gap-2 items-center"
+		slot="tools"
 	>
 		<iconify-icon icon="material-symbols:add" />
 		<span>Create</span>
@@ -141,7 +143,7 @@
 				{projects}
 				href="/infrastructure/clusters/view/{resource.metadata.id}"
 			>
-				<div class="flex gap-4">
+				<ShellListTray>
 					<button
 						on:click={() => getKubeconfig(resource)}
 						on:keypress={() => getKubeconfig(resource)}
@@ -149,9 +151,9 @@
 						<iconify-icon icon="mdi:file-document-outline" />
 					</button>
 					<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
-						<iconify-icon icon="mdi:close" />
+						<iconify-icon icon="mdi:trash-can-outline" />
 					</button>
-				</div>
+				</ShellListTray>
 			</ShellListItem>
 		{/each}
 	</ShellList>

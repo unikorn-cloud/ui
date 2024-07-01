@@ -36,6 +36,7 @@
 		class="btn variant-ghost-primary flex gap-2 items-center"
 		on:click={create}
 		on:keypress={create}
+		slot="tools"
 	>
 		<iconify-icon icon="material-symbols:add" />
 		<span>Create</span>

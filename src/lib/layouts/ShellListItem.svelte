@@ -27,7 +27,9 @@
 	}
 </script>
 
-<div class="flex flex-col lg:flex-row gap-4 items-top justify-between variant-glass rounded-lg p-4">
+<div
+	class="flex flex-col lg:flex-row gap-4 items-top justify-between variant-glass border border-surface-300-600-token rounded-lg p-4"
+>
 	<div class="flex flex-col gap-4">
 		<div class="flex gap-4 items-center">
 			<StatusIcon {metadata} />
