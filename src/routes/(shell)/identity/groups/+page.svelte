@@ -4,6 +4,7 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
+	import ShellListTray from '$lib/layouts/ShellListTray.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -76,7 +77,11 @@
 </script>
 
 <ShellPage {settings}>
-	<a href="/identity/groups/create" class="btn variant-ghost-primary flex gap-2 items-center">
+	<a
+		href="/identity/groups/create"
+		class="btn variant-ghost-primary flex gap-2 items-center"
+		slot="tools"
+	>
 		<iconify-icon icon="material-symbols:add" />
 		<span>Create</span>
 	</a>
@@ -87,9 +92,11 @@
 				metadata={resource.metadata}
 				href="/identity/groups/view/{resource.metadata.id}"
 			>
-				<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
-					<iconify-icon icon="mdi:close" />
-				</button>
+				<ShellListTray>
+					<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
+						<iconify-icon icon="mdi:close" />
+					</button>
+				</ShellListTray>
 			</ShellListItem>
 		{/each}
 	</ShellList>
