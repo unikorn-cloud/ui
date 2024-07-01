@@ -11,7 +11,7 @@
 			{
 				title: 'Identity',
 				items: [
-					{ label: 'Organizations', href: '/identity/organizations' },
+					{ label: 'Organization', href: '/identity/organizations' },
 					{ label: 'OAuth2 Providers', href: '/identity/oauth2providers' },
 					{ label: 'Groups', href: '/identity/groups' },
 					{ label: 'Projects', href: '/identity/projects' },
