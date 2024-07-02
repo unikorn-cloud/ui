@@ -129,7 +129,7 @@
 <ShellPage {settings}>
 	<a
 		href="/infrastructure/clusters/create"
-		class="btn variant-ghost-primary flex gap-2 items-center"
+		class="btn variant-filled-tertiary flex gap-2 items-center"
 		slot="tools"
 	>
 		<iconify-icon icon="material-symbols:add" />

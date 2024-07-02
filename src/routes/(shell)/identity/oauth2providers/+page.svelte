@@ -85,7 +85,7 @@
 <ShellPage {settings}>
 	<a
 		href="/identity/oauth2providers/create"
-		class="btn variant-ghost-primary flex gap-2 items-center"
+		class="btn variant-filled-tertiary flex gap-2 items-center"
 		slot="tools"
 	>
 		<iconify-icon icon="material-symbols:add" />
@@ -97,7 +97,7 @@
 			<ShellListItem metadata={resource.metadata} href="#">
 				<ShellListTray>
 					<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
-						<iconify-icon icon="mdi:close" />
+						<iconify-icon icon="mdi:trash-can-outline" />
 					</button>
 				</ShellListTray>
 			</ShellListItem>

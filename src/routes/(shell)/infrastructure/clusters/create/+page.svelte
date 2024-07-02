@@ -347,31 +347,31 @@
 					defined set of flavours. Workload pools support automatic scaling, thus reducing overall
 					operational cost when not in use.
 				</p>
-
-				{#each resource.spec.workloadPools as pool, i}
-					<article class="bg-surface-50-900-token rounded-lg p-8 flex flex-col gap-8">
-						<WorkloadPoolCreate {flavors} bind:pool bind:valid={poolValid[i]} />
-
-						<button
-							class="btn flex variant-ghost-primary gap-2 items-center self-start"
-							on:click={() => removePool(i)}
-							on:keypress={() => removePool(i)}
-						>
-							<iconify-icon icon="mdi:minus" />
-							<span>Remove Pool</span>
-						</button>
-					</article>
-				{/each}
-
-				<button
-					class="btn variant-ghost-primary flex gap-2 items-center"
-					on:click={addPool}
-					on:keypress={addPool}
-				>
-					<iconify-icon icon="mdi:add" />
-					<span>Add New Pool</span>
-				</button>
 			</ShellSection>
+
+			{#each resource.spec.workloadPools as pool, i}
+				<ShellSection title="Workload Pool {i + 1}">
+					<button
+						class="text-2xl"
+						on:click={() => removePool(i)}
+						on:keypress={() => removePool(i)}
+						slot="tools"
+					>
+						<iconify-icon icon="material-symbols:add" />
+					</button>
+
+					<WorkloadPoolCreate {flavors} bind:pool bind:valid={poolValid[i]} />
+				</ShellSection>
+			{/each}
+
+			<button
+				class="btn variant-filled-tertiary flex gap-2 items-center w-full"
+				on:click={addPool}
+				on:keypress={addPool}
+			>
+				<iconify-icon icon="mdi:add" />
+				<span>Add New Pool</span>
+			</button>
 		</Step>
 		<Step>
 			<svelte:fragment slot="header">Confirmation</svelte:fragment>

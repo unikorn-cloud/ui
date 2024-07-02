@@ -100,7 +100,7 @@
 			<ShellListItem metadata={resource.metadata} {projects} href="#">
 				<ShellListTray>
 					<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
-						<iconify-icon icon="mdi:close" />
+						<iconify-icon icon="mdi:trash-can-outline" />
 					</button>
 				</ShellListTray>
 			</ShellListItem>

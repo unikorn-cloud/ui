@@ -110,7 +110,7 @@
 		</ShellSection>
 
 		<button
-			class="btn variant-ghost-primary flex gap-2 items-center"
+			class="btn variant-filled-tertiary flex gap-2 items-center"
 			disabled={!valid}
 			on:click={submit}
 			on:keypress={submit}

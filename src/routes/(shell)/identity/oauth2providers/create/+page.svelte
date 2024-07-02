@@ -103,7 +103,7 @@
 					</div>
 					<button
 						use:clipboard={{ element: 'callback' }}
-						class="btn variant-ghost-primary flex items-center"
+						class="btn variant-filled-tertiary flex items-center"
 					>
 						<iconify-icon icon="mdi:clipboard-outline" />
 						<span>Copy</span>
