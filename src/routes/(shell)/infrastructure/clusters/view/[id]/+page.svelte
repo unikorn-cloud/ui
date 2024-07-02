@@ -259,7 +259,7 @@
 							<WorkloadPoolCreate {flavors} bind:pool bind:valid={poolValid[i]} />
 
 							<button
-								class="btn flex variant-ghost-primary gap-2 items-center self-start"
+								class="btn flex variant-filled-tertiary gap-2 items-center self-start"
 								on:click={() => removePool(i)}
 								on:keypress={() => removePool(i)}
 							>
@@ -270,7 +270,7 @@
 					{/each}
 
 					<button
-						class="btn variant-ghost-primary flex gap-2 items-center"
+						class="btn variant-filled-tertiary flex gap-2 items-center"
 						on:click={addPool}
 						on:keypress={addPool}
 					>
