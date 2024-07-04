@@ -64,7 +64,11 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDAvailableGroupsGet(parameters)
-			.then((v: Array<Identity.AvailableGroup>) => (availableGroups = v))
+			.then((v: Array<Identity.AvailableGroup>) => {
+				if (v.length == 0) return;
+
+				availableGroups = v;
+			})
 			.catch((e: Error) => Clients.error(e));
 	}
 
