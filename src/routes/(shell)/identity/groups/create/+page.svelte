@@ -27,7 +27,7 @@
 	let at: InternalToken;
 	let organizationID: string;
 	let groups: Array<Identity.GroupRead>;
-	let availableRoles: string[];
+	let availableRoles: Array<Identity.RoleRead>;
 	let availableGroups: Array<Identity.AvailableGroup>;
 
 	let resource: Identity.GroupWrite = {
@@ -35,7 +35,7 @@
 			name: ''
 		},
 		spec: {
-			roles: [],
+			roleIDs: [],
 			users: [],
 			providerGroups: []
 		}
@@ -59,7 +59,7 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRolesGet(parameters)
-			.then((v: Array<string>) => (availableRoles = v))
+			.then((v: Array<Identity.RoleRead>) => (availableRoles = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
@@ -75,7 +75,9 @@
 	let metadataValid = false;
 
 	/* Cluster name must be valid, and it must be unique */
-	$: step1Valid = metadataValid && resource.spec.roles.length > 0;
+	$: step1Valid = metadataValid && resource.spec.roleIDs.length > 0;
+
+	$: console.log(metadataValid, resource.spec.roleIDs.length > 0);
 
 	function complete() {
 		const parameters = {
@@ -101,9 +103,9 @@
 
 			<ShellSection title="Roles">
 				<label for="roles"> Select the roles members of this group have.</label>
-				<select id="roles" class="select" multiple bind:value={resource.spec.roles}>
+				<select id="roles" class="select" multiple bind:value={resource.spec.roleIDs}>
 					{#each availableRoles || [] as role}
-						<option value={role}>{role}</option>
+						<option value={role.metadata.id}>{role.metadata.name}</option>
 					{/each}
 				</select>
 			</ShellSection>

@@ -21,6 +21,8 @@ import type {
   IdentityWrite,
   Image,
   ModelError,
+  PhysicalNetworkRead,
+  PhysicalNetworkWrite,
   RegionRead,
 } from '../models/index';
 import {
@@ -36,9 +38,17 @@ import {
     ImageToJSON,
     ModelErrorFromJSON,
     ModelErrorToJSON,
+    PhysicalNetworkReadFromJSON,
+    PhysicalNetworkReadToJSON,
+    PhysicalNetworkWriteFromJSON,
+    PhysicalNetworkWriteToJSON,
     RegionReadFromJSON,
     RegionReadToJSON,
 } from '../models/index';
+
+export interface ApiV1OrganizationsOrganizationIDIdentitiesGetRequest {
+    organizationID: string;
+}
 
 export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsGetRequest {
     organizationID: string;
@@ -55,6 +65,14 @@ export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionI
     organizationID: string;
     projectID: string;
     regionID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesIdentityIDPhysicalNetworksPostRequest {
+    organizationID: string;
+    projectID: string;
+    regionID: string;
+    identityID: string;
+    physicalNetworkWrite?: PhysicalNetworkWrite;
 }
 
 export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesPostRequest {
@@ -74,6 +92,41 @@ export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionI
  * 
  */
 export class DefaultApi extends runtime.BaseAPI {
+
+    /**
+     * Get all identites scoped to an organization.
+     */
+    async apiV1OrganizationsOrganizationIDIdentitiesGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDIdentitiesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<IdentityRead>>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDIdentitiesGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/identities`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(IdentityReadFromJSON));
+    }
+
+    /**
+     * Get all identites scoped to an organization.
+     */
+    async apiV1OrganizationsOrganizationIDIdentitiesGet(requestParameters: ApiV1OrganizationsOrganizationIDIdentitiesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<IdentityRead>> {
+        const response = await this.apiV1OrganizationsOrganizationIDIdentitiesGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * List all regions.
@@ -197,6 +250,56 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Flavor>> {
         const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Create a new provider network.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesIdentityIDPhysicalNetworksPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesIdentityIDPhysicalNetworksPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PhysicalNetworkRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesIdentityIDPhysicalNetworksPost.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesIdentityIDPhysicalNetworksPost.');
+        }
+
+        if (requestParameters.regionID === null || requestParameters.regionID === undefined) {
+            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesIdentityIDPhysicalNetworksPost.');
+        }
+
+        if (requestParameters.identityID === null || requestParameters.identityID === undefined) {
+            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesIdentityIDPhysicalNetworksPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/regions/{regionID}/identities/{identityID}/physicalNetworks`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: PhysicalNetworkWriteToJSON(requestParameters.physicalNetworkWrite),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => PhysicalNetworkReadFromJSON(jsonValue));
+    }
+
+    /**
+     * Create a new provider network.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesIdentityIDPhysicalNetworksPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesIdentityIDPhysicalNetworksPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PhysicalNetworkRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDIdentitiesIdentityIDPhysicalNetworksPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

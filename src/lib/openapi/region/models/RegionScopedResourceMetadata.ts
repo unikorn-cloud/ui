@@ -21,74 +21,95 @@ import {
 } from './ResourceProvisioningStatus';
 
 /**
- * Resource metadata valid for all reads.
+ * 
  * @export
- * @interface ResourceReadMetadata
+ * @interface RegionScopedResourceMetadata
  */
-export interface ResourceReadMetadata {
+export interface RegionScopedResourceMetadata {
     /**
      * A valid Kubenetes label value, typically used for resource names that can be
      * indexed in the database.
      * @type {string}
-     * @memberof ResourceReadMetadata
+     * @memberof RegionScopedResourceMetadata
      */
     name: string;
     /**
      * The resource description, this optionally augments the name with more context.
      * @type {string}
-     * @memberof ResourceReadMetadata
+     * @memberof RegionScopedResourceMetadata
      */
     description?: string;
     /**
      * The unique resource ID.
      * @type {string}
-     * @memberof ResourceReadMetadata
+     * @memberof RegionScopedResourceMetadata
      */
     id: string;
     /**
      * The time the resource was created.
      * @type {Date}
-     * @memberof ResourceReadMetadata
+     * @memberof RegionScopedResourceMetadata
      */
     creationTime: Date;
     /**
      * The user who created the resource.
      * @type {string}
-     * @memberof ResourceReadMetadata
+     * @memberof RegionScopedResourceMetadata
      */
     createdBy?: string;
     /**
      * The time the resource was deleted.
      * @type {Date}
-     * @memberof ResourceReadMetadata
+     * @memberof RegionScopedResourceMetadata
      */
     deletionTime?: Date;
     /**
      * 
      * @type {ResourceProvisioningStatus}
-     * @memberof ResourceReadMetadata
+     * @memberof RegionScopedResourceMetadata
      */
     provisioningStatus: ResourceProvisioningStatus;
+    /**
+     * The organization identifier the resource belongs to.
+     * @type {string}
+     * @memberof RegionScopedResourceMetadata
+     */
+    organizationId: string;
+    /**
+     * The project identifier the resource belongs to.
+     * @type {string}
+     * @memberof RegionScopedResourceMetadata
+     */
+    projectId: string;
+    /**
+     * A region identifier.
+     * @type {string}
+     * @memberof RegionScopedResourceMetadata
+     */
+    regionId: string;
 }
 
 /**
- * Check if a given object implements the ResourceReadMetadata interface.
+ * Check if a given object implements the RegionScopedResourceMetadata interface.
  */
-export function instanceOfResourceReadMetadata(value: object): boolean {
+export function instanceOfRegionScopedResourceMetadata(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "name" in value;
     isInstance = isInstance && "id" in value;
     isInstance = isInstance && "creationTime" in value;
     isInstance = isInstance && "provisioningStatus" in value;
+    isInstance = isInstance && "organizationId" in value;
+    isInstance = isInstance && "projectId" in value;
+    isInstance = isInstance && "regionId" in value;
 
     return isInstance;
 }
 
-export function ResourceReadMetadataFromJSON(json: any): ResourceReadMetadata {
-    return ResourceReadMetadataFromJSONTyped(json, false);
+export function RegionScopedResourceMetadataFromJSON(json: any): RegionScopedResourceMetadata {
+    return RegionScopedResourceMetadataFromJSONTyped(json, false);
 }
 
-export function ResourceReadMetadataFromJSONTyped(json: any, ignoreDiscriminator: boolean): ResourceReadMetadata {
+export function RegionScopedResourceMetadataFromJSONTyped(json: any, ignoreDiscriminator: boolean): RegionScopedResourceMetadata {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -101,10 +122,13 @@ export function ResourceReadMetadataFromJSONTyped(json: any, ignoreDiscriminator
         'createdBy': !exists(json, 'createdBy') ? undefined : json['createdBy'],
         'deletionTime': !exists(json, 'deletionTime') ? undefined : (new Date(json['deletionTime'])),
         'provisioningStatus': ResourceProvisioningStatusFromJSON(json['provisioningStatus']),
+        'organizationId': json['organizationId'],
+        'projectId': json['projectId'],
+        'regionId': json['regionId'],
     };
 }
 
-export function ResourceReadMetadataToJSON(value?: ResourceReadMetadata | null): any {
+export function RegionScopedResourceMetadataToJSON(value?: RegionScopedResourceMetadata | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -120,6 +144,9 @@ export function ResourceReadMetadataToJSON(value?: ResourceReadMetadata | null):
         'createdBy': value.createdBy,
         'deletionTime': value.deletionTime === undefined ? undefined : (value.deletionTime.toISOString()),
         'provisioningStatus': ResourceProvisioningStatusToJSON(value.provisioningStatus),
+        'organizationId': value.organizationId,
+        'projectId': value.projectId,
+        'regionId': value.regionId,
     };
 }
 

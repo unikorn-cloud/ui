@@ -62,6 +62,9 @@
 		}
 	};
 
+	// Things to keep the API schema happy.
+	$: if (!clustermanagers || clustermanagers.length == 0) delete resource.spec.clusterManagerId;
+
 	let poolValid: Array<boolean> = [false];
 
 	organizationStore.subscribe((value: string) => {
@@ -306,15 +309,21 @@
 					{/each}
 				</select>
 
-				<label for="clustermanager-name">
-					Select a life cycle manager to manage the cluster life-cycle. If none is selected, a
-					default will be created for you.
-				</label>
-				<select id="clustermanager-name" class="select" bind:value={resource.spec.clusterManagerId}>
-					{#each clustermanagers || [] as clustermanager}
-						<option value={clustermanager.metadata.id}>{clustermanager.metadata.name}</option>
-					{/each}
-				</select>
+				{#if clustermanagers}
+					<label for="clustermanager-name">
+						Select a life cycle manager to manage the cluster life-cycle. If none is selected, a
+						default will be created for you.
+					</label>
+					<select
+						id="clustermanager-name"
+						class="select"
+						bind:value={resource.spec.clusterManagerId}
+					>
+						{#each clustermanagers || [] as clustermanager}
+							<option value={clustermanager.metadata.id}>{clustermanager.metadata.name}</option>
+						{/each}
+					</select>
+				{/if}
 			</ShellSection>
 		</Step>
 

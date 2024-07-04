@@ -20,17 +20,17 @@ import { exists, mapValues } from '../runtime';
  */
 export interface GroupSpec {
     /**
-     * A list of users.
+     * A list of strings.
      * @type {Array<string>}
      * @memberof GroupSpec
      */
     users?: Array<string>;
     /**
-     * A list of roles.
+     * A list of strings.
      * @type {Array<string>}
      * @memberof GroupSpec
      */
-    roles: Array<string>;
+    roleIDs: Array<string>;
     /**
      * A list of provider groups.
      * @type {Array<string>}
@@ -44,7 +44,7 @@ export interface GroupSpec {
  */
 export function instanceOfGroupSpec(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "roles" in value;
+    isInstance = isInstance && "roleIDs" in value;
 
     return isInstance;
 }
@@ -60,7 +60,7 @@ export function GroupSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     return {
         
         'users': !exists(json, 'users') ? undefined : json['users'],
-        'roles': json['roles'],
+        'roleIDs': json['roleIDs'],
         'providerGroups': !exists(json, 'providerGroups') ? undefined : json['providerGroups'],
     };
 }
@@ -75,7 +75,7 @@ export function GroupSpecToJSON(value?: GroupSpec | null): any {
     return {
         
         'users': value.users,
-        'roles': value.roles,
+        'roleIDs': value.roleIDs,
         'providerGroups': value.providerGroups,
     };
 }

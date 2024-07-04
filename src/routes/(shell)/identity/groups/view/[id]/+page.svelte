@@ -35,8 +35,7 @@
 	let groups: Array<Identity.GroupRead>;
 	let group: Identity.GroupRead;
 
-	let availableRoles: string[];
-
+	let availableRoles: Array<Identity.RoleRead>;
 	let availableGroups: Array<Identity.AvailableGroup>;
 
 	function update(at: InternalToken, organizationID: string) {
@@ -53,7 +52,7 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRolesGet(parameters)
-			.then((v: Array<string>) => (availableRoles = v))
+			.then((v: Array<Identity.RoleRead>) => (availableRoles = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
@@ -87,7 +86,7 @@
 
 	let metadataValid = false;
 
-	$: valid = metadataValid && group.spec.roles.length != 0;
+	$: valid = metadataValid && group.spec.roleIDs.length != 0;
 
 	function submit() {
 		if (!at || !organizationID) return;
@@ -115,9 +114,9 @@
 		<ShellSection title="Roles">
 			<label class="label">
 				<span>Roles for users in the group.</span>
-				<select class="select" multiple bind:value={group.spec.roles}>
+				<select class="select" multiple bind:value={group.spec.roleIDs}>
 					{#each availableRoles || [] as role}
-						<option value={role}>{role}</option>
+						<option value={role.metadata.id}>{role.metadata.name}</option>
 					{/each}
 				</select>
 			</label>

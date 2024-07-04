@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { IdentityWriteSpec } from './IdentityWriteSpec';
+import type { PhysicalNetworkSpec } from './PhysicalNetworkSpec';
 import {
-    IdentityWriteSpecFromJSON,
-    IdentityWriteSpecFromJSONTyped,
-    IdentityWriteSpecToJSON,
-} from './IdentityWriteSpec';
+    PhysicalNetworkSpecFromJSON,
+    PhysicalNetworkSpecFromJSONTyped,
+    PhysicalNetworkSpecToJSON,
+} from './PhysicalNetworkSpec';
 import type { ResourceWriteMetadata } from './ResourceWriteMetadata';
 import {
     ResourceWriteMetadataFromJSON,
@@ -27,29 +27,29 @@ import {
 } from './ResourceWriteMetadata';
 
 /**
- * An identity request.
+ * A physical network request.
  * @export
- * @interface IdentityWrite
+ * @interface PhysicalNetworkWrite
  */
-export interface IdentityWrite {
+export interface PhysicalNetworkWrite {
     /**
      * 
      * @type {ResourceWriteMetadata}
-     * @memberof IdentityWrite
+     * @memberof PhysicalNetworkWrite
      */
     metadata: ResourceWriteMetadata;
     /**
      * 
-     * @type {IdentityWriteSpec}
-     * @memberof IdentityWrite
+     * @type {PhysicalNetworkSpec}
+     * @memberof PhysicalNetworkWrite
      */
-    spec: IdentityWriteSpec;
+    spec: PhysicalNetworkSpec;
 }
 
 /**
- * Check if a given object implements the IdentityWrite interface.
+ * Check if a given object implements the PhysicalNetworkWrite interface.
  */
-export function instanceOfIdentityWrite(value: object): boolean {
+export function instanceOfPhysicalNetworkWrite(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "metadata" in value;
     isInstance = isInstance && "spec" in value;
@@ -57,22 +57,22 @@ export function instanceOfIdentityWrite(value: object): boolean {
     return isInstance;
 }
 
-export function IdentityWriteFromJSON(json: any): IdentityWrite {
-    return IdentityWriteFromJSONTyped(json, false);
+export function PhysicalNetworkWriteFromJSON(json: any): PhysicalNetworkWrite {
+    return PhysicalNetworkWriteFromJSONTyped(json, false);
 }
 
-export function IdentityWriteFromJSONTyped(json: any, ignoreDiscriminator: boolean): IdentityWrite {
+export function PhysicalNetworkWriteFromJSONTyped(json: any, ignoreDiscriminator: boolean): PhysicalNetworkWrite {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
         'metadata': ResourceWriteMetadataFromJSON(json['metadata']),
-        'spec': IdentityWriteSpecFromJSON(json['spec']),
+        'spec': PhysicalNetworkSpecFromJSON(json['spec']),
     };
 }
 
-export function IdentityWriteToJSON(value?: IdentityWrite | null): any {
+export function PhysicalNetworkWriteToJSON(value?: PhysicalNetworkWrite | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -82,7 +82,7 @@ export function IdentityWriteToJSON(value?: IdentityWrite | null): any {
     return {
         
         'metadata': ResourceWriteMetadataToJSON(value.metadata),
-        'spec': IdentityWriteSpecToJSON(value.spec),
+        'spec': PhysicalNetworkSpecToJSON(value.spec),
     };
 }
 

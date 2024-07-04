@@ -29,8 +29,10 @@ import type {
   OrganizationWrite,
   ProjectRead,
   ProjectWrite,
+  RoleRead,
   Token,
   TokenRequestOptions,
+  Userinfo,
 } from '../models/index';
 import {
     AclFromJSON,
@@ -61,10 +63,14 @@ import {
     ProjectReadToJSON,
     ProjectWriteFromJSON,
     ProjectWriteToJSON,
+    RoleReadFromJSON,
+    RoleReadToJSON,
     TokenFromJSON,
     TokenToJSON,
     TokenRequestOptionsFromJSON,
     TokenRequestOptionsToJSON,
+    UserinfoFromJSON,
+    UserinfoToJSON,
 } from '../models/index';
 
 export interface ApiV1OrganizationsOrganizationIDAclGetRequest {
@@ -156,10 +162,6 @@ export interface ApiV1OrganizationsOrganizationIDPutRequest {
 
 export interface ApiV1OrganizationsOrganizationIDRolesGetRequest {
     organizationID: string;
-}
-
-export interface ApiV1OrganizationsPostRequest {
-    organizationWrite: OrganizationWrite;
 }
 
 export interface Oauth2V2LoginPostRequest {
@@ -941,7 +943,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns roles that can be used by the organization.
      */
-    async apiV1OrganizationsOrganizationIDRolesGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<string>>> {
+    async apiV1OrganizationsOrganizationIDRolesGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<RoleRead>>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDRolesGet.');
         }
@@ -962,52 +964,15 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse<any>(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(RoleReadFromJSON));
     }
 
     /**
      * Returns roles that can be used by the organization.
      */
-    async apiV1OrganizationsOrganizationIDRolesGet(requestParameters: ApiV1OrganizationsOrganizationIDRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<string>> {
+    async apiV1OrganizationsOrganizationIDRolesGet(requestParameters: ApiV1OrganizationsOrganizationIDRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<RoleRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDRolesGetRaw(requestParameters, initOverrides);
         return await response.value();
-    }
-
-    /**
-     * Allows creation of an organization.
-     */
-    async apiV1OrganizationsPostRaw(requestParameters: ApiV1OrganizationsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.organizationWrite === null || requestParameters.organizationWrite === undefined) {
-            throw new runtime.RequiredError('organizationWrite','Required parameter requestParameters.organizationWrite was null or undefined when calling apiV1OrganizationsPost.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/organizations`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: OrganizationWriteToJSON(requestParameters.organizationWrite),
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Allows creation of an organization.
-     */
-    async apiV1OrganizationsPost(requestParameters: ApiV1OrganizationsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsPostRaw(requestParameters, initOverrides);
     }
 
     /**
@@ -1129,7 +1094,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns introspection information about an access token.
      */
-    async oauth2V2UserinfoGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async oauth2V2UserinfoGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Userinfo>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -1146,14 +1111,15 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserinfoFromJSON(jsonValue));
     }
 
     /**
      * Returns introspection information about an access token.
      */
-    async oauth2V2UserinfoGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.oauth2V2UserinfoGetRaw(initOverrides);
+    async oauth2V2UserinfoGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Userinfo> {
+        const response = await this.oauth2V2UserinfoGetRaw(initOverrides);
+        return await response.value();
     }
 
     /**

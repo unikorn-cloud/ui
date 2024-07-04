@@ -16,6 +16,10 @@
 
 	<h2 class="h2">{metadata.name}</h2>
 
+	{#if metadata.description}
+		<div class="text-sm italic">{metadata.description}</div>
+	{/if}
+
 	<div class="flex flex-col gap-2 text-sm">
 		<div class="flex gap-2 items-center text-sm">
 			<iconify-icon icon="mdi:clock-time-five-outline"></iconify-icon>
