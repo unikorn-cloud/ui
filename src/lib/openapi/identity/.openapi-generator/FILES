@@ -2,7 +2,9 @@ apis/DefaultApi.ts
 apis/index.ts
 index.ts
 models/Acl.ts
-models/AclScope.ts
+models/AclEndpoint.ts
+models/AclOperation.ts
+models/AclScopedEndpoints.ts
 models/AuthMethod.ts
 models/AvailableGroup.ts
 models/Claim.ts
@@ -33,11 +35,13 @@ models/ResourceProvisioningStatus.ts
 models/ResourceReadMetadata.ts
 models/ResourceWriteMetadata.ts
 models/ResponseType.ts
+models/RoleRead.ts
 models/Scope.ts
 models/SigningAlgorithm.ts
 models/StaticResourceMetadata.ts
 models/SystemOauth2ProviderRead.ts
 models/Token.ts
 models/TokenRequestOptions.ts
+models/Userinfo.ts
 models/index.ts
 runtime.ts

@@ -1,7 +1,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export * from './Acl';
-export * from './AclScope';
+export * from './AclEndpoint';
+export * from './AclOperation';
+export * from './AclScopedEndpoints';
 export * from './AuthMethod';
 export * from './AvailableGroup';
 export * from './Claim';
@@ -32,9 +34,11 @@ export * from './ResourceProvisioningStatus';
 export * from './ResourceReadMetadata';
 export * from './ResourceWriteMetadata';
 export * from './ResponseType';
+export * from './RoleRead';
 export * from './Scope';
 export * from './SigningAlgorithm';
 export * from './StaticResourceMetadata';
 export * from './SystemOauth2ProviderRead';
 export * from './Token';
 export * from './TokenRequestOptions';
+export * from './Userinfo';

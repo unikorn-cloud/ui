@@ -52,6 +52,12 @@ export interface ProjectScopedResourceReadMetadata {
      */
     creationTime: Date;
     /**
+     * The user who created the resource.
+     * @type {string}
+     * @memberof ProjectScopedResourceReadMetadata
+     */
+    createdBy?: string;
+    /**
      * The time the resource was deleted.
      * @type {Date}
      * @memberof ProjectScopedResourceReadMetadata
@@ -70,23 +76,11 @@ export interface ProjectScopedResourceReadMetadata {
      */
     organizationId: string;
     /**
-     * The organization name the resource belongs to.
-     * @type {string}
-     * @memberof ProjectScopedResourceReadMetadata
-     */
-    organizationName?: string;
-    /**
      * The project identifier the resource belongs to.
      * @type {string}
      * @memberof ProjectScopedResourceReadMetadata
      */
     projectId: string;
-    /**
-     * The project name the resource belongs to.
-     * @type {string}
-     * @memberof ProjectScopedResourceReadMetadata
-     */
-    projectName?: string;
 }
 
 /**
@@ -118,12 +112,11 @@ export function ProjectScopedResourceReadMetadataFromJSONTyped(json: any, ignore
         'description': !exists(json, 'description') ? undefined : json['description'],
         'id': json['id'],
         'creationTime': (new Date(json['creationTime'])),
+        'createdBy': !exists(json, 'createdBy') ? undefined : json['createdBy'],
         'deletionTime': !exists(json, 'deletionTime') ? undefined : (new Date(json['deletionTime'])),
         'provisioningStatus': ResourceProvisioningStatusFromJSON(json['provisioningStatus']),
         'organizationId': json['organizationId'],
-        'organizationName': !exists(json, 'organizationName') ? undefined : json['organizationName'],
         'projectId': json['projectId'],
-        'projectName': !exists(json, 'projectName') ? undefined : json['projectName'],
     };
 }
 
@@ -140,12 +133,11 @@ export function ProjectScopedResourceReadMetadataToJSON(value?: ProjectScopedRes
         'description': value.description,
         'id': value.id,
         'creationTime': (value.creationTime.toISOString()),
+        'createdBy': value.createdBy,
         'deletionTime': value.deletionTime === undefined ? undefined : (value.deletionTime.toISOString()),
         'provisioningStatus': ResourceProvisioningStatusToJSON(value.provisioningStatus),
         'organizationId': value.organizationId,
-        'organizationName': value.organizationName,
         'projectId': value.projectId,
-        'projectName': value.projectName,
     };
 }
 

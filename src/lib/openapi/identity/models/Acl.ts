@@ -13,12 +13,18 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { AclScope } from './AclScope';
+import type { AclEndpoint } from './AclEndpoint';
 import {
-    AclScopeFromJSON,
-    AclScopeFromJSONTyped,
-    AclScopeToJSON,
-} from './AclScope';
+    AclEndpointFromJSON,
+    AclEndpointFromJSONTyped,
+    AclEndpointToJSON,
+} from './AclEndpoint';
+import type { AclScopedEndpoints } from './AclScopedEndpoints';
+import {
+    AclScopedEndpointsFromJSON,
+    AclScopedEndpointsFromJSONTyped,
+    AclScopedEndpointsToJSON,
+} from './AclScopedEndpoints';
 
 /**
  * A list of access control scopes and permissions.
@@ -27,17 +33,23 @@ import {
  */
 export interface Acl {
     /**
-     * Indicates the user can do all the things.
-     * @type {boolean}
-     * @memberof Acl
-     */
-    isSuperAdmin?: boolean;
-    /**
      * A list of access control scopes.
-     * @type {Array<AclScope>}
+     * @type {Array<AclEndpoint>}
      * @memberof Acl
      */
-    scopes?: Array<AclScope>;
+    global?: Array<AclEndpoint>;
+    /**
+     * 
+     * @type {AclScopedEndpoints}
+     * @memberof Acl
+     */
+    organization?: AclScopedEndpoints;
+    /**
+     * A list of resource scoped endpoint permissions.
+     * @type {Array<AclScopedEndpoints>}
+     * @memberof Acl
+     */
+    projects?: Array<AclScopedEndpoints>;
 }
 
 /**
@@ -59,8 +71,9 @@ export function AclFromJSONTyped(json: any, ignoreDiscriminator: boolean): Acl {
     }
     return {
         
-        'isSuperAdmin': !exists(json, 'isSuperAdmin') ? undefined : json['isSuperAdmin'],
-        'scopes': !exists(json, 'scopes') ? undefined : ((json['scopes'] as Array<any>).map(AclScopeFromJSON)),
+        'global': !exists(json, 'global') ? undefined : ((json['global'] as Array<any>).map(AclEndpointFromJSON)),
+        'organization': !exists(json, 'organization') ? undefined : AclScopedEndpointsFromJSON(json['organization']),
+        'projects': !exists(json, 'projects') ? undefined : ((json['projects'] as Array<any>).map(AclScopedEndpointsFromJSON)),
     };
 }
 
@@ -73,8 +86,9 @@ export function AclToJSON(value?: Acl | null): any {
     }
     return {
         
-        'isSuperAdmin': value.isSuperAdmin,
-        'scopes': value.scopes === undefined ? undefined : ((value.scopes as Array<any>).map(AclScopeToJSON)),
+        'global': value.global === undefined ? undefined : ((value.global as Array<any>).map(AclEndpointToJSON)),
+        'organization': AclScopedEndpointsToJSON(value.organization),
+        'projects': value.projects === undefined ? undefined : ((value.projects as Array<any>).map(AclScopedEndpointsToJSON)),
     };
 }
 
