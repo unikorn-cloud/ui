@@ -5,6 +5,9 @@
 	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
+	import TextInput from '$lib/forms/TextInput.svelte';
+	import Select from '$lib/forms/Select.svelte';
+	import * as Validation from '$lib/validation';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -88,75 +91,86 @@
 		return provider.spec.type;
 	}
 
+	let metadataValid: boolean = false;
+	let domainValid: boolean = false;
+
+	let valid: boolean = false;
+
+	$: valid =
+		metadataValid && organization.spec.organizationType == Identity.OrganizationType.Domain
+			? domainValid
+			: true;
+
 	$: oauth2ProviderType = getOauth2ProviderType(providers, organization);
 </script>
 
 <ShellPage {settings}>
 	{#if organization}
 		<ShellViewHeader metadata={organization.metadata} />
-		<ShellMetadataSection metadata={organization.metadata} names={[]} />
+		<ShellMetadataSection metadata={organization.metadata} names={[]} bind:valid={metadataValid} />
 
 		<ShellSection title="Authentication Type">
-			<label for="organization-type"
-				>Select authentication type. When <em>domain</em> authentication is selected, users will
-				login with an email address, and be routed to the correct identity provider for your
-				organization. Using this option allows the use of custom OIDC servers for authentication,
-				and mapping of groups from your identity provider to native RBAC groups. When <em>adhoc</em>
-				authentication is selected, users will login by selected their generic provider explicitly e.g.
-				Google or Microsoft, and must be manually added to groups.
-			</label>
-			<select id="organization-type" class="select" bind:value={organization.spec.organizationType}>
+			<Select
+				id="organization-type"
+				label="Select your organization type."
+				hint="When domain authentication is selected, users will
+                                login with an email address, and be routed to the correct identity provider for your
+                                organization. Using this option allows the use of custom OIDC servers for authentication,
+                                and mapping of groups from your identity provider to native RBAC groups. When adhoc
+                                authentication is selected, users will login by selected their generic provider explicitly e.g.
+				Google or Microsoft, and must be manually added to groups."
+				bind:value={organization.spec.organizationType}
+			>
 				{#each Object.entries(Identity.OrganizationType) as [symbol, value]}
 					<option {value}>{symbol}</option>
 				{/each}
-			</select>
+			</Select>
 		</ShellSection>
 
 		{#if organization.spec.organizationType == Identity.OrganizationType.Domain}
 			<ShellSection title="Email Domain">
-				<label for="domain"
-					>Domain name you are registering. To ensure you own the domain we require you to update
-					your DNS server with a TXT record <em>unikorn-site-verification</em> to your root domain.</label
-				>
-				<input
+				<TextInput
 					id="domain"
-					class="input"
+					label="Your email domain."
+					hint="To ensure you own the domain we require you to update
+					your DNS server with a TXT record unikorn-site-verification to your root domain."
 					placeholder="acme.corp"
-					required
+					validators={[Validation.stringSet]}
 					bind:value={organization.spec.domain}
+					bind:valid={domainValid}
 				/>
 			</ShellSection>
 
 			<ShellSection title="Identity Provider">
-				<label for="idp-scope">
-					Provider type to use. Selecting <em>global</em> enables the use of predefined globally
-					available identity providers such as Google or Microsoft. Selecting <em>organization</em> allows
-					you to define your own identity provider for the organization.
-				</label>
-				<select class="select" bind:value={organization.spec.providerScope}>
+				<Select
+					id="idp-scope"
+					label="Identity provider type."
+					hint="Selecting global enables the use of predefined globally
+                                        available identity providers such as Google or Microsoft. Selecting organization allows
+					you to define your own identity provider for the organization."
+					bind:value={organization.spec.providerScope}
+				>
 					{#each Object.entries(Identity.ProviderScope) as [symbol, value]}
 						<option {value}>{symbol}</option>
 					{/each}
-				</select>
+				</Select>
 
 				{#if organization.spec.providerScope == Identity.ProviderScope.Global}
-					<label for="global-idp">Identity provider to use.</label>
-					<select class="select" bind:value={organization.spec.providerID}>
+					<Select
+						id="global-idp"
+						label="Identity provider to use."
+						bind:value={organization.spec.providerID}
+					>
 						{#each providers || [] as p}
-							<option value={p.metadata.id}>{p.metadata.name}</option>
+							<option value={p.metadata.id}>{p.metadata.description}</option>
 						{/each}
-					</select>
+					</Select>
 
 					{#if oauth2ProviderType == Identity.Oauth2ProviderType.Google}
-						<label for="customer-id">
-							Your Google customer ID. This can be obtained from the <a
-								href="https://admin.google.com">Google admin console</a
-							>. This field is optional, providing a customer ID will allow the identity service to
-							discover organization groups that can be used to control RBAC.
-						</label>
-						<input
-							id="customer-id"
-							class="input"
+						<TextInput
+							id="google-cluster-id"
+							label="Your Google customer ID."
+							hint="This can be obtained from the Google admin console."
 							placeholder="x83hRso7"
 							bind:value={organization.spec.googleCustomerID}
 						/>
@@ -175,6 +189,7 @@
 
 		<button
 			class="btn variant-filled-tertiary flex gap-2 items-center self-end"
+			disabled={!valid}
 			on:click={submit}
 			on:keypress={submit}
 		>

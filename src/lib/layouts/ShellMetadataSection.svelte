@@ -2,6 +2,7 @@
 	import * as Validation from '$lib/validation';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
+	import TextInput from '$lib/forms/TextInput.svelte';
 
 	// Metadata object to bind to.
 	export let metadata: Kubernetes.ResourceMetadata;
@@ -13,18 +14,21 @@
 
 	// Whether the input is valid.
 	export let valid = false;
-
-	$: valid =
-		Validation.kubernetesNameValid(metadata.name) && Validation.unique(metadata.name, names);
 </script>
 
 <ShellSection title="Resource Metadata">
-	<label for="name"
-		>Display name. The name must be unique, contain no more than 63 characters, and contain only
-		letters, numbers and hyphens.</label
-	>
-	<input id="name" class="input" type="text" bind:value={metadata.name} />
-
-	<label for="name">Optional description.</label>
-	<input id="description" class="input" type="text" bind:value={metadata.description} />
+	<TextInput
+		id="name"
+		bind:value={metadata.name}
+		label="Resource name."
+		hint="Name should be unique, contain 0-9, a-z, . or - and be at most 63 characters."
+		validators={Validation.GetKubernetesNameValidators(names)}
+		bind:valid
+	/>
+	<TextInput
+		id="description"
+		bind:value={metadata.description}
+		label="Resource decription."
+		hint="This is optional but may add more verbose information about the resource."
+	/>
 </ShellSection>

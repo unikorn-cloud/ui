@@ -4,6 +4,7 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
+	import Select from '$lib/forms/Select.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -295,34 +296,39 @@
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 
 			<ShellSection title="Environment Configuration">
-				<label for="project-name"> Select a project to provision in the cluster in. </label>
-				<select id="project-name" class="select" bind:value={projectID}>
+				<Select
+					id="project-name"
+					label="Choose a project."
+					hint="The cluster will be available to users linked to the project's groups."
+					bind:value={projectID}
+				>
 					{#each projects || [] as project}
 						<option value={project.metadata.id}>{project.metadata.name}</option>
 					{/each}
-				</select>
+				</Select>
 
-				<label for="region-name"> Select a region to provision in the cluster in. </label>
-				<select id="region-name" class="select" bind:value={resource.spec.regionId}>
+				<Select
+					id="region"
+					label="Choose a region."
+					hint="Defines the geographical region where the cluster will run."
+					bind:value={resource.spec.regionId}
+				>
 					{#each regions || [] as region}
 						<option value={region.metadata.id}>{region.metadata.name}</option>
 					{/each}
-				</select>
+				</Select>
 
 				{#if clustermanagers}
-					<label for="clustermanager-name">
-						Select a life cycle manager to manage the cluster life-cycle. If none is selected, a
-						default will be created for you.
-					</label>
-					<select
-						id="clustermanager-name"
-						class="select"
+					<Select
+						id="clustermanager"
+						label="Choose the cluster manager."
+						hint="Allows the selection of the cluster manager, this allows horizonal scaling and isolation of clusters from one another."
 						bind:value={resource.spec.clusterManagerId}
 					>
 						{#each clustermanagers || [] as clustermanager}
 							<option value={clustermanager.metadata.id}>{clustermanager.metadata.name}</option>
 						{/each}
-					</select>
+					</Select>
 				{/if}
 			</ShellSection>
 		</Step>
@@ -333,30 +339,30 @@
 			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
 			<ShellSection title="Platform Configuration">
-				<label for="kubernetes-version">
-					Select a Kubernetes version to provision. Kubernetes provides guarantees backward
-					compatibility so choosing the newest is usually the right choice as that provides a rich
-					feature set and enhanced security. Certain applications &mdash; e.g. Kubeflow &mdash; may
-					require a specific version.
-				</label>
-				<select id="kubernetes-version" class="select" value={resource.spec.version}>
+				<Select
+					id="kubernetes-version"
+					label="Choose a Kubernetes version."
+					hint="Kubernetes provides guarantees backward
+                                                compatibility so choosing the newest is usually the right choice as that provides a rich
+                                                feature set and enhanced security. Certain applications &mdash; e.g. Kubeflow &mdash;
+                                                may require a specific version."
+					bind:value={resource.spec.version}
+				>
 					{#each versions || [] as version}
 						<option value={version}>{version}</option>
 					{/each}
-				</select>
+				</Select>
 			</ShellSection>
 		</Step>
 		<Step locked={!step3Valid}>
 			<svelte:fragment slot="header">Worker Setup</svelte:fragment>
 
-			<ShellSection title="Workload Pool Configuration">
-				<p>
-					Workload pools provide compute resouce for your cluster. You may have as many as required
-					for your workload. Each pool has a set of CPU, GPU and memory that can be selected from a
-					defined set of flavours. Workload pools support automatic scaling, thus reducing overall
-					operational cost when not in use.
-				</p>
-			</ShellSection>
+			<p>
+				Workload pools provide compute resouce for your cluster. You may have as many as required
+				for your workload. Each pool has a set of CPU, GPU and memory that can be selected from a
+				defined set of flavours. Workload pools support automatic scaling, thus reducing overall
+				operational cost when not in use.
+			</p>
 
 			{#each resource.spec.workloadPools as pool, i}
 				<ShellSection title="Workload Pool {i + 1}">
@@ -366,7 +372,7 @@
 						on:keypress={() => removePool(i)}
 						slot="tools"
 					>
-						<iconify-icon icon="material-symbols:add" />
+						<iconify-icon icon="mdi:trash-can-outline" />
 					</button>
 
 					<WorkloadPoolCreate {flavors} bind:pool bind:valid={poolValid[i]} />

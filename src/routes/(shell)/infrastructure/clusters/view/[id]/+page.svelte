@@ -6,6 +6,7 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
+	import Select from '$lib/forms/Select.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -230,54 +231,54 @@
 				<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
 				<ShellSection title="Platform Configuration">
-					<label for="kubernetes-version">
-						Select a Kubernetes version to provision. Kubernetes provides guarantees backward
-						compatibility so choosing the newest is usually the right choice as that provides a rich
-						feature set and enhanced security. Certain applications &mdash; e.g. Kubeflow &mdash;
-						may require a specific version.
-					</label>
-					<select id="kubernetes-version" class="select" value={resource.spec.version}>
+					<Select
+						id="kubernetes-version"
+						label="Choose a Kubernetes version."
+						hint="Kubernetes provides guarantees backward
+                                                compatibility so choosing the newest is usually the right choice as that provides a rich
+                                                feature set and enhanced security. Certain applications &mdash; e.g. Kubeflow &mdash;
+						may require a specific version."
+						bind:value={resource.spec.version}
+					>
 						{#each versions || [] as version}
 							<option value={version}>{version}</option>
 						{/each}
-					</select>
+					</Select>
 				</ShellSection>
 			</Step>
 			<Step locked={!step3Valid}>
 				<svelte:fragment slot="header">Worker Setup</svelte:fragment>
 
-				<ShellSection title="Workload Pool Configuration">
-					<p>
-						Workload pools provide compute resouce for your cluster. You may have as many as
-						required for your workload. Each pool has a set of CPU, GPU and memory that can be
-						selected from a defined set of flavours. Workload pools support automatic scaling, thus
-						reducing overall operational cost when not in use.
-					</p>
+				<p>
+					Workload pools provide compute resouce for your cluster. You may have as many as required
+					for your workload. Each pool has a set of CPU, GPU and memory that can be selected from a
+					defined set of flavours. Workload pools support automatic scaling, thus reducing overall
+					operational cost when not in use.
+				</p>
 
-					{#each resource.spec.workloadPools as pool, i}
-						<article class="bg-surface-50-900-token rounded-lg p-8 flex flex-col gap-8">
-							<WorkloadPoolCreate {flavors} bind:pool bind:valid={poolValid[i]} />
+				{#each resource.spec.workloadPools as pool, i}
+					<ShellSection title="Workload Pool {i + 1}">
+						<button
+							class="text-2xl"
+							on:click={() => removePool(i)}
+							on:keypress={() => removePool(i)}
+							slot="tools"
+						>
+							<iconify-icon icon="mdi:trash-can-outline" />
+						</button>
 
-							<button
-								class="btn flex variant-filled-tertiary gap-2 items-center self-start"
-								on:click={() => removePool(i)}
-								on:keypress={() => removePool(i)}
-							>
-								<iconify-icon icon="mdi:minus" />
-								<span>Remove Pool</span>
-							</button>
-						</article>
-					{/each}
+						<WorkloadPoolCreate {flavors} bind:pool bind:valid={poolValid[i]} />
+					</ShellSection>
+				{/each}
 
-					<button
-						class="btn variant-filled-tertiary flex gap-2 items-center"
-						on:click={addPool}
-						on:keypress={addPool}
-					>
-						<iconify-icon icon="mdi:add" />
-						<span>Add New Pool</span>
-					</button>
-				</ShellSection>
+				<button
+					class="btn variant-filled-tertiary flex gap-2 items-center"
+					on:click={addPool}
+					on:keypress={addPool}
+				>
+					<iconify-icon icon="mdi:add" />
+					<span>Add New Pool</span>
+				</button>
 			</Step>
 			<Step>
 				<svelte:fragment slot="header">Confirmation</svelte:fragment>
