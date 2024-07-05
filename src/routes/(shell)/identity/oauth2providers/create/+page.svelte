@@ -4,6 +4,8 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
+	import TextInput from '$lib/forms/TextInput.svelte';
+	import * as Validation from '$lib/validation';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -60,9 +62,13 @@
 	$: names = (providers || []).map((x) => x.metadata.name);
 
 	let metadataValid = false;
+	let issuerValid: boolean = false;
+	let clientIdValid: boolean = false;
+	let clientSecretValid: boolean = false;
 
-	/* Cluster name must be valid, and it must be unique */
-	$: step1Valid = metadataValid && resource.spec.issuer && resource.spec.clientID;
+	let step1Valid: boolean = false;
+
+	$: step1Valid = metadataValid && issuerValid && clientIdValid && clientSecretValid;
 
 	function complete() {
 		const parameters = {
@@ -75,6 +81,10 @@
 			.then(() => window.location.assign('/identity/oauth2providers'))
 			.catch((e: Error) => Clients.error(e));
 	}
+
+	var callback: string = browser
+		? window.location.protocol + '://' + window.location.hostname + '/oauth2/callback'
+		: '';
 
 	import { browser } from '$app/environment';
 	import { clipboard } from '@skeletonlabs/skeleton';
@@ -92,56 +102,41 @@
 					>Oauth2 callback address. This is used to configure your OIDC application with before
 					continuing with the following fields.</label
 				>
-				<div id="callback" class="flex gap-4 items-center">
-					<div
+				<div class="input-group input-group-divider grid-cols-[1fr_auto]">
+					<input
+						class="input overflow-hidden text-ellipsis whitespace-nowrap"
 						data-clipboard="callback"
-						class="p-2 overflow-hidden textarea text-ellipsis whitespace-nowrap"
-					>
-						{browser
-							? window.location.protocol + '://' + window.location.hostname + '/oauth2/callback'
-							: ''}
-					</div>
-					<button
-						use:clipboard={{ element: 'callback' }}
-						class="btn variant-filled-tertiary flex items-center"
-					>
+						value={callback}
+						disabled
+					/>
+					<button class="variant-filled-primary" use:clipboard={{ input: 'callback' }}>
 						<iconify-icon icon="mdi:clipboard-outline" />
-						<span>Copy</span>
 					</button>
 				</div>
 
-				<label for="issuer"
-					>Issuer address. This is the base address used to derive the <em
-						>/.well-known/openid-configuration</em
-					> endpoint</label
-				>
-				<input
+				<TextInput
 					id="issuer"
-					class="input"
-					type="url"
+					label="Issuer address"
+					validators={[Validation.stringSet]}
 					placeholder="https://identity.domain.com"
-					required
 					bind:value={resource.spec.issuer}
+					bind:valid={issuerValid}
 				/>
-
-				<label for="client-id">Client Identifier</label>
-				<input
+				<TextInput
 					id="client-id"
-					class="input"
-					type="text"
+					label="Client ID"
+					validators={[Validation.stringSet]}
 					placeholder="73458e95-1d2c-481b-81e8-7225fd089060"
-					required
 					bind:value={resource.spec.clientID}
+					bind:valid={clientIdValid}
 				/>
-
-				<label for="client-secret">Client Secret</label>
-				<input
+				<TextInput
 					id="client-secret"
-					class="input"
-					type="text"
+					label="Client secret"
+					validators={[Validation.stringSet]}
 					placeholder="ooHovOvanogyisAvChuOvbyctoffOdloidKuAlsyemgosJias3twanechorjIdCo"
-					required
 					bind:value={resource.spec.clientSecret}
+					bind:valid={clientSecretValid}
 				/>
 			</ShellSection>
 		</Step>

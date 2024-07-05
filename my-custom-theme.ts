@@ -19,7 +19,7 @@ export const myCustomTheme: CustomThemeConfig = {
 		"--on-success": "0 0 0",
 		"--on-warning": "0 0 0",
 		"--on-error": "255 255 255",
-		"--on-surface": "255 255 255",
+		"--on-surface": "0 0 0",
 		// =~= Theme Colors  =~=
 		// primary | #308080 
 		"--color-primary-50": "224 236 236", // #e0ecec
@@ -65,13 +65,13 @@ export const myCustomTheme: CustomThemeConfig = {
 		"--color-success-700": "12 144 12", // #0c900c
 		"--color-success-800": "10 115 10", // #0a730a
 		"--color-success-900": "8 94 8", // #085e08
-		// warning | #f0B010 
+		// warning | #f0b010 
 		"--color-warning-50": "253 243 219", // #fdf3db
 		"--color-warning-100": "252 239 207", // #fcefcf
 		"--color-warning-200": "251 235 195", // #fbebc3
 		"--color-warning-300": "249 223 159", // #f9df9f
 		"--color-warning-400": "245 200 88", // #f5c858
-		"--color-warning-500": "240 176 16", // #f0B010
+		"--color-warning-500": "240 176 16", // #f0b010
 		"--color-warning-600": "216 158 14", // #d89e0e
 		"--color-warning-700": "180 132 12", // #b4840c
 		"--color-warning-800": "144 106 10", // #906a0a
@@ -87,17 +87,17 @@ export const myCustomTheme: CustomThemeConfig = {
 		"--color-error-700": "156 24 96", // #9c1860
 		"--color-error-800": "125 19 77", // #7d134d
 		"--color-error-900": "102 16 63", // #66103f
-		// surface | #404050 
-		"--color-surface-50": "226 226 229", // #e2e2e5
-		"--color-surface-100": "217 217 220", // #d9d9dc
-		"--color-surface-200": "207 207 211", // #cfcfd3
-		"--color-surface-300": "179 179 185", // #b3b3b9
-		"--color-surface-400": "121 121 133", // #797985
-		"--color-surface-500": "64 64 80", // #404050
-		"--color-surface-600": "58 58 72", // #3a3a48
-		"--color-surface-700": "48 48 60", // #30303c
-		"--color-surface-800": "38 38 48", // #262630
-		"--color-surface-900": "31 31 39", // #1f1f27
+		// surface | #808090 
+		"--color-surface-50": "236 236 238", // #ececee
+		"--color-surface-100": "230 230 233", // #e6e6e9
+		"--color-surface-200": "223 223 227", // #dfdfe3
+		"--color-surface-300": "204 204 211", // #ccccd3
+		"--color-surface-400": "166 166 177", // #a6a6b1
+		"--color-surface-500": "128 128 144", // #808090
+		"--color-surface-600": "115 115 130", // #737382
+		"--color-surface-700": "96 96 108", // #60606c
+		"--color-surface-800": "77 77 86", // #4d4d56
+		"--color-surface-900": "63 63 71", // #3f3f47
 		
 	}
 }

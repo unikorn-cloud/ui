@@ -4,6 +4,7 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
+	import MultiSelect from '$lib/forms/MultiSelect.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -99,15 +100,18 @@
 			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
 			<ShellSection title="Groups">
-				<label for="groups">
-					Choose one or more groups of users that can access this project and all resources that it
-					contains.
-				</label>
-				<select id="groups" class="select" multiple bind:value={resource.spec.groupIDs}>
-					{#each groups || [] as group}
-						<option value={group.metadata.id}>{group.metadata.name}</option>
-					{/each}
-				</select>
+				{#if groups && resource.spec.groupIDs}
+					<MultiSelect
+						id="group-ids"
+						label="Select group access."
+						hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
+						bind:value={resource.spec.groupIDs}
+					>
+						{#each groups || [] as group}
+							<option value={group.metadata.id}>{group.metadata.name}</option>
+						{/each}
+					</MultiSelect>
+				{/if}
 			</ShellSection>
 		</Step>
 		<Step>

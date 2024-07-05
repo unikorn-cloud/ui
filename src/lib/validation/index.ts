@@ -1,12 +1,19 @@
-export type NamedResource = {
-	name: string;
-};
+// A function that validates a string.
+type StringValidatorFunc = (s: string) => boolean;
 
-export type NamedResourceWithSpec = {
-	metadata: NamedResource;
-};
+// A list of string validators with descriptions.
+export type StringValidators = Array<StringValidatorFunc>;
 
-export type NamedResourceUnion = NamedResource | NamedResourceWithSpec;
+// Given a string and an array of validators, check the string against
+// each validator, if any fails, then return false and the description,
+// otheriwse true and null.
+export function validateString(s: string, validators: StringValidators): boolean {
+	return validators.every((v: StringValidatorFunc) => v(s));
+}
+
+export function stringSet(s: string): boolean {
+	return Boolean(s);
+}
 
 export function kubernetesNameValid(name: string | null | undefined): boolean {
 	if (!name) return false;
@@ -15,21 +22,11 @@ export function kubernetesNameValid(name: string | null | undefined): boolean {
 	return name.match(/^(?!-)[a-z0-9-]{0,62}[a-z0-9]$/) != null;
 }
 
-export function namedResourceNames(
-	resources: Array<NamedResourceUnion> | null | undefined
-): Array<string> {
-	if (!resources) return [];
-
-	return resources.map((x) => {
-		if ('metadata' in x) {
-			return (x as NamedResourceWithSpec).metadata.name;
-		}
-
-		return x.name;
-	});
-}
-
 export function unique(needle: string, haystack: Array<string> | undefined): boolean {
 	if (!haystack) return true;
 	return !haystack.includes(needle);
+}
+
+export function GetKubernetesNameValidators(names: Array<string>): StringValidators {
+	return [stringSet, kubernetesNameValid, (name: string) => unique(name, names)];
 }

@@ -6,6 +6,8 @@
 	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
+	import MultiSelect from '$lib/forms/MultiSelect.svelte';
+	import InputChips from '$lib/forms/InputChips.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -59,7 +61,6 @@
 			.apiV1OrganizationsOrganizationIDAvailableGroupsGet(parameters)
 			.then((v: Array<Identity.AvailableGroup>) => {
 				if (v.length == 0) return;
-
 				availableGroups = v;
 			})
 			.catch((e: Error) => Clients.error(e));
@@ -76,6 +77,7 @@
 
 		// Add a provider groups array so the multiselet bind doesn't barf.
 		if (!temp.spec.providerGroups) temp.spec.providerGroups = [];
+		if (!temp.spec.users) temp.spec.users = [];
 
 		group = temp;
 	}
@@ -106,8 +108,6 @@
 			.then(() => window.location.assign('/identity/groups'))
 			.catch((e: Error) => Clients.error(e));
 	}
-
-	import { InputChip } from '@skeletonlabs/skeleton';
 </script>
 
 <ShellPage {settings}>
@@ -116,32 +116,44 @@
 		<ShellMetadataSection metadata={group.metadata} {names} bind:valid={metadataValid} />
 
 		<ShellSection title="Roles">
-			<label class="label">
-				<span>Roles for users in the group.</span>
-				<select class="select" multiple bind:value={group.spec.roleIDs}>
+			{#if availableRoles}
+				<MultiSelect
+					id="role-ids"
+					label="Select roles for group members."
+					hint="You must select at least one role."
+					bind:value={group.spec.roleIDs}
+				>
 					{#each availableRoles || [] as role}
 						<option value={role.metadata.id}>{role.metadata.name}</option>
 					{/each}
-				</select>
-			</label>
+				</MultiSelect>
+			{/if}
 		</ShellSection>
 
-		{#if availableGroups}
+		{#if availableGroups && group.spec.providerGroups}
 			<ShellSection title="Identity Provider Groups">
-				<label for="groups">
-					Select any groups from your identity provider that will implicitly include users.
-				</label>
-				<select id="groups" class="select" multiple bind:value={group.spec.providerGroups}>
+				<MultiSelect
+					id="provider-groups"
+					label="Include users with identity provider groups."
+					hint="To add and remove members edit the group with your identity provider."
+					bind:value={group.spec.providerGroups}
+				>
 					{#each availableGroups || [] as group}
 						<option value={group.name}>{group.displayName || group.name}</option>
 					{/each}
-				</select>
+				</MultiSelect>
 			</ShellSection>
 		{/if}
 
 		<ShellSection title="Explicit Users">
-			<label class="label" for="users"> Users that are part of the group. </label>
-			<InputChip name="users" bind:value={group.spec.users} />
+			{#if group.spec.users}
+				<InputChips
+					name="users"
+					label="Include users by email address."
+					hint="This must be the user's primary email address, not an alias."
+					bind:value={group.spec.users}
+				/>
+			{/if}
 		</ShellSection>
 
 		<button
