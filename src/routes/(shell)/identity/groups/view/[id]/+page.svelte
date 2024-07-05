@@ -130,8 +130,8 @@
 			{/if}
 		</ShellSection>
 
-		{#if availableGroups && group.spec.providerGroups}
-			<ShellSection title="Identity Provider Groups">
+		<ShellSection title="Users">
+			{#if availableGroups && group.spec.providerGroups}
 				<MultiSelect
 					id="provider-groups"
 					label="Include users with identity provider groups."
@@ -142,10 +142,8 @@
 						<option value={group.name}>{group.displayName || group.name}</option>
 					{/each}
 				</MultiSelect>
-			</ShellSection>
-		{/if}
+			{/if}
 
-		<ShellSection title="Explicit Users">
 			{#if group.spec.users}
 				<InputChips
 					name="users"

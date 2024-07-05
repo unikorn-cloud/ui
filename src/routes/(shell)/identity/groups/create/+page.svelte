@@ -104,21 +104,23 @@
 
 			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
-			{#if availableRoles}
-				<MultiSelect
-					id="role-ids"
-					label="Select roles for group members."
-					hint="You must select at least one role."
-					bind:value={resource.spec.roleIDs}
-				>
-					{#each availableRoles || [] as role}
-						<option value={role.metadata.id}>{role.metadata.name}</option>
-					{/each}
-				</MultiSelect>
-			{/if}
+			<ShellSection title="Roles">
+				{#if availableRoles}
+					<MultiSelect
+						id="role-ids"
+						label="Select roles for group members."
+						hint="You must select at least one role."
+						bind:value={resource.spec.roleIDs}
+					>
+						{#each availableRoles || [] as role}
+							<option value={role.metadata.id}>{role.metadata.name}</option>
+						{/each}
+					</MultiSelect>
+				{/if}
+			</ShellSection>
 
-			{#if availableGroups && resource.spec.providerGroups}
-				<ShellSection title="Identity Provider Groups">
+			<ShellSection title="Users">
+				{#if availableGroups && resource.spec.providerGroups}
 					<MultiSelect
 						id="provider-groups"
 						label="Include users with identity provider groups."
@@ -129,10 +131,8 @@
 							<option value={group.name}>{group.displayName || group.name}</option>
 						{/each}
 					</MultiSelect>
-				</ShellSection>
-			{/if}
+				{/if}
 
-			<ShellSection title="Explicit Users">
 				{#if resource.spec.users}
 					<InputChips
 						name="users"
