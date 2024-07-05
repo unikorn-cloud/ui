@@ -37,6 +37,10 @@ import {
     ModelErrorToJSON,
 } from '../models/index';
 
+export interface ApiV1OrganizationsOrganizationIDApplicationsGetRequest {
+    organizationID: string;
+}
+
 export interface ApiV1OrganizationsOrganizationIDClustermanagersGetRequest {
     organizationID: string;
 }
@@ -97,7 +101,11 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists applications available to be installed on clusters.
      */
-    async apiV1ApplicationsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ApplicationRead>>> {
+    async apiV1OrganizationsOrganizationIDApplicationsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDApplicationsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ApplicationRead>>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDApplicationsGet.');
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -108,7 +116,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/applications`,
+            path: `/api/v1/organizations/{organizationID}/applications`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -120,8 +128,8 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists applications available to be installed on clusters.
      */
-    async apiV1ApplicationsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ApplicationRead>> {
-        const response = await this.apiV1ApplicationsGetRaw(initOverrides);
+    async apiV1OrganizationsOrganizationIDApplicationsGet(requestParameters: ApiV1OrganizationsOrganizationIDApplicationsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ApplicationRead>> {
+        const response = await this.apiV1OrganizationsOrganizationIDApplicationsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
