@@ -56,7 +56,7 @@
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
-			body: `Removing project "${resource.metadata.name}" will also remove all resources owned by it.`,
+			body: `Removing group "${resource.metadata.name}" disassociate any projects referencing it.`,
 			response: (ok: boolean) => {
 				if (!ok) return;
 
