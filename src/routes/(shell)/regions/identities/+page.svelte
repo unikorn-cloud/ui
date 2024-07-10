@@ -4,11 +4,12 @@
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 	import ShellListTray from '$lib/layouts/ShellListTray.svelte';
+	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 
 	const settings: ShellPageSettings = {
-		feature: 'Infrastructure',
-		name: 'Cluster Managers',
-		description: 'Manage your cluster life-cycle managers.'
+		feature: 'Regions',
+		name: 'Identities',
+		description: 'Manage your cloud identities'
 	};
 
 	import { onDestroy } from 'svelte';
@@ -26,14 +27,13 @@
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
-	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as Identity from '$lib/openapi/identity';
+	import * as Region from '$lib/openapi/region';
 
 	let at: InternalToken;
 
-	let resources: Array<Kubernetes.ClusterManagerRead>;
-
 	let projects: Array<Identity.ProjectRead>;
+	let identities: Array<Region.IdentityRead>;
 
 	let organizationID: string;
 
@@ -57,9 +57,9 @@
 			organizationID: organizationID
 		};
 
-		Clients.kubernetes(toastStore, at)
-			.apiV1OrganizationsOrganizationIDClustermanagersGet(parameters)
-			.then((v: Array<Kubernetes.ClusterManagerRead>) => (resources = v))
+		Clients.region(toastStore, at)
+			.apiV1OrganizationsOrganizationIDIdentitiesGet(parameters)
+			.then((v: Array<Region.IdentityRead>) => (identities = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
@@ -68,14 +68,15 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function remove(resource: Kubernetes.ClusterManagerRead): void {
+	function remove(resource: Region.IdentityRead): void {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
-			body: `Removing cluster manager "${resource.metadata.name}" will remove all resources owned by it.`,
+			body: `Removing identity "${resource.metadata.name}" will remove all cloud infrastructure provisioned by it`,
 			response: (ok: boolean) => {
 				if (!ok) return;
 
+				/*
 				const parameters = {
 					organizationID: organizationID,
 					projectID: resource.metadata.projectId,
@@ -87,6 +88,7 @@
 						parameters
 					)
 					.catch((e: Error) => Clients.error(e));
+			*/
 			}
 		};
 
@@ -96,13 +98,27 @@
 
 <ShellPage {settings}>
 	<ShellList>
-		{#each resources || [] as resource}
-			<ShellListItem metadata={resource.metadata} {projects} href="#">
+		{#each identities || [] as identity}
+			<ShellListItem metadata={identity.metadata} {projects} href="#">
 				<ShellListTray>
-					<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
+					<button on:click={() => remove(identity)} on:keypress={() => remove(identity)}>
 						<iconify-icon icon="mdi:trash-can-outline" />
 					</button>
 				</ShellListTray>
+
+				<svelte:fragment slot="metadata">
+					<ShellMetadataItem icon="mdi:web">
+						{identity.metadata.regionId}
+					</ShellMetadataItem>
+
+					{#if identity.spec.tags}
+						<ShellMetadataItem icon="mdi:tag-outline">
+							{#each identity.spec.tags as tag}
+								<div class="badge variant-soft">{tag.name}: {tag.value}</div>
+							{/each}
+						</ShellMetadataItem>
+					{/if}
+				</svelte:fragment>
 			</ShellListItem>
 		{/each}
 	</ShellList>

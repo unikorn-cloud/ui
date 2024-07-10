@@ -3,6 +3,7 @@
 	import * as Identity from '$lib/openapi/identity';
 	import * as Formatters from '$lib/formatters';
 	import StatusIcon from '$lib/StatusIcon.svelte';
+	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 
 	export let metadata: Kubernetes.ResourceReadMetadata;
 	export let projects: Array<Identity.ProjectRead> = [];
@@ -50,17 +51,17 @@
 		</div>
 
 		<div class="flex flex-col gap-2 text-sm">
-			<div class="flex gap-2 items-center text-sm">
-				<iconify-icon icon="mdi:clock-time-five-outline"></iconify-icon>
+			<ShellMetadataItem icon="mdi:clock-time-five-outline">
 				{Formatters.ageFormatter(metadata.creationTime)}
-			</div>
+			</ShellMetadataItem>
 
 			{#if metadata.createdBy}
-				<div class="flex gap-2 items-center">
-					<iconify-icon icon="mdi:user-outline"></iconify-icon>
+				<ShellMetadataItem icon="mdi:user-outline">
 					{metadata.createdBy}
-				</div>
+				</ShellMetadataItem>
 			{/if}
+
+			<slot name="metadata" />
 		</div>
 	</div>
 

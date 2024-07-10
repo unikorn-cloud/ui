@@ -24,13 +24,13 @@ export interface IdentitySpecOpenStack {
      * @type {string}
      * @memberof IdentitySpecOpenStack
      */
-    cloud: string;
+    cloud?: string;
     /**
      * A base64 encoded cloud config file.
      * @type {string}
      * @memberof IdentitySpecOpenStack
      */
-    cloudConfig: string;
+    cloudConfig?: string;
     /**
      * User identitifer allocated for the infrastructure.
      * @type {string}
@@ -50,8 +50,6 @@ export interface IdentitySpecOpenStack {
  */
 export function instanceOfIdentitySpecOpenStack(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "cloud" in value;
-    isInstance = isInstance && "cloudConfig" in value;
     isInstance = isInstance && "userId" in value;
     isInstance = isInstance && "projectId" in value;
 
@@ -68,8 +66,8 @@ export function IdentitySpecOpenStackFromJSONTyped(json: any, ignoreDiscriminato
     }
     return {
         
-        'cloud': json['cloud'],
-        'cloudConfig': json['cloudConfig'],
+        'cloud': !exists(json, 'cloud') ? undefined : json['cloud'],
+        'cloudConfig': !exists(json, 'cloudConfig') ? undefined : json['cloudConfig'],
         'userId': json['userId'],
         'projectId': json['projectId'],
     };

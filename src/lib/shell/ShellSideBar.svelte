@@ -33,6 +33,12 @@
 					{ label: 'Cluster Managers', href: '/infrastructure/clustermanagers' }
 				]
 			}
+		],
+		'/regions': [
+			{
+				title: 'Regions',
+				items: [{ label: 'Identities', href: '/regions/identities' }]
+			}
 		]
 	};
 
@@ -80,6 +86,12 @@
 				<iconify-icon icon="mdi:cloud-outline" class="text-2xl" />
 			</svelte:fragment>
 			<span>Infra</span>
+		</AppRailTile>
+		<AppRailTile bind:group={railCategory} name="regions" value={'/regions'}>
+			<svelte:fragment slot="lead">
+				<iconify-icon icon="mdi:web" class="text-2xl" />
+			</svelte:fragment>
+			<span>Regions</span>
 		</AppRailTile>
 		<!-- Make this configurable -->
 		<AppRailAnchor href="https://github.com/unikorn-cloud">
