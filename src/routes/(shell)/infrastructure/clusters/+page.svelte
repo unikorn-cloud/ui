@@ -5,6 +5,7 @@
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 	import ShellListTray from '$lib/layouts/ShellListTray.svelte';
+	import Badge from '$lib/layouts/Badge.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -24,6 +25,8 @@
 	import * as Clients from '$lib/clients';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as Identity from '$lib/openapi/identity';
+	import * as Region from '$lib/openapi/region';
+	import * as RegionUtil from '$lib/regionutil';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 
@@ -35,8 +38,8 @@
 	let at: InternalToken;
 
 	let resources: Array<Kubernetes.KubernetesClusterRead>;
-
 	let projects: Array<Identity.ProjectRead>;
+	let regions: Array<Region.RegionRead>;
 
 	let organizationID: string;
 
@@ -63,6 +66,11 @@
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
 			.then((v: Array<Kubernetes.KubernetesClusterRead>) => (resources = v))
+			.catch((e: Error) => Clients.error(e));
+
+		Clients.region(toastStore, at)
+			.apiV1OrganizationsOrganizationIDRegionsGet(parameters)
+			.then((v: Array<Region.RegionRead>) => (regions = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
@@ -143,6 +151,12 @@
 				{projects}
 				href="/infrastructure/clusters/view/{resource.metadata.id}"
 			>
+				<svelte:fragment slot="badges">
+					<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+						{RegionUtil.name(regions, resource.spec.regionId)}
+					</Badge>
+				</svelte:fragment>
+
 				<ShellListTray>
 					<button
 						on:click={() => getKubeconfig(resource)}

@@ -21,4 +21,4 @@
 	$: icon = getIcon(metadata);
 </script>
 
-<iconify-icon class="text-2xl {color}" {icon} />
+<iconify-icon class="text-lg {color}" {icon} />

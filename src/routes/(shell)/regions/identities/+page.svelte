@@ -5,6 +5,7 @@
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 	import ShellListTray from '$lib/layouts/ShellListTray.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
+	import Badge from '$lib/layouts/Badge.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Regions',
@@ -29,10 +30,12 @@
 	import { token } from '$lib/credentials';
 	import * as Identity from '$lib/openapi/identity';
 	import * as Region from '$lib/openapi/region';
+	import * as RegionUtil from '$lib/regionutil';
 
 	let at: InternalToken;
 
 	let projects: Array<Identity.ProjectRead>;
+	let regions: Array<Region.RegionRead>;
 	let identities: Array<Region.IdentityRead>;
 
 	let organizationID: string;
@@ -60,6 +63,11 @@
 		Clients.region(toastStore, at)
 			.apiV1OrganizationsOrganizationIDIdentitiesGet(parameters)
 			.then((v: Array<Region.IdentityRead>) => (identities = v))
+			.catch((e: Error) => Clients.error(e));
+
+		Clients.region(toastStore, at)
+			.apiV1OrganizationsOrganizationIDRegionsGet(parameters)
+			.then((v: Array<Region.RegionRead>) => (regions = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
@@ -100,6 +108,12 @@
 	<ShellList>
 		{#each identities || [] as identity}
 			<ShellListItem metadata={identity.metadata} {projects} href="#">
+				<svelte:fragment slot="badges">
+					<Badge icon={RegionUtil.icon(regions, identity.spec.regionId)}>
+						{RegionUtil.name(regions, identity.spec.regionId)}
+					</Badge>
+				</svelte:fragment>
+
 				<ShellListTray>
 					<button on:click={() => remove(identity)} on:keypress={() => remove(identity)}>
 						<iconify-icon icon="mdi:trash-can-outline" />
@@ -107,10 +121,6 @@
 				</ShellListTray>
 
 				<svelte:fragment slot="metadata">
-					<ShellMetadataItem icon="mdi:web">
-						{identity.metadata.regionId}
-					</ShellMetadataItem>
-
 					{#if identity.spec.tags}
 						<ShellMetadataItem icon="mdi:tag-outline">
 							{#each identity.spec.tags as tag}

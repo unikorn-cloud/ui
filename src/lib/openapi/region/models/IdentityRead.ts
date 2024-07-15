@@ -19,12 +19,12 @@ import {
     IdentitySpecFromJSONTyped,
     IdentitySpecToJSON,
 } from './IdentitySpec';
-import type { RegionScopedResourceMetadata } from './RegionScopedResourceMetadata';
+import type { ProjectScopedResourceReadMetadata } from './ProjectScopedResourceReadMetadata';
 import {
-    RegionScopedResourceMetadataFromJSON,
-    RegionScopedResourceMetadataFromJSONTyped,
-    RegionScopedResourceMetadataToJSON,
-} from './RegionScopedResourceMetadata';
+    ProjectScopedResourceReadMetadataFromJSON,
+    ProjectScopedResourceReadMetadataFromJSONTyped,
+    ProjectScopedResourceReadMetadataToJSON,
+} from './ProjectScopedResourceReadMetadata';
 
 /**
  * A provider specific identity.
@@ -34,10 +34,10 @@ import {
 export interface IdentityRead {
     /**
      * 
-     * @type {RegionScopedResourceMetadata}
+     * @type {ProjectScopedResourceReadMetadata}
      * @memberof IdentityRead
      */
-    metadata: RegionScopedResourceMetadata;
+    metadata: ProjectScopedResourceReadMetadata;
     /**
      * 
      * @type {IdentitySpec}
@@ -67,7 +67,7 @@ export function IdentityReadFromJSONTyped(json: any, ignoreDiscriminator: boolea
     }
     return {
         
-        'metadata': RegionScopedResourceMetadataFromJSON(json['metadata']),
+        'metadata': ProjectScopedResourceReadMetadataFromJSON(json['metadata']),
         'spec': IdentitySpecFromJSON(json['spec']),
     };
 }
@@ -81,7 +81,7 @@ export function IdentityReadToJSON(value?: IdentityRead | null): any {
     }
     return {
         
-        'metadata': RegionScopedResourceMetadataToJSON(value.metadata),
+        'metadata': ProjectScopedResourceReadMetadataToJSON(value.metadata),
         'spec': IdentitySpecToJSON(value.spec),
     };
 }

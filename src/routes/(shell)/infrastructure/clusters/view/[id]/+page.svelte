@@ -4,8 +4,10 @@
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
+	import Badge from '$lib/layouts/Badge.svelte';
 	import Select from '$lib/forms/Select.svelte';
 
 	const settings: ShellPageSettings = {
@@ -27,6 +29,7 @@
 	import { token } from '$lib/credentials';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as Region from '$lib/openapi/region';
+	import * as RegionUtil from '$lib/regionutil';
 
 	let at: InternalToken;
 	let organizationID: string;
@@ -35,6 +38,7 @@
 	let allClusters: Array<Kubernetes.KubernetesClusterRead>;
 	let clusters: Array<Kubernetes.KubernetesClusterRead>;
 	let resource: Kubernetes.KubernetesClusterRead;
+	let regions: Array<Region.RegionRead>;
 	let images: Array<Region.Image>;
 	let flavors: Array<Region.Flavor>;
 	let versions: Array<string>;
@@ -62,6 +66,11 @@
 			.then((v: Array<Kubernetes.KubernetesClusterRead>) => {
 				allClusters = v;
 			})
+			.catch((e: Error) => Clients.error(e));
+
+		Clients.region(toastStore, at)
+			.apiV1OrganizationsOrganizationIDRegionsGet(parameters)
+			.then((v: Array<Region.RegionRead>) => (regions = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -105,48 +114,36 @@
 	$: step2Valid = metadataValid;
 
 	/* Once the region has been selected we can poll the images and other resources */
-	function updateImages(
-		at: InternalToken,
-		organizationID: string,
-		projectID: string,
-		regionID: string
-	): void {
-		if (!at || !organizationID || !projectID || !regionID) return;
+	function updateImages(at: InternalToken, organizationID: string, regionID: string): void {
+		if (!at || !organizationID || !regionID) return;
 
 		const parameters = {
 			organizationID: organizationID,
-			projectID: projectID,
 			regionID: regionID
 		};
 
 		Clients.region(toastStore, at)
-			.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGet(parameters)
+			.apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet(parameters)
 			.then((v: Array<Region.Image>) => (images = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function updateFlavors(
-		at: InternalToken,
-		organizationID: string,
-		projectID: string,
-		regionID: string
-	): void {
-		if (!at || !organizationID || !projectID || !regionID) return;
+	function updateFlavors(at: InternalToken, organizationID: string, regionID: string): void {
+		if (!at || !organizationID || !regionID) return;
 
 		const parameters = {
 			organizationID: organizationID,
-			projectID: projectID,
 			regionID: regionID
 		};
 
 		Clients.region(toastStore, at)
-			.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGet(parameters)
+			.apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet(parameters)
 			.then((v: Array<Region.Flavor>) => (flavors = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateImages(at, organizationID, projectID, regionID);
-	$: updateFlavors(at, organizationID, projectID, regionID);
+	$: updateImages(at, organizationID, regionID);
+	$: updateFlavors(at, organizationID, regionID);
 
 	/* From the images, we can get a list of Kubernetes versions */
 	function updateVersions(at: InternalToken, images: Array<Region.Image>): void {
@@ -224,6 +221,14 @@
 
 <ShellPage {settings}>
 	{#if resource}
+		<ShellViewHeader metadata={resource.metadata}>
+			<svelte:fragment slot="badges">
+				<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+					{RegionUtil.name(regions, resource.spec.regionId)}
+				</Badge>
+			</svelte:fragment>
+		</ShellViewHeader>
+
 		<Stepper on:complete={complete}>
 			<Step locked={!step2Valid}>
 				<svelte:fragment slot="header">Basic Cluster Setup</svelte:fragment>
