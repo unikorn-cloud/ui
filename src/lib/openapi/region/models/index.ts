@@ -20,7 +20,6 @@ export * from './PhysicalNetworkSpec';
 export * from './PhysicalNetworkWrite';
 export * from './ProjectScopedResourceReadMetadata';
 export * from './RegionRead';
-export * from './RegionScopedResourceMetadata';
 export * from './RegionSpec';
 export * from './RegionType';
 export * from './ResourceMetadata';

@@ -53,6 +53,12 @@ export interface IdentitySpec {
      */
     type: RegionType;
     /**
+     * The region an identity is provisioned in.
+     * @type {string}
+     * @memberof IdentitySpec
+     */
+    regionId: string;
+    /**
      * 
      * @type {IdentitySpecOpenStack}
      * @memberof IdentitySpec
@@ -66,6 +72,7 @@ export interface IdentitySpec {
 export function instanceOfIdentitySpec(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "type" in value;
+    isInstance = isInstance && "regionId" in value;
 
     return isInstance;
 }
@@ -82,6 +89,7 @@ export function IdentitySpecFromJSONTyped(json: any, ignoreDiscriminator: boolea
         
         'tags': !exists(json, 'tags') ? undefined : ((json['tags'] as Array<any>).map(TagFromJSON)),
         'type': RegionTypeFromJSON(json['type']),
+        'regionId': json['regionId'],
         'openstack': !exists(json, 'openstack') ? undefined : IdentitySpecOpenStackFromJSON(json['openstack']),
     };
 }
@@ -97,6 +105,7 @@ export function IdentitySpecToJSON(value?: IdentitySpec | null): any {
         
         'tags': value.tags === undefined ? undefined : ((value.tags as Array<any>).map(TagToJSON)),
         'type': RegionTypeToJSON(value.type),
+        'regionId': value.regionId,
         'openstack': IdentitySpecOpenStackToJSON(value.openstack),
     };
 }

@@ -32,6 +32,12 @@ export interface IdentityWriteSpec {
      * @memberof IdentityWriteSpec
      */
     tags?: Array<Tag>;
+    /**
+     * The region an identity is provisioned in.
+     * @type {string}
+     * @memberof IdentityWriteSpec
+     */
+    regionId: string;
 }
 
 /**
@@ -39,6 +45,7 @@ export interface IdentityWriteSpec {
  */
 export function instanceOfIdentityWriteSpec(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "regionId" in value;
 
     return isInstance;
 }
@@ -54,6 +61,7 @@ export function IdentityWriteSpecFromJSONTyped(json: any, ignoreDiscriminator: b
     return {
         
         'tags': !exists(json, 'tags') ? undefined : ((json['tags'] as Array<any>).map(TagFromJSON)),
+        'regionId': json['regionId'],
     };
 }
 
@@ -67,6 +75,7 @@ export function IdentityWriteSpecToJSON(value?: IdentityWriteSpec | null): any {
     return {
         
         'tags': value.tags === undefined ? undefined : ((value.tags as Array<any>).map(TagToJSON)),
+        'regionId': value.regionId,
     };
 }
 

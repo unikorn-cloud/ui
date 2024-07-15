@@ -4,6 +4,7 @@
 	import * as Formatters from '$lib/formatters';
 	import StatusIcon from '$lib/StatusIcon.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
+	import Badge from '$lib/layouts/Badge.svelte';
 
 	export let metadata: Kubernetes.ResourceReadMetadata;
 	export let projects: Array<Identity.ProjectRead> = [];
@@ -32,11 +33,13 @@
 	class="flex flex-col lg:flex-row gap-4 items-top justify-between variant-glass border border-surface-300-600-token rounded-lg p-4"
 >
 	<div class="flex flex-col gap-4">
-		<div class="flex gap-4 items-center">
-			<StatusIcon {metadata} />
-			<div class="badge variant-soft">
+		<div class="flex gap-2 items-center">
+			<Badge>
+				<StatusIcon {metadata} />
 				{metadata.provisioningStatus}
-			</div>
+			</Badge>
+
+			<slot name="badges" />
 		</div>
 
 		<div class="flex gap-4 items-center">

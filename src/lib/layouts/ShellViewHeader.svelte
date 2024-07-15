@@ -2,16 +2,19 @@
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as Formatters from '$lib/formatters';
 	import StatusIcon from '$lib/StatusIcon.svelte';
+	import Badge from '$lib/layouts/Badge.svelte';
 
 	export let metadata: Kubernetes.ResourceReadMetadata;
 </script>
 
 <div class="flex flex-col gap-4">
-	<div class="flex gap-4 items-center">
-		<StatusIcon {metadata} />
-		<div class="badge variant-soft">
+	<div class="flex gap-2 items-center">
+		<Badge>
+			<StatusIcon {metadata} />
 			{metadata.provisioningStatus}
-		</div>
+		</Badge>
+
+		<slot name="badges" />
 	</div>
 
 	<h2 class="h2">{metadata.name}</h2>

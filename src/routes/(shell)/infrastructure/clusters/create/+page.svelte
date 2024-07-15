@@ -96,18 +96,17 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function updateRegions(at: InternalToken, organizationID: string, projectID: string) {
-		if (!at || !organizationID || !projectID) return;
+	function updateRegions(at: InternalToken, organizationID: string) {
+		if (!at || !organizationID) return;
 
 		const parameters = {
-			organizationID: organizationID,
-			projectID: projectID
+			organizationID: organizationID
 		};
 
 		/* Get top-level resources required for the first step */
 		/* TODO: parallelize with Promise.all */
 		Clients.region(toastStore, at)
-			.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsGet(parameters)
+			.apiV1OrganizationsOrganizationIDRegionsGet(parameters)
 			.then((v: Array<Region.RegionRead>) => {
 				if (v.length == 0) return;
 
@@ -117,7 +116,7 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateRegions(at, organizationID, projectID);
+	$: updateRegions(at, organizationID);
 
 	function updateClusterManagers(at: InternalToken, projectID: string) {
 		if (!at || !projectID) return;
@@ -173,48 +172,36 @@
 	$: step2Valid = metadataValid;
 
 	/* Once the region has been selected we can poll the images and other resources */
-	function updateImages(
-		at: InternalToken,
-		organizationID: string,
-		projectID: string,
-		regionID: string
-	): void {
-		if (!at || !organizationID || !projectID || !regionID) return;
+	function updateImages(at: InternalToken, organizationID: string, regionID: string): void {
+		if (!at || !organizationID || !regionID) return;
 
 		const parameters = {
 			organizationID: organizationID,
-			projectID: projectID,
 			regionID: regionID
 		};
 
 		Clients.region(toastStore, at)
-			.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDImagesGet(parameters)
+			.apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet(parameters)
 			.then((v: Array<Region.Image>) => (images = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function updateFlavors(
-		at: InternalToken,
-		organizationID: string,
-		projectID: string,
-		regionID: string
-	): void {
-		if (!at || !organizationID || !projectID || !regionID) return;
+	function updateFlavors(at: InternalToken, organizationID: string, regionID: string): void {
+		if (!at || !organizationID || !regionID) return;
 
 		const parameters = {
 			organizationID: organizationID,
-			projectID: projectID,
 			regionID: regionID
 		};
 
 		Clients.region(toastStore, at)
-			.apiV1OrganizationsOrganizationIDProjectsProjectIDRegionsRegionIDFlavorsGet(parameters)
+			.apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet(parameters)
 			.then((v: Array<Region.Flavor>) => (flavors = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateImages(at, organizationID, projectID, regionID);
-	$: updateFlavors(at, organizationID, projectID, regionID);
+	$: updateImages(at, organizationID, regionID);
+	$: updateFlavors(at, organizationID, regionID);
 
 	$: resource.spec.regionId = regionID;
 
