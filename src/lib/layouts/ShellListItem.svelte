@@ -2,7 +2,7 @@
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as Identity from '$lib/openapi/identity';
 	import * as Formatters from '$lib/formatters';
-	import StatusIcon from '$lib/StatusIcon.svelte';
+	import * as Status from '$lib/status';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
 
@@ -34,8 +34,7 @@
 >
 	<div class="flex flex-col gap-4">
 		<div class="flex gap-2 items-center">
-			<Badge>
-				<StatusIcon {metadata} />
+			<Badge icon={Status.icon(metadata)} iconcolor={Status.color(metadata)}>
 				{metadata.provisioningStatus}
 			</Badge>
 
