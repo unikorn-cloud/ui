@@ -6,7 +6,7 @@ import type { InternalToken } from '$lib/oauth2';
 import * as KubernetesApi from '$lib/openapi/kubernetes';
 import * as IdentityApi from '$lib/openapi/identity';
 import * as RegionApi from '$lib/openapi/region';
-import { removeCredentials } from '$lib/credentials';
+import { token, removeCredentials } from '$lib/credentials';
 import type { ToastSettings } from '@skeletonlabs/skeleton';
 
 import { ROOT_CONTEXT, defaultTextMapSetter, trace } from '@opentelemetry/api';
@@ -72,13 +72,16 @@ function traceContextMiddleware(toastStore: any): IdentityApi.Middleware {
 // accessToken is a callback to get the Authorization header.  Crucially this
 // also has a reference to the full token, so san see when the access token
 // has expired and refresh it using the refresh token.
-async function accessToken(token: InternalToken): Promise<string> {
-	if (new Date(Date.now()).toJSON() > token.expiry) {
+async function accessToken(tokens: InternalToken): Promise<string> {
+	// TODO: we could get multiple API calls concurrently, at which point
+	// we are repeating the operation, be nice if we could handle this
+	// somehow.
+	if (new Date(Date.now()).toJSON() > tokens.expiry) {
 		const discovery = await OIDC.discovery();
 
 		const form = new URLSearchParams({
 			grant_type: 'refresh_token',
-			refresh_token: token.refresh_token
+			refresh_token: tokens.refresh_token
 		});
 
 		const options = {
@@ -94,52 +97,55 @@ async function accessToken(token: InternalToken): Promise<string> {
 		const result = await response.json();
 
 		if (!response.ok) {
-			console.log('ruh roh', result);
+			// This will utimately turn into a 401 that will remove the creds
+			// and start a login.
+			return '';
 		}
 
 		const new_token = result as InternalToken;
 
-		// Do an in-place update of the token so as not to trigger
-		// a refresh of all the things.
-		Object.assign(token, new_token);
-
 		// Set the expiry time so we know when to perform a rotation.
 		// Add a little wiggle room in there to account for any latency.
 		const expiry = new Date(Date.now());
-		expiry.setSeconds(expiry.getSeconds() + token.expires_in - 60);
-		token.expiry = expiry.toJSON();
+		expiry.setSeconds(expiry.getSeconds() + new_token.expires_in - 60);
+		new_token.expiry = expiry.toJSON();
+
+		// Update the session storage.
+		token.set(new_token);
+
+		Object.assign(tokens, new_token);
 	}
 
-	return token.token_type + ' ' + token.access_token;
+	return tokens.token_type + ' ' + tokens.access_token;
 }
 
 // client gets a new initialized client with auth and any additional middlewares.
 // NOTE: the toast store must be initialized in a svelte compenent or the context
 // lookup for the store will fail, hence we have to pass it in.
-export function kubernetes(toastStore: any, token: InternalToken): KubernetesApi.DefaultApi {
+export function kubernetes(toastStore: any, tokens: InternalToken): KubernetesApi.DefaultApi {
 	const config = new KubernetesApi.Configuration({
 		basePath: env.PUBLIC_KUBERNETES_HOST,
-		accessToken: async () => accessToken(token),
+		accessToken: async () => accessToken(tokens),
 		middleware: [authenticationMiddleware(), traceContextMiddleware(toastStore)]
 	});
 
 	return new KubernetesApi.DefaultApi(config);
 }
 
-export function identity(toastStore: any, token: InternalToken): IdentityApi.DefaultApi {
+export function identity(toastStore: any, tokens: InternalToken): IdentityApi.DefaultApi {
 	const config = new IdentityApi.Configuration({
 		basePath: env.PUBLIC_OAUTH2_ISSUER,
-		accessToken: async () => accessToken(token),
+		accessToken: async () => accessToken(tokens),
 		middleware: [authenticationMiddleware(), traceContextMiddleware(toastStore)]
 	});
 
 	return new IdentityApi.DefaultApi(config);
 }
 
-export function region(toastStore: any, token: InternalToken): RegionApi.DefaultApi {
+export function region(toastStore: any, tokens: InternalToken): RegionApi.DefaultApi {
 	const config = new RegionApi.Configuration({
 		basePath: env.PUBLIC_REGION_HOST,
-		accessToken: async () => accessToken(token),
+		accessToken: async () => accessToken(tokens),
 		middleware: [authenticationMiddleware(), traceContextMiddleware(toastStore)]
 	});
 
