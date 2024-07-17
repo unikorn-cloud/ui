@@ -297,7 +297,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Creates a new cluster manager within the project.
      */
-    async apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ClusterManagerRead>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersPost.');
         }
@@ -329,14 +329,15 @@ export class DefaultApi extends runtime.BaseAPI {
             body: ClusterManagerWriteToJSON(requestParameters.clusterManagerWrite),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ClusterManagerReadFromJSON(jsonValue));
     }
 
     /**
      * Creates a new cluster manager within the project.
      */
-    async apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersPostRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ClusterManagerRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersPostRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
@@ -475,7 +476,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Creates a new cluster within the selected cluster manager.
      */
-    async apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<KubernetesClusterRead>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost.');
         }
@@ -507,14 +508,15 @@ export class DefaultApi extends runtime.BaseAPI {
             body: KubernetesClusterWriteToJSON(requestParameters.kubernetesClusterWrite),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => KubernetesClusterReadFromJSON(jsonValue));
     }
 
     /**
      * Creates a new cluster within the selected cluster manager.
      */
-    async apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<KubernetesClusterRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }

@@ -169,7 +169,7 @@ export interface Oauth2V2LoginPostRequest {
 }
 
 export interface Oauth2V2TokenPostRequest {
-    tokenRequestOptions: TokenRequestOptions | null;
+    tokenRequestOptions: TokenRequestOptions;
 }
 
 /**
@@ -504,7 +504,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Allows creation of a new group.
      */
-    async apiV1OrganizationsOrganizationIDGroupsPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDGroupsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiV1OrganizationsOrganizationIDGroupsPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDGroupsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GroupRead>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDGroupsPost.');
         }
@@ -532,14 +532,15 @@ export class DefaultApi extends runtime.BaseAPI {
             body: GroupWriteToJSON(requestParameters.groupWrite),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => GroupReadFromJSON(jsonValue));
     }
 
     /**
      * Allows creation of a new group.
      */
-    async apiV1OrganizationsOrganizationIDGroupsPost(requestParameters: ApiV1OrganizationsOrganizationIDGroupsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationIDGroupsPostRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDGroupsPost(requestParameters: ApiV1OrganizationsOrganizationIDGroupsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GroupRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDGroupsPostRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
@@ -580,7 +581,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Create an organization\'s identity provider.
      */
-    async apiV1OrganizationsOrganizationIDOauth2providersPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiV1OrganizationsOrganizationIDOauth2providersPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Oauth2ProviderRead>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDOauth2providersPost.');
         }
@@ -608,14 +609,15 @@ export class DefaultApi extends runtime.BaseAPI {
             body: Oauth2ProviderWriteToJSON(requestParameters.oauth2ProviderWrite),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => Oauth2ProviderReadFromJSON(jsonValue));
     }
 
     /**
      * Create an organization\'s identity provider.
      */
-    async apiV1OrganizationsOrganizationIDOauth2providersPost(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationIDOauth2providersPostRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDOauth2providersPost(requestParameters: ApiV1OrganizationsOrganizationIDOauth2providersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Oauth2ProviderRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDOauth2providersPostRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
@@ -739,7 +741,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Creates a new project resource for the user\'s organization.
      */
-    async apiV1OrganizationsOrganizationIDProjectsPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiV1OrganizationsOrganizationIDProjectsPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ProjectRead>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsPost.');
         }
@@ -767,14 +769,15 @@ export class DefaultApi extends runtime.BaseAPI {
             body: ProjectWriteToJSON(requestParameters.projectWrite),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ProjectReadFromJSON(jsonValue));
     }
 
     /**
      * Creates a new project resource for the user\'s organization.
      */
-    async apiV1OrganizationsOrganizationIDProjectsPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationIDProjectsPostRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ProjectRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsPostRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**

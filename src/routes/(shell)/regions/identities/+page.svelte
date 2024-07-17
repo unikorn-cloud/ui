@@ -84,19 +84,15 @@
 			response: (ok: boolean) => {
 				if (!ok) return;
 
-				/*
 				const parameters = {
 					organizationID: organizationID,
 					projectID: resource.metadata.projectId,
-					clusterManagerID: resource.metadata.id
+					identityID: resource.metadata.id
 				};
 
-				Clients.kubernetes(toastStore, at)
-					.apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersClusterManagerIDDelete(
-						parameters
-					)
+				Clients.region(toastStore, at)
+					.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDelete(parameters)
 					.catch((e: Error) => Clients.error(e));
-			*/
 			}
 		};
 
