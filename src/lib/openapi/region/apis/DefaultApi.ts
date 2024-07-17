@@ -50,6 +50,12 @@ export interface ApiV1OrganizationsOrganizationIDIdentitiesGetRequest {
     organizationID: string;
 }
 
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDeleteRequest {
+    organizationID: string;
+    projectID: string;
+    identityID: string;
+}
+
 export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalNetworksPostRequest {
     organizationID: string;
     projectID: string;
@@ -120,6 +126,48 @@ export class DefaultApi extends runtime.BaseAPI {
     async apiV1OrganizationsOrganizationIDIdentitiesGet(requestParameters: ApiV1OrganizationsOrganizationIDIdentitiesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<IdentityRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDIdentitiesGetRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     * Delete an identity and any resources associated with it.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDelete.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDelete.');
+        }
+
+        if (requestParameters.identityID === null || requestParameters.identityID === undefined) {
+            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDelete.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/identities/{identityID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Delete an identity and any resources associated with it.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDelete(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
