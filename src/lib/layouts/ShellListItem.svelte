@@ -23,10 +23,17 @@
 
 	let scope: string;
 
-	if ('projectId' in metadata) {
-		const projectMeta = metadata as Kubernetes.ProjectScopedResourceReadMetadata;
-		scope = lookupProject(projectMeta.projectId);
+	function updateScope(
+		metadata: Kubernetes.ResourceReadMetadata,
+		projects: Array<Identity.ProjectRead>
+	) {
+		if ('projectId' in metadata) {
+			const projectMeta = metadata as Kubernetes.ProjectScopedResourceReadMetadata;
+			scope = lookupProject(projectMeta.projectId);
+		}
 	}
+
+	$: updateScope(metadata, projects);
 </script>
 
 <div
