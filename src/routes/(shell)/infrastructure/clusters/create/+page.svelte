@@ -278,7 +278,7 @@
 </script>
 
 <ShellPage {settings}>
-	<Stepper on:complete={complete}>
+	<Stepper on:complete={complete} buttonNext="variant-filled-primary">
 		<Step locked={!step1Valid}>
 			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
 
@@ -366,11 +366,7 @@
 				</ShellSection>
 			{/each}
 
-			<button
-				class="btn variant-filled-tertiary flex gap-2 items-center w-full"
-				on:click={addPool}
-				on:keypress={addPool}
-			>
+			<button class="btn flex gap-2 items-center w-full" on:click={addPool} on:keypress={addPool}>
 				<iconify-icon icon="mdi:add" />
 				<span>Add New Pool</span>
 			</button>

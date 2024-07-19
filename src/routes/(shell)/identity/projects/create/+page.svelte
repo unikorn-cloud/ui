@@ -15,8 +15,6 @@
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	import { Stepper, Step } from '@skeletonlabs/skeleton';
-
 	import { organizationStore } from '$lib/stores';
 
 	/* Client setup */
@@ -77,9 +75,9 @@
 	let metadataValid = false;
 
 	/* Cluster name must be valid, and it must be unique */
-	$: step1Valid = metadataValid && resource.spec.groupIDs && resource.spec.groupIDs.length != 0;
+	$: valid = metadataValid && resource.spec.groupIDs && resource.spec.groupIDs.length != 0;
 
-	function complete() {
+	function submit() {
 		const parameters = {
 			organizationID: organizationID,
 			projectWrite: resource
@@ -93,31 +91,29 @@
 </script>
 
 <ShellPage {settings}>
-	<Stepper on:complete={complete}>
-		<Step locked={!step1Valid}>
-			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
+	<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
-			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
+	<ShellSection title="Groups">
+		{#if groups && resource.spec.groupIDs}
+			<MultiSelect
+				id="group-ids"
+				label="Select group access."
+				hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
+				bind:value={resource.spec.groupIDs}
+			>
+				{#each groups || [] as group}
+					<option value={group.metadata.id}>{group.metadata.name}</option>
+				{/each}
+			</MultiSelect>
+		{/if}
+	</ShellSection>
 
-			<ShellSection title="Groups">
-				{#if groups && resource.spec.groupIDs}
-					<MultiSelect
-						id="group-ids"
-						label="Select group access."
-						hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
-						bind:value={resource.spec.groupIDs}
-					>
-						{#each groups || [] as group}
-							<option value={group.metadata.id}>{group.metadata.name}</option>
-						{/each}
-					</MultiSelect>
-				{/if}
-			</ShellSection>
-		</Step>
-		<Step>
-			<svelte:fragment slot="header">Confirmation</svelte:fragment>
-
-			<p>Create project "{resource.metadata.name}"?</p>
-		</Step>
-	</Stepper>
+	<button
+		class="btn variant-filled-primary flex gap-2 items-center"
+		disabled={!valid}
+		on:click={submit}
+		on:keypress={submit}
+	>
+		Create
+	</button>
 </ShellPage>

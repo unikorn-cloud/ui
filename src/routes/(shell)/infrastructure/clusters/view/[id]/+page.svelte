@@ -229,7 +229,7 @@
 			</svelte:fragment>
 		</ShellViewHeader>
 
-		<Stepper on:complete={complete}>
+		<Stepper on:complete={complete} buttonNext="variant-filled-primary">
 			<Step locked={!step2Valid}>
 				<svelte:fragment slot="header">Basic Cluster Setup</svelte:fragment>
 
@@ -276,11 +276,7 @@
 					</ShellSection>
 				{/each}
 
-				<button
-					class="btn variant-filled-tertiary flex gap-2 items-center"
-					on:click={addPool}
-					on:keypress={addPool}
-				>
+				<button class="btn flex gap-2 items-center" on:click={addPool} on:keypress={addPool}>
 					<iconify-icon icon="mdi:add" />
 					<span>Add New Pool</span>
 				</button>
