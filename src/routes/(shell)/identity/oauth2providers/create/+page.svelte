@@ -16,8 +16,6 @@
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	import { Stepper, Step } from '@skeletonlabs/skeleton';
-
 	import { organizationStore } from '$lib/stores';
 
 	/* Client setup */
@@ -66,11 +64,9 @@
 	let clientIdValid: boolean = false;
 	let clientSecretValid: boolean = false;
 
-	let step1Valid: boolean = false;
+	$: valid = metadataValid && issuerValid && clientIdValid && clientSecretValid;
 
-	$: step1Valid = metadataValid && issuerValid && clientIdValid && clientSecretValid;
-
-	function complete() {
+	function submit() {
 		const parameters = {
 			organizationID: organizationID,
 			oauth2ProviderWrite: resource
@@ -91,59 +87,57 @@
 </script>
 
 <ShellPage {settings}>
-	<Stepper on:complete={complete}>
-		<Step locked={!step1Valid}>
-			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
+	<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
-			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
+	<ShellSection title="OAuth2 Settings">
+		<label for="callback"
+			>Oauth2 callback address. This is used to configure your OIDC application with before
+			continuing with the following fields.</label
+		>
+		<div class="input-group input-group-divider grid-cols-[1fr_auto]">
+			<input
+				class="input overflow-hidden text-ellipsis whitespace-nowrap"
+				data-clipboard="callback"
+				value={callback}
+				disabled
+			/>
+			<button class="variant-filled-primary" use:clipboard={{ input: 'callback' }}>
+				<iconify-icon icon="mdi:clipboard-outline" />
+			</button>
+		</div>
 
-			<ShellSection title="OAuth2 Settings">
-				<label for="callback"
-					>Oauth2 callback address. This is used to configure your OIDC application with before
-					continuing with the following fields.</label
-				>
-				<div class="input-group input-group-divider grid-cols-[1fr_auto]">
-					<input
-						class="input overflow-hidden text-ellipsis whitespace-nowrap"
-						data-clipboard="callback"
-						value={callback}
-						disabled
-					/>
-					<button class="variant-filled-primary" use:clipboard={{ input: 'callback' }}>
-						<iconify-icon icon="mdi:clipboard-outline" />
-					</button>
-				</div>
+		<TextInput
+			id="issuer"
+			label="Issuer address"
+			validators={[Validation.stringSet]}
+			placeholder="https://identity.domain.com"
+			bind:value={resource.spec.issuer}
+			bind:valid={issuerValid}
+		/>
+		<TextInput
+			id="client-id"
+			label="Client ID"
+			validators={[Validation.stringSet]}
+			placeholder="73458e95-1d2c-481b-81e8-7225fd089060"
+			bind:value={resource.spec.clientID}
+			bind:valid={clientIdValid}
+		/>
+		<TextInput
+			id="client-secret"
+			label="Client secret"
+			validators={[Validation.stringSet]}
+			placeholder="ooHovOvanogyisAvChuOvbyctoffOdloidKuAlsyemgosJias3twanechorjIdCo"
+			bind:value={resource.spec.clientSecret}
+			bind:valid={clientSecretValid}
+		/>
+	</ShellSection>
 
-				<TextInput
-					id="issuer"
-					label="Issuer address"
-					validators={[Validation.stringSet]}
-					placeholder="https://identity.domain.com"
-					bind:value={resource.spec.issuer}
-					bind:valid={issuerValid}
-				/>
-				<TextInput
-					id="client-id"
-					label="Client ID"
-					validators={[Validation.stringSet]}
-					placeholder="73458e95-1d2c-481b-81e8-7225fd089060"
-					bind:value={resource.spec.clientID}
-					bind:valid={clientIdValid}
-				/>
-				<TextInput
-					id="client-secret"
-					label="Client secret"
-					validators={[Validation.stringSet]}
-					placeholder="ooHovOvanogyisAvChuOvbyctoffOdloidKuAlsyemgosJias3twanechorjIdCo"
-					bind:value={resource.spec.clientSecret}
-					bind:valid={clientSecretValid}
-				/>
-			</ShellSection>
-		</Step>
-		<Step>
-			<svelte:fragment slot="header">Confirmation</svelte:fragment>
-
-			<p>Create provider "{resource.metadata.name}"?</p>
-		</Step>
-	</Stepper>
+	<button
+		class="btn variant-filled-primary flex gap-2 items-center"
+		disabled={!valid}
+		on:click={submit}
+		on:keypress={submit}
+	>
+		Create
+	</button>
 </ShellPage>

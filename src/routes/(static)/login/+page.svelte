@@ -60,13 +60,13 @@
 					placeholder="jane.doe@acme.com"
 					autocomplete="email"
 				/>
-				<input class="btn variant-filled-tertiary" type="submit" value="Login" />
+				<input class="btn variant-filled-primary" type="submit" value="Login" />
 			</section>
 
 			<section class="flex flex-col gap-4">
 				<p>or login with your chosen provider</p>
 				<button
-					class="btn variant-filled-tertiary flex align-center"
+					class="btn variant-filled-primary flex align-center"
 					on:click={google}
 					on:keypress={google}
 				>
@@ -74,7 +74,7 @@
 					<span>Google</span>
 				</button>
 				<button
-					class="btn variant-filled-tertiary flex align-center"
+					class="btn variant-filled-primary flex align-center"
 					on:click={microsoft}
 					on:keypress={microsoft}
 				>

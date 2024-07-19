@@ -16,8 +16,6 @@
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	import { Stepper, Step } from '@skeletonlabs/skeleton';
-
 	import { organizationStore } from '$lib/stores';
 
 	/* Client setup */
@@ -80,11 +78,11 @@
 	let metadataValid = false;
 
 	/* Cluster name must be valid, and it must be unique */
-	$: step1Valid = metadataValid && resource.spec.roleIDs.length > 0;
+	$: valid = metadataValid && resource.spec.roleIDs.length > 0;
 
 	$: console.log(metadataValid, resource.spec.roleIDs.length > 0);
 
-	function complete() {
+	function submit() {
 		const parameters = {
 			organizationID: organizationID,
 			groupWrite: resource
@@ -98,55 +96,53 @@
 </script>
 
 <ShellPage {settings}>
-	<Stepper on:complete={complete}>
-		<Step locked={!step1Valid}>
-			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
+	<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
-			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
+	<ShellSection title="Roles">
+		{#if availableRoles}
+			<MultiSelect
+				id="role-ids"
+				label="Select roles for group members."
+				hint="You must select at least one role."
+				bind:value={resource.spec.roleIDs}
+			>
+				{#each availableRoles || [] as role}
+					<option value={role.metadata.id}>{role.metadata.name}</option>
+				{/each}
+			</MultiSelect>
+		{/if}
+	</ShellSection>
 
-			<ShellSection title="Roles">
-				{#if availableRoles}
-					<MultiSelect
-						id="role-ids"
-						label="Select roles for group members."
-						hint="You must select at least one role."
-						bind:value={resource.spec.roleIDs}
-					>
-						{#each availableRoles || [] as role}
-							<option value={role.metadata.id}>{role.metadata.name}</option>
-						{/each}
-					</MultiSelect>
-				{/if}
-			</ShellSection>
+	<ShellSection title="Users">
+		{#if availableGroups && resource.spec.providerGroups}
+			<MultiSelect
+				id="provider-groups"
+				label="Include users with identity provider groups."
+				hint="To add and remove members edit the group with your identity provider."
+				bind:value={resource.spec.providerGroups}
+			>
+				{#each availableGroups || [] as group}
+					<option value={group.name}>{group.displayName || group.name}</option>
+				{/each}
+			</MultiSelect>
+		{/if}
 
-			<ShellSection title="Users">
-				{#if availableGroups && resource.spec.providerGroups}
-					<MultiSelect
-						id="provider-groups"
-						label="Include users with identity provider groups."
-						hint="To add and remove members edit the group with your identity provider."
-						bind:value={resource.spec.providerGroups}
-					>
-						{#each availableGroups || [] as group}
-							<option value={group.name}>{group.displayName || group.name}</option>
-						{/each}
-					</MultiSelect>
-				{/if}
+		{#if resource.spec.users}
+			<InputChips
+				name="users"
+				label="Include users by email address."
+				hint="This must be the user's primary email address, not an alias."
+				bind:value={resource.spec.users}
+			/>
+		{/if}
+	</ShellSection>
 
-				{#if resource.spec.users}
-					<InputChips
-						name="users"
-						label="Include users by email address."
-						hint="This must be the user's primary email address, not an alias."
-						bind:value={resource.spec.users}
-					/>
-				{/if}
-			</ShellSection>
-		</Step>
-		<Step>
-			<svelte:fragment slot="header">Confirmation</svelte:fragment>
-
-			<p>Create group "{resource.metadata.name}"?</p>
-		</Step>
-	</Stepper>
+	<button
+		class="btn variant-filled-primary flex gap-2 items-center"
+		disabled={!valid}
+		on:click={submit}
+		on:keypress={submit}
+	>
+		Create
+	</button>
 </ShellPage>

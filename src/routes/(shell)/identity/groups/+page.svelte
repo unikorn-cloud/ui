@@ -79,7 +79,7 @@
 <ShellPage {settings}>
 	<a
 		href="/identity/groups/create"
-		class="btn variant-filled-tertiary flex gap-2 items-center"
+		class="btn variant-filled-primary flex gap-2 items-center"
 		slot="tools"
 	>
 		<iconify-icon icon="material-symbols:add" />

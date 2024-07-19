@@ -33,7 +33,7 @@
 
 <ShellPage {settings}>
 	<button
-		class="btn variant-filled-tertiary flex gap-2 items-center"
+		class="btn variant-filled-primary flex gap-2 items-center"
 		on:click={create}
 		on:keypress={create}
 		slot="tools"
@@ -56,7 +56,7 @@
 				</div>
 				<button
 					use:clipboard={{ element: 'pat' }}
-					class="btn variant-filled-tertiary flex items-center"
+					class="btn variant-filled-primary flex items-center"
 				>
 					<iconify-icon icon="mdi:clipboard-outline" />
 					<span>Copy</span>
