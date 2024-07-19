@@ -2,6 +2,7 @@
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellList from '$lib/layouts/ShellList.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Applications',
@@ -51,27 +52,31 @@
 </script>
 
 <ShellPage {settings}>
-	{#if applications}
-		{#each applications as application}
-			<article class="flex gap-8 variant-glass border border-surface-300-600-token rounded-lg p-4">
-				<div class="w-16">
-					<!-- eslint-disable svelte/no-at-html-tags -->
-					{@html atob(application.spec.icon)}
-				</div>
-
-				<div class="flex flex-col gap-2">
-					<div class="flex gap-2">
-						{#each application.spec.tags || [] as tag}
-							<div class="badge variant-soft">{tag}</div>
-						{/each}
+	<ShellList>
+		{#if applications}
+			{#each applications as application}
+				<div
+					class="card bg-surface-50-900-token border border-surface-300-600-token shadow-sm p-4 flex gap-8"
+				>
+					<div class="w-16">
+						<!-- eslint-disable svelte/no-at-html-tags -->
+						{@html atob(application.spec.icon)}
 					</div>
 
-					<h4 class="h4">{application.metadata.name}</h4>
-					<div class="text-xs italic">{application.metadata.description}</div>
+					<div class="flex flex-col gap-2">
+						<div class="flex gap-2">
+							{#each application.spec.tags || [] as tag}
+								<div class="badge variant-soft">{tag}</div>
+							{/each}
+						</div>
+
+						<h4 class="h4">{application.metadata.name}</h4>
+						<div class="text-xs italic">{application.metadata.description}</div>
+					</div>
 				</div>
-			</article>
-		{/each}
-	{/if}
+			{/each}
+		{/if}
+	</ShellList>
 </ShellPage>
 
 <style>
