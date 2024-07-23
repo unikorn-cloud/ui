@@ -9,6 +9,10 @@
 	import SlideToggle from '$lib/forms/SlideToggle.svelte';
 	import Select from '$lib/forms/Select.svelte';
 	import RangeSlider from '$lib/forms/RangeSlider.svelte';
+	import { popup } from '@skeletonlabs/skeleton';
+	import { ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
+	import SelectNew from '$lib/forms/SelectNew.svelte';
+	import Flavor from '$lib/Flavor.svelte';
 
 	/* The pool should be bound to expose the built configuration */
 	export let pool: Kubernetes.KubernetesClusterWorkloadPool;
@@ -57,6 +61,26 @@
 	$: updateDisk(persistentStorage);
 
 	$: valid = Validation.kubernetesNameValid(pool.name);
+
+	function lookupFlavor(flavors: Array<Region.Flavor>, flavorID: string): Region.Flavor {
+		const flavor = flavors.find((x) => x.metadata.id == flavorID);
+		if (!flavor) {
+			return {
+				metadata: {
+					id: 'undefined',
+					name: 'undefined',
+					creationTime: new Date()
+				},
+				spec: {
+					cpus: 0,
+					memory: 0,
+					disk: 0
+				}
+			};
+		}
+
+		return flavor;
+	}
 </script>
 
 <ShellSection title="Pool Metadata">
@@ -71,17 +95,23 @@
 </ShellSection>
 
 <ShellSection title="Pool Topology">
-	<Select
-		id="flavor"
-		label="Choose a pool type."
-		hint="Allows the selection of the pool's available resources to be used by workloads per
-                pool member. This includes CPU, GPU and memory."
-		bind:value={pool.machine.flavorId}
-	>
-		{#each flavors || [] as flavor}
-			<option value={flavor.metadata.id}>{Formatters.flavorFormatter(flavor)}</option>
-		{/each}
-	</Select>
+	{#if flavors && pool.machine.flavorId}
+		<SelectNew
+			id="flavor"
+			label="Choose a pool type."
+			hint="Allows the selection of the pool's available resources to be used by workloads per pool
+			member. This includes CPU, GPU and memory."
+		>
+			<Flavor slot="selected_body" flavor={lookupFlavor(flavors, pool.machine.flavorId)} />
+			<svelte:fragment>
+				{#each flavors || [] as flavor}
+					<ListBoxItem bind:group={pool.machine.flavorId} name="foo" value={flavor.metadata.id}>
+						<Flavor {flavor} />
+					</ListBoxItem>
+				{/each}
+			</svelte:fragment>
+		</SelectNew>
+	{/if}
 
 	<SlideToggle
 		name="persistent-storage"
