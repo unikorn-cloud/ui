@@ -118,6 +118,8 @@
 
 	$: updateRegions(at, organizationID);
 
+	$: resource.spec.regionId = regionID;
+
 	function updateClusterManagers(at: InternalToken, projectID: string) {
 		if (!at || !projectID) return;
 
@@ -298,7 +300,7 @@
 					id="region"
 					label="Choose a region."
 					hint="Defines the geographical region where the cluster will run."
-					bind:value={resource.spec.regionId}
+					bind:value={regionID}
 				>
 					{#each regions || [] as region}
 						<option value={region.metadata.id}>{region.metadata.name}</option>

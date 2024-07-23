@@ -21,7 +21,7 @@
 
 	function updateFlavors(flavors: Array<Region.Flavor>): void {
 		/* Bizarrely this triggers when the select is interacted with :shrug: */
-		if (!flavors || pool.machine.flavorId) return;
+		if (!flavors || flavors.find((x) => x.metadata.id == pool.machine.flavorId)) return;
 		pool.machine.flavorId = flavors[0].metadata.id;
 	}
 
