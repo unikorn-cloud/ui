@@ -4,7 +4,8 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
-	import ShellListTray from '$lib/layouts/ShellListTray.svelte';
+	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
+	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
 
 	const settings: ShellPageSettings = {
@@ -146,28 +147,37 @@
 
 	<ShellList>
 		{#each resources || [] as resource}
-			<ShellListItem
-				metadata={resource.metadata}
-				{projects}
-				href="/infrastructure/clusters/view/{resource.metadata.id}"
-			>
+			<ShellListItem metadata={resource.metadata} {projects}>
 				<svelte:fragment slot="badges">
 					<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
 						{RegionUtil.name(regions, resource.spec.regionId)}
 					</Badge>
 				</svelte:fragment>
 
-				<ShellListTray>
-					<button
-						on:click={() => getKubeconfig(resource)}
-						on:keypress={() => getKubeconfig(resource)}
-					>
-						<iconify-icon icon="mdi:file-document-outline" />
-					</button>
-					<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
-						<iconify-icon icon="mdi:trash-can-outline" />
-					</button>
-				</ShellListTray>
+				<svelte:fragment slot="tray">
+					<BurgerMenu name="menu-{resource.metadata.id}">
+						<BurgerMenuItem
+							href="/infrastructure/clusters/view/{resource.metadata.id}"
+							icon="mdi:edit-outline"
+						>
+							Edit
+						</BurgerMenuItem>
+						<BurgerMenuItem
+							on:click={() => remove(resource)}
+							on:keypress={() => remove(resource)}
+							icon="mdi:trash-can-outline"
+						>
+							Delete
+						</BurgerMenuItem>
+						<BurgerMenuItem
+							on:click={() => getKubeconfig(resource)}
+							on:keypress={() => getKubeconfig(resource)}
+							icon="mdi:download"
+						>
+							Kubeconfig
+						</BurgerMenuItem>
+					</BurgerMenu>
+				</svelte:fragment>
 			</ShellListItem>
 		{/each}
 	</ShellList>

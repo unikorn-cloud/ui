@@ -4,7 +4,8 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
-	import ShellListTray from '$lib/layouts/ShellListTray.svelte';
+	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
+	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -88,15 +89,24 @@
 
 	<ShellList>
 		{#each groups || [] as resource}
-			<ShellListItem
-				metadata={resource.metadata}
-				href="/identity/groups/view/{resource.metadata.id}"
-			>
-				<ShellListTray>
-					<button on:click={() => remove(resource)} on:keypress={() => remove(resource)}>
-						<iconify-icon icon="mdi:trash-can-outline" />
-					</button>
-				</ShellListTray>
+			<ShellListItem metadata={resource.metadata}>
+				<svelte:fragment slot="tray">
+					<BurgerMenu name="menu-{resource.metadata.id}">
+						<BurgerMenuItem
+							href="/identity/groups/view/{resource.metadata.id}"
+							icon="mdi:edit-outline"
+						>
+							Edit
+						</BurgerMenuItem>
+						<BurgerMenuItem
+							on:click={() => remove(resource)}
+							on:keypress={() => remove(resource)}
+							icon="mdi:trash-can-outline"
+						>
+							Delete
+						</BurgerMenuItem>
+					</BurgerMenu>
+				</svelte:fragment>
 			</ShellListItem>
 		{/each}
 	</ShellList>

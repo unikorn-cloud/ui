@@ -3,7 +3,8 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
-	import ShellListTray from '$lib/layouts/ShellListTray.svelte';
+	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
+	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
 
@@ -102,24 +103,30 @@
 
 <ShellPage {settings}>
 	<ShellList>
-		{#each identities || [] as identity}
-			<ShellListItem metadata={identity.metadata} {projects} href="#">
+		{#each identities || [] as resource}
+			<ShellListItem metadata={resource.metadata} {projects}>
 				<svelte:fragment slot="badges">
-					<Badge icon={RegionUtil.icon(regions, identity.spec.regionId)}>
-						{RegionUtil.name(regions, identity.spec.regionId)}
+					<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+						{RegionUtil.name(regions, resource.spec.regionId)}
 					</Badge>
 				</svelte:fragment>
 
-				<ShellListTray>
-					<button on:click={() => remove(identity)} on:keypress={() => remove(identity)}>
-						<iconify-icon icon="mdi:trash-can-outline" />
-					</button>
-				</ShellListTray>
+				<svelte:fragment slot="tray">
+					<BurgerMenu name="menu-{resource.metadata.id}">
+						<BurgerMenuItem
+							on:click={() => remove(resource)}
+							on:keypress={() => remove(resource)}
+							icon="mdi:trash-can-outline"
+						>
+							Delete
+						</BurgerMenuItem>
+					</BurgerMenu>
+				</svelte:fragment>
 
 				<svelte:fragment slot="metadata">
-					{#if identity.spec.tags}
+					{#if resource.spec.tags}
 						<ShellMetadataItem icon="mdi:tag-outline">
-							{#each identity.spec.tags as tag}
+							{#each resource.spec.tags as tag}
 								<div class="badge variant-soft">{tag.name}: {tag.value}</div>
 							{/each}
 						</ShellMetadataItem>

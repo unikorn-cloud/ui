@@ -8,7 +8,6 @@
 
 	export let metadata: Kubernetes.ResourceReadMetadata;
 	export let projects: Array<Identity.ProjectRead> = [];
-	export let href: string;
 
 	function lookupProject(id: string): string {
 		if (projects) {
@@ -37,29 +36,37 @@
 </script>
 
 <div
-	class="flex flex-col lg:flex-row gap-4 items-top justify-between variant-glass border border-surface-300-600-token rounded-lg p-4"
+	class="card bg-surface-50-900-token border border-surface-300-600-token shadow-sm flex flex-col p-4"
 >
-	<div class="flex flex-col gap-4">
-		<div class="flex gap-2 items-center">
-			<Badge icon={Status.icon(metadata)} iconcolor={Status.color(metadata)}>
-				{metadata.provisioningStatus}
-			</Badge>
+	<div class="flex flex-col gap-3 w-full">
+		<div class="flex justify-between">
+			<div class="flex gap-2 items-center">
+				<Badge icon={Status.icon(metadata)} iconcolor={Status.color(metadata)}>
+					{metadata.provisioningStatus}
+				</Badge>
 
-			<slot name="badges" />
+				<slot name="badges" />
+			</div>
+
+			<div class="flex gap-2 items-center">
+				<slot name="tray" />
+			</div>
 		</div>
 
-		<div class="flex gap-4 items-center">
-			{#if scope}
-				<a class="font-bold" {href}>{scope}/{metadata.name}</a>
-			{:else}
-				<a class="font-bold" {href}>{metadata.name}</a>
-			{/if}
+		<div class="flex flex-col gap-1">
+			<div class="font-bold">
+				{#if scope}
+					{scope}/{metadata.name}
+				{:else}
+					{metadata.name}
+				{/if}
+			</div>
 			{#if metadata.description}
-				<div class="text-sm italic">{metadata.description}</div>
+				<div class="text-sm italic text-surface-600-300-token">{metadata.description}</div>
 			{/if}
 		</div>
 
-		<div class="flex flex-col gap-2 text-sm">
+		<div class="flex flex-col gap-1 text-sm">
 			<ShellMetadataItem icon="mdi:clock-time-five-outline">
 				{Formatters.ageFormatter(metadata.creationTime)}
 			</ShellMetadataItem>
