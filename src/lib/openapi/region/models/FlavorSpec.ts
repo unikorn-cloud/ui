@@ -27,6 +27,12 @@ import {
  */
 export interface FlavorSpec {
     /**
+     * Whether the flavor is for a dedicated machine.
+     * @type {boolean}
+     * @memberof FlavorSpec
+     */
+    baremetal?: boolean;
+    /**
      * The number of CPUs.
      * @type {number}
      * @memberof FlavorSpec
@@ -80,6 +86,7 @@ export function FlavorSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
+        'baremetal': !exists(json, 'baremetal') ? undefined : json['baremetal'],
         'cpus': json['cpus'],
         'cpuFamily': !exists(json, 'cpuFamily') ? undefined : json['cpuFamily'],
         'memory': json['memory'],
@@ -97,6 +104,7 @@ export function FlavorSpecToJSON(value?: FlavorSpec | null): any {
     }
     return {
         
+        'baremetal': value.baremetal,
         'cpus': value.cpus,
         'cpuFamily': value.cpuFamily,
         'memory': value.memory,

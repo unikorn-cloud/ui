@@ -19,6 +19,8 @@
 
 	import { organizationStore } from '$lib/stores';
 
+	import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
+
 	/* Client setup */
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
@@ -41,7 +43,11 @@
 
 	let resource: Kubernetes.KubernetesClusterWrite = {
 		metadata: {
-			name: ''
+			name: uniqueNamesGenerator({
+				dictionaries: [adjectives, animals],
+				separator: '-',
+				length: 2
+			})
 		},
 		spec: {
 			regionId: '',

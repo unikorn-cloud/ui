@@ -3,7 +3,6 @@
 export * from './ExternalNetwork';
 export * from './Flavor';
 export * from './FlavorSpec';
-export * from './GpuDriver';
 export * from './GpuSpec';
 export * from './GpuVendor';
 export * from './IdentityRead';
@@ -12,7 +11,9 @@ export * from './IdentitySpecOpenStack';
 export * from './IdentityWrite';
 export * from './IdentityWriteSpec';
 export * from './Image';
+export * from './ImageGpu';
 export * from './ImageSpec';
+export * from './ImageVirtualization';
 export * from './ModelError';
 export * from './OrganizationScopedResourceReadMetadata';
 export * from './PhysicalNetworkRead';

@@ -65,6 +65,7 @@
 		"jose": "^5.2.2",
 		"semver": "^7.6.0",
 		"svelte-portal": "^2.2.1",
+		"unique-names-generator": "^4.7.1",
 		"uuid": "^9.0.1"
 	}
 }

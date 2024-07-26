@@ -4,7 +4,6 @@ index.ts
 models/ExternalNetwork.ts
 models/Flavor.ts
 models/FlavorSpec.ts
-models/GpuDriver.ts
 models/GpuSpec.ts
 models/GpuVendor.ts
 models/IdentityRead.ts
@@ -13,7 +12,9 @@ models/IdentitySpecOpenStack.ts
 models/IdentityWrite.ts
 models/IdentityWriteSpec.ts
 models/Image.ts
+models/ImageGpu.ts
 models/ImageSpec.ts
+models/ImageVirtualization.ts
 models/ModelError.ts
 models/OrganizationScopedResourceReadMetadata.ts
 models/PhysicalNetworkRead.ts
