@@ -13,12 +13,18 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { GpuDriver } from './GpuDriver';
+import type { ImageGpu } from './ImageGpu';
 import {
-    GpuDriverFromJSON,
-    GpuDriverFromJSONTyped,
-    GpuDriverToJSON,
-} from './GpuDriver';
+    ImageGpuFromJSON,
+    ImageGpuFromJSONTyped,
+    ImageGpuToJSON,
+} from './ImageGpu';
+import type { ImageVirtualization } from './ImageVirtualization';
+import {
+    ImageVirtualizationFromJSON,
+    ImageVirtualizationFromJSONTyped,
+    ImageVirtualizationToJSON,
+} from './ImageVirtualization';
 import type { SoftwareVersions } from './SoftwareVersions';
 import {
     SoftwareVersionsFromJSON,
@@ -34,16 +40,22 @@ import {
 export interface ImageSpec {
     /**
      * 
+     * @type {ImageVirtualization}
+     * @memberof ImageSpec
+     */
+    virtualization: ImageVirtualization;
+    /**
+     * 
      * @type {SoftwareVersions}
      * @memberof ImageSpec
      */
     softwareVersions?: SoftwareVersions;
     /**
      * 
-     * @type {GpuDriver}
+     * @type {ImageGpu}
      * @memberof ImageSpec
      */
-    gpuDriver?: GpuDriver;
+    gpu?: ImageGpu;
 }
 
 /**
@@ -51,6 +63,7 @@ export interface ImageSpec {
  */
 export function instanceOfImageSpec(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "virtualization" in value;
 
     return isInstance;
 }
@@ -65,8 +78,9 @@ export function ImageSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
+        'virtualization': ImageVirtualizationFromJSON(json['virtualization']),
         'softwareVersions': !exists(json, 'softwareVersions') ? undefined : SoftwareVersionsFromJSON(json['softwareVersions']),
-        'gpuDriver': !exists(json, 'gpuDriver') ? undefined : GpuDriverFromJSON(json['gpuDriver']),
+        'gpu': !exists(json, 'gpu') ? undefined : ImageGpuFromJSON(json['gpu']),
     };
 }
 
@@ -79,8 +93,9 @@ export function ImageSpecToJSON(value?: ImageSpec | null): any {
     }
     return {
         
+        'virtualization': ImageVirtualizationToJSON(value.virtualization),
         'softwareVersions': SoftwareVersionsToJSON(value.softwareVersions),
-        'gpuDriver': GpuDriverToJSON(value.gpuDriver),
+        'gpu': ImageGpuToJSON(value.gpu),
     };
 }
 

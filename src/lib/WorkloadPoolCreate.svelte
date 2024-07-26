@@ -24,7 +24,6 @@
 	export let flavors: Array<Region.Flavor>;
 
 	function updateFlavors(flavors: Array<Region.Flavor>): void {
-		/* Bizarrely this triggers when the select is interacted with :shrug: */
 		if (!flavors || flavors.find((x) => x.metadata.id == pool.machine.flavorId)) return;
 		pool.machine.flavorId = flavors[0].metadata.id;
 	}
@@ -111,28 +110,30 @@
 				{/each}
 			</svelte:fragment>
 		</SelectNew>
-	{/if}
 
-	<SlideToggle
-		name="persistent-storage"
-		label="Enable persistent storage."
-		hint="If not selected, the disk size will be
+		{#if !lookupFlavor(flavors, pool.machine.flavorId).spec.baremetal}
+			<SlideToggle
+				name="persistent-storage"
+				label="Enable persistent storage."
+				hint="If not selected, the disk size will be
                 fixed to that offered by the pool type, and will be ephemeral with higher performance. If
                 selected, the disk will be network attached with higher availabilty and the option to change the
                 size."
-		bind:checked={persistentStorage}
-	/>
+				bind:checked={persistentStorage}
+			/>
 
-	{#if pool.machine.disk}
-		<RangeSlider
-			name="storage-size"
-			label="Select the disk size per machine."
-			min={50}
-			max={4000}
-			step={50}
-			formatter={Formatters.formatGB}
-			bind:value={pool.machine.disk.size}
-		/>
+			{#if pool.machine.disk}
+				<RangeSlider
+					name="storage-size"
+					label="Select the disk size per machine."
+					min={50}
+					max={4000}
+					step={50}
+					formatter={Formatters.formatGB}
+					bind:value={pool.machine.disk.size}
+				/>
+			{/if}
+		{/if}
 	{/if}
 
 	<SlideToggle
