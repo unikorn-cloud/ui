@@ -25,8 +25,8 @@
 
 	/* Required for popups */
 	import { storePopup } from '@skeletonlabs/skeleton';
-	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+	import { computePosition, autoUpdate, offset, shift, flip, arrow, size } from '@floating-ui/dom';
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow, size });
 
 	/* Shell components */
 	import { AppShell } from '@skeletonlabs/skeleton';
