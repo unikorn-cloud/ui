@@ -43,7 +43,7 @@ export interface PhysicalNetworkWrite {
      * @type {PhysicalNetworkSpec}
      * @memberof PhysicalNetworkWrite
      */
-    spec: PhysicalNetworkSpec;
+    spec?: PhysicalNetworkSpec;
 }
 
 /**
@@ -52,7 +52,6 @@ export interface PhysicalNetworkWrite {
 export function instanceOfPhysicalNetworkWrite(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "metadata" in value;
-    isInstance = isInstance && "spec" in value;
 
     return isInstance;
 }
@@ -68,7 +67,7 @@ export function PhysicalNetworkWriteFromJSONTyped(json: any, ignoreDiscriminator
     return {
         
         'metadata': ResourceWriteMetadataFromJSON(json['metadata']),
-        'spec': PhysicalNetworkSpecFromJSON(json['spec']),
+        'spec': !exists(json, 'spec') ? undefined : PhysicalNetworkSpecFromJSON(json['spec']),
     };
 }
 

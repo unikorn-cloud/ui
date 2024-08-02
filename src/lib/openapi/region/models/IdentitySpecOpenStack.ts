@@ -24,13 +24,13 @@ export interface IdentitySpecOpenStack {
      * @type {string}
      * @memberof IdentitySpecOpenStack
      */
-    cloud?: string;
+    cloud: string;
     /**
      * A base64 encoded cloud config file.
      * @type {string}
      * @memberof IdentitySpecOpenStack
      */
-    cloudConfig?: string;
+    cloudConfig: string;
     /**
      * User identitifer allocated for the infrastructure.
      * @type {string}
@@ -43,6 +43,12 @@ export interface IdentitySpecOpenStack {
      * @memberof IdentitySpecOpenStack
      */
     projectId: string;
+    /**
+     * Server group identifier allocated for the intrastructure.
+     * @type {string}
+     * @memberof IdentitySpecOpenStack
+     */
+    serverGroupId?: string;
 }
 
 /**
@@ -50,6 +56,8 @@ export interface IdentitySpecOpenStack {
  */
 export function instanceOfIdentitySpecOpenStack(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "cloud" in value;
+    isInstance = isInstance && "cloudConfig" in value;
     isInstance = isInstance && "userId" in value;
     isInstance = isInstance && "projectId" in value;
 
@@ -66,10 +74,11 @@ export function IdentitySpecOpenStackFromJSONTyped(json: any, ignoreDiscriminato
     }
     return {
         
-        'cloud': !exists(json, 'cloud') ? undefined : json['cloud'],
-        'cloudConfig': !exists(json, 'cloudConfig') ? undefined : json['cloudConfig'],
+        'cloud': json['cloud'],
+        'cloudConfig': json['cloudConfig'],
         'userId': json['userId'],
         'projectId': json['projectId'],
+        'serverGroupId': !exists(json, 'serverGroupId') ? undefined : json['serverGroupId'],
     };
 }
 
@@ -86,6 +95,7 @@ export function IdentitySpecOpenStackToJSON(value?: IdentitySpecOpenStack | null
         'cloudConfig': value.cloudConfig,
         'userId': value.userId,
         'projectId': value.projectId,
+        'serverGroupId': value.serverGroupId,
     };
 }
 

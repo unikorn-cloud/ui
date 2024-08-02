@@ -58,6 +58,18 @@ export interface ResourceReadMetadata {
      */
     createdBy?: string;
     /**
+     * The time a resource was updated.
+     * @type {Date}
+     * @memberof ResourceReadMetadata
+     */
+    modifiedTime?: Date;
+    /**
+     * The user who updated the resource.
+     * @type {string}
+     * @memberof ResourceReadMetadata
+     */
+    modifiedBy?: string;
+    /**
      * The time the resource was deleted.
      * @type {Date}
      * @memberof ResourceReadMetadata
@@ -99,6 +111,8 @@ export function ResourceReadMetadataFromJSONTyped(json: any, ignoreDiscriminator
         'id': json['id'],
         'creationTime': (new Date(json['creationTime'])),
         'createdBy': !exists(json, 'createdBy') ? undefined : json['createdBy'],
+        'modifiedTime': !exists(json, 'modifiedTime') ? undefined : (new Date(json['modifiedTime'])),
+        'modifiedBy': !exists(json, 'modifiedBy') ? undefined : json['modifiedBy'],
         'deletionTime': !exists(json, 'deletionTime') ? undefined : (new Date(json['deletionTime'])),
         'provisioningStatus': ResourceProvisioningStatusFromJSON(json['provisioningStatus']),
     };
@@ -118,6 +132,8 @@ export function ResourceReadMetadataToJSON(value?: ResourceReadMetadata | null):
         'id': value.id,
         'creationTime': (value.creationTime.toISOString()),
         'createdBy': value.createdBy,
+        'modifiedTime': value.modifiedTime === undefined ? undefined : (value.modifiedTime.toISOString()),
+        'modifiedBy': value.modifiedBy,
         'deletionTime': value.deletionTime === undefined ? undefined : (value.deletionTime.toISOString()),
         'provisioningStatus': ResourceProvisioningStatusToJSON(value.provisioningStatus),
     };
