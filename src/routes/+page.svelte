@@ -17,8 +17,16 @@
 	provider.register();
 
 	/* Required for drawers and modals */
-	import { initializeStores } from '@skeletonlabs/skeleton';
+	import { initializeStores, Modal } from '@skeletonlabs/skeleton';
 	initializeStores();
+
+	/* Required for toasts */
+	import { Toast } from '@skeletonlabs/skeleton';
+
+	/* Required for popups */
+	import { storePopup } from '@skeletonlabs/skeleton';
+	import { computePosition, autoUpdate, offset, shift, flip, arrow, size } from '@floating-ui/dom';
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow, size });
 
 	/* Shell components */
 	import { AppShell } from '@skeletonlabs/skeleton';
@@ -27,6 +35,8 @@
 	import ShellDrawer from '$lib/shell/ShellDrawer.svelte';
 </script>
 
+<Modal />
+<Toast />
 <ShellDrawer />
 
 <AppShell class="h-screen">

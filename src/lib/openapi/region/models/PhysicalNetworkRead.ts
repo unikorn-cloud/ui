@@ -43,7 +43,7 @@ export interface PhysicalNetworkRead {
      * @type {PhysicalNetworkSpec}
      * @memberof PhysicalNetworkRead
      */
-    spec: PhysicalNetworkSpec;
+    spec?: PhysicalNetworkSpec;
 }
 
 /**
@@ -52,7 +52,6 @@ export interface PhysicalNetworkRead {
 export function instanceOfPhysicalNetworkRead(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "metadata" in value;
-    isInstance = isInstance && "spec" in value;
 
     return isInstance;
 }
@@ -68,7 +67,7 @@ export function PhysicalNetworkReadFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'metadata': ProjectScopedResourceReadMetadataFromJSON(json['metadata']),
-        'spec': PhysicalNetworkSpecFromJSON(json['spec']),
+        'spec': !exists(json, 'spec') ? undefined : PhysicalNetworkSpecFromJSON(json['spec']),
     };
 }
 

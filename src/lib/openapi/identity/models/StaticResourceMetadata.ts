@@ -53,6 +53,18 @@ export interface StaticResourceMetadata {
      * @memberof StaticResourceMetadata
      */
     createdBy?: string;
+    /**
+     * The time a resource was updated.
+     * @type {Date}
+     * @memberof StaticResourceMetadata
+     */
+    modifiedTime?: Date;
+    /**
+     * The user who updated the resource.
+     * @type {string}
+     * @memberof StaticResourceMetadata
+     */
+    modifiedBy?: string;
 }
 
 /**
@@ -82,6 +94,8 @@ export function StaticResourceMetadataFromJSONTyped(json: any, ignoreDiscriminat
         'id': json['id'],
         'creationTime': (new Date(json['creationTime'])),
         'createdBy': !exists(json, 'createdBy') ? undefined : json['createdBy'],
+        'modifiedTime': !exists(json, 'modifiedTime') ? undefined : (new Date(json['modifiedTime'])),
+        'modifiedBy': !exists(json, 'modifiedBy') ? undefined : json['modifiedBy'],
     };
 }
 
@@ -99,6 +113,8 @@ export function StaticResourceMetadataToJSON(value?: StaticResourceMetadata | nu
         'id': value.id,
         'creationTime': (value.creationTime.toISOString()),
         'createdBy': value.createdBy,
+        'modifiedTime': value.modifiedTime === undefined ? undefined : (value.modifiedTime.toISOString()),
+        'modifiedBy': value.modifiedBy,
     };
 }
 

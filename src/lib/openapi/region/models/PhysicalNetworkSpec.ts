@@ -32,12 +32,6 @@ export interface PhysicalNetworkSpec {
      * @memberof PhysicalNetworkSpec
      */
     tags?: Array<Tag>;
-    /**
-     * An IPv4 address prefix.
-     * @type {string}
-     * @memberof PhysicalNetworkSpec
-     */
-    prefix: string;
 }
 
 /**
@@ -45,7 +39,6 @@ export interface PhysicalNetworkSpec {
  */
 export function instanceOfPhysicalNetworkSpec(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "prefix" in value;
 
     return isInstance;
 }
@@ -61,7 +54,6 @@ export function PhysicalNetworkSpecFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'tags': !exists(json, 'tags') ? undefined : ((json['tags'] as Array<any>).map(TagFromJSON)),
-        'prefix': json['prefix'],
     };
 }
 
@@ -75,7 +67,6 @@ export function PhysicalNetworkSpecToJSON(value?: PhysicalNetworkSpec | null): a
     return {
         
         'tags': value.tags === undefined ? undefined : ((value.tags as Array<any>).map(TagToJSON)),
-        'prefix': value.prefix,
     };
 }
 

@@ -73,6 +73,8 @@ function traceContextMiddleware(toastStore: any): IdentityApi.Middleware {
 // also has a reference to the full token, so san see when the access token
 // has expired and refresh it using the refresh token.
 async function accessToken(tokens: InternalToken): Promise<string> {
+	if (!tokens) return '';
+
 	// TODO: we could get multiple API calls concurrently, at which point
 	// we are repeating the operation, be nice if we could handle this
 	// somehow.

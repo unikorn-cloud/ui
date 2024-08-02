@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { RegionFeatures } from './RegionFeatures';
+import {
+    RegionFeaturesFromJSON,
+    RegionFeaturesFromJSONTyped,
+    RegionFeaturesToJSON,
+} from './RegionFeatures';
 import type { RegionType } from './RegionType';
 import {
     RegionTypeFromJSON,
@@ -32,6 +38,12 @@ export interface RegionSpec {
      * @memberof RegionSpec
      */
     type: RegionType;
+    /**
+     * 
+     * @type {RegionFeatures}
+     * @memberof RegionSpec
+     */
+    features: RegionFeatures;
 }
 
 /**
@@ -40,6 +52,7 @@ export interface RegionSpec {
 export function instanceOfRegionSpec(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "type" in value;
+    isInstance = isInstance && "features" in value;
 
     return isInstance;
 }
@@ -55,6 +68,7 @@ export function RegionSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     return {
         
         'type': RegionTypeFromJSON(json['type']),
+        'features': RegionFeaturesFromJSON(json['features']),
     };
 }
 
@@ -68,6 +82,7 @@ export function RegionSpecToJSON(value?: RegionSpec | null): any {
     return {
         
         'type': RegionTypeToJSON(value.type),
+        'features': RegionFeaturesToJSON(value.features),
     };
 }
 

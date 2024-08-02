@@ -21,6 +21,7 @@ models/PhysicalNetworkRead.ts
 models/PhysicalNetworkSpec.ts
 models/PhysicalNetworkWrite.ts
 models/ProjectScopedResourceReadMetadata.ts
+models/RegionFeatures.ts
 models/RegionRead.ts
 models/RegionSpec.ts
 models/RegionType.ts
