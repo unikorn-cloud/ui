@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { PhysicalNetworkSpec } from './PhysicalNetworkSpec';
+import type { PhysicalNetworkReadSpec } from './PhysicalNetworkReadSpec';
 import {
-    PhysicalNetworkSpecFromJSON,
-    PhysicalNetworkSpecFromJSONTyped,
-    PhysicalNetworkSpecToJSON,
-} from './PhysicalNetworkSpec';
+    PhysicalNetworkReadSpecFromJSON,
+    PhysicalNetworkReadSpecFromJSONTyped,
+    PhysicalNetworkReadSpecToJSON,
+} from './PhysicalNetworkReadSpec';
 import type { ProjectScopedResourceReadMetadata } from './ProjectScopedResourceReadMetadata';
 import {
     ProjectScopedResourceReadMetadataFromJSON,
@@ -40,10 +40,10 @@ export interface PhysicalNetworkRead {
     metadata: ProjectScopedResourceReadMetadata;
     /**
      * 
-     * @type {PhysicalNetworkSpec}
+     * @type {PhysicalNetworkReadSpec}
      * @memberof PhysicalNetworkRead
      */
-    spec?: PhysicalNetworkSpec;
+    spec: PhysicalNetworkReadSpec;
 }
 
 /**
@@ -52,6 +52,7 @@ export interface PhysicalNetworkRead {
 export function instanceOfPhysicalNetworkRead(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "metadata" in value;
+    isInstance = isInstance && "spec" in value;
 
     return isInstance;
 }
@@ -67,7 +68,7 @@ export function PhysicalNetworkReadFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'metadata': ProjectScopedResourceReadMetadataFromJSON(json['metadata']),
-        'spec': !exists(json, 'spec') ? undefined : PhysicalNetworkSpecFromJSON(json['spec']),
+        'spec': PhysicalNetworkReadSpecFromJSON(json['spec']),
     };
 }
 
@@ -81,7 +82,7 @@ export function PhysicalNetworkReadToJSON(value?: PhysicalNetworkRead | null): a
     return {
         
         'metadata': ProjectScopedResourceReadMetadataToJSON(value.metadata),
-        'spec': PhysicalNetworkSpecToJSON(value.spec),
+        'spec': PhysicalNetworkReadSpecToJSON(value.spec),
     };
 }
 

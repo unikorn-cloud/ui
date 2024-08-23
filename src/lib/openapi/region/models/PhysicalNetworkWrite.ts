@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { PhysicalNetworkSpec } from './PhysicalNetworkSpec';
+import type { PhysicalNetworkWriteSpec } from './PhysicalNetworkWriteSpec';
 import {
-    PhysicalNetworkSpecFromJSON,
-    PhysicalNetworkSpecFromJSONTyped,
-    PhysicalNetworkSpecToJSON,
-} from './PhysicalNetworkSpec';
+    PhysicalNetworkWriteSpecFromJSON,
+    PhysicalNetworkWriteSpecFromJSONTyped,
+    PhysicalNetworkWriteSpecToJSON,
+} from './PhysicalNetworkWriteSpec';
 import type { ResourceWriteMetadata } from './ResourceWriteMetadata';
 import {
     ResourceWriteMetadataFromJSON,
@@ -40,10 +40,10 @@ export interface PhysicalNetworkWrite {
     metadata: ResourceWriteMetadata;
     /**
      * 
-     * @type {PhysicalNetworkSpec}
+     * @type {PhysicalNetworkWriteSpec}
      * @memberof PhysicalNetworkWrite
      */
-    spec?: PhysicalNetworkSpec;
+    spec?: PhysicalNetworkWriteSpec;
 }
 
 /**
@@ -67,7 +67,7 @@ export function PhysicalNetworkWriteFromJSONTyped(json: any, ignoreDiscriminator
     return {
         
         'metadata': ResourceWriteMetadataFromJSON(json['metadata']),
-        'spec': !exists(json, 'spec') ? undefined : PhysicalNetworkSpecFromJSON(json['spec']),
+        'spec': !exists(json, 'spec') ? undefined : PhysicalNetworkWriteSpecFromJSON(json['spec']),
     };
 }
 
@@ -81,7 +81,7 @@ export function PhysicalNetworkWriteToJSON(value?: PhysicalNetworkWrite | null):
     return {
         
         'metadata': ResourceWriteMetadataToJSON(value.metadata),
-        'spec': PhysicalNetworkSpecToJSON(value.spec),
+        'spec': PhysicalNetworkWriteSpecToJSON(value.spec),
     };
 }
 

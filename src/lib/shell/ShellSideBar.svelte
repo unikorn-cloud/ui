@@ -37,7 +37,10 @@
 		'/regions': [
 			{
 				title: 'Regions',
-				items: [{ label: 'Identities', href: '/regions/identities' }]
+				items: [
+					{ label: 'Identities', href: '/regions/identities' },
+					{ label: 'Physical Networks', href: '/regions/physicalnetworks' }
+				]
 			}
 		]
 	};

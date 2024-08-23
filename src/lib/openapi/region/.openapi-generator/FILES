@@ -18,8 +18,10 @@ models/ImageVirtualization.ts
 models/ModelError.ts
 models/OrganizationScopedResourceReadMetadata.ts
 models/PhysicalNetworkRead.ts
-models/PhysicalNetworkSpec.ts
+models/PhysicalNetworkReadSpec.ts
+models/PhysicalNetworkSpecOpenstack.ts
 models/PhysicalNetworkWrite.ts
+models/PhysicalNetworkWriteSpec.ts
 models/ProjectScopedResourceReadMetadata.ts
 models/RegionFeatures.ts
 models/RegionRead.ts
