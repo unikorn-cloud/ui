@@ -52,10 +52,10 @@
 	token.subscribe((token: InternalToken): void => {
 		at = token;
 		update();
-
-		const ticker = setInterval(update, 5000);
-		onDestroy(() => clearInterval(ticker));
 	});
+
+	const ticker = setInterval(update, 5000);
+	onDestroy(() => clearInterval(ticker));
 
 	function update(): void {
 		if (!at || !organizationID) return;
