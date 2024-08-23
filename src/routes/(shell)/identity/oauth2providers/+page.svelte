@@ -36,10 +36,10 @@
 	token.subscribe((token: InternalToken) => {
 		at = token;
 		update();
-
-		const ticker = setInterval(update, 5000);
-		onDestroy(() => clearInterval(ticker));
 	});
+
+	const ticker = setInterval(update, 5000);
+	onDestroy(() => clearInterval(ticker));
 
 	organizationStore.subscribe((value: string) => {
 		organizationID = value;
