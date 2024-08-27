@@ -47,7 +47,23 @@
 
 	let persistentStorage: boolean = Boolean(pool.machine.disk);
 
-	function updateDisk(enabled: boolean) {
+	function updateDisk(
+		enabled: boolean,
+		flavors: Array<Region.Flavor>,
+		flavorID: string | undefined
+	) {
+		if (!flavors || !flavorID) return;
+
+		/* Volumes cannot be used on baremetal nodes */
+		const allowed = !lookupFlavor(flavors, flavorID).spec.baremetal;
+		if (!allowed) {
+			if (pool.machine.disk) {
+				delete pool.machine.disk;
+			}
+
+			return;
+		}
+
 		if (enabled && !pool.machine.disk) {
 			pool.machine.disk = {
 				size: 50
@@ -57,7 +73,7 @@
 		}
 	}
 
-	$: updateDisk(persistentStorage);
+	$: updateDisk(persistentStorage, flavors, pool.machine.flavorId);
 
 	$: valid = Validation.kubernetesNameValid(pool.name);
 
