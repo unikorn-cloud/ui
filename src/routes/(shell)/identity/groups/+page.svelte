@@ -6,6 +6,7 @@
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
+	import Protected from '$lib/rbac/Protected.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -20,29 +21,40 @@
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	const modalStore = getModalStore();
 
-	import { organizationStore } from '$lib/stores';
-
 	/* Client setup */
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Identity from '$lib/openapi/identity';
+	import * as RBAC from '$lib/rbac';
+	import * as Stores from '$lib/stores';
 
 	let at: InternalToken;
+	let organizationInfo: Stores.OrganizationInfo;
+
+	// Define required RBAC rules.
+	let allowed: boolean;
+
+	let organizationScopes: Array<RBAC.OrganizationScope> = [
+		{
+			endpoint: 'groups',
+			operation: Identity.AclOperation.Create
+		}
+	];
 
 	token.subscribe((token: InternalToken) => (at = token));
 
-	let organizationID: string;
-
-	organizationStore.subscribe((value: string) => (organizationID = value));
+	Stores.organizationStore.subscribe(
+		(value: Stores.OrganizationInfo) => (organizationInfo = value)
+	);
 
 	let groups: Array<Identity.GroupRead>;
 
-	function update(at: InternalToken, organizationID: string) {
-		if (!at || !organizationID) return;
+	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo, allowed: boolean) {
+		if (!at || !organizationInfo || !allowed) return;
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.identity(toastStore, at)
@@ -51,7 +63,7 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: update(at, organizationID);
+	$: update(at, organizationInfo, allowed);
 
 	function remove(resource: Identity.GroupRead) {
 		const modal: ModalSettings = {
@@ -62,13 +74,13 @@
 				if (!ok) return;
 
 				const parameters = {
-					organizationID: organizationID,
+					organizationID: organizationInfo.id,
 					groupid: resource.metadata.id
 				};
 
 				Clients.identity(toastStore, at)
 					.apiV1OrganizationsOrganizationIDGroupsGroupidDelete(parameters)
-					.then(() => update(at, organizationID))
+					.then(() => update(at, organizationInfo, allowed))
 					.catch((e: Error) => Clients.error(e));
 			}
 		};
@@ -78,36 +90,36 @@
 </script>
 
 <ShellPage {settings}>
-	<a
-		href="/identity/groups/create"
-		class="btn variant-filled-primary flex gap-2 items-center"
-		slot="tools"
-	>
-		<iconify-icon icon="material-symbols:add" />
-		<span>Create</span>
-	</a>
+	<form action="/identity/groups/create" slot="tools">
+		<button class="btn variant-filled-primary flex gap-2 items-center" disabled={!allowed}>
+			<iconify-icon icon="material-symbols:add" />
+			<span>Create</span>
+		</button>
+	</form>
 
-	<ShellList>
-		{#each groups || [] as resource}
-			<ShellListItem metadata={resource.metadata}>
-				<svelte:fragment slot="tray">
-					<BurgerMenu name="menu-{resource.metadata.id}">
-						<BurgerMenuItem
-							href="/identity/groups/view/{resource.metadata.id}"
-							icon="mdi:edit-outline"
-						>
-							Edit
-						</BurgerMenuItem>
-						<BurgerMenuItem
-							on:click={() => remove(resource)}
-							on:keypress={() => remove(resource)}
-							icon="mdi:trash-can-outline"
-						>
-							Delete
-						</BurgerMenuItem>
-					</BurgerMenu>
-				</svelte:fragment>
-			</ShellListItem>
-		{/each}
-	</ShellList>
+	<Protected {organizationScopes} bind:allowed>
+		<ShellList>
+			{#each groups || [] as resource}
+				<ShellListItem metadata={resource.metadata}>
+					<svelte:fragment slot="tray">
+						<BurgerMenu name="menu-{resource.metadata.id}">
+							<BurgerMenuItem
+								href="/identity/groups/view/{resource.metadata.id}"
+								icon="mdi:edit-outline"
+							>
+								Edit
+							</BurgerMenuItem>
+							<BurgerMenuItem
+								on:click={() => remove(resource)}
+								on:keypress={() => remove(resource)}
+								icon="mdi:trash-can-outline"
+							>
+								Delete
+							</BurgerMenuItem>
+						</BurgerMenu>
+					</svelte:fragment>
+				</ShellListItem>
+			{/each}
+		</ShellList>
+	</Protected>
 </ShellPage>

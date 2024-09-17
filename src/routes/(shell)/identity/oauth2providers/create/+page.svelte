@@ -16,16 +16,15 @@
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	import { organizationStore } from '$lib/stores';
-
 	/* Client setup */
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Identity from '$lib/openapi/identity';
+	import * as Stores from '$lib/stores';
 
 	let at: InternalToken;
-	let organizationID: string;
+	let organizationInfo: Stores.OrganizationInfo;
 	let providers: Array<Identity.Oauth2ProviderRead>;
 
 	let resource: Identity.Oauth2ProviderWrite = {
@@ -38,17 +37,19 @@
 		}
 	};
 
-	organizationStore.subscribe((value: string) => (organizationID = value));
+	Stores.organizationStore.subscribe(
+		(value: Stores.OrganizationInfo) => (organizationInfo = value)
+	);
 
 	token.subscribe((token: InternalToken) => {
 		/* Setup the token on load */
-		if (!token || !organizationID) return;
+		if (!token || !organizationInfo) return;
 
 		at = token;
 
 		/* Get top-level resources required for the first step */
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.identity(toastStore, at)
@@ -68,7 +69,7 @@
 
 	function submit() {
 		const parameters = {
-			organizationID: organizationID,
+			organizationID: organizationInfo.id,
 			oauth2ProviderWrite: resource
 		};
 

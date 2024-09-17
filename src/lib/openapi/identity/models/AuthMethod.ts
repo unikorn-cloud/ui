@@ -18,8 +18,9 @@
  * @export
  */
 export const AuthMethod = {
-    Post: 'client_secret_post',
-    Basic: 'client_secret_basic'
+    ClientSecretPost: 'client_secret_post',
+    ClientSecretBasic: 'client_secret_basic',
+    TlsClientAuth: 'tls_client_auth'
 } as const;
 export type AuthMethod = typeof AuthMethod[keyof typeof AuthMethod];
 

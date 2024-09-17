@@ -14,6 +14,9 @@
 	import SelectNew from '$lib/forms/SelectNew.svelte';
 	import Flavor from '$lib/Flavor.svelte';
 
+	/* The pool index allows us to fully qualify IDs so they are unique */
+	export let index: number;
+
 	/* The pool should be bound to expose the built configuration */
 	export let pool: Kubernetes.KubernetesClusterWorkloadPool;
 
@@ -112,7 +115,7 @@
 <ShellSection title="Pool Topology">
 	{#if flavors && pool.machine.flavorId}
 		<SelectNew
-			id="flavor"
+			id="flavor-{index}"
 			label="Choose a pool type."
 			hint="Allows the selection of the pool's available resources to be used by workloads per pool
 			member. This includes CPU, GPU and memory."

@@ -17,32 +17,33 @@
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	import { organizationStore } from '$lib/stores';
-
 	/* Client setup */
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Identity from '$lib/openapi/identity';
+	import * as Stores from '$lib/stores';
 
 	let at: InternalToken;
 
 	token.subscribe((token: InternalToken) => (at = token));
 
-	let organizationID: string;
+	let organizationInfo: Stores.OrganizationInfo;
 
-	organizationStore.subscribe((value: string) => (organizationID = value));
+	Stores.organizationStore.subscribe(
+		(value: Stores.OrganizationInfo) => (organizationInfo = value)
+	);
 
 	let projects: Array<Identity.ProjectRead>;
 	let project: Identity.ProjectRead;
 
 	let groups: Array<Identity.GroupRead>;
 
-	function update(at: InternalToken, organizationID: string) {
-		if (!at || !organizationID) return;
+	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
+		if (!at || !organizationInfo) return;
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.identity(toastStore, at)
@@ -79,11 +80,11 @@
 
 	$: valid = metadataValid && project.spec.groupIDs && project.spec.groupIDs.length != 0;
 
-	$: update(at, organizationID);
+	$: update(at, organizationInfo);
 
 	function submit() {
 		const parameters = {
-			organizationID: organizationID,
+			organizationID: organizationInfo.id,
 			projectID: $page.params.id,
 			projectWrite: project
 		};

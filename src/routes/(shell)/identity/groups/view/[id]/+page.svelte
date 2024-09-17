@@ -18,21 +18,22 @@
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	import { organizationStore } from '$lib/stores';
-
 	/* Client setup */
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Identity from '$lib/openapi/identity';
+	import * as Stores from '$lib/stores';
 
 	let at: InternalToken;
 
 	token.subscribe((token: InternalToken) => (at = token));
 
-	let organizationID: string;
+	let organizationInfo: Stores.OrganizationInfo;
 
-	organizationStore.subscribe((value: string) => (organizationID = value));
+	Stores.organizationStore.subscribe(
+		(value: Stores.OrganizationInfo) => (organizationInfo = value)
+	);
 
 	let groups: Array<Identity.GroupRead>;
 	let group: Identity.GroupRead;
@@ -40,11 +41,11 @@
 	let availableRoles: Array<Identity.RoleRead>;
 	let availableGroups: Array<Identity.AvailableGroup>;
 
-	function update(at: InternalToken, organizationID: string) {
-		if (!at || !organizationID) return;
+	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
+		if (!at || !organizationInfo) return;
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.identity(toastStore, at)
@@ -66,7 +67,7 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: update(at, organizationID);
+	$: update(at, organizationInfo);
 
 	function updateGroup(groups: Array<Identity.GroupRead>) {
 		if (!groups) return;
@@ -95,10 +96,10 @@
 	$: valid = metadataValid && group.spec.roleIDs.length != 0;
 
 	function submit() {
-		if (!at || !organizationID) return;
+		if (!at || !organizationInfo) return;
 
 		const parameters = {
-			organizationID: organizationID,
+			organizationID: organizationInfo.id,
 			groupid: $page.params.id,
 			groupWrite: group
 		};

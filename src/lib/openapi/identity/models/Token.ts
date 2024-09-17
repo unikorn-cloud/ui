@@ -36,7 +36,7 @@ export interface Token {
      * @type {string}
      * @memberof Token
      */
-    refreshToken: string;
+    refreshToken?: string;
     /**
      * An OIDC ID token.
      * @type {string}
@@ -58,7 +58,6 @@ export function instanceOfToken(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "tokenType" in value;
     isInstance = isInstance && "accessToken" in value;
-    isInstance = isInstance && "refreshToken" in value;
     isInstance = isInstance && "expiresIn" in value;
 
     return isInstance;
@@ -76,7 +75,7 @@ export function TokenFromJSONTyped(json: any, ignoreDiscriminator: boolean): Tok
         
         'tokenType': json['token_type'],
         'accessToken': json['access_token'],
-        'refreshToken': json['refresh_token'],
+        'refreshToken': !exists(json, 'refresh_token') ? undefined : json['refresh_token'],
         'idToken': !exists(json, 'id_token') ? undefined : json['id_token'],
         'expiresIn': json['expires_in'],
     };

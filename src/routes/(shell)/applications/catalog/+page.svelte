@@ -18,13 +18,12 @@
 	import { token } from '$lib/credentials';
 	import * as Clients from '$lib/clients';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
+	import * as Stores from '$lib/stores';
 
-	import { organizationStore } from '$lib/stores';
+	let organizationInfo: Stores.OrganizationInfo;
 
-	let organizationID: string;
-
-	organizationStore.subscribe((value: string) => {
-		organizationID = value;
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
 	});
 
 	let at: InternalToken;
@@ -35,11 +34,11 @@
 
 	let applications: Array<Kubernetes.ApplicationRead>;
 
-	function updateApplications(at: InternalToken, organizationID: string) {
-		if (!at || !organizationID) return;
+	function updateApplications(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
+		if (!at || !organizationInfo) return;
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.kubernetes(toastStore, at)
@@ -48,7 +47,7 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateApplications(at, organizationID);
+	$: updateApplications(at, organizationInfo);
 </script>
 
 <ShellPage {settings}>

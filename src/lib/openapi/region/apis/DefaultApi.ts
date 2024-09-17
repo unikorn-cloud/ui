@@ -23,6 +23,7 @@ import type {
   ModelError,
   PhysicalNetworkRead,
   PhysicalNetworkWrite,
+  QuotasSpec,
   RegionRead,
 } from '../models/index';
 import {
@@ -42,6 +43,8 @@ import {
     PhysicalNetworkReadToJSON,
     PhysicalNetworkWriteFromJSON,
     PhysicalNetworkWriteToJSON,
+    QuotasSpecFromJSON,
+    QuotasSpecToJSON,
     RegionReadFromJSON,
     RegionReadToJSON,
 } from '../models/index';
@@ -85,6 +88,19 @@ export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIden
     projectID: string;
     identityID: string;
     physicalNetworkWrite?: PhysicalNetworkWrite;
+}
+
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasGetRequest {
+    organizationID: string;
+    projectID: string;
+    identityID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasPutRequest {
+    organizationID: string;
+    projectID: string;
+    identityID: string;
+    quotasSpec?: QuotasSpec;
 }
 
 export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesPostRequest {
@@ -409,6 +425,94 @@ export class DefaultApi extends runtime.BaseAPI {
     async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PhysicalNetworkRead> {
         const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPostRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     * A client-specific set of quotas for the identity.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<QuotasSpec>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasGet.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasGet.');
+        }
+
+        if (requestParameters.identityID === null || requestParameters.identityID === undefined) {
+            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/identities/{identityID}/quotas`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => QuotasSpecFromJSON(jsonValue));
+    }
+
+    /**
+     * A client-specific set of quotas for the identity.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<QuotasSpec> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Set per-client quotas for the identity.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasPutRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasPut.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasPut.');
+        }
+
+        if (requestParameters.identityID === null || requestParameters.identityID === undefined) {
+            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasPut.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/identities/{identityID}/quotas`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: QuotasSpecToJSON(requestParameters.quotasSpec),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Set per-client quotas for the identity.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasPut(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasPutRaw(requestParameters, initOverrides);
     }
 
     /**

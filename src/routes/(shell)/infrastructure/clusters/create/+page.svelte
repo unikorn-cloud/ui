@@ -17,8 +17,6 @@
 
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 
-	import { organizationStore } from '$lib/stores';
-
 	import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
 
 	/* Client setup */
@@ -28,9 +26,10 @@
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as Identity from '$lib/openapi/identity';
 	import * as Region from '$lib/openapi/region';
+	import * as Stores from '$lib/stores';
 
 	let at: InternalToken;
-	let organizationID: string;
+	let organizationInfo: Stores.OrganizationInfo;
 	let projectID: string;
 	let regionID: string;
 	let regions: Array<Region.RegionRead>;
@@ -74,8 +73,8 @@
 
 	let poolValid: Array<boolean> = [false];
 
-	organizationStore.subscribe((value: string) => {
-		organizationID = value;
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
 		updateProjects();
 	});
 
@@ -85,10 +84,10 @@
 	});
 
 	function updateProjects() {
-		if (!at || !organizationID) return;
+		if (!at || !organizationInfo) return;
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.identity(toastStore, at)
@@ -102,11 +101,11 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function updateRegions(at: InternalToken, organizationID: string) {
-		if (!at || !organizationID) return;
+	function updateRegions(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
+		if (!at || !organizationInfo) return;
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		/* Get top-level resources required for the first step */
@@ -122,7 +121,7 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateRegions(at, organizationID);
+	$: updateRegions(at, organizationInfo);
 
 	$: resource.spec.regionId = regionID;
 
@@ -130,7 +129,7 @@
 		if (!at || !projectID) return;
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.kubernetes(toastStore, at)
@@ -152,7 +151,7 @@
 		if (!at || !projectID) return;
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.kubernetes(toastStore, at)
@@ -180,11 +179,15 @@
 	$: step2Valid = metadataValid;
 
 	/* Once the region has been selected we can poll the images and other resources */
-	function updateImages(at: InternalToken, organizationID: string, regionID: string): void {
-		if (!at || !organizationID || !regionID) return;
+	function updateImages(
+		at: InternalToken,
+		organizationInfo: Stores.OrganizationInfo,
+		regionID: string
+	): void {
+		if (!at || !organizationInfo || !regionID) return;
 
 		const parameters = {
-			organizationID: organizationID,
+			organizationID: organizationInfo.id,
 			regionID: regionID
 		};
 
@@ -194,11 +197,15 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function updateFlavors(at: InternalToken, organizationID: string, regionID: string): void {
-		if (!at || !organizationID || !regionID) return;
+	function updateFlavors(
+		at: InternalToken,
+		organizationInfo: Stores.OrganizationInfo,
+		regionID: string
+	): void {
+		if (!at || !organizationInfo || !regionID) return;
 
 		const parameters = {
-			organizationID: organizationID,
+			organizationID: organizationInfo.id,
 			regionID: regionID
 		};
 
@@ -208,8 +215,8 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateImages(at, organizationID, regionID);
-	$: updateFlavors(at, organizationID, regionID);
+	$: updateImages(at, organizationInfo, regionID);
+	$: updateFlavors(at, organizationInfo, regionID);
 
 	$: resource.spec.regionId = regionID;
 
@@ -273,7 +280,7 @@
 
 	function complete() {
 		const parameters = {
-			organizationID: organizationID,
+			organizationID: organizationInfo.id,
 			projectID: projectID,
 			kubernetesClusterWrite: resource
 		};
@@ -359,18 +366,18 @@
 				operational cost when not in use.
 			</p>
 
-			{#each resource.spec.workloadPools as pool, i}
-				<ShellSection title="Workload Pool {i + 1}">
+			{#each resource.spec.workloadPools as pool, index}
+				<ShellSection title="Workload Pool {index + 1}">
 					<button
 						class="text-2xl"
-						on:click={() => removePool(i)}
-						on:keypress={() => removePool(i)}
+						on:click={() => removePool(index)}
+						on:keypress={() => removePool(index)}
 						slot="tools"
 					>
 						<iconify-icon icon="mdi:trash-can-outline" />
 					</button>
 
-					<WorkloadPoolCreate {flavors} bind:pool bind:valid={poolValid[i]} />
+					<WorkloadPoolCreate {index} {flavors} bind:pool bind:valid={poolValid[index]} />
 				</ShellSection>
 			{/each}
 

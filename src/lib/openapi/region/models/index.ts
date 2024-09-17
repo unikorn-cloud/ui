@@ -2,6 +2,7 @@
 /* eslint-disable */
 export * from './ExternalNetwork';
 export * from './Flavor';
+export * from './FlavorQuota';
 export * from './FlavorSpec';
 export * from './GpuSpec';
 export * from './GpuVendor';
@@ -22,6 +23,7 @@ export * from './PhysicalNetworkSpecOpenstack';
 export * from './PhysicalNetworkWrite';
 export * from './PhysicalNetworkWriteSpec';
 export * from './ProjectScopedResourceReadMetadata';
+export * from './QuotasSpec';
 export * from './RegionFeatures';
 export * from './RegionRead';
 export * from './RegionSpec';

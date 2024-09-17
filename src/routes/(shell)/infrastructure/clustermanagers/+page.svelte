@@ -21,14 +21,13 @@
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	const modalStore = getModalStore();
 
-	import { organizationStore } from '$lib/stores';
-
 	/* Client setup */
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as Identity from '$lib/openapi/identity';
+	import * as Stores from '$lib/stores';
 
 	let at: InternalToken;
 
@@ -36,10 +35,10 @@
 
 	let projects: Array<Identity.ProjectRead>;
 
-	let organizationID: string;
+	let organizationInfo: Stores.OrganizationInfo;
 
-	organizationStore.subscribe((value: string) => {
-		organizationID = value;
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
 		update();
 	});
 
@@ -52,10 +51,10 @@
 	onDestroy(() => clearInterval(ticker));
 
 	function update(): void {
-		if (!at || !organizationID) return;
+		if (!at || !organizationInfo) return;
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.kubernetes(toastStore, at)
@@ -78,7 +77,7 @@
 				if (!ok) return;
 
 				const parameters = {
-					organizationID: organizationID,
+					organizationID: organizationInfo.id,
 					projectID: resource.metadata.projectId,
 					clusterManagerID: resource.metadata.id
 				};

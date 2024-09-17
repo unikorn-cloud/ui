@@ -49,6 +49,12 @@ export interface IdentitySpecOpenStack {
      * @memberof IdentitySpecOpenStack
      */
     serverGroupId?: string;
+    /**
+     * Ephemeral SSH key generated for the identity.
+     * @type {string}
+     * @memberof IdentitySpecOpenStack
+     */
+    sshKeyName?: string;
 }
 
 /**
@@ -75,6 +81,7 @@ export function IdentitySpecOpenStackFromJSONTyped(json: any, ignoreDiscriminato
         'userId': !exists(json, 'userId') ? undefined : json['userId'],
         'projectId': !exists(json, 'projectId') ? undefined : json['projectId'],
         'serverGroupId': !exists(json, 'serverGroupId') ? undefined : json['serverGroupId'],
+        'sshKeyName': !exists(json, 'sshKeyName') ? undefined : json['sshKeyName'],
     };
 }
 
@@ -92,6 +99,7 @@ export function IdentitySpecOpenStackToJSON(value?: IdentitySpecOpenStack | null
         'userId': value.userId,
         'projectId': value.projectId,
         'serverGroupId': value.serverGroupId,
+        'sshKeyName': value.sshKeyName,
     };
 }
 

@@ -3,6 +3,7 @@ apis/index.ts
 index.ts
 models/ExternalNetwork.ts
 models/Flavor.ts
+models/FlavorQuota.ts
 models/FlavorSpec.ts
 models/GpuSpec.ts
 models/GpuVendor.ts
@@ -23,6 +24,7 @@ models/PhysicalNetworkSpecOpenstack.ts
 models/PhysicalNetworkWrite.ts
 models/PhysicalNetworkWriteSpec.ts
 models/ProjectScopedResourceReadMetadata.ts
+models/QuotasSpec.ts
 models/RegionFeatures.ts
 models/RegionRead.ts
 models/RegionSpec.ts
