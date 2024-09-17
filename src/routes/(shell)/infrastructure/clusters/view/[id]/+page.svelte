@@ -21,8 +21,6 @@
 
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 
-	import { organizationStore } from '$lib/stores';
-
 	/* Client setup */
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
@@ -30,9 +28,10 @@
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as Region from '$lib/openapi/region';
 	import * as RegionUtil from '$lib/regionutil';
+	import * as Stores from '$lib/stores';
 
 	let at: InternalToken;
-	let organizationID: string;
+	let organizationInfo: Stores.OrganizationInfo;
 	let projectID: string;
 	let regionID: string;
 	let allClusters: Array<Kubernetes.KubernetesClusterRead>;
@@ -45,8 +44,8 @@
 
 	let poolValid: Array<boolean> = [];
 
-	organizationStore.subscribe((value: string) => {
-		organizationID = value;
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
 	});
 
 	token.subscribe((value: InternalToken) => {
@@ -54,11 +53,11 @@
 	});
 
 	// Get all clusters in the organization.
-	function updateAllClusters(at: InternalToken, organizationID: string): void {
-		if (!at || !organizationID) return;
+	function updateAllClusters(at: InternalToken, organizationInfo: Stores.OrganizationInfo): void {
+		if (!at || !organizationInfo) return;
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.kubernetes(toastStore, at)
@@ -74,7 +73,7 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateAllClusters(at, organizationID);
+	$: updateAllClusters(at, organizationInfo);
 
 	// Find our cluster.
 	function updateCuster(clusters: Array<Kubernetes.KubernetesClusterRead>) {
@@ -114,11 +113,15 @@
 	$: step2Valid = metadataValid;
 
 	/* Once the region has been selected we can poll the images and other resources */
-	function updateImages(at: InternalToken, organizationID: string, regionID: string): void {
-		if (!at || !organizationID || !regionID) return;
+	function updateImages(
+		at: InternalToken,
+		organizationInfo: Stores.OrganizationInfo,
+		regionID: string
+	): void {
+		if (!at || !organizationInfo || !regionID) return;
 
 		const parameters = {
-			organizationID: organizationID,
+			organizationID: organizationInfo.id,
 			regionID: regionID
 		};
 
@@ -128,11 +131,15 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function updateFlavors(at: InternalToken, organizationID: string, regionID: string): void {
-		if (!at || !organizationID || !regionID) return;
+	function updateFlavors(
+		at: InternalToken,
+		organizationInfo: Stores.OrganizationInfo,
+		regionID: string
+	): void {
+		if (!at || !organizationInfo || !regionID) return;
 
 		const parameters = {
-			organizationID: organizationID,
+			organizationID: organizationInfo.id,
 			regionID: regionID
 		};
 
@@ -142,8 +149,8 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateImages(at, organizationID, regionID);
-	$: updateFlavors(at, organizationID, regionID);
+	$: updateImages(at, organizationInfo, regionID);
+	$: updateFlavors(at, organizationInfo, regionID);
 
 	/* From the images, we can get a list of Kubernetes versions */
 	function updateVersions(at: InternalToken, images: Array<Region.Image>): void {
@@ -206,7 +213,7 @@
 
 	function complete() {
 		const parameters = {
-			organizationID: organizationID,
+			organizationID: organizationInfo.id,
 			projectID: projectID,
 			clusterID: resource.metadata.id,
 			kubernetesClusterWrite: resource
@@ -261,18 +268,18 @@
 					operational cost when not in use.
 				</p>
 
-				{#each resource.spec.workloadPools as pool, i}
-					<ShellSection title="Workload Pool {i + 1}">
+				{#each resource.spec.workloadPools as pool, index}
+					<ShellSection title="Workload Pool {index + 1}">
 						<button
 							class="text-2xl"
-							on:click={() => removePool(i)}
-							on:keypress={() => removePool(i)}
+							on:click={() => removePool(index)}
+							on:keypress={() => removePool(index)}
 							slot="tools"
 						>
 							<iconify-icon icon="mdi:trash-can-outline" />
 						</button>
 
-						<WorkloadPoolCreate {flavors} bind:pool bind:valid={poolValid[i]} />
+						<WorkloadPoolCreate {index} {flavors} bind:pool bind:valid={poolValid[index]} />
 					</ShellSection>
 				{/each}
 

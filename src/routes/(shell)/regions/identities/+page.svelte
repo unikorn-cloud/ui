@@ -7,6 +7,7 @@
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
+	import Protected from '$lib/rbac/Protected.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Regions',
@@ -23,8 +24,6 @@
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	const modalStore = getModalStore();
 
-	import { organizationStore } from '$lib/stores';
-
 	/* Client setup */
 	import * as Clients from '$lib/clients';
 	import type { InternalToken } from '$lib/oauth2';
@@ -32,6 +31,8 @@
 	import * as Identity from '$lib/openapi/identity';
 	import * as Region from '$lib/openapi/region';
 	import * as RegionUtil from '$lib/regionutil';
+	import * as RBAC from '$lib/rbac';
+	import * as Stores from '$lib/stores';
 
 	let at: InternalToken;
 
@@ -39,10 +40,20 @@
 	let regions: Array<Region.RegionRead>;
 	let identities: Array<Region.IdentityRead>;
 
-	let organizationID: string;
+	let organizationInfo: Stores.OrganizationInfo;
 
-	organizationStore.subscribe((value: string) => {
-		organizationID = value;
+	// Define required RBAC rules.
+	let allowed: boolean;
+
+	let organizationScopes: Array<RBAC.OrganizationScope> = [
+		{
+			endpoint: 'identites',
+			operation: Identity.AclOperation.Read
+		}
+	];
+
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
 		update();
 	});
 
@@ -55,10 +66,10 @@
 	onDestroy(() => clearInterval(ticker));
 
 	function update(): void {
-		if (!at || !organizationID) return;
+		if (!at || !organizationInfo || !allowed) return;
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.region(toastStore, at)
@@ -86,7 +97,7 @@
 				if (!ok) return;
 
 				const parameters = {
-					organizationID: organizationID,
+					organizationID: organizationInfo.id,
 					projectID: resource.metadata.projectId,
 					identityID: resource.metadata.id
 				};
@@ -102,37 +113,39 @@
 </script>
 
 <ShellPage {settings}>
-	<ShellList>
-		{#each identities || [] as resource}
-			<ShellListItem metadata={resource.metadata} {projects}>
-				<svelte:fragment slot="badges">
-					<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
-						{RegionUtil.name(regions, resource.spec.regionId)}
-					</Badge>
-				</svelte:fragment>
+	<Protected {organizationScopes} bind:allowed>
+		<ShellList>
+			{#each identities || [] as resource}
+				<ShellListItem metadata={resource.metadata} {projects}>
+					<svelte:fragment slot="badges">
+						<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+							{RegionUtil.name(regions, resource.spec.regionId)}
+						</Badge>
+					</svelte:fragment>
 
-				<svelte:fragment slot="tray">
-					<BurgerMenu name="menu-{resource.metadata.id}">
-						<BurgerMenuItem
-							on:click={() => remove(resource)}
-							on:keypress={() => remove(resource)}
-							icon="mdi:trash-can-outline"
-						>
-							Delete
-						</BurgerMenuItem>
-					</BurgerMenu>
-				</svelte:fragment>
+					<svelte:fragment slot="tray">
+						<BurgerMenu name="menu-{resource.metadata.id}">
+							<BurgerMenuItem
+								on:click={() => remove(resource)}
+								on:keypress={() => remove(resource)}
+								icon="mdi:trash-can-outline"
+							>
+								Delete
+							</BurgerMenuItem>
+						</BurgerMenu>
+					</svelte:fragment>
 
-				<svelte:fragment slot="metadata">
-					{#if resource.spec.tags}
-						<ShellMetadataItem icon="mdi:tag-outline">
-							{#each resource.spec.tags as tag}
-								<div class="badge variant-soft">{tag.name}: {tag.value}</div>
-							{/each}
-						</ShellMetadataItem>
-					{/if}
-				</svelte:fragment>
-			</ShellListItem>
-		{/each}
-	</ShellList>
+					<svelte:fragment slot="metadata">
+						{#if resource.spec.tags}
+							<ShellMetadataItem icon="mdi:tag-outline">
+								{#each resource.spec.tags as tag}
+									<div class="badge variant-soft">{tag.name}: {tag.value}</div>
+								{/each}
+							</ShellMetadataItem>
+						{/if}
+					</svelte:fragment>
+				</ShellListItem>
+			{/each}
+		</ShellList>
+	</Protected>
 </ShellPage>

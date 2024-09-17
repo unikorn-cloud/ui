@@ -20,8 +20,6 @@
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	const modalStore = getModalStore();
 
-	import { organizationStore } from '$lib/stores';
-
 	/* Client setup */
 	import * as Clients from '$lib/clients';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
@@ -30,6 +28,7 @@
 	import * as RegionUtil from '$lib/regionutil';
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
+	import * as Stores from '$lib/stores';
 
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
@@ -42,10 +41,10 @@
 	let projects: Array<Identity.ProjectRead>;
 	let regions: Array<Region.RegionRead>;
 
-	let organizationID: string;
+	let organizationInfo: Stores.OrganizationInfo;
 
-	organizationStore.subscribe((value: string) => {
-		organizationID = value;
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
 		update();
 	});
 
@@ -58,10 +57,10 @@
 	onDestroy(() => clearInterval(ticker));
 
 	function update(): void {
-		if (!at || !organizationID) return;
+		if (!at || !organizationInfo) return;
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.kubernetes(toastStore, at)
@@ -90,7 +89,7 @@
 				if (!resource.metadata) return;
 
 				const parameters = {
-					organizationID: organizationID,
+					organizationID: organizationInfo.id,
 					projectID: resource.metadata.projectId,
 					clusterID: resource.metadata.id
 				};
@@ -106,7 +105,7 @@
 
 	function getKubeconfig(resource: Kubernetes.KubernetesClusterRead): void {
 		const parameters = {
-			organizationID: organizationID,
+			organizationID: organizationInfo.id,
 			projectID: resource.metadata.projectId,
 			clusterID: resource.metadata.id
 		};

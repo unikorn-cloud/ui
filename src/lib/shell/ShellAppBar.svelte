@@ -11,7 +11,7 @@
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
 	const drawerStore = getDrawerStore();
 
-	import { organizationStore } from '$lib/stores';
+	import * as Stores from '$lib/stores';
 
 	function showSideMenu(): void {
 		const settings: DrawerSettings = { id: 'sidebar' };
@@ -45,14 +45,19 @@
 	let organizations: Array<Identity.OrganizationRead>;
 	let organizationID: string;
 
-	let currentOrganizationID: string;
+	let currentOrganizationInfo: Stores.OrganizationInfo;
 
 	// Grab the organization out of session storage first.
-	organizationStore.subscribe((o: string) => {
-		currentOrganizationID = o;
+	// TODO: make persistent storage!
+	Stores.organizationStore.subscribe((o: Stores.OrganizationInfo) => {
+		currentOrganizationInfo = o;
 	});
 
-	token.subscribe((at: InternalToken) => {
+	let at: InternalToken;
+
+	token.subscribe((token: InternalToken) => (at = token));
+
+	function updateToken(at: InternalToken) {
 		if (!at) return;
 
 		Clients.identity(toastStore, at)
@@ -61,16 +66,36 @@
 				organizations = v;
 
 				// Try reuse the current organization if we can.
-				const existingOrganization = v.find((o) => o.metadata.id == currentOrganizationID);
+				const existingOrganization = v.some((o) => o.metadata.id == currentOrganizationInfo?.id);
 
 				organizationID = existingOrganization
-					? currentOrganizationID
+					? currentOrganizationInfo.id
 					: organizations[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
-	});
+	}
 
-	$: if (organizationID) organizationStore.set(organizationID);
+	$: updateToken(at);
+
+	function updateOrganization(at: InternalToken, organizationID: string) {
+		if (!organizationID || !at) return;
+
+		const parameters = {
+			organizationID: organizationID
+		};
+
+		Clients.identity(toastStore, at)
+			.apiV1OrganizationsOrganizationIDAclGet(parameters)
+			.then((v: Identity.Acl) => {
+				Stores.organizationStore.set({
+					id: organizationID,
+					acl: v
+				});
+			})
+			.catch((e: Error) => Clients.error(e));
+	}
+
+	$: updateOrganization(at, organizationID);
 
 	function doLogout(): void {
 		logout();

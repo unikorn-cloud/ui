@@ -7,6 +7,7 @@
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import TextInput from '$lib/forms/TextInput.svelte';
 	import Select from '$lib/forms/Select.svelte';
+	import Protected from '$lib/rbac/Protected.svelte';
 	import * as Validation from '$lib/validation';
 
 	const settings: ShellPageSettings = {
@@ -23,28 +24,40 @@
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Identity from '$lib/openapi/identity';
+	import * as RBAC from '$lib/rbac';
+	import * as Stores from '$lib/stores';
 
 	let at: InternalToken;
 
 	token.subscribe((token: InternalToken) => (at = token));
 
-	import { organizationStore } from '$lib/stores';
+	// Define required RBAC rules.
+	let allowed: boolean;
 
-	let organizationID: string;
+	let organizationScopes: Array<RBAC.OrganizationScope> = [
+		{
+			endpoint: 'organizations',
+			operation: Identity.AclOperation.Update
+		}
+	];
 
-	organizationStore.subscribe((value: string) => (organizationID = value));
+	let organizationInfo: Stores.OrganizationInfo;
 
-	let organization: Identity.OrganizationRead;
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
+	});
 
-	let providers: Array<Identity.Oauth2ProviderRead>;
+	let organization: Identity.OrganizationRead | null;
+	let providers: Array<Identity.Oauth2ProviderRead> | null;
+	let organizationProviders: Array<Identity.Oauth2ProviderRead> | null;
 
-	let organizationProviders: Array<Identity.Oauth2ProviderRead>;
-
-	function update(at: InternalToken, organizationID: string) {
-		if (!at || !organizationID) return;
+	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo, allowed: boolean) {
+		if (!at || !organizationInfo || !allowed) {
+			return;
+		}
 
 		const parameters = {
-			organizationID: organizationID
+			organizationID: organizationInfo.id
 		};
 
 		Clients.identity(toastStore, at)
@@ -63,13 +76,15 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: update(at, organizationID);
+	$: update(at, organizationInfo, allowed);
 
 	function submit() {
+		if (!organization) return;
+
 		// Update the organization.
 		// TODO: input validation!
 		const parameters = {
-			organizationID: organizationID,
+			organizationID: organization.metadata.id,
 			organizationWrite: organization
 		};
 
@@ -80,8 +95,8 @@
 	}
 
 	function getOauth2ProviderType(
-		providers: Array<Identity.Oauth2ProviderRead>,
-		organization: Identity.OrganizationRead
+		providers: Array<Identity.Oauth2ProviderRead> | null,
+		organization: Identity.OrganizationRead | null
 	): Identity.Oauth2ProviderType | undefined {
 		if (!providers || !organization) return undefined;
 
@@ -97,7 +112,7 @@
 	let valid: boolean = false;
 
 	$: valid =
-		metadataValid && organization.spec.organizationType == Identity.OrganizationType.Domain
+		metadataValid && organization?.spec.organizationType == Identity.OrganizationType.Domain
 			? domainValid
 			: true;
 
@@ -105,95 +120,101 @@
 </script>
 
 <ShellPage {settings}>
-	{#if organization}
-		<ShellViewHeader metadata={organization.metadata} />
-		<ShellMetadataSection metadata={organization.metadata} names={[]} bind:valid={metadataValid} />
+	<Protected {organizationScopes} bind:allowed>
+		{#if organization}
+			<ShellViewHeader metadata={organization.metadata} />
+			<ShellMetadataSection
+				metadata={organization.metadata}
+				names={[]}
+				bind:valid={metadataValid}
+			/>
 
-		<ShellSection title="Authentication Type">
-			<Select
-				id="organization-type"
-				label="Select your organization type."
-				hint="When domain authentication is selected, users will
+			<ShellSection title="Authentication Type">
+				<Select
+					id="organization-type"
+					label="Select your organization type."
+					hint="When domain authentication is selected, users will
                                 login with an email address, and be routed to the correct identity provider for your
                                 organization. Using this option allows the use of custom OIDC servers for authentication,
                                 and mapping of groups from your identity provider to native RBAC groups. When adhoc
                                 authentication is selected, users will login by selected their generic provider explicitly e.g.
 				Google or Microsoft, and must be manually added to groups."
-				bind:value={organization.spec.organizationType}
-			>
-				{#each Object.entries(Identity.OrganizationType) as [symbol, value]}
-					<option {value}>{symbol}</option>
-				{/each}
-			</Select>
-		</ShellSection>
-
-		{#if organization.spec.organizationType == Identity.OrganizationType.Domain}
-			<ShellSection title="Email Domain">
-				<TextInput
-					id="domain"
-					label="Your email domain."
-					hint="To ensure you own the domain we require you to update
-					your DNS server with a TXT record unikorn-site-verification to your root domain."
-					placeholder="acme.corp"
-					validators={[Validation.stringSet]}
-					bind:value={organization.spec.domain}
-					bind:valid={domainValid}
-				/>
-			</ShellSection>
-
-			<ShellSection title="Identity Provider">
-				<Select
-					id="idp-scope"
-					label="Identity provider type."
-					hint="Selecting global enables the use of predefined globally
-                                        available identity providers such as Google or Microsoft. Selecting organization allows
-					you to define your own identity provider for the organization."
-					bind:value={organization.spec.providerScope}
+					bind:value={organization.spec.organizationType}
 				>
-					{#each Object.entries(Identity.ProviderScope) as [symbol, value]}
+					{#each Object.entries(Identity.OrganizationType) as [symbol, value]}
 						<option {value}>{symbol}</option>
 					{/each}
 				</Select>
+			</ShellSection>
 
-				{#if organization.spec.providerScope == Identity.ProviderScope.Global}
+			{#if organization.spec.organizationType == Identity.OrganizationType.Domain}
+				<ShellSection title="Email Domain">
+					<TextInput
+						id="domain"
+						label="Your email domain."
+						hint="To ensure you own the domain we require you to update
+					your DNS server with a TXT record unikorn-site-verification to your root domain."
+						placeholder="acme.corp"
+						validators={[Validation.stringSet]}
+						bind:value={organization.spec.domain}
+						bind:valid={domainValid}
+					/>
+				</ShellSection>
+
+				<ShellSection title="Identity Provider">
 					<Select
-						id="global-idp"
-						label="Identity provider to use."
-						bind:value={organization.spec.providerID}
+						id="idp-scope"
+						label="Identity provider type."
+						hint="Selecting global enables the use of predefined globally
+                                        available identity providers such as Google or Microsoft. Selecting organization allows
+					you to define your own identity provider for the organization."
+						bind:value={organization.spec.providerScope}
 					>
-						{#each providers || [] as p}
-							<option value={p.metadata.id}>{p.metadata.description}</option>
+						{#each Object.entries(Identity.ProviderScope) as [symbol, value]}
+							<option {value}>{symbol}</option>
 						{/each}
 					</Select>
 
-					{#if oauth2ProviderType == Identity.Oauth2ProviderType.Google}
-						<TextInput
-							id="google-cluster-id"
-							label="Your Google customer ID."
-							hint="This can be obtained from the Google admin console."
-							placeholder="x83hRso7"
-							bind:value={organization.spec.googleCustomerID}
-						/>
-					{/if}
-				{:else}
-					<!-- TODO: allow inline creation for better UX -->
-					<label for="global-idp">Identity provider to use.</label>
-					<select class="select" bind:value={organization.spec.providerID}>
-						{#each organizationProviders || [] as p}
-							<option value={p.metadata.id}>{p.metadata.name}</option>
-						{/each}
-					</select>
-				{/if}
-			</ShellSection>
-		{/if}
+					{#if organization.spec.providerScope == Identity.ProviderScope.Global}
+						<Select
+							id="global-idp"
+							label="Identity provider to use."
+							bind:value={organization.spec.providerID}
+						>
+							{#each providers || [] as p}
+								<option value={p.metadata.id}>{p.metadata.description}</option>
+							{/each}
+						</Select>
 
-		<button
-			class="btn variant-filled-primary flex gap-2 items-center self-end"
-			disabled={!valid}
-			on:click={submit}
-			on:keypress={submit}
-		>
-			Update
-		</button>
-	{/if}
+						{#if oauth2ProviderType == Identity.Oauth2ProviderType.Google}
+							<TextInput
+								id="google-cluster-id"
+								label="Your Google customer ID."
+								hint="This can be obtained from the Google admin console."
+								placeholder="x83hRso7"
+								bind:value={organization.spec.googleCustomerID}
+							/>
+						{/if}
+					{:else}
+						<!-- TODO: allow inline creation for better UX -->
+						<label for="global-idp">Identity provider to use.</label>
+						<select class="select" bind:value={organization.spec.providerID}>
+							{#each organizationProviders || [] as p}
+								<option value={p.metadata.id}>{p.metadata.name}</option>
+							{/each}
+						</select>
+					{/if}
+				</ShellSection>
+			{/if}
+
+			<button
+				class="btn variant-filled-primary flex gap-2 items-center self-end"
+				disabled={!valid}
+				on:click={submit}
+				on:keypress={submit}
+			>
+				Update
+			</button>
+		{/if}
+	</Protected>
 </ShellPage>
