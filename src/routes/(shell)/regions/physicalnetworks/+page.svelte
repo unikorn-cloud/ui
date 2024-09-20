@@ -48,18 +48,17 @@
 
 	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
 		organizationInfo = value;
-		update();
 	});
 
 	token.subscribe((token: InternalToken): void => {
 		at = token;
-		update();
 	});
 
-	const ticker = setInterval(update, 5000);
-	onDestroy(() => clearInterval(ticker));
-
-	function update(): void {
+	function update(
+		at: InternalToken,
+		organizationInfo: Stores.OrganizationInfo,
+		allowed: boolean
+	): void {
 		if (!at || !organizationInfo || !allowed) return;
 
 		const parameters = {
@@ -81,6 +80,11 @@
 			.then((v: Array<Identity.ProjectRead>) => (projects = v))
 			.catch((e: Error) => Clients.error(e));
 	}
+
+	$: update(at, organizationInfo, allowed);
+
+	const ticker = setInterval(() => update(at, organizationInfo, allowed), 5000);
+	onDestroy(() => clearInterval(ticker));
 </script>
 
 <ShellPage {settings}>
