@@ -99,8 +99,14 @@ async function accessToken(tokens: InternalToken): Promise<string> {
 		const result = await response.json();
 
 		if (!response.ok) {
-			// This will utimately turn into a 401 that will remove the creds
-			// and start a login.
+			const err = result as IdentityApi.ModelError;
+
+			if (err.error == IdentityApi.ModelErrorErrorEnum.InvalidGrant) {
+				removeCredentials();
+			}
+
+			// This will utimately turn into a 400 due to missing headers.
+			// TODO: Not the best way to handle things to be honest.
 			return '';
 		}
 

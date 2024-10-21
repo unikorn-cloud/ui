@@ -45,11 +45,17 @@ export interface GpuSpec {
      */
     memory: number;
     /**
-     * The number of GPUs available.
+     * The physical number of GPUs (cards) available.
      * @type {number}
      * @memberof GpuSpec
      */
-    count: number;
+    physicalCount: number;
+    /**
+     * The logical number of GPUs available as seen in the OS.
+     * @type {number}
+     * @memberof GpuSpec
+     */
+    logicalCount: number;
 }
 
 /**
@@ -60,7 +66,8 @@ export function instanceOfGpuSpec(value: object): boolean {
     isInstance = isInstance && "vendor" in value;
     isInstance = isInstance && "model" in value;
     isInstance = isInstance && "memory" in value;
-    isInstance = isInstance && "count" in value;
+    isInstance = isInstance && "physicalCount" in value;
+    isInstance = isInstance && "logicalCount" in value;
 
     return isInstance;
 }
@@ -78,7 +85,8 @@ export function GpuSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean): G
         'vendor': GpuVendorFromJSON(json['vendor']),
         'model': json['model'],
         'memory': json['memory'],
-        'count': json['count'],
+        'physicalCount': json['physicalCount'],
+        'logicalCount': json['logicalCount'],
     };
 }
 
@@ -94,7 +102,8 @@ export function GpuSpecToJSON(value?: GpuSpec | null): any {
         'vendor': GpuVendorToJSON(value.vendor),
         'model': value.model,
         'memory': value.memory,
-        'count': value.count,
+        'physicalCount': value.physicalCount,
+        'logicalCount': value.logicalCount,
     };
 }
 
