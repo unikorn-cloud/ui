@@ -6,19 +6,6 @@ export function formatGB(n: number): string {
 	return `${n} GB`;
 }
 
-export function flavorFormatter(f: Region.Flavor): string {
-	let family = '';
-
-	if (f.spec.cpuFamily) family = ' ' + f.spec.cpuFamily;
-
-	let gpu = '';
-
-	if (f.spec.gpu)
-		gpu = `, ${f.spec.gpu.count} GPU ${f.spec.gpu.vendor} ${f.spec.gpu.model} ${f.spec.gpu.memory}Gi`;
-
-	return `${f.metadata.name} ${f.spec.cpus} core${family}, ${f.spec.memory}Gi${gpu}`;
-}
-
 export function ageFormatter(time: Date): string {
 	// Get age of the instance in seconds.
 	const now = Date.now();
