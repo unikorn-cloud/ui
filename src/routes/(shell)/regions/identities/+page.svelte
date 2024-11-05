@@ -47,7 +47,7 @@
 
 	let organizationScopes: Array<RBAC.OrganizationScope> = [
 		{
-			endpoint: 'identities',
+			endpoint: 'region:identities',
 			operation: Identity.AclOperation.Read
 		}
 	];

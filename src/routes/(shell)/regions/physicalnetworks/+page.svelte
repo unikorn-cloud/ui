@@ -41,7 +41,7 @@
 
 	let organizationScopes: Array<RBAC.OrganizationScope> = [
 		{
-			endpoint: 'physicalnetworks',
+			endpoint: 'region:physicalnetworks',
 			operation: Identity.AclOperation.Read
 		}
 	];

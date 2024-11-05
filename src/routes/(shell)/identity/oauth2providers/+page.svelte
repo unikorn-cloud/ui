@@ -38,7 +38,7 @@
 
 	let organizationScopes: Array<RBAC.OrganizationScope> = [
 		{
-			endpoint: 'oauth2providers',
+			endpoint: 'identity:oauth2providers',
 			operation: Identity.AclOperation.Create
 		}
 	];
