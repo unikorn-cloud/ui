@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Kubernetes Service API
- * The Kubernetes Service API provides services that allows provisioning and life cycle management of Kubernetes clusters. The API is logically composed of authentication services, platform provider specific calls to get a set of resource types that can be then used by abstract Kubernetes Service resources to create and manage Kubernetes clusters. Requests must specify the HTML content type header.
+ * Application Service API
+ * The application service is a layer that sits on top of the Kubernetes service and allows the provisioning of applications onto managed Kubernetes clusters. This yields a higher level PaaS solution.
  *
  * The version of the OpenAPI document: 0.2.0
  * 

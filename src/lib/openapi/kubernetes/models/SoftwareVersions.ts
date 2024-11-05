@@ -14,44 +14,43 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * An application dependency.
+ * Image preinstalled version version metadata.
  * @export
- * @interface ApplicationDependency
+ * @interface SoftwareVersions
  */
-export interface ApplicationDependency {
+export interface SoftwareVersions {
     /**
-     * The application name.
+     * A semantic version.
      * @type {string}
-     * @memberof ApplicationDependency
+     * @memberof SoftwareVersions
      */
-    name: string;
+    kubernetes?: string;
 }
 
 /**
- * Check if a given object implements the ApplicationDependency interface.
+ * Check if a given object implements the SoftwareVersions interface.
  */
-export function instanceOfApplicationDependency(value: object): boolean {
+export function instanceOfSoftwareVersions(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "name" in value;
 
     return isInstance;
 }
 
-export function ApplicationDependencyFromJSON(json: any): ApplicationDependency {
-    return ApplicationDependencyFromJSONTyped(json, false);
+export function SoftwareVersionsFromJSON(json: any): SoftwareVersions {
+    return SoftwareVersionsFromJSONTyped(json, false);
 }
 
-export function ApplicationDependencyFromJSONTyped(json: any, ignoreDiscriminator: boolean): ApplicationDependency {
+export function SoftwareVersionsFromJSONTyped(json: any, ignoreDiscriminator: boolean): SoftwareVersions {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'name': json['name'],
+        'kubernetes': !exists(json, 'kubernetes') ? undefined : json['kubernetes'],
     };
 }
 
-export function ApplicationDependencyToJSON(value?: ApplicationDependency | null): any {
+export function SoftwareVersionsToJSON(value?: SoftwareVersions | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -60,7 +59,7 @@ export function ApplicationDependencyToJSON(value?: ApplicationDependency | null
     }
     return {
         
-        'name': value.name,
+        'kubernetes': value.kubernetes,
     };
 }
 

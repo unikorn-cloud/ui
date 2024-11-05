@@ -17,7 +17,7 @@
 	import type { InternalToken } from '$lib/oauth2';
 	import { token } from '$lib/credentials';
 	import * as Clients from '$lib/clients';
-	import * as Kubernetes from '$lib/openapi/kubernetes';
+	import * as Application from '$lib/openapi/application';
 	import * as Stores from '$lib/stores';
 
 	let organizationInfo: Stores.OrganizationInfo;
@@ -32,18 +32,19 @@
 		at = token;
 	});
 
-	let applications: Array<Kubernetes.ApplicationRead>;
+	let applications: Array<Application.ApplicationRead>;
 
 	function updateApplications(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
 		if (!at || !organizationInfo) return;
 
 		const parameters = {
-			organizationID: organizationInfo.id
+			organizationID: organizationInfo.id,
+			projectID: 'TODO'
 		};
 
-		Clients.kubernetes(toastStore, at)
-			.apiV1OrganizationsOrganizationIDApplicationsGet(parameters)
-			.then((v: Array<Kubernetes.ApplicationRead>) => (applications = v))
+		Clients.application(toastStore, at)
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDApplicationsGet(parameters)
+			.then((v: Array<Application.ApplicationRead>) => (applications = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 

@@ -38,7 +38,7 @@
 
 	let organizationScopes: Array<RBAC.OrganizationScope> = [
 		{
-			endpoint: 'projects',
+			endpoint: 'identity:projects',
 			operation: Identity.AclOperation.Create
 		}
 	];

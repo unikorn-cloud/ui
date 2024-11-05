@@ -4,6 +4,7 @@ import * as OIDC from '$lib/oidc';
 import type { InternalToken } from '$lib/oauth2';
 
 import * as KubernetesApi from '$lib/openapi/kubernetes';
+import * as ApplicationApi from '$lib/openapi/application';
 import * as IdentityApi from '$lib/openapi/identity';
 import * as RegionApi from '$lib/openapi/region';
 import { token, removeCredentials } from '$lib/credentials';
@@ -138,6 +139,16 @@ export function kubernetes(toastStore: any, tokens: InternalToken): KubernetesAp
 	});
 
 	return new KubernetesApi.DefaultApi(config);
+}
+
+export function application(toastStore: any, tokens: InternalToken): ApplicationApi.DefaultApi {
+	const config = new ApplicationApi.Configuration({
+		basePath: env.PUBLIC_APPLICATION_HOST,
+		accessToken: async () => accessToken(tokens),
+		middleware: [authenticationMiddleware(), traceContextMiddleware(toastStore)]
+	});
+
+	return new ApplicationApi.DefaultApi(config);
 }
 
 export function identity(toastStore: any, tokens: InternalToken): IdentityApi.DefaultApi {

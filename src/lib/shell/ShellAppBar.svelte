@@ -26,11 +26,14 @@
 	import * as Identity from '$lib/openapi/identity';
 	import * as OIDC from '$lib/oidc';
 
+	let email: string;
 	let initials: string;
 	let picture: string;
 
 	profile.subscribe((value: OIDC.IDToken) => {
 		if (!value) return;
+
+		email = value.email;
 
 		const givenName = value.given_name || '?';
 		const familyName = value.family_name || '?';
@@ -135,8 +138,12 @@
 			<Avatar src={picture} {initials} class="!w-10 !h-10" />
 		</button>
 
-		<div class="card p-4 w-60 shadow-x1" data-popup="user">
+		<div class="card p-4 shadow-x1" data-popup="user">
 			<div class="space-y-4">
+				<section class="flex justify-between items-center">
+					{email}
+				</section>
+
 				<section class="flex justify-between items-center">
 					<h6 class="h6">Color Scheme</h6>
 					<LightSwitch />

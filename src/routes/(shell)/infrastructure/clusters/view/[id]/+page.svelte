@@ -125,7 +125,7 @@
 			regionID: regionID
 		};
 
-		Clients.region(toastStore, at)
+		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet(parameters)
 			.then((v: Array<Region.Image>) => (images = v))
 			.catch((e: Error) => Clients.error(e));
@@ -143,7 +143,7 @@
 			regionID: regionID
 		};
 
-		Clients.region(toastStore, at)
+		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet(parameters)
 			.then((v: Array<Region.Flavor>) => (flavors = v))
 			.catch((e: Error) => Clients.error(e));

@@ -15,20 +15,23 @@
 
 import * as runtime from '../runtime';
 import type {
-  ApplicationRead,
   ClusterManagerRead,
   ClusterManagerWrite,
+  Flavor,
+  Image,
   KubernetesClusterRead,
   KubernetesClusterWrite,
   ModelError,
 } from '../models/index';
 import {
-    ApplicationReadFromJSON,
-    ApplicationReadToJSON,
     ClusterManagerReadFromJSON,
     ClusterManagerReadToJSON,
     ClusterManagerWriteFromJSON,
     ClusterManagerWriteToJSON,
+    FlavorFromJSON,
+    FlavorToJSON,
+    ImageFromJSON,
+    ImageToJSON,
     KubernetesClusterReadFromJSON,
     KubernetesClusterReadToJSON,
     KubernetesClusterWriteFromJSON,
@@ -36,10 +39,6 @@ import {
     ModelErrorFromJSON,
     ModelErrorToJSON,
 } from '../models/index';
-
-export interface ApiV1OrganizationsOrganizationIDApplicationsGetRequest {
-    organizationID: string;
-}
 
 export interface ApiV1OrganizationsOrganizationIDClustermanagersGetRequest {
     organizationID: string;
@@ -93,45 +92,20 @@ export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRe
     kubernetesClusterWrite: KubernetesClusterWrite;
 }
 
+export interface ApiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGetRequest {
+    organizationID: string;
+    regionID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDRegionsRegionIDImagesGetRequest {
+    organizationID: string;
+    regionID: string;
+}
+
 /**
  * 
  */
 export class DefaultApi extends runtime.BaseAPI {
-
-    /**
-     * Lists applications available to be installed on clusters.
-     */
-    async apiV1OrganizationsOrganizationIDApplicationsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDApplicationsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ApplicationRead>>> {
-        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
-            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDApplicationsGet.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
-        }
-
-        const response = await this.request({
-            path: `/api/v1/organizations/{organizationID}/applications`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ApplicationReadFromJSON));
-    }
-
-    /**
-     * Lists applications available to be installed on clusters.
-     */
-    async apiV1OrganizationsOrganizationIDApplicationsGet(requestParameters: ApiV1OrganizationsOrganizationIDApplicationsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ApplicationRead>> {
-        const response = await this.apiV1OrganizationsOrganizationIDApplicationsGetRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
 
     /**
      * Lists cluster managers within the organization.
@@ -516,6 +490,84 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<KubernetesClusterRead> {
         const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Lists all Kubernetes compatible flavors that the user has access to.
+     */
+    async apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Flavor>>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet.');
+        }
+
+        if (requestParameters.regionID === null || requestParameters.regionID === undefined) {
+            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/regions/{regionID}/flavors`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(FlavorFromJSON));
+    }
+
+    /**
+     * Lists all Kubernetes compatible flavors that the user has access to.
+     */
+    async apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet(requestParameters: ApiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Flavor>> {
+        const response = await this.apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Lists all Kubernetes compatible images that the user has access to.
+     */
+    async apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDRegionsRegionIDImagesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Image>>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet.');
+        }
+
+        if (requestParameters.regionID === null || requestParameters.regionID === undefined) {
+            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/regions/{regionID}/images`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ImageFromJSON));
+    }
+
+    /**
+     * Lists all Kubernetes compatible images that the user has access to.
+     */
+    async apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet(requestParameters: ApiV1OrganizationsOrganizationIDRegionsRegionIDImagesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Image>> {
+        const response = await this.apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

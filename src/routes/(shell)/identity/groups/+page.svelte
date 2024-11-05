@@ -37,7 +37,7 @@
 
 	let organizationScopes: Array<RBAC.OrganizationScope> = [
 		{
-			endpoint: 'groups',
+			endpoint: 'identity:groups',
 			operation: Identity.AclOperation.Create
 		}
 	];

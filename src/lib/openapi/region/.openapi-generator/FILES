@@ -33,6 +33,16 @@ models/ResourceMetadata.ts
 models/ResourceProvisioningStatus.ts
 models/ResourceReadMetadata.ts
 models/ResourceWriteMetadata.ts
+models/SecurityGroupRead.ts
+models/SecurityGroupReadSpec.ts
+models/SecurityGroupRulePort.ts
+models/SecurityGroupRulePortRange.ts
+models/SecurityGroupRuleRead.ts
+models/SecurityGroupRuleReadSpec.ts
+models/SecurityGroupRuleWrite.ts
+models/SecurityGroupRuleWriteSpec.ts
+models/SecurityGroupWrite.ts
+models/SecurityGroupWriteSpec.ts
 models/SoftwareVersions.ts
 models/StaticResourceMetadata.ts
 models/Tag.ts
