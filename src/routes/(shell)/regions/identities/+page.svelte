@@ -140,9 +140,9 @@
 					</svelte:fragment>
 
 					<svelte:fragment slot="metadata">
-						{#if resource.spec.tags}
+						{#if resource.metadata.tags}
 							<ShellMetadataItem icon="mdi:tag-outline">
-								{#each resource.spec.tags as tag}
+								{#each resource.metadata.tags as tag}
 									<div class="badge variant-soft">{tag.name}: {tag.value}</div>
 								{/each}
 							</ShellMetadataItem>

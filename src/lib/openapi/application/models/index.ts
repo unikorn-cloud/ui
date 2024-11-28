@@ -9,3 +9,4 @@ export * from './ResourceMetadata';
 export * from './ResourceProvisioningStatus';
 export * from './ResourceReadMetadata';
 export * from './StaticResourceMetadata';
+export * from './Tag';

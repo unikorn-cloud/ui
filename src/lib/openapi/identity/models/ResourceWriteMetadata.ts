@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { Tag } from './Tag';
+import {
+    TagFromJSON,
+    TagFromJSONTyped,
+    TagToJSON,
+} from './Tag';
+
 /**
  * Resource metadata valid for all API resource reads and writes.
  * @export
@@ -32,6 +39,12 @@ export interface ResourceWriteMetadata {
      * @memberof ResourceWriteMetadata
      */
     description?: string;
+    /**
+     * A list of tags.
+     * @type {Array<Tag>}
+     * @memberof ResourceWriteMetadata
+     */
+    tags?: Array<Tag>;
 }
 
 /**
@@ -56,6 +69,7 @@ export function ResourceWriteMetadataFromJSONTyped(json: any, ignoreDiscriminato
         
         'name': json['name'],
         'description': !exists(json, 'description') ? undefined : json['description'],
+        'tags': !exists(json, 'tags') ? undefined : ((json['tags'] as Array<any>).map(TagFromJSON)),
     };
 }
 
@@ -70,6 +84,7 @@ export function ResourceWriteMetadataToJSON(value?: ResourceWriteMetadata | null
         
         'name': value.name,
         'description': value.description,
+        'tags': value.tags === undefined ? undefined : ((value.tags as Array<any>).map(TagToJSON)),
     };
 }
 

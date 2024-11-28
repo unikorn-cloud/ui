@@ -19,53 +19,60 @@ import {
     ResourceWriteMetadataFromJSONTyped,
     ResourceWriteMetadataToJSON,
 } from './ResourceWriteMetadata';
+import type { ServerWriteSpec } from './ServerWriteSpec';
+import {
+    ServerWriteSpecFromJSON,
+    ServerWriteSpecFromJSONTyped,
+    ServerWriteSpecToJSON,
+} from './ServerWriteSpec';
 
 /**
- * A security group request.
+ * A server request.
  * @export
- * @interface SecurityGroupWrite
+ * @interface ServerWrite
  */
-export interface SecurityGroupWrite {
+export interface ServerWrite {
     /**
      * 
      * @type {ResourceWriteMetadata}
-     * @memberof SecurityGroupWrite
+     * @memberof ServerWrite
      */
     metadata: ResourceWriteMetadata;
     /**
-     * A security group's specification.
-     * @type {object}
-     * @memberof SecurityGroupWrite
+     * 
+     * @type {ServerWriteSpec}
+     * @memberof ServerWrite
      */
-    spec?: object;
+    spec: ServerWriteSpec;
 }
 
 /**
- * Check if a given object implements the SecurityGroupWrite interface.
+ * Check if a given object implements the ServerWrite interface.
  */
-export function instanceOfSecurityGroupWrite(value: object): boolean {
+export function instanceOfServerWrite(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "metadata" in value;
+    isInstance = isInstance && "spec" in value;
 
     return isInstance;
 }
 
-export function SecurityGroupWriteFromJSON(json: any): SecurityGroupWrite {
-    return SecurityGroupWriteFromJSONTyped(json, false);
+export function ServerWriteFromJSON(json: any): ServerWrite {
+    return ServerWriteFromJSONTyped(json, false);
 }
 
-export function SecurityGroupWriteFromJSONTyped(json: any, ignoreDiscriminator: boolean): SecurityGroupWrite {
+export function ServerWriteFromJSONTyped(json: any, ignoreDiscriminator: boolean): ServerWrite {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
         'metadata': ResourceWriteMetadataFromJSON(json['metadata']),
-        'spec': !exists(json, 'spec') ? undefined : json['spec'],
+        'spec': ServerWriteSpecFromJSON(json['spec']),
     };
 }
 
-export function SecurityGroupWriteToJSON(value?: SecurityGroupWrite | null): any {
+export function ServerWriteToJSON(value?: ServerWrite | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -75,7 +82,7 @@ export function SecurityGroupWriteToJSON(value?: SecurityGroupWrite | null): any
     return {
         
         'metadata': ResourceWriteMetadataToJSON(value.metadata),
-        'spec': value.spec,
+        'spec': ServerWriteSpecToJSON(value.spec),
     };
 }
 

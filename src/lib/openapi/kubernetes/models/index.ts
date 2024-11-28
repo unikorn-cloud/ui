@@ -27,4 +27,5 @@ export * from './ResourceReadMetadata';
 export * from './ResourceWriteMetadata';
 export * from './SoftwareVersions';
 export * from './StaticResourceMetadata';
+export * from './Tag';
 export * from './Volume';

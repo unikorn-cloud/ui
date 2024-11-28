@@ -19,6 +19,12 @@ import {
     ResourceProvisioningStatusFromJSONTyped,
     ResourceProvisioningStatusToJSON,
 } from './ResourceProvisioningStatus';
+import type { Tag } from './Tag';
+import {
+    TagFromJSON,
+    TagFromJSONTyped,
+    TagToJSON,
+} from './Tag';
 
 /**
  * 
@@ -39,6 +45,12 @@ export interface OrganizationScopedResourceReadMetadata {
      * @memberof OrganizationScopedResourceReadMetadata
      */
     description?: string;
+    /**
+     * A list of tags.
+     * @type {Array<Tag>}
+     * @memberof OrganizationScopedResourceReadMetadata
+     */
+    tags?: Array<Tag>;
     /**
      * The unique resource ID.
      * @type {string}
@@ -115,6 +127,7 @@ export function OrganizationScopedResourceReadMetadataFromJSONTyped(json: any, i
         
         'name': json['name'],
         'description': !exists(json, 'description') ? undefined : json['description'],
+        'tags': !exists(json, 'tags') ? undefined : ((json['tags'] as Array<any>).map(TagFromJSON)),
         'id': json['id'],
         'creationTime': (new Date(json['creationTime'])),
         'createdBy': !exists(json, 'createdBy') ? undefined : json['createdBy'],
@@ -137,6 +150,7 @@ export function OrganizationScopedResourceReadMetadataToJSON(value?: Organizatio
         
         'name': value.name,
         'description': value.description,
+        'tags': value.tags === undefined ? undefined : ((value.tags as Array<any>).map(TagToJSON)),
         'id': value.id,
         'creationTime': (value.creationTime.toISOString()),
         'createdBy': value.createdBy,

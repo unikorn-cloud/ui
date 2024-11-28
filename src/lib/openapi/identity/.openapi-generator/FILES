@@ -40,6 +40,7 @@ models/Scope.ts
 models/SigningAlgorithm.ts
 models/StaticResourceMetadata.ts
 models/SystemOauth2ProviderRead.ts
+models/Tag.ts
 models/Token.ts
 models/TokenRequestOptions.ts
 models/Userinfo.ts

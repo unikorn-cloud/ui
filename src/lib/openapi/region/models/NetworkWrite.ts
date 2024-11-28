@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { NetworkWriteSpec } from './NetworkWriteSpec';
+import {
+    NetworkWriteSpecFromJSON,
+    NetworkWriteSpecFromJSONTyped,
+    NetworkWriteSpecToJSON,
+} from './NetworkWriteSpec';
 import type { ResourceWriteMetadata } from './ResourceWriteMetadata';
 import {
     ResourceWriteMetadataFromJSON,
@@ -21,51 +27,51 @@ import {
 } from './ResourceWriteMetadata';
 
 /**
- * A security group request.
+ * A network request.
  * @export
- * @interface SecurityGroupWrite
+ * @interface NetworkWrite
  */
-export interface SecurityGroupWrite {
+export interface NetworkWrite {
     /**
      * 
      * @type {ResourceWriteMetadata}
-     * @memberof SecurityGroupWrite
+     * @memberof NetworkWrite
      */
     metadata: ResourceWriteMetadata;
     /**
-     * A security group's specification.
-     * @type {object}
-     * @memberof SecurityGroupWrite
+     * 
+     * @type {NetworkWriteSpec}
+     * @memberof NetworkWrite
      */
-    spec?: object;
+    spec?: NetworkWriteSpec;
 }
 
 /**
- * Check if a given object implements the SecurityGroupWrite interface.
+ * Check if a given object implements the NetworkWrite interface.
  */
-export function instanceOfSecurityGroupWrite(value: object): boolean {
+export function instanceOfNetworkWrite(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "metadata" in value;
 
     return isInstance;
 }
 
-export function SecurityGroupWriteFromJSON(json: any): SecurityGroupWrite {
-    return SecurityGroupWriteFromJSONTyped(json, false);
+export function NetworkWriteFromJSON(json: any): NetworkWrite {
+    return NetworkWriteFromJSONTyped(json, false);
 }
 
-export function SecurityGroupWriteFromJSONTyped(json: any, ignoreDiscriminator: boolean): SecurityGroupWrite {
+export function NetworkWriteFromJSONTyped(json: any, ignoreDiscriminator: boolean): NetworkWrite {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
         'metadata': ResourceWriteMetadataFromJSON(json['metadata']),
-        'spec': !exists(json, 'spec') ? undefined : json['spec'],
+        'spec': !exists(json, 'spec') ? undefined : NetworkWriteSpecFromJSON(json['spec']),
     };
 }
 
-export function SecurityGroupWriteToJSON(value?: SecurityGroupWrite | null): any {
+export function NetworkWriteToJSON(value?: NetworkWrite | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -75,7 +81,7 @@ export function SecurityGroupWriteToJSON(value?: SecurityGroupWrite | null): any
     return {
         
         'metadata': ResourceWriteMetadataToJSON(value.metadata),
-        'spec': value.spec,
+        'spec': NetworkWriteSpecToJSON(value.spec),
     };
 }
 

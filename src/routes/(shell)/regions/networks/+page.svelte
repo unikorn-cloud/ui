@@ -10,7 +10,7 @@
 	const settings: ShellPageSettings = {
 		feature: 'Regions',
 		name: 'Physical Networks',
-		description: 'Manage your physical networks'
+		description: 'Manage your networks'
 	};
 
 	import { onDestroy } from 'svelte';
@@ -32,7 +32,7 @@
 
 	let projects: Array<Identity.ProjectRead>;
 	let regions: Array<Region.RegionRead>;
-	let physicalNetworks: Array<Region.PhysicalNetworkRead>;
+	let networks: Array<Region.NetworkRead>;
 
 	let organizationInfo: Stores.OrganizationInfo;
 
@@ -41,7 +41,7 @@
 
 	let organizationScopes: Array<RBAC.OrganizationScope> = [
 		{
-			endpoint: 'region:physicalnetworks',
+			endpoint: 'region:networks',
 			operation: Identity.AclOperation.Read
 		}
 	];
@@ -66,8 +66,8 @@
 		};
 
 		Clients.region(toastStore, at)
-			.apiV1OrganizationsOrganizationIDPhysicalnetworksGet(parameters)
-			.then((v: Array<Region.PhysicalNetworkRead>) => (physicalNetworks = v))
+			.apiV1OrganizationsOrganizationIDNetworksGet(parameters)
+			.then((v: Array<Region.NetworkRead>) => (networks = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.region(toastStore, at)
@@ -90,7 +90,7 @@
 <ShellPage {settings}>
 	<Protected {organizationScopes} bind:allowed>
 		<ShellList>
-			{#each physicalNetworks || [] as resource}
+			{#each networks || [] as resource}
 				<ShellListItem metadata={resource.metadata} {projects}>
 					<svelte:fragment slot="badges">
 						<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
@@ -108,9 +108,9 @@
 						<ShellMetadataItem icon="mdi:nic">
 							{resource.spec.openstack?.vlanId}
 						</ShellMetadataItem>
-						{#if resource.spec.tags}
+						{#if resource.metadata.tags}
 							<ShellMetadataItem icon="mdi:tag-outline">
-								{#each resource.spec.tags as tag}
+								{#each resource.metadata.tags as tag}
 									<div class="badge variant-soft">{tag.name}: {tag.value}</div>
 								{/each}
 							</ShellMetadataItem>

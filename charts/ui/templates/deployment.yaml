@@ -36,6 +36,10 @@ spec:
           value: https://{{ include "unikorn.region.host" . }}
         - name: PUBLIC_KUBERNETES_HOST
           value: https://{{ include "unikorn.kubernetes.host" . }}
+        - name: PUBLIC_APPLICATION_HOST
+          value: https://{{ include "unikorn.application.host" . }}
+        - name: PUBLIC_COMPUTE_HOST
+          value: https://{{ include "unikorn.compute.host" . }}
         - name: PUBLIC_OAUTH2_CLIENT_ID
           {{- if .Values.oauth2.clientName }}
           value: {{ include "resource.id" .Values.oauth2.clientName }}

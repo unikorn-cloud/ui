@@ -49,6 +49,17 @@
 	}
 
 	$: updateApplications(at, organizationInfo);
+
+	function applicationCategories(app: Application.ApplicationRead): Array<string> {
+		if (!app.metadata.tags) return [];
+
+		const categories = app.metadata.tags.find(
+			(x) => x.name == 'application.unikorn-cloud.org/category'
+		);
+		if (!categories) return [];
+
+		return categories.value.split(',');
+	}
 </script>
 
 <ShellPage {settings}>
@@ -65,8 +76,8 @@
 
 					<div class="flex flex-col gap-2">
 						<div class="flex gap-2">
-							{#each application.spec.tags || [] as tag}
-								<div class="badge variant-soft">{tag}</div>
+							{#each applicationCategories(application) as category}
+								<div class="badge variant-soft">{category}</div>
 							{/each}
 						</div>
 
