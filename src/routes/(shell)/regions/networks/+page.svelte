@@ -9,7 +9,7 @@
 
 	const settings: ShellPageSettings = {
 		feature: 'Regions',
-		name: 'Physical Networks',
+		name: 'Networks',
 		description: 'Manage your networks'
 	};
 
