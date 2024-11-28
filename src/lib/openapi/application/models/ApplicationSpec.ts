@@ -56,12 +56,6 @@ export interface ApplicationSpec {
      * @memberof ApplicationSpec
      */
     versions: Array<ApplicationVersion>;
-    /**
-     * A set of tags for filtering applications.
-     * @type {Array<string>}
-     * @memberof ApplicationSpec
-     */
-    tags?: Array<string>;
 }
 
 /**
@@ -93,7 +87,6 @@ export function ApplicationSpecFromJSONTyped(json: any, ignoreDiscriminator: boo
         'license': json['license'],
         'icon': json['icon'],
         'versions': ((json['versions'] as Array<any>).map(ApplicationVersionFromJSON)),
-        'tags': !exists(json, 'tags') ? undefined : json['tags'],
     };
 }
 
@@ -111,7 +104,6 @@ export function ApplicationSpecToJSON(value?: ApplicationSpec | null): any {
         'license': value.license,
         'icon': value.icon,
         'versions': ((value.versions as Array<any>).map(ApplicationVersionToJSON)),
-        'tags': value.tags,
     };
 }
 

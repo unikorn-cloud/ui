@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { Tag } from './Tag';
+import {
+    TagFromJSON,
+    TagFromJSONTyped,
+    TagToJSON,
+} from './Tag';
+
 /**
  * This metadata is for resources that just exist, and don't require
  * any provisioning and health status, but benefit from a standarized
@@ -35,6 +42,12 @@ export interface StaticResourceMetadata {
      * @memberof StaticResourceMetadata
      */
     description?: string;
+    /**
+     * A list of tags.
+     * @type {Array<Tag>}
+     * @memberof StaticResourceMetadata
+     */
+    tags?: Array<Tag>;
     /**
      * The unique resource ID.
      * @type {string}
@@ -91,6 +104,7 @@ export function StaticResourceMetadataFromJSONTyped(json: any, ignoreDiscriminat
         
         'name': json['name'],
         'description': !exists(json, 'description') ? undefined : json['description'],
+        'tags': !exists(json, 'tags') ? undefined : ((json['tags'] as Array<any>).map(TagFromJSON)),
         'id': json['id'],
         'creationTime': (new Date(json['creationTime'])),
         'createdBy': !exists(json, 'createdBy') ? undefined : json['createdBy'],
@@ -110,6 +124,7 @@ export function StaticResourceMetadataToJSON(value?: StaticResourceMetadata | nu
         
         'name': value.name,
         'description': value.description,
+        'tags': value.tags === undefined ? undefined : ((value.tags as Array<any>).map(TagToJSON)),
         'id': value.id,
         'creationTime': (value.creationTime.toISOString()),
         'createdBy': value.createdBy,

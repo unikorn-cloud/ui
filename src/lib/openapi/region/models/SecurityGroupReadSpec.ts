@@ -13,25 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Tag } from './Tag';
-import {
-    TagFromJSON,
-    TagFromJSONTyped,
-    TagToJSON,
-} from './Tag';
-
 /**
  * A security group's specification.
  * @export
  * @interface SecurityGroupReadSpec
  */
 export interface SecurityGroupReadSpec {
-    /**
-     * A list of tags.
-     * @type {Array<Tag>}
-     * @memberof SecurityGroupReadSpec
-     */
-    tags?: Array<Tag>;
     /**
      * The region an identity is provisioned in.
      * @type {string}
@@ -60,7 +47,6 @@ export function SecurityGroupReadSpecFromJSONTyped(json: any, ignoreDiscriminato
     }
     return {
         
-        'tags': !exists(json, 'tags') ? undefined : ((json['tags'] as Array<any>).map(TagFromJSON)),
         'regionId': json['regionId'],
     };
 }
@@ -74,7 +60,6 @@ export function SecurityGroupReadSpecToJSON(value?: SecurityGroupReadSpec | null
     }
     return {
         
-        'tags': value.tags === undefined ? undefined : ((value.tags as Array<any>).map(TagToJSON)),
         'regionId': value.regionId,
     };
 }

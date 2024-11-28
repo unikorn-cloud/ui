@@ -39,6 +39,7 @@ export * from './Scope';
 export * from './SigningAlgorithm';
 export * from './StaticResourceMetadata';
 export * from './SystemOauth2ProviderRead';
+export * from './Tag';
 export * from './Token';
 export * from './TokenRequestOptions';
 export * from './Userinfo';

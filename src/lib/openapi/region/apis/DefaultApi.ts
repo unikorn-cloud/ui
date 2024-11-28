@@ -21,14 +21,16 @@ import type {
   IdentityWrite,
   Image,
   ModelError,
-  PhysicalNetworkRead,
-  PhysicalNetworkWrite,
+  NetworkRead,
+  NetworkWrite,
   QuotasSpec,
   RegionRead,
   SecurityGroupRead,
   SecurityGroupRuleRead,
   SecurityGroupRuleWrite,
   SecurityGroupWrite,
+  ServerRead,
+  ServerWrite,
 } from '../models/index';
 import {
     ExternalNetworkFromJSON,
@@ -43,10 +45,10 @@ import {
     ImageToJSON,
     ModelErrorFromJSON,
     ModelErrorToJSON,
-    PhysicalNetworkReadFromJSON,
-    PhysicalNetworkReadToJSON,
-    PhysicalNetworkWriteFromJSON,
-    PhysicalNetworkWriteToJSON,
+    NetworkReadFromJSON,
+    NetworkReadToJSON,
+    NetworkWriteFromJSON,
+    NetworkWriteToJSON,
     QuotasSpecFromJSON,
     QuotasSpecToJSON,
     RegionReadFromJSON,
@@ -59,13 +61,17 @@ import {
     SecurityGroupRuleWriteToJSON,
     SecurityGroupWriteFromJSON,
     SecurityGroupWriteToJSON,
+    ServerReadFromJSON,
+    ServerReadToJSON,
+    ServerWriteFromJSON,
+    ServerWriteToJSON,
 } from '../models/index';
 
 export interface ApiV1OrganizationsOrganizationIDIdentitiesGetRequest {
     organizationID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationIDPhysicalnetworksGetRequest {
+export interface ApiV1OrganizationsOrganizationIDNetworksGetRequest {
     organizationID: string;
 }
 
@@ -81,25 +87,25 @@ export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIden
     identityID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDDeleteRequest {
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDDeleteRequest {
     organizationID: string;
     projectID: string;
     identityID: string;
-    physicalNetworkID: string;
+    networkID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDGetRequest {
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDGetRequest {
     organizationID: string;
     projectID: string;
     identityID: string;
-    physicalNetworkID: string;
+    networkID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPostRequest {
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksPostRequest {
     organizationID: string;
     projectID: string;
     identityID: string;
-    physicalNetworkWrite?: PhysicalNetworkWrite;
+    networkWrite?: NetworkWrite;
 }
 
 export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDQuotasGetRequest {
@@ -175,6 +181,27 @@ export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIden
     ruleID: string;
 }
 
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersPostRequest {
+    organizationID: string;
+    projectID: string;
+    identityID: string;
+    serverWrite?: ServerWrite;
+}
+
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDDeleteRequest {
+    organizationID: string;
+    projectID: string;
+    identityID: string;
+    serverID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDGetRequest {
+    organizationID: string;
+    projectID: string;
+    identityID: string;
+    serverID: string;
+}
+
 export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesPostRequest {
     organizationID: string;
     projectID: string;
@@ -201,6 +228,10 @@ export interface ApiV1OrganizationsOrganizationIDRegionsRegionIDImagesGetRequest
 }
 
 export interface ApiV1OrganizationsOrganizationIDSecuritygroupsGetRequest {
+    organizationID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDServersGetRequest {
     organizationID: string;
 }
 
@@ -245,11 +276,11 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * List physical networks.
+     * List networks.
      */
-    async apiV1OrganizationsOrganizationIDPhysicalnetworksGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDPhysicalnetworksGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<PhysicalNetworkRead>>> {
+    async apiV1OrganizationsOrganizationIDNetworksGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDNetworksGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<NetworkRead>>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
-            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDPhysicalnetworksGet.');
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDNetworksGet.');
         }
 
         const queryParameters: any = {};
@@ -262,20 +293,20 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationID}/physicalnetworks`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            path: `/api/v1/organizations/{organizationID}/networks`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(PhysicalNetworkReadFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(NetworkReadFromJSON));
     }
 
     /**
-     * List physical networks.
+     * List networks.
      */
-    async apiV1OrganizationsOrganizationIDPhysicalnetworksGet(requestParameters: ApiV1OrganizationsOrganizationIDPhysicalnetworksGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<PhysicalNetworkRead>> {
-        const response = await this.apiV1OrganizationsOrganizationIDPhysicalnetworksGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDNetworksGet(requestParameters: ApiV1OrganizationsOrganizationIDNetworksGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<NetworkRead>> {
+        const response = await this.apiV1OrganizationsOrganizationIDNetworksGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -365,23 +396,23 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete a new physical network.
+     * Delete a new network.
      */
-    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
-            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDDelete.');
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDDelete.');
         }
 
         if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
-            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDDelete.');
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDDelete.');
         }
 
         if (requestParameters.identityID === null || requestParameters.identityID === undefined) {
-            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDDelete.');
+            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDDelete.');
         }
 
-        if (requestParameters.physicalNetworkID === null || requestParameters.physicalNetworkID === undefined) {
-            throw new runtime.RequiredError('physicalNetworkID','Required parameter requestParameters.physicalNetworkID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDDelete.');
+        if (requestParameters.networkID === null || requestParameters.networkID === undefined) {
+            throw new runtime.RequiredError('networkID','Required parameter requestParameters.networkID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDDelete.');
         }
 
         const queryParameters: any = {};
@@ -394,7 +425,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/identities/{identityID}/physicalnetworks/{physicalNetworkID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))).replace(`{${"physicalNetworkID"}}`, encodeURIComponent(String(requestParameters.physicalNetworkID))),
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/identities/{identityID}/networks/{networkID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))).replace(`{${"networkID"}}`, encodeURIComponent(String(requestParameters.networkID))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -404,30 +435,30 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete a new physical network.
+     * Delete a new network.
      */
-    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDDelete(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDDeleteRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDDelete(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
      * Get a phyiscal network.
      */
-    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PhysicalNetworkRead>> {
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NetworkRead>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
-            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDGet.');
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDGet.');
         }
 
         if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
-            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDGet.');
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDGet.');
         }
 
         if (requestParameters.identityID === null || requestParameters.identityID === undefined) {
-            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDGet.');
+            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDGet.');
         }
 
-        if (requestParameters.physicalNetworkID === null || requestParameters.physicalNetworkID === undefined) {
-            throw new runtime.RequiredError('physicalNetworkID','Required parameter requestParameters.physicalNetworkID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDGet.');
+        if (requestParameters.networkID === null || requestParameters.networkID === undefined) {
+            throw new runtime.RequiredError('networkID','Required parameter requestParameters.networkID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDGet.');
         }
 
         const queryParameters: any = {};
@@ -440,37 +471,37 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/identities/{identityID}/physicalnetworks/{physicalNetworkID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))).replace(`{${"physicalNetworkID"}}`, encodeURIComponent(String(requestParameters.physicalNetworkID))),
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/identities/{identityID}/networks/{networkID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))).replace(`{${"networkID"}}`, encodeURIComponent(String(requestParameters.networkID))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PhysicalNetworkReadFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => NetworkReadFromJSON(jsonValue));
     }
 
     /**
      * Get a phyiscal network.
      */
-    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PhysicalNetworkRead> {
-        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPhysicalNetworkIDGetRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NetworkRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksNetworkIDGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * Create a new physical network.
+     * Create a new network.
      */
-    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PhysicalNetworkRead>> {
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NetworkRead>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
-            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPost.');
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksPost.');
         }
 
         if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
-            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPost.');
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksPost.');
         }
 
         if (requestParameters.identityID === null || requestParameters.identityID === undefined) {
-            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPost.');
+            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksPost.');
         }
 
         const queryParameters: any = {};
@@ -485,21 +516,21 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/identities/{identityID}/physicalnetworks`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))),
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/identities/{identityID}/networks`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: PhysicalNetworkWriteToJSON(requestParameters.physicalNetworkWrite),
+            body: NetworkWriteToJSON(requestParameters.networkWrite),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PhysicalNetworkReadFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => NetworkReadFromJSON(jsonValue));
     }
 
     /**
-     * Create a new physical network.
+     * Create a new network.
      */
-    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PhysicalNetworkRead> {
-        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDPhysicalnetworksPostRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NetworkRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDNetworksPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -978,6 +1009,145 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
+     * Create a new server.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ServerRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersPost.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersPost.');
+        }
+
+        if (requestParameters.identityID === null || requestParameters.identityID === undefined) {
+            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/identities/{identityID}/servers`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ServerWriteToJSON(requestParameters.serverWrite),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServerReadFromJSON(jsonValue));
+    }
+
+    /**
+     * Create a new server.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServerRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Delete a server.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDDelete.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDDelete.');
+        }
+
+        if (requestParameters.identityID === null || requestParameters.identityID === undefined) {
+            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDDelete.');
+        }
+
+        if (requestParameters.serverID === null || requestParameters.serverID === undefined) {
+            throw new runtime.RequiredError('serverID','Required parameter requestParameters.serverID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDDelete.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/identities/{identityID}/servers/{serverID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))).replace(`{${"serverID"}}`, encodeURIComponent(String(requestParameters.serverID))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Delete a server.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDDelete(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDDeleteRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Get a server.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ServerRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDGet.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDGet.');
+        }
+
+        if (requestParameters.identityID === null || requestParameters.identityID === undefined) {
+            throw new runtime.RequiredError('identityID','Required parameter requestParameters.identityID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDGet.');
+        }
+
+        if (requestParameters.serverID === null || requestParameters.serverID === undefined) {
+            throw new runtime.RequiredError('serverID','Required parameter requestParameters.serverID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/identities/{identityID}/servers/{serverID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"identityID"}}`, encodeURIComponent(String(requestParameters.identityID))).replace(`{${"serverID"}}`, encodeURIComponent(String(requestParameters.serverID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServerReadFromJSON(jsonValue));
+    }
+
+    /**
+     * Get a server.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServerRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDServersServerIDGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Create a new identity in the region.
      */
     async apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IdentityRead>> {
@@ -1207,6 +1377,41 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationIDSecuritygroupsGet(requestParameters: ApiV1OrganizationsOrganizationIDSecuritygroupsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SecurityGroupRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDSecuritygroupsGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * List servers.
+     */
+    async apiV1OrganizationsOrganizationIDServersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDServersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ServerRead>>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDServersGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/servers`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServerReadFromJSON));
+    }
+
+    /**
+     * List servers.
+     */
+    async apiV1OrganizationsOrganizationIDServersGet(requestParameters: ApiV1OrganizationsOrganizationIDServersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ServerRead>> {
+        const response = await this.apiV1OrganizationsOrganizationIDServersGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -25,12 +25,6 @@ import {
     RegionTypeFromJSONTyped,
     RegionTypeToJSON,
 } from './RegionType';
-import type { Tag } from './Tag';
-import {
-    TagFromJSON,
-    TagFromJSONTyped,
-    TagToJSON,
-} from './Tag';
 
 /**
  * A provider specific identity, while the client can list regions to infer the
@@ -40,12 +34,6 @@ import {
  * @interface IdentitySpec
  */
 export interface IdentitySpec {
-    /**
-     * A list of tags.
-     * @type {Array<Tag>}
-     * @memberof IdentitySpec
-     */
-    tags?: Array<Tag>;
     /**
      * 
      * @type {RegionType}
@@ -87,7 +75,6 @@ export function IdentitySpecFromJSONTyped(json: any, ignoreDiscriminator: boolea
     }
     return {
         
-        'tags': !exists(json, 'tags') ? undefined : ((json['tags'] as Array<any>).map(TagFromJSON)),
         'type': RegionTypeFromJSON(json['type']),
         'regionId': json['regionId'],
         'openstack': !exists(json, 'openstack') ? undefined : IdentitySpecOpenStackFromJSON(json['openstack']),
@@ -103,7 +90,6 @@ export function IdentitySpecToJSON(value?: IdentitySpec | null): any {
     }
     return {
         
-        'tags': value.tags === undefined ? undefined : ((value.tags as Array<any>).map(TagToJSON)),
         'type': RegionTypeToJSON(value.type),
         'regionId': value.regionId,
         'openstack': IdentitySpecOpenStackToJSON(value.openstack),

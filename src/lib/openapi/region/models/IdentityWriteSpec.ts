@@ -13,25 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Tag } from './Tag';
-import {
-    TagFromJSON,
-    TagFromJSONTyped,
-    TagToJSON,
-} from './Tag';
-
 /**
  * Request parameters for creating an identity.
  * @export
  * @interface IdentityWriteSpec
  */
 export interface IdentityWriteSpec {
-    /**
-     * A list of tags.
-     * @type {Array<Tag>}
-     * @memberof IdentityWriteSpec
-     */
-    tags?: Array<Tag>;
     /**
      * The region an identity is provisioned in.
      * @type {string}
@@ -60,7 +47,6 @@ export function IdentityWriteSpecFromJSONTyped(json: any, ignoreDiscriminator: b
     }
     return {
         
-        'tags': !exists(json, 'tags') ? undefined : ((json['tags'] as Array<any>).map(TagFromJSON)),
         'regionId': json['regionId'],
     };
 }
@@ -74,7 +60,6 @@ export function IdentityWriteSpecToJSON(value?: IdentityWriteSpec | null): any {
     }
     return {
         
-        'tags': value.tags === undefined ? undefined : ((value.tags as Array<any>).map(TagToJSON)),
         'regionId': value.regionId,
     };
 }

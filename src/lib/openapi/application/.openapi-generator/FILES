@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
@@ -11,5 +10,6 @@ models/ResourceMetadata.ts
 models/ResourceProvisioningStatus.ts
 models/ResourceReadMetadata.ts
 models/StaticResourceMetadata.ts
+models/Tag.ts
 models/index.ts
 runtime.ts
