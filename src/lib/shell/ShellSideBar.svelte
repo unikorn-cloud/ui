@@ -30,7 +30,8 @@
 				title: 'Infrastucture',
 				items: [
 					{ label: 'Kubernetes Clusters', href: '/infrastructure/clusters' },
-					{ label: 'Cluster Managers', href: '/infrastructure/clustermanagers' }
+					{ label: 'Kubernetes Cluster Managers', href: '/infrastructure/clustermanagers' },
+					{ label: 'Compute Clusters', href: '/infrastructure/computeclusters' }
 				]
 			}
 		],

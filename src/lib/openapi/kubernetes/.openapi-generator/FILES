@@ -9,6 +9,7 @@ models/GpuSpec.ts
 models/GpuVendor.ts
 models/Image.ts
 models/ImageGpu.ts
+models/ImageOS.ts
 models/ImageSpec.ts
 models/ImageVirtualization.ts
 models/KubernetesClusterAPI.ts
@@ -21,12 +22,14 @@ models/KubernetesClusterWrite.ts
 models/MachinePool.ts
 models/ModelError.ts
 models/OrganizationScopedResourceReadMetadata.ts
+models/OsDistro.ts
+models/OsFamily.ts
+models/OsKernel.ts
 models/ProjectScopedResourceReadMetadata.ts
 models/ResourceMetadata.ts
 models/ResourceProvisioningStatus.ts
 models/ResourceReadMetadata.ts
 models/ResourceWriteMetadata.ts
-models/SoftwareVersions.ts
 models/StaticResourceMetadata.ts
 models/Tag.ts
 models/Volume.ts
