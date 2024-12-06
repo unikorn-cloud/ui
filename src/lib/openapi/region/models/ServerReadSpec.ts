@@ -74,6 +74,12 @@ export interface ServerReadSpec {
      * @memberof ServerReadSpec
      */
     networks: Array<ServerNetwork>;
+    /**
+     * UserData contains base64-encoded configuration information or scripts to use upon launch.
+     * @type {string}
+     * @memberof ServerReadSpec
+     */
+    userData?: string;
 }
 
 /**
@@ -103,6 +109,7 @@ export function ServerReadSpecFromJSONTyped(json: any, ignoreDiscriminator: bool
         'securityGroups': !exists(json, 'securityGroups') ? undefined : ((json['securityGroups'] as Array<any>).map(ServerSecurityGroupFromJSON)),
         'publicIPAllocation': !exists(json, 'publicIPAllocation') ? undefined : ServerPublicIPAllocationFromJSON(json['publicIPAllocation']),
         'networks': ((json['networks'] as Array<any>).map(ServerNetworkFromJSON)),
+        'userData': !exists(json, 'userData') ? undefined : json['userData'],
     };
 }
 
@@ -120,6 +127,7 @@ export function ServerReadSpecToJSON(value?: ServerReadSpec | null): any {
         'securityGroups': value.securityGroups === undefined ? undefined : ((value.securityGroups as Array<any>).map(ServerSecurityGroupToJSON)),
         'publicIPAllocation': ServerPublicIPAllocationToJSON(value.publicIPAllocation),
         'networks': ((value.networks as Array<any>).map(ServerNetworkToJSON)),
+        'userData': value.userData,
     };
 }
 

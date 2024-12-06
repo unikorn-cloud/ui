@@ -19,18 +19,18 @@ import {
     ImageGpuFromJSONTyped,
     ImageGpuToJSON,
 } from './ImageGpu';
+import type { ImageOS } from './ImageOS';
+import {
+    ImageOSFromJSON,
+    ImageOSFromJSONTyped,
+    ImageOSToJSON,
+} from './ImageOS';
 import type { ImageVirtualization } from './ImageVirtualization';
 import {
     ImageVirtualizationFromJSON,
     ImageVirtualizationFromJSONTyped,
     ImageVirtualizationToJSON,
 } from './ImageVirtualization';
-import type { SoftwareVersions } from './SoftwareVersions';
-import {
-    SoftwareVersionsFromJSON,
-    SoftwareVersionsFromJSONTyped,
-    SoftwareVersionsToJSON,
-} from './SoftwareVersions';
 
 /**
  * An image.
@@ -39,6 +39,12 @@ import {
  */
 export interface ImageSpec {
     /**
+     * Minimum disk size required to use the image in GiB.
+     * @type {number}
+     * @memberof ImageSpec
+     */
+    sizeGiB: number;
+    /**
      * 
      * @type {ImageVirtualization}
      * @memberof ImageSpec
@@ -46,10 +52,16 @@ export interface ImageSpec {
     virtualization: ImageVirtualization;
     /**
      * 
-     * @type {SoftwareVersions}
+     * @type {ImageOS}
      * @memberof ImageSpec
      */
-    softwareVersions?: SoftwareVersions;
+    os: ImageOS;
+    /**
+     * Image preinstalled version version metadata.
+     * @type {{ [key: string]: string; }}
+     * @memberof ImageSpec
+     */
+    softwareVersions?: { [key: string]: string; };
     /**
      * 
      * @type {ImageGpu}
@@ -63,7 +75,9 @@ export interface ImageSpec {
  */
 export function instanceOfImageSpec(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "sizeGiB" in value;
     isInstance = isInstance && "virtualization" in value;
+    isInstance = isInstance && "os" in value;
 
     return isInstance;
 }
@@ -78,8 +92,10 @@ export function ImageSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
+        'sizeGiB': json['sizeGiB'],
         'virtualization': ImageVirtualizationFromJSON(json['virtualization']),
-        'softwareVersions': !exists(json, 'softwareVersions') ? undefined : SoftwareVersionsFromJSON(json['softwareVersions']),
+        'os': ImageOSFromJSON(json['os']),
+        'softwareVersions': !exists(json, 'softwareVersions') ? undefined : json['softwareVersions'],
         'gpu': !exists(json, 'gpu') ? undefined : ImageGpuFromJSON(json['gpu']),
     };
 }
@@ -93,8 +109,10 @@ export function ImageSpecToJSON(value?: ImageSpec | null): any {
     }
     return {
         
+        'sizeGiB': value.sizeGiB,
         'virtualization': ImageVirtualizationToJSON(value.virtualization),
-        'softwareVersions': SoftwareVersionsToJSON(value.softwareVersions),
+        'os': ImageOSToJSON(value.os),
+        'softwareVersions': value.softwareVersions,
         'gpu': ImageGpuToJSON(value.gpu),
     };
 }

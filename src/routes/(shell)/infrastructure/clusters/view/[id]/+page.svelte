@@ -201,7 +201,7 @@
 		poolValid = poolValid;
 	}
 
-	import WorkloadPoolCreate from '$lib/WorkloadPoolCreate.svelte';
+	import KubernetesWorkloadPool from '$lib/KubernetesWorkloadPool.svelte';
 
 	/* There must be at least one workload pool, all of them must be valid and every pool must have a unique name */
 	$: step3Valid =
@@ -279,7 +279,7 @@
 							<iconify-icon icon="mdi:trash-can-outline" />
 						</button>
 
-						<WorkloadPoolCreate {index} {flavors} bind:pool bind:valid={poolValid[index]} />
+						<KubernetesWorkloadPool {index} {flavors} bind:pool bind:valid={poolValid[index]} />
 					</ShellSection>
 				{/each}
 

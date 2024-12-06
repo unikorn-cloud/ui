@@ -164,6 +164,10 @@ export interface ApiV1OrganizationsOrganizationIDRolesGetRequest {
     organizationID: string;
 }
 
+export interface ApiV1OrganizationsPostRequest {
+    organizationWrite: OrganizationWrite;
+}
+
 export interface Oauth2V2LoginPostRequest {
     loginRequestOptions: LoginRequestOptions;
 }
@@ -176,6 +180,37 @@ export interface Oauth2V2TokenPostRequest {
  * 
  */
 export class DefaultApi extends runtime.BaseAPI {
+
+    /**
+     * Returns access control properties for the user.
+     */
+    async apiV1AclGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Acl>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/acl`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AclFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns access control properties for the user.
+     */
+    async apiV1AclGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Acl> {
+        const response = await this.apiV1AclGetRaw(initOverrides);
+        return await response.value();
+    }
 
     /**
      * Lists system identity providers.
@@ -975,6 +1010,44 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationIDRolesGet(requestParameters: ApiV1OrganizationsOrganizationIDRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<RoleRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDRolesGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Allows creation of a new organization. This is only available when authenticateUnknownUsers is true.
+     */
+    async apiV1OrganizationsPostRaw(requestParameters: ApiV1OrganizationsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OrganizationRead>> {
+        if (requestParameters.organizationWrite === null || requestParameters.organizationWrite === undefined) {
+            throw new runtime.RequiredError('organizationWrite','Required parameter requestParameters.organizationWrite was null or undefined when calling apiV1OrganizationsPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: OrganizationWriteToJSON(requestParameters.organizationWrite),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => OrganizationReadFromJSON(jsonValue));
+    }
+
+    /**
+     * Allows creation of a new organization. This is only available when authenticateUnknownUsers is true.
+     */
+    async apiV1OrganizationsPost(requestParameters: ApiV1OrganizationsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OrganizationRead> {
+        const response = await this.apiV1OrganizationsPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

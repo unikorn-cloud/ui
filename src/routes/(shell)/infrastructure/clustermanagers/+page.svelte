@@ -8,8 +8,8 @@
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
-		name: 'Cluster Managers',
-		description: 'Manage your cluster life-cycle managers.'
+		name: 'Kubernetes Cluster Managers',
+		description: 'Manage your Kubernetes cluster life-cycle managers.'
 	};
 
 	import { onDestroy } from 'svelte';
