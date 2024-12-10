@@ -15,6 +15,14 @@ export function stringSet(s: string): boolean {
 	return Boolean(s);
 }
 
+export function stringInt(s: string): boolean {
+	return !isNaN(parseInt(s, 10));
+}
+
+export function stringIntOrUndefined(s: string): boolean {
+	return s == '' || !isNaN(parseInt(s, 10));
+}
+
 export function kubernetesNameValid(name: string | null | undefined): boolean {
 	if (!name) return false;
 	// RFC-1123.  Must start and end with alphanumeric.

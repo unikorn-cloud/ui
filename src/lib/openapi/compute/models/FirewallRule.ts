@@ -13,13 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { FirewallRulePort } from './FirewallRulePort';
-import {
-    FirewallRulePortFromJSON,
-    FirewallRulePortFromJSONTyped,
-    FirewallRulePortToJSON,
-} from './FirewallRulePort';
-
 /**
  * A firewall rule applied to a workload pool.
  * @export
@@ -27,25 +20,46 @@ import {
  */
 export interface FirewallRule {
     /**
+     * The direction of network traffic to apply the rule to.
+     * @type {string}
+     * @memberof FirewallRule
+     */
+    direction: FirewallRuleDirectionEnum;
+    /**
      * The protocol to allow.
      * @type {string}
      * @memberof FirewallRule
      */
     protocol: FirewallRuleProtocolEnum;
     /**
-     * 
-     * @type {FirewallRulePort}
+     * The port to allow, or start of a port range.
+     * @type {number}
      * @memberof FirewallRule
      */
-    port: FirewallRulePort;
+    port: number;
     /**
-     * A list of CIDR blocks to allow, it might be any IPv4 or IPv6 in CIDR notation.
+     * The end of a port range, inclusive of this this port, if specified.
+     * @type {number}
+     * @memberof FirewallRule
+     */
+    portMax?: number;
+    /**
+     * A list of CIDR prefixes to allow, it might be any IPv4 or IPv6 in CIDR notation.
      * @type {Array<string>}
      * @memberof FirewallRule
      */
-    cidr: Array<string>;
+    prefixes: Array<string>;
 }
 
+
+/**
+ * @export
+ */
+export const FirewallRuleDirectionEnum = {
+    Ingress: 'ingress',
+    Egress: 'egress'
+} as const;
+export type FirewallRuleDirectionEnum = typeof FirewallRuleDirectionEnum[keyof typeof FirewallRuleDirectionEnum];
 
 /**
  * @export
@@ -62,9 +76,10 @@ export type FirewallRuleProtocolEnum = typeof FirewallRuleProtocolEnum[keyof typ
  */
 export function instanceOfFirewallRule(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "direction" in value;
     isInstance = isInstance && "protocol" in value;
     isInstance = isInstance && "port" in value;
-    isInstance = isInstance && "cidr" in value;
+    isInstance = isInstance && "prefixes" in value;
 
     return isInstance;
 }
@@ -79,9 +94,11 @@ export function FirewallRuleFromJSONTyped(json: any, ignoreDiscriminator: boolea
     }
     return {
         
+        'direction': json['direction'],
         'protocol': json['protocol'],
-        'port': FirewallRulePortFromJSON(json['port']),
-        'cidr': json['cidr'],
+        'port': json['port'],
+        'portMax': !exists(json, 'portMax') ? undefined : json['portMax'],
+        'prefixes': json['prefixes'],
     };
 }
 
@@ -94,9 +111,11 @@ export function FirewallRuleToJSON(value?: FirewallRule | null): any {
     }
     return {
         
+        'direction': value.direction,
         'protocol': value.protocol,
-        'port': FirewallRulePortToJSON(value.port),
-        'cidr': value.cidr,
+        'port': value.port,
+        'portMax': value.portMax,
+        'prefixes': value.prefixes,
     };
 }
 
