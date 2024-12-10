@@ -13,6 +13,7 @@
 	import Select from '$lib/forms/Select.svelte';
 	import Flavor from '$lib/Flavor.svelte';
 	import Image from '$lib/Image.svelte';
+	import ComputeWorkloadPoolSecurityRule from '$lib/ComputeWorkloadPoolSecurityRule.svelte';
 
 	/* The pool index allows us to fully qualify IDs so they are unique */
 	export let index: number;
@@ -191,6 +192,41 @@
 
 		return lookupImage(images, distro, variant, version);
 	}
+
+	let tempRule: Compute.FirewallRule | null;
+
+	let tempRuleValid: boolean;
+
+	function addFirewallRule() {
+		tempRuleValid = false;
+
+		tempRule = {
+			direction: Compute.FirewallRuleDirectionEnum.Ingress,
+			protocol: Compute.FirewallRuleProtocolEnum.Tcp,
+			port: 0,
+			prefixes: []
+		};
+	}
+
+	function submitFirewallRule() {
+		if (!tempRule) return;
+
+		if (!pool.machine.firewall) {
+			pool.machine.firewall = [];
+		}
+
+		pool.machine.firewall.push(tempRule);
+		pool.machine.firewall = pool.machine.firewall;
+
+		tempRule = null;
+	}
+
+	function deleteFirewallRule(index: number) {
+		if (!pool.machine.firewall) return;
+
+		pool.machine.firewall.splice(index, 1);
+		pool.machine.firewall = pool.machine.firewall;
+	}
 </script>
 
 <ShellSection title="Pool Metadata">
@@ -295,4 +331,61 @@
 		hint="Selecting this option allocates a public IP address to each node in the pool."
 		bind:checked={publicIP}
 	/>
+
+	<ShellSection title="Firewall Rules">
+		<div class="table-container">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Direction</th>
+						<th>Protocol</th>
+						<th>Port</th>
+						<th>Prefixes</th>
+						<th class="table-cell-fit"></th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each pool.machine.firewall || [] as rule, i}
+						<tr>
+							<td>{rule.direction}</td>
+							<td>{rule.protocol}</td>
+							<td
+								>{rule.port}{#if rule.portMax}-{rule.portMax}{/if}</td
+							>
+							<td>{rule.prefixes.join(', ')}</td>
+							<td>
+								<button
+									class="text-2xl"
+									on:click={() => deleteFirewallRule(i)}
+									on:keypress={() => deleteFirewallRule(i)}
+								>
+									<iconify-icon icon="mdi:trash-can-outline" />
+								</button>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+
+		{#if tempRule}
+			<ComputeWorkloadPoolSecurityRule id="foo" rule={tempRule} bind:valid={tempRuleValid} />
+
+			<button
+				class="btn variant-filled-primary"
+				disabled={!tempRuleValid}
+				on:click={submitFirewallRule}
+				on:keypress={submitFirewallRule}>Submit</button
+			>
+		{:else}
+			<button
+				class="btn flex gap-2 items-center w-full"
+				on:click={addFirewallRule}
+				on:keypress={addFirewallRule}
+			>
+				<iconify-icon icon="mdi:add" />
+				<span>Add New Rule</span>
+			</button>
+		{/if}
+	</ShellSection>
 </ShellSection>

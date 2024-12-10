@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Firewall } from './Firewall';
+import type { FirewallRule } from './FirewallRule';
 import {
-    FirewallFromJSON,
-    FirewallFromJSONTyped,
-    FirewallToJSON,
-} from './Firewall';
+    FirewallRuleFromJSON,
+    FirewallRuleFromJSONTyped,
+    FirewallRuleToJSON,
+} from './FirewallRule';
 import type { ImageSelector } from './ImageSelector';
 import {
     ImageSelectorFromJSON,
@@ -63,11 +63,11 @@ export interface MachinePool {
      */
     disk?: Volume;
     /**
-     * 
-     * @type {Firewall}
+     * A list of firewall rules applied to a workload pool.
+     * @type {Array<FirewallRule>}
      * @memberof MachinePool
      */
-    firewall?: Firewall;
+    firewall?: Array<FirewallRule>;
     /**
      * 
      * @type {PublicIPAllocation}
@@ -113,7 +113,7 @@ export function MachinePoolFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'replicas': json['replicas'],
         'flavorId': json['flavorId'],
         'disk': !exists(json, 'disk') ? undefined : VolumeFromJSON(json['disk']),
-        'firewall': !exists(json, 'firewall') ? undefined : FirewallFromJSON(json['firewall']),
+        'firewall': !exists(json, 'firewall') ? undefined : ((json['firewall'] as Array<any>).map(FirewallRuleFromJSON)),
         'publicIPAllocation': !exists(json, 'publicIPAllocation') ? undefined : PublicIPAllocationFromJSON(json['publicIPAllocation']),
         'image': ImageSelectorFromJSON(json['image']),
         'userData': !exists(json, 'userData') ? undefined : json['userData'],
@@ -132,7 +132,7 @@ export function MachinePoolToJSON(value?: MachinePool | null): any {
         'replicas': value.replicas,
         'flavorId': value.flavorId,
         'disk': VolumeToJSON(value.disk),
-        'firewall': FirewallToJSON(value.firewall),
+        'firewall': value.firewall === undefined ? undefined : ((value.firewall as Array<any>).map(FirewallRuleToJSON)),
         'publicIPAllocation': PublicIPAllocationToJSON(value.publicIPAllocation),
         'image': ImageSelectorToJSON(value.image),
         'userData': value.userData,
