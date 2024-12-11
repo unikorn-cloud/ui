@@ -46,7 +46,6 @@ export * from './SecurityGroupRuleWrite';
 export * from './SecurityGroupRuleWriteSpec';
 export * from './SecurityGroupWrite';
 export * from './ServerImage';
-export * from './ServerImageSelector';
 export * from './ServerNetwork';
 export * from './ServerPublicIPAllocation';
 export * from './ServerRead';

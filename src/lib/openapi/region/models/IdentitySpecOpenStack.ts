@@ -55,6 +55,12 @@ export interface IdentitySpecOpenStack {
      * @memberof IdentitySpecOpenStack
      */
     sshKeyName?: string;
+    /**
+     * Ephemeral SSH private key to be used by higher order services.
+     * @type {string}
+     * @memberof IdentitySpecOpenStack
+     */
+    sshPrivateKey?: string;
 }
 
 /**
@@ -82,6 +88,7 @@ export function IdentitySpecOpenStackFromJSONTyped(json: any, ignoreDiscriminato
         'projectId': !exists(json, 'projectId') ? undefined : json['projectId'],
         'serverGroupId': !exists(json, 'serverGroupId') ? undefined : json['serverGroupId'],
         'sshKeyName': !exists(json, 'sshKeyName') ? undefined : json['sshKeyName'],
+        'sshPrivateKey': !exists(json, 'sshPrivateKey') ? undefined : json['sshPrivateKey'],
     };
 }
 
@@ -100,6 +107,7 @@ export function IdentitySpecOpenStackToJSON(value?: IdentitySpecOpenStack | null
         'projectId': value.projectId,
         'serverGroupId': value.serverGroupId,
         'sshKeyName': value.sshKeyName,
+        'sshPrivateKey': value.sshPrivateKey,
     };
 }
 

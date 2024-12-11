@@ -52,15 +52,23 @@
 				{
 					name: 'default',
 					machine: {
-						replicas: 3,
+						replicas: 1,
 						flavorId: '',
 						image: {
 							distro: Compute.OsDistro.Ubuntu,
 							version: '24.04'
 						},
 						publicIPAllocation: {
-							enabled: false
-						}
+							enabled: true
+						},
+						firewall: [
+							{
+								direction: Compute.FirewallRuleDirectionEnum.Ingress,
+								protocol: Compute.FirewallRuleProtocolEnum.Tcp,
+								port: 22,
+								prefixes: ['0.0.0.0/0']
+							}
+						]
 					}
 				}
 			]

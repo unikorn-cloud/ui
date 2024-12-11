@@ -27,6 +27,12 @@ import {
  */
 export interface ComputeClusterStatus {
     /**
+     * SSH private key that allows access to the cluster.
+     * @type {string}
+     * @memberof ComputeClusterStatus
+     */
+    sshPrivateKey?: string;
+    /**
      * A list of Compute cluster workload pools status.
      * @type {Array<ComputeClusterWorkloadPoolStatus>}
      * @memberof ComputeClusterStatus
@@ -53,6 +59,7 @@ export function ComputeClusterStatusFromJSONTyped(json: any, ignoreDiscriminator
     }
     return {
         
+        'sshPrivateKey': !exists(json, 'sshPrivateKey') ? undefined : json['sshPrivateKey'],
         'workloadPools': !exists(json, 'workloadPools') ? undefined : ((json['workloadPools'] as Array<any>).map(ComputeClusterWorkloadPoolStatusFromJSON)),
     };
 }
@@ -66,6 +73,7 @@ export function ComputeClusterStatusToJSON(value?: ComputeClusterStatus | null):
     }
     return {
         
+        'sshPrivateKey': value.sshPrivateKey,
         'workloadPools': value.workloadPools === undefined ? undefined : ((value.workloadPools as Array<any>).map(ComputeClusterWorkloadPoolStatusToJSON)),
     };
 }
