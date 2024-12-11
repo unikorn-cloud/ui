@@ -13,13 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ServerImageSelector } from './ServerImageSelector';
-import {
-    ServerImageSelectorFromJSON,
-    ServerImageSelectorFromJSONTyped,
-    ServerImageSelectorToJSON,
-} from './ServerImageSelector';
-
 /**
  * The image to use for the server.
  * @export
@@ -31,13 +24,7 @@ export interface ServerImage {
      * @type {string}
      * @memberof ServerImage
      */
-    id?: string;
-    /**
-     * 
-     * @type {ServerImageSelector}
-     * @memberof ServerImage
-     */
-    selector?: ServerImageSelector;
+    id: string;
 }
 
 /**
@@ -45,6 +32,7 @@ export interface ServerImage {
  */
 export function instanceOfServerImage(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "id" in value;
 
     return isInstance;
 }
@@ -59,8 +47,7 @@ export function ServerImageFromJSONTyped(json: any, ignoreDiscriminator: boolean
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'selector': !exists(json, 'selector') ? undefined : ServerImageSelectorFromJSON(json['selector']),
+        'id': json['id'],
     };
 }
 
@@ -74,7 +61,6 @@ export function ServerImageToJSON(value?: ServerImage | null): any {
     return {
         
         'id': value.id,
-        'selector': ServerImageSelectorToJSON(value.selector),
     };
 }
 

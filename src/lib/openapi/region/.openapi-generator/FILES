@@ -47,7 +47,6 @@ models/SecurityGroupRuleWrite.ts
 models/SecurityGroupRuleWriteSpec.ts
 models/SecurityGroupWrite.ts
 models/ServerImage.ts
-models/ServerImageSelector.ts
 models/ServerNetwork.ts
 models/ServerPublicIPAllocation.ts
 models/ServerRead.ts
