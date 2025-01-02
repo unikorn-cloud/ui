@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -27,12 +29,8 @@
 	import * as RBAC from '$lib/rbac';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
-
-	token.subscribe((token: InternalToken) => (at = token));
-
 	// Define required RBAC rules.
-	let allowed: boolean;
+	let allowed: boolean = $state(false);
 
 	let organizationScopes: Array<RBAC.OrganizationScope> = [
 		{
@@ -41,15 +39,23 @@
 		}
 	];
 
-	let organizationInfo: Stores.OrganizationInfo;
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
 	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
 		organizationInfo = value;
 	});
 
-	let organization: Identity.OrganizationRead | null;
-	let providers: Array<Identity.Oauth2ProviderRead> | null;
-	let organizationProviders: Array<Identity.Oauth2ProviderRead> | null;
+	// Grab the acces token.
+	let at = $state() as InternalToken;
+
+	token.subscribe((token: InternalToken): void => {
+		at = token;
+	});
+
+	let organization: Identity.OrganizationRead | undefined = $state();
+	let providers: Array<Identity.Oauth2ProviderRead> | undefined = $state();
+	let organizationProviders: Array<Identity.Oauth2ProviderRead> | undefined = $state();
 
 	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo, allowed: boolean) {
 		if (!at || !organizationInfo || !allowed) {
@@ -76,7 +82,9 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: update(at, organizationInfo, allowed);
+	run(() => {
+		update(at, organizationInfo, allowed);
+	});
 
 	function submit() {
 		if (!organization) return;
@@ -95,8 +103,8 @@
 	}
 
 	function getOauth2ProviderType(
-		providers: Array<Identity.Oauth2ProviderRead> | null,
-		organization: Identity.OrganizationRead | null
+		providers: Array<Identity.Oauth2ProviderRead> | undefined,
+		organization: Identity.OrganizationRead | undefined
 	): Identity.Oauth2ProviderType | undefined {
 		if (!providers || !organization) return undefined;
 
@@ -106,17 +114,18 @@
 		return provider.spec.type;
 	}
 
-	let metadataValid: boolean = false;
-	let domainValid: boolean = false;
+	let metadataValid: boolean = $state(false);
+	let domainValid: boolean = $state(false);
+	let valid: boolean = $state(false);
 
-	let valid: boolean = false;
+	run(() => {
+		valid =
+			metadataValid && organization?.spec.organizationType == Identity.OrganizationType.Domain
+				? domainValid
+				: true;
+	});
 
-	$: valid =
-		metadataValid && organization?.spec.organizationType == Identity.OrganizationType.Domain
-			? domainValid
-			: true;
-
-	$: oauth2ProviderType = getOauth2ProviderType(providers, organization);
+	let oauth2ProviderType = $derived(getOauth2ProviderType(providers, organization));
 </script>
 
 <ShellPage {settings}>
@@ -210,8 +219,8 @@
 			<button
 				class="btn variant-filled-primary flex gap-2 items-center self-end"
 				disabled={!valid}
-				on:click={submit}
-				on:keypress={submit}
+				onclick={submit}
+				onkeypress={submit}
 			>
 				Update
 			</button>

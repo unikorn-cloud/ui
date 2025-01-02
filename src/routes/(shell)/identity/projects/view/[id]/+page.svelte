@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { page } from '$app/stores';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
@@ -24,20 +26,22 @@
 	import * as Identity from '$lib/openapi/identity';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
-	token.subscribe((token: InternalToken) => (at = token));
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
+	});
 
-	let organizationInfo: Stores.OrganizationInfo;
+	// Grab the acces token.
+	let at = $state() as InternalToken;
 
-	Stores.organizationStore.subscribe(
-		(value: Stores.OrganizationInfo) => (organizationInfo = value)
-	);
+	token.subscribe((token: InternalToken): void => {
+		at = token;
+	});
 
-	let projects: Array<Identity.ProjectRead>;
-	let project: Identity.ProjectRead;
-
-	let groups: Array<Identity.GroupRead>;
+	let projects: Array<Identity.ProjectRead> | undefined = $state();
+	let groups: Array<Identity.GroupRead> | undefined = $state();
 
 	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
 		if (!at || !organizationInfo) return;
@@ -57,7 +61,9 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	function updateProject(projects: Array<Identity.ProjectRead>) {
+	let project: Identity.ProjectRead | undefined = $state();
+
+	function updateProject(projects: Array<Identity.ProjectRead> | undefined) {
 		if (!projects) return;
 
 		const temp = projects.find((x) => x.metadata.id == $page.params.id);
@@ -68,21 +74,27 @@
 		project = temp;
 	}
 
-	$: updateProject(projects);
+	run(() => {
+		updateProject(projects);
+	});
 
-	let names: Array<string>;
+	let names: Array<string> = $derived(
+		(projects || []).filter((x) => x.metadata.id != $page.params.id).map((x) => x.metadata.name)
+	);
 
-	$: names = (projects || [])
-		.filter((x) => x.metadata.id != $page.params.id)
-		.map((x) => x.metadata.name);
+	let metadataValid = $state(false);
 
-	let metadataValid = false;
+	let valid = $derived(
+		metadataValid && project?.spec.groupIDs && project?.spec.groupIDs.length != 0
+	);
 
-	$: valid = metadataValid && project.spec.groupIDs && project.spec.groupIDs.length != 0;
-
-	$: update(at, organizationInfo);
+	run(() => {
+		update(at, organizationInfo);
+	});
 
 	function submit() {
+		if (!project) return;
+
 		const parameters = {
 			organizationID: organizationInfo.id,
 			projectID: $page.params.id,
@@ -119,8 +131,8 @@
 		<button
 			class="btn variant-filled-primary flex gap-2 items-center"
 			disabled={!valid}
-			on:click={submit}
-			on:keypress={submit}
+			onclick={submit}
+			onkeypress={submit}
 		>
 			Update
 		</button>

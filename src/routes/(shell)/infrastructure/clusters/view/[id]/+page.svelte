@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { page } from '$app/stores';
 
 	/* Page setup */
@@ -30,29 +32,24 @@
 	import * as RegionUtil from '$lib/regionutil';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
-	let organizationInfo: Stores.OrganizationInfo;
-	let projectID: string;
-	let regionID: string;
-	let allClusters: Array<Kubernetes.KubernetesClusterRead>;
-	let clusters: Array<Kubernetes.KubernetesClusterRead>;
-	let resource: Kubernetes.KubernetesClusterRead;
-	let regions: Array<Region.RegionRead>;
-	let images: Array<Region.Image>;
-	let flavors: Array<Region.Flavor>;
-	let versions: Array<string>;
-
-	let poolValid: Array<boolean> = [];
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
 	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
 		organizationInfo = value;
 	});
 
-	token.subscribe((value: InternalToken) => {
-		at = value;
+	// Grab the acces token.
+	let at = $state() as InternalToken;
+
+	token.subscribe((token: InternalToken): void => {
+		at = token;
 	});
 
-	// Get all clusters in the organization.
+	// Get all clusters and regions.
+	let allClusters: Array<Kubernetes.KubernetesClusterRead> | undefined = $state();
+	let regions: Array<Region.RegionRead> | undefined = $state();
+
 	function updateAllClusters(at: InternalToken, organizationInfo: Stores.OrganizationInfo): void {
 		if (!at || !organizationInfo) return;
 
@@ -73,19 +70,33 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateAllClusters(at, organizationInfo);
+	run(() => {
+		updateAllClusters(at, organizationInfo);
+	});
 
-	// Find our cluster.
-	function updateCuster(clusters: Array<Kubernetes.KubernetesClusterRead>) {
-		if (!clusters) return;
+	// Once we know have the clusters, we can extract the one we care about
+	// as identified by the ID, then derive the region and project ID.  From
+	// the project ID we can extract all clusters in the same project to use
+	// for name comparison.
+	let resource: Kubernetes.KubernetesClusterRead | undefined = $state();
+	let projectID: string;
+	let regionID: string | undefined = $state();
+	let poolValid: Array<boolean> = $state([]);
 
-		const temp = clusters.find((x) => x.metadata.id == $page.params.id);
+	function updateCuster(
+		at: InternalToken,
+		organizationInfo: Stores.OrganizationInfo,
+		allClusters: Array<Kubernetes.KubernetesClusterRead> | undefined
+	) {
+		if (!at || !organizationInfo || !allClusters) return;
+
+		const temp = allClusters.find((x) => x.metadata.id == $page.params.id);
 		if (!temp) return;
 
 		resource = temp;
 
 		// Extract immutable data, or stuff that triggers API calls, we don't
-		// want them being invoked for ever object update!
+		// want them being invoked for every object update!
 		projectID = temp.metadata.projectId;
 		regionID = temp.spec.regionId;
 
@@ -94,29 +105,36 @@
 		}
 
 		poolValid = poolValid;
-
-		const temp2 = allClusters.filter((x) => x.metadata.projectId == temp.metadata.projectId);
-		if (!temp2) return;
-
-		clusters = temp2;
 	}
 
-	$: updateCuster(allClusters);
+	run(() => {
+		updateCuster(at, organizationInfo, allClusters);
+	});
 
-	$: names = (clusters || [])
-		.filter((x) => x.metadata.id != $page.params.id)
-		.map((x) => x.metadata.name);
+	let names: Array<string> | undefined = $state();
 
-	let metadataValid = false;
+	function updateNames(
+		allClusters: Array<Kubernetes.KubernetesClusterRead> | undefined,
+		projectID: string | undefined
+	) {
+		if (!allClusters || !resource) return;
 
-	/* Cluster name must be valid, and it must be unique */
-	$: step2Valid = metadataValid;
+		names = allClusters
+			.filter((x) => x.metadata.id != $page.params.id && x.metadata.projectId == projectID)
+			.map((x) => x.metadata.name);
+	}
 
-	/* Once the region has been selected we can poll the images and other resources */
+	run(() => {
+		updateNames(allClusters, projectID);
+	});
+
+	// Once we know the region ID, we can extract the images and flavors.
+	let images: Array<Region.Image> | undefined = $state();
+
 	function updateImages(
 		at: InternalToken,
 		organizationInfo: Stores.OrganizationInfo,
-		regionID: string
+		regionID: string | undefined
 	): void {
 		if (!at || !organizationInfo || !regionID) return;
 
@@ -131,10 +149,16 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
+	run(() => {
+		updateImages(at, organizationInfo, regionID);
+	});
+
+	let flavors: Array<Region.Flavor> | undefined = $state();
+
 	function updateFlavors(
 		at: InternalToken,
 		organizationInfo: Stores.OrganizationInfo,
-		regionID: string
+		regionID: string | undefined
 	): void {
 		if (!at || !organizationInfo || !regionID) return;
 
@@ -149,12 +173,19 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateImages(at, organizationInfo, regionID);
-	$: updateFlavors(at, organizationInfo, regionID);
+	run(() => {
+		updateFlavors(at, organizationInfo, regionID);
+	});
 
-	/* From the images, we can get a list of Kubernetes versions */
-	function updateVersions(at: InternalToken, images: Array<Region.Image>): void {
-		if (!at || !images) return;
+	// Once we know the images, we can extract the Kubernetes versons available.
+	let versions: Array<string> | undefined = $state();
+
+	function updateVersions(
+		at: InternalToken,
+		resource: Kubernetes.KubernetesClusterRead | undefined,
+		images: Array<Region.Image> | undefined
+	): void {
+		if (!at || !resource || !images) return;
 
 		versions = [
 			...new Set(
@@ -164,13 +195,20 @@
 				})
 			)
 		].reverse();
-
-		resource.spec.version = versions[0];
 	}
 
-	$: updateVersions(at, images);
+	run(() => {
+		updateVersions(at, resource, images);
+	});
+
+	let metadataValid = $state(false);
+
+	// Cluster name must be valid, and it must be unique.
+	let step2Valid = $derived(metadataValid);
 
 	function addPool(): void {
+		if (!resource) return;
+
 		let pool: Kubernetes.KubernetesClusterWorkloadPool = {
 			name: '',
 			machine: {
@@ -193,6 +231,8 @@
 	}
 
 	function removePool(index: number): void {
+		if (!resource) return;
+
 		resource.spec.workloadPools.splice(index, 1);
 		poolValid.splice(index, 1);
 
@@ -204,14 +244,16 @@
 	import KubernetesWorkloadPool from '$lib/KubernetesWorkloadPool.svelte';
 
 	/* There must be at least one workload pool, all of them must be valid and every pool must have a unique name */
-	$: step3Valid =
+	let step3Valid = $derived(
 		resource &&
-		resource.spec.workloadPools.length > 0 &&
-		poolValid.every((x) => x) &&
-		[...new Set(resource.spec.workloadPools.map((x) => x.name))].length ==
-			resource.spec.workloadPools.length;
+			resource.spec.workloadPools.length > 0 &&
+			poolValid.every((x) => x) &&
+			[...new Set(resource.spec.workloadPools.map((x) => x.name))].length ==
+				resource.spec.workloadPools.length
+	);
 
 	function complete() {
+		if (!projectID || !resource) return;
 		const parameters = {
 			organizationID: organizationInfo.id,
 			projectID: projectID,
@@ -227,20 +269,26 @@
 </script>
 
 <ShellPage {settings}>
-	{#if resource}
+	{#if resource && regions && flavors}
 		<ShellViewHeader metadata={resource.metadata}>
-			<svelte:fragment slot="badges">
-				<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
-					{RegionUtil.name(regions, resource.spec.regionId)}
-				</Badge>
-			</svelte:fragment>
+			{#snippet badges()}
+				{#if resource}
+					<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+						{RegionUtil.name(regions, resource.spec.regionId)}
+					</Badge>
+				{/if}
+			{/snippet}
 		</ShellViewHeader>
 
 		<Stepper on:complete={complete} buttonNext="variant-filled-primary">
 			<Step locked={!step2Valid}>
-				<svelte:fragment slot="header">Basic Cluster Setup</svelte:fragment>
+				{#snippet header()}
+					Basic Cluster Setup
+				{/snippet}
 
-				<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
+				{#if names}
+					<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
+				{/if}
 
 				<ShellSection title="Platform Configuration">
 					<Select
@@ -259,7 +307,9 @@
 				</ShellSection>
 			</Step>
 			<Step locked={!step3Valid}>
-				<svelte:fragment slot="header">Worker Setup</svelte:fragment>
+				{#snippet header()}
+					Worker Setup
+				{/snippet}
 
 				<p>
 					Workload pools provide compute resouce for your cluster. You may have as many as required
@@ -268,28 +318,38 @@
 					operational cost when not in use.
 				</p>
 
+				<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 				{#each resource.spec.workloadPools as pool, index}
 					<ShellSection title="Workload Pool {index + 1}">
-						<button
-							class="text-2xl"
-							on:click={() => removePool(index)}
-							on:keypress={() => removePool(index)}
-							slot="tools"
-						>
-							<iconify-icon icon="mdi:trash-can-outline" />
-						</button>
+						{#snippet tools()}
+							<button
+								class="text-2xl"
+								onclick={() => removePool(index)}
+								onkeypress={() => removePool(index)}
+								aria-label="delete workload pool"
+							>
+								<iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
+							</button>
+						{/snippet}
 
-						<KubernetesWorkloadPool {index} {flavors} bind:pool bind:valid={poolValid[index]} />
+						<KubernetesWorkloadPool
+							{index}
+							{flavors}
+							bind:pool={resource.spec.workloadPools[index]}
+							bind:valid={poolValid[index]}
+						/>
 					</ShellSection>
 				{/each}
 
-				<button class="btn flex gap-2 items-center" on:click={addPool} on:keypress={addPool}>
-					<iconify-icon icon="mdi:add" />
+				<button class="btn flex gap-2 items-center" onclick={addPool} onkeypress={addPool}>
+					<iconify-icon icon="mdi:add"></iconify-icon>
 					<span>Add New Pool</span>
 				</button>
 			</Step>
 			<Step>
-				<svelte:fragment slot="header">Confirmation</svelte:fragment>
+				{#snippet header()}
+					Confirmation
+				{/snippet}
 
 				<p>Insert a summary of what's about to be created...</p>
 			</Step>

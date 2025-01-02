@@ -37,26 +37,24 @@
 
 	import { browser } from '$app/environment';
 
-	let at: InternalToken;
-
-	let resources: Array<Compute.ComputeClusterRead>;
-	let projects: Array<Identity.ProjectRead>;
-	let regions: Array<Region.RegionRead>;
-
-	let organizationInfo: Stores.OrganizationInfo;
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
 	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
 		organizationInfo = value;
-		update();
 	});
+
+	// Grab the acces token.
+	let at = $state() as InternalToken;
 
 	token.subscribe((token: InternalToken): void => {
 		at = token;
-		update();
 	});
 
-	const ticker = setInterval(update, 5000);
-	onDestroy(() => clearInterval(ticker));
+	// Grab the root resources from the API.
+	let resources: Array<Compute.ComputeClusterRead> | undefined = $state();
+	let projects: Array<Identity.ProjectRead> | undefined = $state();
+	let regions: Array<Region.RegionRead> | undefined = $state();
 
 	function update(): void {
 		if (!at || !organizationInfo) return;
@@ -80,6 +78,9 @@
 			.then((v: Array<Identity.ProjectRead>) => (projects = v))
 			.catch((e: Error) => Clients.error(e));
 	}
+
+	const ticker = setInterval(update, 5000);
+	onDestroy(() => clearInterval(ticker));
 
 	function remove(resource: Compute.ComputeClusterRead): void {
 		const modal: ModalSettings = {
@@ -123,96 +124,93 @@
 </script>
 
 <ShellPage {settings}>
-	<a
-		href="/infrastructure/computeclusters/create"
-		class="btn variant-filled-primary flex gap-2 items-center"
-		slot="tools"
-	>
-		<iconify-icon icon="material-symbols:add" />
-		<span>Create</span>
-	</a>
+	{#snippet tools()}
+		<a
+			href="/infrastructure/computeclusters/create"
+			class="btn variant-filled-primary flex gap-2 items-center"
+		>
+			<iconify-icon icon="material-symbols:add"></iconify-icon>
+			<span>Create</span>
+		</a>
+	{/snippet}
 
 	<ShellList>
-		{#each resources || [] as resource}
-			<ShellListItem metadata={resource.metadata} {projects}>
-				<svelte:fragment slot="badges">
-					<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
-						{RegionUtil.name(regions, resource.spec.regionId)}
-					</Badge>
-				</svelte:fragment>
+		{#if resources && regions && projects}
+			{#each resources as resource}
+				<ShellListItem metadata={resource.metadata} {projects}>
+					{#snippet badges()}
+						<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+							{RegionUtil.name(regions, resource.spec.regionId)}
+						</Badge>
+					{/snippet}
 
-				<svelte:fragment slot="tray">
-					<BurgerMenu name="menu-{resource.metadata.id}">
-						<BurgerMenuItem
-							href="/infrastructure/computeclusters/view/{resource.metadata.id}"
-							icon="mdi:edit-outline"
-						>
-							Edit
-						</BurgerMenuItem>
-						<BurgerMenuItem
-							on:click={() => remove(resource)}
-							on:keypress={() => remove(resource)}
-							icon="mdi:trash-can-outline"
-						>
-							Delete
-						</BurgerMenuItem>
-						<BurgerMenuItem
-							on:click={() => getSSHKey(resource)}
-							on:keypress={() => getSSHKey(resource)}
-							icon="mdi:download"
-						>
-							SSH Key
-						</BurgerMenuItem>
-					</BurgerMenu>
-				</svelte:fragment>
+					{#snippet tray()}
+						<BurgerMenu name="menu-{resource.metadata.id}">
+							<BurgerMenuItem
+								href="/infrastructure/computeclusters/view/{resource.metadata.id}"
+								icon="mdi:edit-outline"
+							>
+								Edit
+							</BurgerMenuItem>
+							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
+								Delete
+							</BurgerMenuItem>
+							<BurgerMenuItem clicked={() => getSSHKey(resource)} icon="mdi:download">
+								SSH Key
+							</BurgerMenuItem>
+						</BurgerMenu>
+					{/snippet}
 
-				<Accordion class="pt-4">
-					<AccordionItem padding="py-2" hover="">
-						<svelte:fragment slot="summary">
-							<span>Cluster Overview</span>
-						</svelte:fragment>
+					{#snippet content()}
+						<Accordion class="pt-4">
+							<AccordionItem padding="py-2" hover="">
+								{#snippet summary()}
+									<span>Cluster Overview</span>
+								{/snippet}
 
-						<svelte:fragment slot="content">
-							{#each resource.status?.workloadPools || [] as pool}
-								<div class="flex gap-2 items-center">
-									<iconify-icon icon="mdi:server-outline" class="text-2xl" />
-									<div class="h4">Pool {pool.name}</div>
-								</div>
-
-								{#each pool.machines || [] as machine}
-									<div class="flex gap-2">
-										<Badge
-											icon={Status.statusIcon(machine.status)}
-											iconcolor={Status.statusColor(machine.status)}
-										/>
-										<div class="flex flex-col gap-2">
-											<div class="flex gap-2">
-												<div class="font-bold">{machine.hostname}</div>
-											</div>
-
-											<div class="flex gap-2 text-xs">
-												{#if machine.privateIP}
-													<div>
-														<span class="font-bold">Private IP:</span>
-														{machine.privateIP}
-													</div>
-												{/if}
-
-												{#if machine.publicIP}
-													<div>
-														<span class="font-bold">Public IP:</span>
-														{machine.publicIP}
-													</div>
-												{/if}
-											</div>
+								{#snippet content()}
+									{#each resource.status?.workloadPools || [] as pool}
+										<div class="flex gap-2 items-center">
+											<iconify-icon icon="mdi:server-outline" class="text-2xl"></iconify-icon>
+											<div class="h4">Pool {pool.name}</div>
 										</div>
-									</div>
-								{/each}
-							{/each}
-						</svelte:fragment>
-					</AccordionItem>
-				</Accordion>
-			</ShellListItem>
-		{/each}
+
+										{#each pool.machines || [] as machine}
+											<div class="flex gap-2">
+												<Badge
+													icon={Status.statusIcon(machine.status)}
+													iconcolor={Status.statusColor(machine.status)}
+												/>
+												<div class="flex flex-col gap-2">
+													<div class="flex gap-2">
+														<div class="font-bold">{machine.hostname}</div>
+													</div>
+
+													<div class="flex gap-2 text-xs">
+														{#if machine.privateIP}
+															<div>
+																<span class="font-bold">Private IP:</span>
+																{machine.privateIP}
+															</div>
+														{/if}
+
+														{#if machine.publicIP}
+															<div>
+																<span class="font-bold">Public IP:</span>
+																{machine.publicIP}
+															</div>
+														{/if}
+													</div>
+												</div>
+											</div>
+										{/each}
+									{/each}
+								{/snippet}
+							</AccordionItem>
+						</Accordion>
+					{/snippet}
+				</ShellListItem>
+			{/each}
+		{/if}
 	</ShellList>
 </ShellPage>

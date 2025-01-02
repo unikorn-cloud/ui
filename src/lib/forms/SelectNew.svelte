@@ -4,14 +4,18 @@
 	import type { PopupSettings } from '@skeletonlabs/skeleton';
 	import type { SizeOptions } from '@floating-ui/dom';
 
-	// Unique element ID.
-	export let id: string;
+	interface Props {
+		// Unique element ID.
+		id: string;
+		// Label to attach describing the input.
+		label: string;
+		// Formatting hint.
+		hint?: string;
+		selected_body?: import('svelte').Snippet;
+		children?: import('svelte').Snippet;
+	}
 
-	// Label to attach describing the input.
-	export let label: string;
-
-	// Formatting hint.
-	export let hint: string = '';
+	let { id, label, hint = '', selected_body, children }: Props = $props();
 
 	let sizeOptions: SizeOptions = {
 		apply({ rects, elements }) {
@@ -40,14 +44,14 @@
 </div>
 
 <button class="btn variant-ghost w-full justify-between" use:popup={settings}>
-	<slot name="selected_body" />
-	<iconify-icon icon="ph:caret-down-bold" />
+	{@render selected_body?.()}
+	<iconify-icon icon="ph:caret-down-bold"></iconify-icon>
 </button>
 
 <div class="z-10" data-popup={`select-${id}`}>
 	<div class="card shadow-xl">
 		<ListBox>
-			<slot />
+			{@render children?.()}
 		</ListBox>
 	</div>
 </div>

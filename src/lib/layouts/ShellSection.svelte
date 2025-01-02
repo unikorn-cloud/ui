@@ -1,5 +1,11 @@
 <script lang="ts">
-	export let title: string;
+	interface Props {
+		title: string;
+		tools?: import('svelte').Snippet;
+		children?: import('svelte').Snippet;
+	}
+
+	let { title, tools, children }: Props = $props();
 </script>
 
 <div
@@ -8,8 +14,8 @@
 	<div class="flex items-center justify-between">
 		<h4 class="h4">{title}</h4>
 
-		<slot name="tools" />
+		{@render tools?.()}
 	</div>
 
-	<slot />
+	{@render children?.()}
 </div>

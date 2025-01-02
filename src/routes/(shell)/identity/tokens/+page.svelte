@@ -19,7 +19,7 @@
 	import type { Token } from '$lib/oauth2';
 	import { pat } from '$lib/credentials';
 
-	let token: Token;
+	let token: Token | undefined = $state();
 
 	// If there is a PAT in storage, only show it the one time, and remore it
 	// immediately.
@@ -32,15 +32,16 @@
 </script>
 
 <ShellPage {settings}>
-	<button
-		class="btn variant-filled-primary flex gap-2 items-center"
-		on:click={create}
-		on:keypress={create}
-		slot="tools"
-	>
-		<iconify-icon icon="material-symbols:add" />
-		<span>Create</span>
-	</button>
+	{#snippet tools()}
+		<button
+			class="btn variant-filled-primary flex gap-2 items-center"
+			onclick={create}
+			onkeypress={create}
+		>
+			<iconify-icon icon="material-symbols:add"></iconify-icon>
+			<span>Create</span>
+		</button>
+	{/snippet}
 
 	{#if token}
 		<ShellSection title="Your Personal Access Token">
@@ -58,7 +59,7 @@
 					use:clipboard={{ element: 'pat' }}
 					class="btn variant-filled-primary flex items-center"
 				>
-					<iconify-icon icon="mdi:clipboard-outline" />
+					<iconify-icon icon="mdi:clipboard-outline"></iconify-icon>
 					<span>Copy</span>
 				</button>
 			</div>

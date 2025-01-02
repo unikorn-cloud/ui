@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -28,19 +30,198 @@
 	import * as Region from '$lib/openapi/region';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
-	let organizationInfo: Stores.OrganizationInfo;
-	let projectID: string;
-	let regionID: string;
-	let regions: Array<Region.RegionRead>;
-	let projects: Array<Identity.ProjectRead>;
-	let clustermanagers: Array<Kubernetes.ClusterManagerRead>;
-	let clusters: Array<Kubernetes.KubernetesClusterRead>;
-	let images: Array<Region.Image>;
-	let flavors: Array<Region.Flavor>;
-	let versions: Array<string>;
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
-	let resource: Kubernetes.KubernetesClusterWrite = {
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
+	});
+
+	// Grab the acces token.
+	let at = $state() as InternalToken;
+
+	token.subscribe((token: InternalToken): void => {
+		at = token;
+	});
+
+	// Get the root resources.
+	let projects: Array<Identity.ProjectRead> | undefined = $state();
+	let projectID: string | undefined = $state();
+
+	function updateProjects(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
+		if (!at || !organizationInfo) return;
+
+		const parameters = {
+			organizationID: organizationInfo.id
+		};
+
+		Clients.identity(toastStore, at)
+			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
+			.then((v: Array<Identity.ProjectRead>) => {
+				if (v.length == 0) return;
+
+				projects = v;
+				projectID = projects[0].metadata.id;
+			})
+			.catch((e: Error) => Clients.error(e));
+	}
+
+	run(() => {
+		updateProjects(at, organizationInfo);
+	});
+
+	let regionID: string | undefined = $state();
+	let regions: Array<Region.RegionRead> | undefined = $state();
+
+	function updateRegions(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
+		if (!at || !organizationInfo) return;
+
+		const parameters = {
+			organizationID: organizationInfo.id
+		};
+
+		/* Get top-level resources required for the first step */
+		/* TODO: parallelize with Promise.all */
+		Clients.region(toastStore, at)
+			.apiV1OrganizationsOrganizationIDRegionsGet(parameters)
+			.then((v: Array<Region.RegionRead>) => {
+				if (v.length == 0) return;
+
+				regions = v;
+				regionID = regions[0].metadata.id;
+			})
+			.catch((e: Error) => Clients.error(e));
+	}
+
+	run(() => {
+		updateRegions(at, organizationInfo);
+	});
+
+	// Once we know the project ID, we can lookup clusters and cluster managers.
+	let clustermanagers: Array<Kubernetes.ClusterManagerRead> | undefined = $state();
+	let clusters: Array<Kubernetes.KubernetesClusterRead> | undefined = $state();
+
+	function updateClusterManagers(at: InternalToken, projectID: string | undefined) {
+		if (!at || !projectID) return;
+
+		const parameters = {
+			organizationID: organizationInfo.id
+		};
+
+		Clients.kubernetes(toastStore, at)
+			.apiV1OrganizationsOrganizationIDClustermanagersGet(parameters)
+			.then((v: Array<Kubernetes.ClusterManagerRead>) => {
+				if (v.length == 0) return;
+
+				// TODO: a possible excuse for request query parameters?
+				clustermanagers = v.filter((x) => x.metadata.projectId == projectID);
+				resource.spec.clusterManagerId = clustermanagers[0].metadata.id;
+			})
+			.catch((e: Error) => Clients.error(e));
+	}
+
+	run(() => {
+		updateClusterManagers(at, projectID);
+	});
+
+	function updateClusters(at: InternalToken, projectID: string | undefined): void {
+		if (!at || !projectID) return;
+
+		const parameters = {
+			organizationID: organizationInfo.id
+		};
+
+		Clients.kubernetes(toastStore, at)
+			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
+			.then((v: Array<Kubernetes.KubernetesClusterRead>) => {
+				// As we are only chekcing names, then scope to the project.
+				const temp = v.filter((x) => x.metadata.projectId == projectID);
+				if (!temp) return;
+
+				clusters = temp;
+			})
+			.catch((e: Error) => Clients.error(e));
+	}
+
+	run(() => {
+		updateClusters(at, projectID);
+	});
+
+	let names = $derived((clusters || []).map((x) => x.metadata.name));
+
+	// Once we know the region, we can load up the images and flavors.
+	let images: Array<Region.Image> | undefined = $state();
+
+	function updateImages(
+		at: InternalToken,
+		organizationInfo: Stores.OrganizationInfo,
+		regionID: string | undefined
+	): void {
+		if (!at || !organizationInfo || !regionID) return;
+
+		const parameters = {
+			organizationID: organizationInfo.id,
+			regionID: regionID
+		};
+
+		Clients.kubernetes(toastStore, at)
+			.apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet(parameters)
+			.then((v: Array<Region.Image>) => (images = v))
+			.catch((e: Error) => Clients.error(e));
+	}
+
+	run(() => {
+		updateImages(at, organizationInfo, regionID);
+	});
+
+	let flavors: Array<Region.Flavor> | undefined = $state();
+
+	function updateFlavors(
+		at: InternalToken,
+		organizationInfo: Stores.OrganizationInfo,
+		regionID: string | undefined
+	): void {
+		if (!at || !organizationInfo || !regionID) return;
+
+		const parameters = {
+			organizationID: organizationInfo.id,
+			regionID: regionID
+		};
+
+		Clients.kubernetes(toastStore, at)
+			.apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet(parameters)
+			.then((v: Array<Region.Flavor>) => (flavors = v))
+			.catch((e: Error) => Clients.error(e));
+	}
+
+	run(() => {
+		updateFlavors(at, organizationInfo, regionID);
+	});
+
+	// Once we know the images, we can extract the Kubernetes versons available
+	// and select the most recent by default.
+	let versions: Array<string> | undefined = $state();
+
+	function updateVersions(at: InternalToken, images: Array<Region.Image> | undefined): void {
+		if (!at || !images) return;
+
+		versions = [
+			...new Set(
+				(images || []).map((x) => {
+					if (!x.spec.softwareVersions || !x.spec.softwareVersions.kubernetes) return '';
+					return x.spec.softwareVersions.kubernetes;
+				})
+			)
+		].reverse();
+
+		resource.spec.version = versions[0];
+	}
+
+	run(() => {
+		updateVersions(at, images);
+	});
+
+	let resource: Kubernetes.KubernetesClusterWrite = $state({
 		metadata: {
 			name: uniqueNamesGenerator({
 				dictionaries: [adjectives, animals],
@@ -66,177 +247,21 @@
 				}
 			]
 		}
-	};
-
-	// Things to keep the API schema happy.
-	$: if (!clustermanagers || clustermanagers.length == 0) delete resource.spec.clusterManagerId;
-
-	let poolValid: Array<boolean> = [false];
-
-	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
-		organizationInfo = value;
-		updateProjects();
 	});
 
-	token.subscribe((value: InternalToken) => {
-		at = value;
-		updateProjects();
+	run(() => {
+		if (resource && regionID) resource.spec.regionId = regionID;
 	});
 
-	function updateProjects() {
-		if (!at || !organizationInfo) return;
-
-		const parameters = {
-			organizationID: organizationInfo.id
-		};
-
-		Clients.identity(toastStore, at)
-			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
-			.then((v: Array<Identity.ProjectRead>) => {
-				if (v.length == 0) return;
-
-				projects = v;
-				projectID = projects[0].metadata.id;
-			})
-			.catch((e: Error) => Clients.error(e));
-	}
-
-	function updateRegions(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
-		if (!at || !organizationInfo) return;
-
-		const parameters = {
-			organizationID: organizationInfo.id
-		};
-
-		/* Get top-level resources required for the first step */
-		/* TODO: parallelize with Promise.all */
-		Clients.region(toastStore, at)
-			.apiV1OrganizationsOrganizationIDRegionsGet(parameters)
-			.then((v: Array<Region.RegionRead>) => {
-				if (v.length == 0) return;
-
-				regions = v;
-				regionID = regions[0].metadata.id;
-			})
-			.catch((e: Error) => Clients.error(e));
-	}
-
-	$: updateRegions(at, organizationInfo);
-
-	$: resource.spec.regionId = regionID;
-
-	function updateClusterManagers(at: InternalToken, projectID: string) {
-		if (!at || !projectID) return;
-
-		const parameters = {
-			organizationID: organizationInfo.id
-		};
-
-		Clients.kubernetes(toastStore, at)
-			.apiV1OrganizationsOrganizationIDClustermanagersGet(parameters)
-			.then((v: Array<Kubernetes.ClusterManagerRead>) => {
-				if (v.length == 0) return;
-
-				// TODO: a possible excuse for request query parameters?
-				clustermanagers = v.filter((x) => x.metadata.projectId == projectID);
-				resource.spec.clusterManagerId = clustermanagers[0].metadata.id;
-			})
-			.catch((e: Error) => Clients.error(e));
-	}
-
-	$: updateClusterManagers(at, projectID);
-
-	/* Clusters are scoped to control planes, so update this when the CP does */
-	function updateClusters(at: InternalToken, projectID: string): void {
-		if (!at || !projectID) return;
-
-		const parameters = {
-			organizationID: organizationInfo.id
-		};
-
-		Clients.kubernetes(toastStore, at)
-			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
-			.then((v: Array<Kubernetes.KubernetesClusterRead>) => {
-				// As we are only chekcing names, then scope to the project.
-				const temp = v.filter((x) => x.metadata.projectId == projectID);
-				if (!temp) return;
-
-				clusters = temp;
-			})
-			.catch((e: Error) => Clients.error(e));
-	}
-
-	$: updateClusters(at, projectID);
+	let poolValid: Array<boolean> = $state([false]);
 
 	/* Project must be set */
-	$: step1Valid = projectID;
+	let step1Valid = $derived(projectID);
 
-	$: names = (clusters || []).map((x) => x.metadata.name);
-
-	let metadataValid = false;
+	let metadataValid = $state(false);
 
 	/* Cluster name must be valid, and it must be unique */
-	$: step2Valid = metadataValid;
-
-	/* Once the region has been selected we can poll the images and other resources */
-	function updateImages(
-		at: InternalToken,
-		organizationInfo: Stores.OrganizationInfo,
-		regionID: string
-	): void {
-		if (!at || !organizationInfo || !regionID) return;
-
-		const parameters = {
-			organizationID: organizationInfo.id,
-			regionID: regionID
-		};
-
-		Clients.kubernetes(toastStore, at)
-			.apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet(parameters)
-			.then((v: Array<Region.Image>) => (images = v))
-			.catch((e: Error) => Clients.error(e));
-	}
-
-	function updateFlavors(
-		at: InternalToken,
-		organizationInfo: Stores.OrganizationInfo,
-		regionID: string
-	): void {
-		if (!at || !organizationInfo || !regionID) return;
-
-		const parameters = {
-			organizationID: organizationInfo.id,
-			regionID: regionID
-		};
-
-		Clients.kubernetes(toastStore, at)
-			.apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet(parameters)
-			.then((v: Array<Region.Flavor>) => (flavors = v))
-			.catch((e: Error) => Clients.error(e));
-	}
-
-	$: updateImages(at, organizationInfo, regionID);
-	$: updateFlavors(at, organizationInfo, regionID);
-
-	$: resource.spec.regionId = regionID;
-
-	/* From the images, we can get a list of Kubernetes versions */
-	function updateVersions(at: InternalToken, images: Array<Region.Image>): void {
-		if (!at || !images) return;
-
-		versions = [
-			...new Set(
-				(images || []).map((x) => {
-					if (!x.spec.softwareVersions || !x.spec.softwareVersions.kubernetes) return '';
-					return x.spec.softwareVersions.kubernetes;
-				})
-			)
-		].reverse();
-
-		resource.spec.version = versions[0];
-	}
-
-	$: updateVersions(at, images);
+	let step2Valid = $derived(metadataValid);
 
 	function addPool(): void {
 		let pool: Kubernetes.KubernetesClusterWorkloadPool = {
@@ -272,13 +297,16 @@
 	import KubernetesWorkloadPool from '$lib/KubernetesWorkloadPool.svelte';
 
 	/* There must be at least one workload pool, all of them must be valid and every pool must have a unique name */
-	$: step3Valid =
+	let step3Valid = $derived(
 		resource.spec.workloadPools.length > 0 &&
-		poolValid.every((x) => x) &&
-		[...new Set(resource.spec.workloadPools.map((x) => x.name))].length ==
-			resource.spec.workloadPools.length;
+			poolValid.every((x) => x) &&
+			[...new Set(resource.spec.workloadPools.map((x) => x.name))].length ==
+				resource.spec.workloadPools.length
+	);
 
 	function complete() {
+		if (!projectID || !resource) return;
+
 		const parameters = {
 			organizationID: organizationInfo.id,
 			projectID: projectID,
@@ -295,7 +323,9 @@
 <ShellPage {settings}>
 	<Stepper on:complete={complete} buttonNext="variant-filled-primary">
 		<Step locked={!step1Valid}>
-			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
+			{#snippet header()}
+				Let's Get Started!
+			{/snippet}
 
 			<ShellSection title="Environment Configuration">
 				<Select
@@ -336,7 +366,9 @@
 		</Step>
 
 		<Step locked={!step2Valid}>
-			<svelte:fragment slot="header">Basic Cluster Setup</svelte:fragment>
+			{#snippet header()}
+				Basic Cluster Setup
+			{/snippet}
 
 			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
@@ -357,7 +389,9 @@
 			</ShellSection>
 		</Step>
 		<Step locked={!step3Valid}>
-			<svelte:fragment slot="header">Worker Setup</svelte:fragment>
+			{#snippet header()}
+				Worker Setup
+			{/snippet}
 
 			<p>
 				Workload pools provide compute resouce for your cluster. You may have as many as required
@@ -366,28 +400,40 @@
 				operational cost when not in use.
 			</p>
 
+			<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 			{#each resource.spec.workloadPools as pool, index}
 				<ShellSection title="Workload Pool {index + 1}">
-					<button
-						class="text-2xl"
-						on:click={() => removePool(index)}
-						on:keypress={() => removePool(index)}
-						slot="tools"
-					>
-						<iconify-icon icon="mdi:trash-can-outline" />
-					</button>
+					{#snippet tools()}
+						<button
+							class="text-2xl"
+							onclick={() => removePool(index)}
+							onkeypress={() => removePool(index)}
+							aria-label="delete workload pool"
+						>
+							<iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
+						</button>
+					{/snippet}
 
-					<KubernetesWorkloadPool {index} {flavors} bind:pool bind:valid={poolValid[index]} />
+					{#if flavors}
+						<KubernetesWorkloadPool
+							{index}
+							{flavors}
+							bind:pool={resource.spec.workloadPools[index]}
+							bind:valid={poolValid[index]}
+						/>
+					{/if}
 				</ShellSection>
 			{/each}
 
-			<button class="btn flex gap-2 items-center w-full" on:click={addPool} on:keypress={addPool}>
-				<iconify-icon icon="mdi:add" />
+			<button class="btn flex gap-2 items-center w-full" onclick={addPool} onkeypress={addPool}>
+				<iconify-icon icon="mdi:add"></iconify-icon>
 				<span>Add New Pool</span>
 			</button>
 		</Step>
 		<Step>
-			<svelte:fragment slot="header">Confirmation</svelte:fragment>
+			{#snippet header()}
+				Confirmation
+			{/snippet}
 
 			<p>Insert a summary of what's about to be created...</p>
 		</Step>

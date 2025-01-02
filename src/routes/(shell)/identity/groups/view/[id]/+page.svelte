@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { page } from '$app/stores';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
@@ -25,21 +27,24 @@
 	import * as Identity from '$lib/openapi/identity';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
-	token.subscribe((token: InternalToken) => (at = token));
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
+	});
 
-	let organizationInfo: Stores.OrganizationInfo;
+	// Grab the acces token.
+	let at = $state() as InternalToken;
 
-	Stores.organizationStore.subscribe(
-		(value: Stores.OrganizationInfo) => (organizationInfo = value)
-	);
+	token.subscribe((token: InternalToken): void => {
+		at = token;
+	});
 
-	let groups: Array<Identity.GroupRead>;
-	let group: Identity.GroupRead;
-
-	let availableRoles: Array<Identity.RoleRead>;
-	let availableGroups: Array<Identity.AvailableGroup>;
+	// Get root resources from the API.
+	let groups: Array<Identity.GroupRead> | undefined = $state();
+	let availableRoles: Array<Identity.RoleRead> | undefined = $state();
+	let availableGroups: Array<Identity.AvailableGroup> | undefined = $state();
 
 	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
 		if (!at || !organizationInfo) return;
@@ -67,9 +72,14 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: update(at, organizationInfo);
+	run(() => {
+		update(at, organizationInfo);
+	});
 
-	function updateGroup(groups: Array<Identity.GroupRead>) {
+	// Once we know the groups, select the one we are viewing.
+	let group: Identity.GroupRead | undefined = $state();
+
+	function updateGroup(groups: Array<Identity.GroupRead> | undefined) {
 		if (!groups) return;
 
 		// Find our group based on ID.
@@ -83,20 +93,20 @@
 		group = temp;
 	}
 
-	$: updateGroup(groups);
+	run(() => {
+		updateGroup(groups);
+	});
 
-	let names: Array<string>;
+	let names: Array<string> = $derived(
+		(groups || []).filter((x) => x.metadata.id != $page.params.id).map((x) => x.metadata.name)
+	);
 
-	$: names = (groups || [])
-		.filter((x) => x.metadata.id != $page.params.id)
-		.map((x) => x.metadata.name);
+	let metadataValid = $state(false);
 
-	let metadataValid = false;
-
-	$: valid = metadataValid && group.spec.roleIDs.length != 0;
+	let valid = $derived(metadataValid && group?.spec.roleIDs.length != 0);
 
 	function submit() {
-		if (!at || !organizationInfo) return;
+		if (!at || !organizationInfo || !group) return;
 
 		const parameters = {
 			organizationID: organizationInfo.id,
@@ -158,8 +168,8 @@
 		<button
 			class="btn variant-filled-primary flex gap-2 items-center"
 			disabled={!valid}
-			on:click={submit}
-			on:keypress={submit}
+			onclick={submit}
+			onkeypress={submit}
 		>
 			Update
 		</button>

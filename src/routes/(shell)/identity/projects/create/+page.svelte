@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -22,34 +24,24 @@
 	import * as Identity from '$lib/openapi/identity';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
-	let organizationInfo: Stores.OrganizationInfo;
-	let projects: Array<Identity.ProjectRead>;
-	let groups: Array<Identity.GroupRead>;
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
-	let resource: Identity.ProjectWrite = {
-		metadata: {
-			name: ''
-		},
-		spec: {
-			groupIDs: []
-		}
-	};
-
-	Stores.organizationStore.subscribe(
-		(value: Stores.OrganizationInfo) => (organizationInfo = value)
-	);
-
-	token.subscribe((token: InternalToken) => {
-		at = token;
-		updateProjects();
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
 	});
 
-	function updateProjects() {
-		/* Setup the token on load */
-		if (!token || !organizationInfo) return;
+	// Grab the acces token.
+	let at = $state() as InternalToken;
 
-		/* Get top-level resources required for the first step */
+	token.subscribe((token: InternalToken): void => {
+		at = token;
+	});
+
+	let projects: Array<Identity.ProjectRead> | undefined = $state();
+	let groups: Array<Identity.GroupRead> | undefined = $state();
+
+	function update() {
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -69,14 +61,27 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	let names: Array<string>;
+	run(() => {
+		update();
+	});
 
-	$: names = (projects || []).map((x) => x.metadata.name);
+	let names: Array<string> = $derived((projects || []).map((x) => x.metadata.name));
 
-	let metadataValid = false;
+	let resource: Identity.ProjectWrite = $state({
+		metadata: {
+			name: ''
+		},
+		spec: {
+			groupIDs: []
+		}
+	});
+
+	let metadataValid = $state(false);
 
 	/* Cluster name must be valid, and it must be unique */
-	$: valid = metadataValid && resource.spec.groupIDs && resource.spec.groupIDs.length != 0;
+	let valid = $derived(
+		metadataValid && resource.spec.groupIDs && resource.spec.groupIDs.length != 0
+	);
 
 	function submit() {
 		const parameters = {
@@ -112,8 +117,8 @@
 	<button
 		class="btn variant-filled-primary flex gap-2 items-center"
 		disabled={!valid}
-		on:click={submit}
-		on:keypress={submit}
+		onclick={submit}
+		onkeypress={submit}
 	>
 		Create
 	</button>

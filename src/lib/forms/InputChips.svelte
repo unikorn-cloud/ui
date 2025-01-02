@@ -1,17 +1,18 @@
 <script lang="ts">
 	import { InputChip } from '@skeletonlabs/skeleton';
 
-	// Unique element name.
-	export let name: string;
+	interface Props {
+		// Unique element name.
+		name: string;
+		// Value to bind to.
+		value: Array<string>;
+		// Label to attach describing the input.
+		label: string;
+		// Formatting hint.
+		hint?: string;
+	}
 
-	// Value to bind to.
-	export let value: Array<string>;
-
-	// Label to attach describing the input.
-	export let label: string;
-
-	// Formatting hint.
-	export let hint: string = '';
+	let { name, value = $bindable(), label, hint = '' }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-4">

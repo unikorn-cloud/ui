@@ -1,6 +1,6 @@
 import * as Region from '$lib/openapi/region';
 
-export function name(regions: Array<Region.RegionRead>, regionID: string): string {
+export function name(regions: Array<Region.RegionRead> | undefined, regionID: string): string {
 	if (!regions || !regionID) {
 		return 'unknown';
 	}
@@ -13,7 +13,7 @@ export function name(regions: Array<Region.RegionRead>, regionID: string): strin
 	return region.metadata.name;
 }
 
-export function icon(regions: Array<Region.RegionRead>, regionID: string): string {
+export function icon(regions: Array<Region.RegionRead> | undefined, regionID: string): string {
 	const regionName = name(regions, regionID);
 	if (regionName === 'unknown') {
 		return 'circle-flags:az';

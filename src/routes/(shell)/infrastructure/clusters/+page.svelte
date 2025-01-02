@@ -35,26 +35,24 @@
 
 	import { browser } from '$app/environment';
 
-	let at: InternalToken;
-
-	let resources: Array<Kubernetes.KubernetesClusterRead>;
-	let projects: Array<Identity.ProjectRead>;
-	let regions: Array<Region.RegionRead>;
-
-	let organizationInfo: Stores.OrganizationInfo;
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
 	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
 		organizationInfo = value;
-		update();
 	});
+
+	// Grab the acces token.
+	let at = $state() as InternalToken;
 
 	token.subscribe((token: InternalToken): void => {
 		at = token;
-		update();
 	});
 
-	const ticker = setInterval(update, 5000);
-	onDestroy(() => clearInterval(ticker));
+	// Get all root resources from the API.
+	let resources: Array<Kubernetes.KubernetesClusterRead> | undefined = $state();
+	let projects: Array<Identity.ProjectRead> | undefined = $state();
+	let regions: Array<Region.RegionRead> | undefined = $state();
 
 	function update(): void {
 		if (!at || !organizationInfo) return;
@@ -78,6 +76,9 @@
 			.then((v: Array<Identity.ProjectRead>) => (projects = v))
 			.catch((e: Error) => Clients.error(e));
 	}
+
+	const ticker = setInterval(update, 5000);
+	onDestroy(() => clearInterval(ticker));
 
 	function remove(resource: Kubernetes.KubernetesClusterRead): void {
 		const modal: ModalSettings = {
@@ -135,49 +136,44 @@
 </script>
 
 <ShellPage {settings}>
-	<a
-		href="/infrastructure/clusters/create"
-		class="btn variant-filled-primary flex gap-2 items-center"
-		slot="tools"
-	>
-		<iconify-icon icon="material-symbols:add" />
-		<span>Create</span>
-	</a>
+	{#snippet tools()}
+		<a
+			href="/infrastructure/clusters/create"
+			class="btn variant-filled-primary flex gap-2 items-center"
+		>
+			<iconify-icon icon="material-symbols:add"></iconify-icon>
+			<span>Create</span>
+		</a>
+	{/snippet}
 
 	<ShellList>
-		{#each resources || [] as resource}
-			<ShellListItem metadata={resource.metadata} {projects}>
-				<svelte:fragment slot="badges">
-					<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
-						{RegionUtil.name(regions, resource.spec.regionId)}
-					</Badge>
-				</svelte:fragment>
+		{#if projects}
+			{#each resources || [] as resource}
+				<ShellListItem metadata={resource.metadata} {projects}>
+					{#snippet badges()}
+						<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+							{RegionUtil.name(regions, resource.spec.regionId)}
+						</Badge>
+					{/snippet}
 
-				<svelte:fragment slot="tray">
-					<BurgerMenu name="menu-{resource.metadata.id}">
-						<BurgerMenuItem
-							href="/infrastructure/clusters/view/{resource.metadata.id}"
-							icon="mdi:edit-outline"
-						>
-							Edit
-						</BurgerMenuItem>
-						<BurgerMenuItem
-							on:click={() => remove(resource)}
-							on:keypress={() => remove(resource)}
-							icon="mdi:trash-can-outline"
-						>
-							Delete
-						</BurgerMenuItem>
-						<BurgerMenuItem
-							on:click={() => getKubeconfig(resource)}
-							on:keypress={() => getKubeconfig(resource)}
-							icon="mdi:download"
-						>
-							Kubeconfig
-						</BurgerMenuItem>
-					</BurgerMenu>
-				</svelte:fragment>
-			</ShellListItem>
-		{/each}
+					{#snippet tray()}
+						<BurgerMenu name="menu-{resource.metadata.id}">
+							<BurgerMenuItem
+								href="/infrastructure/clusters/view/{resource.metadata.id}"
+								icon="mdi:edit-outline"
+							>
+								Edit
+							</BurgerMenuItem>
+							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
+								Delete
+							</BurgerMenuItem>
+							<BurgerMenuItem clicked={() => getKubeconfig(resource)} icon="mdi:download">
+								Kubeconfig
+							</BurgerMenuItem>
+						</BurgerMenu>
+					{/snippet}
+				</ShellListItem>
+			{/each}
+		{/if}
 	</ShellList>
 </ShellPage>

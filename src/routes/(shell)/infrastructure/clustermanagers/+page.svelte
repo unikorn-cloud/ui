@@ -29,26 +29,23 @@
 	import * as Identity from '$lib/openapi/identity';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
-
-	let resources: Array<Kubernetes.ClusterManagerRead>;
-
-	let projects: Array<Identity.ProjectRead>;
-
-	let organizationInfo: Stores.OrganizationInfo;
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
 	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
 		organizationInfo = value;
-		update();
 	});
+
+	// Grab the acces token.
+	let at = $state() as InternalToken;
 
 	token.subscribe((token: InternalToken): void => {
 		at = token;
-		update();
 	});
 
-	const ticker = setInterval(update, 5000);
-	onDestroy(() => clearInterval(ticker));
+	// Get all root resources from the API.
+	let resources: Array<Kubernetes.ClusterManagerRead> | undefined = $state();
+	let projects: Array<Identity.ProjectRead> | undefined = $state();
 
 	function update(): void {
 		if (!at || !organizationInfo) return;
@@ -67,6 +64,9 @@
 			.then((v: Array<Identity.ProjectRead>) => (projects = v))
 			.catch((e: Error) => Clients.error(e));
 	}
+
+	const ticker = setInterval(update, 5000);
+	onDestroy(() => clearInterval(ticker));
 
 	function remove(resource: Kubernetes.ClusterManagerRead): void {
 		const modal: ModalSettings = {
@@ -96,20 +96,18 @@
 
 <ShellPage {settings}>
 	<ShellList>
-		{#each resources || [] as resource}
-			<ShellListItem metadata={resource.metadata} {projects}>
-				<svelte:fragment slot="tray">
-					<BurgerMenu name="menu-{resource.metadata.id}">
-						<BurgerMenuItem
-							on:click={() => remove(resource)}
-							on:keypress={() => remove(resource)}
-							icon="mdi:trash-can-outline"
-						>
-							Delete
-						</BurgerMenuItem>
-					</BurgerMenu>
-				</svelte:fragment>
-			</ShellListItem>
-		{/each}
+		{#if resources && projects}
+			{#each resources as resource}
+				<ShellListItem metadata={resource.metadata} {projects}>
+					{#snippet tray()}
+						<BurgerMenu name="menu-{resource.metadata.id}">
+							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
+								Delete
+							</BurgerMenuItem>
+						</BurgerMenu>
+					{/snippet}
+				</ShellListItem>
+			{/each}
+		{/if}
 	</ShellList>
 </ShellPage>

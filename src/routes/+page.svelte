@@ -40,11 +40,11 @@
 <ShellDrawer />
 
 <AppShell class="h-screen">
-	<svelte:fragment slot="header">
+	{#snippet header()}
 		<ShellAppBar />
-	</svelte:fragment>
+	{/snippet}
 
-	<svelte:fragment slot="sidebarLeft">
+	{#snippet sidebarLeft()}
 		<ShellSideBar class="hidden lg:grid" />
-	</svelte:fragment>
+	{/snippet}
 </AppShell>

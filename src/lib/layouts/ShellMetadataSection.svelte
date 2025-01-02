@@ -4,16 +4,19 @@
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import TextInput from '$lib/forms/TextInput.svelte';
 
-	// Metadata object to bind to.
-	export let metadata: Kubernetes.ResourceMetadata;
-
 	// A list of names that already exist in this context for validation,
 	// so ensure you prune out the current one when using in an update
-	// dialog.
-	export let names: Array<string>;
 
-	// Whether the input is valid.
-	export let valid = false;
+	interface Props {
+		// Metadata object to bind to.
+		metadata: Kubernetes.ResourceMetadata;
+		// dialog.
+		names: Array<string>;
+		// Whether the input is valid.
+		valid?: boolean;
+	}
+
+	let { metadata = $bindable(), names, valid = $bindable(false) }: Props = $props();
 </script>
 
 <ShellSection title="Resource Metadata">

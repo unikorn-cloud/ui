@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as Region from '$lib/openapi/region';
 
@@ -14,27 +16,30 @@
 	import SelectNew from '$lib/forms/SelectNew.svelte';
 	import Flavor from '$lib/Flavor.svelte';
 
-	/* The pool index allows us to fully qualify IDs so they are unique */
-	export let index: number;
+	interface Props {
+		/* The pool index allows us to fully qualify IDs so they are unique */
+		index: number;
+		/* The pool should be bound to expose the built configuration */
+		pool: Kubernetes.KubernetesClusterWorkloadPool;
+		/* Whether the configuration is valid */
+		valid: boolean;
+		/* Flavors allows the pool type to be populated */
+		flavors: Array<Region.Flavor>;
+	}
 
-	/* The pool should be bound to expose the built configuration */
-	export let pool: Kubernetes.KubernetesClusterWorkloadPool;
-
-	/* Whether the configuration is valid */
-	export let valid: boolean;
-
-	/* Flavors allows the pool type to be populated */
-	export let flavors: Array<Region.Flavor>;
+	let { index, pool = $bindable(), valid = $bindable(), flavors }: Props = $props();
 
 	function updateFlavors(flavors: Array<Region.Flavor>): void {
 		if (!flavors || flavors.find((x) => x.metadata.id == pool.machine.flavorId)) return;
 		pool.machine.flavorId = flavors[0].metadata.id;
 	}
 
-	$: updateFlavors(flavors);
+	run(() => {
+		updateFlavors(flavors);
+	});
 
 	/* Default to autoscaling with scale from zero */
-	let autoscaling: boolean = Boolean(pool.autoscaling);
+	let autoscaling: boolean = $state(Boolean(pool.autoscaling));
 
 	function updateAutoscaling(enabled: boolean) {
 		if (enabled && !pool.autoscaling) {
@@ -46,9 +51,11 @@
 		}
 	}
 
-	$: updateAutoscaling(autoscaling);
+	run(() => {
+		updateAutoscaling(autoscaling);
+	});
 
-	let persistentStorage: boolean = Boolean(pool.machine.disk);
+	let persistentStorage: boolean = $state(Boolean(pool.machine.disk));
 
 	function updateDisk(
 		enabled: boolean,
@@ -76,26 +83,35 @@
 		}
 	}
 
-	$: updateDisk(persistentStorage, flavors, pool.machine.flavorId);
+	run(() => {
+		updateDisk(persistentStorage, flavors, pool.machine.flavorId);
+	});
 
-	$: valid = Validation.kubernetesNameValid(pool.name);
+	run(() => {
+		valid = Validation.kubernetesNameValid(pool.name);
+	});
 
-	function lookupFlavor(flavors: Array<Region.Flavor>, flavorID: string): Region.Flavor {
+	function lookupFlavor(
+		flavors: Array<Region.Flavor> | undefined,
+		flavorID: string | undefined
+	): Region.Flavor {
+		const defaultFlavor = {
+			metadata: {
+				id: 'undefined',
+				name: 'undefined',
+				creationTime: new Date()
+			},
+			spec: {
+				cpus: 0,
+				memory: 0,
+				disk: 0
+			}
+		};
+
+		if (!flavors || !flavorID) return defaultFlavor;
+
 		const flavor = flavors.find((x) => x.metadata.id == flavorID);
-		if (!flavor) {
-			return {
-				metadata: {
-					id: 'undefined',
-					name: 'undefined',
-					creationTime: new Date()
-				},
-				spec: {
-					cpus: 0,
-					memory: 0,
-					disk: 0
-				}
-			};
-		}
+		if (!flavor) return defaultFlavor;
 
 		return flavor;
 	}
@@ -120,14 +136,16 @@
 			hint="Allows the selection of the pool's available resources to be used by workloads per pool
 			member. This includes CPU, GPU and memory."
 		>
-			<Flavor slot="selected_body" flavor={lookupFlavor(flavors, pool.machine.flavorId)} />
-			<svelte:fragment>
+			{#snippet selected_body()}
+				<Flavor flavor={lookupFlavor(flavors, pool.machine.flavorId)} />
+			{/snippet}
+			{#snippet children()}
 				{#each flavors || [] as flavor}
 					<ListBoxItem bind:group={pool.machine.flavorId} name="foo" value={flavor.metadata.id}>
 						<Flavor {flavor} />
 					</ListBoxItem>
 				{/each}
-			</svelte:fragment>
+			{/snippet}
 		</SelectNew>
 
 		{#if !lookupFlavor(flavors, pool.machine.flavorId).spec.baremetal}

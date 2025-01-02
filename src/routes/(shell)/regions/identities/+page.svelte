@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
@@ -34,16 +36,8 @@
 	import * as RBAC from '$lib/rbac';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
-
-	let projects: Array<Identity.ProjectRead>;
-	let regions: Array<Region.RegionRead>;
-	let identities: Array<Region.IdentityRead>;
-
-	let organizationInfo: Stores.OrganizationInfo;
-
 	// Define required RBAC rules.
-	let allowed: boolean;
+	let allowed: boolean = $state(false);
 
 	let organizationScopes: Array<RBAC.OrganizationScope> = [
 		{
@@ -52,13 +46,24 @@
 		}
 	];
 
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
+
 	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
 		organizationInfo = value;
 	});
 
+	// Grab the acces token.
+	let at = $state() as InternalToken;
+
 	token.subscribe((token: InternalToken): void => {
 		at = token;
 	});
+
+	// Grab the main resources from the API.
+	let projects: Array<Identity.ProjectRead> | undefined = $state();
+	let regions: Array<Region.RegionRead> | undefined = $state();
+	let identities: Array<Region.IdentityRead> | undefined = $state();
 
 	function update(
 		at: InternalToken,
@@ -87,7 +92,9 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: update(at, organizationInfo, allowed);
+	run(() => {
+		update(at, organizationInfo, allowed);
+	});
 
 	const ticker = setInterval(() => update(at, organizationInfo, allowed), 5000);
 	onDestroy(() => clearInterval(ticker));
@@ -119,37 +126,35 @@
 <ShellPage {settings}>
 	<Protected {organizationScopes} bind:allowed>
 		<ShellList>
-			{#each identities || [] as resource}
-				<ShellListItem metadata={resource.metadata} {projects}>
-					<svelte:fragment slot="badges">
-						<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
-							{RegionUtil.name(regions, resource.spec.regionId)}
-						</Badge>
-					</svelte:fragment>
+			{#if projects && regions && identities}
+				{#each identities as resource}
+					<ShellListItem metadata={resource.metadata} {projects}>
+						{#snippet badges()}
+							<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+								{RegionUtil.name(regions, resource.spec.regionId)}
+							</Badge>
+						{/snippet}
 
-					<svelte:fragment slot="tray">
-						<BurgerMenu name="menu-{resource.metadata.id}">
-							<BurgerMenuItem
-								on:click={() => remove(resource)}
-								on:keypress={() => remove(resource)}
-								icon="mdi:trash-can-outline"
-							>
-								Delete
-							</BurgerMenuItem>
-						</BurgerMenu>
-					</svelte:fragment>
+						{#snippet tray()}
+							<BurgerMenu name="menu-{resource.metadata.id}">
+								<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
+									Delete
+								</BurgerMenuItem>
+							</BurgerMenu>
+						{/snippet}
 
-					<svelte:fragment slot="metadata">
-						{#if resource.metadata.tags}
-							<ShellMetadataItem icon="mdi:tag-outline">
-								{#each resource.metadata.tags as tag}
-									<div class="badge variant-soft">{tag.name}: {tag.value}</div>
-								{/each}
-							</ShellMetadataItem>
-						{/if}
-					</svelte:fragment>
-				</ShellListItem>
-			{/each}
+						{#snippet extraMetadata()}
+							{#if resource.metadata.tags}
+								<ShellMetadataItem icon="mdi:tag-outline">
+									{#each resource.metadata.tags as tag}
+										<div class="badge variant-soft">{tag.name}: {tag.value}</div>
+									{/each}
+								</ShellMetadataItem>
+							{/if}
+						{/snippet}
+					</ShellListItem>
+				{/each}
+			{/if}
 		</ShellList>
 	</Protected>
 </ShellPage>

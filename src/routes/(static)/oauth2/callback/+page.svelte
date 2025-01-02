@@ -16,8 +16,8 @@
 	import { setCredentials, pat } from '$lib/credentials';
 	import * as Login from '$lib/login';
 
-	let error: string;
-	let description: string;
+	let error: string | undefined = $state();
+	let description: string | undefined = $state();
 
 	async function handleCallback() {
 		if (!browser) {

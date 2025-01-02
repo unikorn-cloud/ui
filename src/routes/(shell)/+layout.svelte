@@ -33,6 +33,11 @@
 	import ShellAppBar from '$lib/shell/ShellAppBar.svelte';
 	import ShellSideBar from '$lib/shell/ShellSideBar.svelte';
 	import ShellDrawer from '$lib/shell/ShellDrawer.svelte';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 <Modal />
@@ -40,13 +45,13 @@
 <ShellDrawer />
 
 <AppShell class="h-screen">
-	<svelte:fragment slot="header">
+	{#snippet header()}
 		<ShellAppBar />
-	</svelte:fragment>
+	{/snippet}
 
-	<svelte:fragment slot="sidebarLeft">
+	{#snippet sidebarLeft()}
 		<ShellSideBar class="hidden lg:grid" />
-	</svelte:fragment>
+	{/snippet}
 
-	<slot />
+	{@render children?.()}
 </AppShell>

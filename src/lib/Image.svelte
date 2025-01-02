@@ -1,7 +1,11 @@
 <script lang="ts">
 	import * as Region from '$lib/openapi/region';
 
-	export let image: Region.Image;
+	interface Props {
+		image: Region.Image;
+	}
+
+	let { image }: Props = $props();
 
 	function getIcon(): string {
 		if (!image) return 'mdi:question-mark';
@@ -35,7 +39,7 @@
 
 {#if image}
 	<div class="flex items-center gap-4">
-		<iconify-icon class="pr-1 text-2xl" icon={getIcon()} />
+		<iconify-icon class="pr-1 text-2xl" icon={getIcon()}></iconify-icon>
 
 		{toTitleCase(image.spec.os.distro)}
 
