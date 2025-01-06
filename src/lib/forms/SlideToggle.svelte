@@ -1,17 +1,18 @@
 <script lang="ts">
 	import { SlideToggle } from '@skeletonlabs/skeleton';
 
-	// Unique element name.
-	export let name: string;
+	interface Props {
+		// Unique element name.
+		name: string;
+		// Whether the toggle is checked.
+		checked: boolean;
+		// Label to attach describing the input.
+		label: string;
+		// Formatting hint.
+		hint?: string;
+	}
 
-	// Whether the toggle is checked.
-	export let checked: boolean;
-
-	// Label to attach describing the input.
-	export let label: string;
-
-	// Formatting hint.
-	export let hint: string = '';
+	let { name, checked = $bindable(), label, hint = '' }: Props = $props();
 </script>
 
 <div class="flex gap-4 items-center justify-between">

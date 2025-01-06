@@ -30,11 +30,8 @@
 	import * as RBAC from '$lib/rbac';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
-	let organizationInfo: Stores.OrganizationInfo;
-
 	// Define required RBAC rules.
-	let allowed: boolean;
+	let allowed: boolean = $state(false);
 
 	let organizationScopes: Array<RBAC.OrganizationScope> = [
 		{
@@ -43,15 +40,21 @@
 		}
 	];
 
-	token.subscribe((token: InternalToken) => {
-		at = token;
-	});
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
 	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
 		organizationInfo = value;
 	});
 
-	let resources: Array<Identity.Oauth2ProviderRead>;
+	// Grab the acces token.
+	let at = $state() as InternalToken;
+
+	token.subscribe((token: InternalToken): void => {
+		at = token;
+	});
+
+	let resources: Array<Identity.Oauth2ProviderRead> | undefined = $state();
 
 	function update(
 		at: InternalToken,
@@ -69,8 +72,6 @@
 			.then((v: Array<Identity.Oauth2ProviderRead>) => (resources = v))
 			.catch((e: Error) => Clients.error(e));
 	}
-
-	$: update(at, organizationInfo, allowed);
 
 	const ticker = setInterval(() => update(at, organizationInfo, allowed), 5000);
 	onDestroy(() => clearInterval(ticker));
@@ -98,28 +99,26 @@
 </script>
 
 <ShellPage {settings}>
-	<form action="/identity/oauth2providers/create" slot="tools">
-		<button class="btn variant-filled-primary flex gap-2 items-center" disabled={!allowed}>
-			<iconify-icon icon="material-symbols:add" />
-			<span>Create</span>
-		</button>
-	</form>
+	{#snippet tools()}
+		<form action="/identity/oauth2providers/create">
+			<button class="btn variant-filled-primary flex gap-2 items-center" disabled={!allowed}>
+				<iconify-icon icon="material-symbols:add"></iconify-icon>
+				<span>Create</span>
+			</button>
+		</form>
+	{/snippet}
 
 	<Protected {organizationScopes} bind:allowed>
 		<ShellList>
 			{#each resources || [] as resource}
 				<ShellListItem metadata={resource.metadata}>
-					<svelte:fragment slot="tray">
+					{#snippet tray()}
 						<BurgerMenu name="menu-{resource.metadata.id}">
-							<BurgerMenuItem
-								on:click={() => remove(resource)}
-								on:keypress={() => remove(resource)}
-								icon="mdi:trash-can-outline"
-							>
+							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
 								Delete
 							</BurgerMenuItem>
 						</BurgerMenu>
-					</svelte:fragment>
+					{/snippet}
 				</ShellListItem>
 			{/each}
 		</ShellList>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -28,17 +30,8 @@
 	import * as Region from '$lib/openapi/region';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
-	let organizationInfo: Stores.OrganizationInfo;
-	let projectID: string;
-	let regionID: string;
-	let regions: Array<Region.RegionRead>;
-	let projects: Array<Identity.ProjectRead>;
-	let clusters: Array<Compute.ComputeClusterRead>;
-	let images: Array<Compute.Image>;
-	let flavors: Array<Compute.Flavor>;
-
-	let resource: Compute.ComputeClusterWrite = {
+	// Define the new resource defaults.
+	let resource: Compute.ComputeClusterWrite = $state({
 		metadata: {
 			name: uniqueNamesGenerator({
 				dictionaries: [adjectives, animals],
@@ -73,21 +66,27 @@
 				}
 			]
 		}
-	};
+	});
 
-	let poolValid: Array<boolean> = [false];
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
 	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
 		organizationInfo = value;
-		updateProjects();
 	});
 
-	token.subscribe((value: InternalToken) => {
-		at = value;
-		updateProjects();
+	// Grab the acces token.
+	let at = $state() as InternalToken;
+
+	token.subscribe((token: InternalToken): void => {
+		at = token;
 	});
 
-	function updateProjects() {
+	// Grab the root resources from the API.
+	let projects: Array<Identity.ProjectRead> | undefined = $state();
+	let projectID: string | undefined = $state();
+
+	function updateProjects(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
 		if (!at || !organizationInfo) return;
 
 		const parameters = {
@@ -104,6 +103,13 @@
 			})
 			.catch((e: Error) => Clients.error(e));
 	}
+
+	run(() => {
+		updateProjects(at, organizationInfo);
+	});
+
+	let regions: Array<Region.RegionRead> | undefined = $state();
+	let regionID: string | undefined = $state();
 
 	function updateRegions(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
 		if (!at || !organizationInfo) return;
@@ -125,12 +131,18 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateRegions(at, organizationInfo);
+	run(() => {
+		updateRegions(at, organizationInfo);
+	});
 
-	$: resource.spec.regionId = regionID;
+	run(() => {
+		if (regionID) resource.spec.regionId = regionID;
+	});
 
-	/* Clusters are scoped to control planes, so update this when the CP does */
-	function updateClusters(at: InternalToken, projectID: string): void {
+	let clusters: Array<Compute.ComputeClusterRead> | undefined = $state();
+
+	// Once a project ID is set we can poll the clusters.
+	function updateClusters(at: InternalToken, projectID: string | undefined): void {
 		if (!at || !projectID) return;
 
 		const parameters = {
@@ -149,23 +161,17 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateClusters(at, projectID);
+	run(() => {
+		updateClusters(at, projectID);
+	});
 
-	/* Project must be set */
-	$: step1Valid = projectID;
+	// Once a region is set we can poll images and flavors.
+	let images: Array<Compute.Image> | undefined = $state();
 
-	$: names = (clusters || []).map((x) => x.metadata.name);
-
-	let metadataValid = false;
-
-	/* Cluster name must be valid, and it must be unique */
-	$: step2Valid = metadataValid;
-
-	/* Once the region has been selected we can poll the images and other resources */
 	function updateImages(
 		at: InternalToken,
 		organizationInfo: Stores.OrganizationInfo,
-		regionID: string
+		regionID: string | undefined
 	): void {
 		if (!at || !organizationInfo || !regionID) return;
 
@@ -180,10 +186,16 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
+	run(() => {
+		updateImages(at, organizationInfo, regionID);
+	});
+
+	let flavors: Array<Compute.Flavor> | undefined = $state();
+
 	function updateFlavors(
 		at: InternalToken,
 		organizationInfo: Stores.OrganizationInfo,
-		regionID: string
+		regionID: string | undefined
 	): void {
 		if (!at || !organizationInfo || !regionID) return;
 
@@ -198,10 +210,21 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateImages(at, organizationInfo, regionID);
-	$: updateFlavors(at, organizationInfo, regionID);
+	run(() => {
+		updateFlavors(at, organizationInfo, regionID);
+	});
 
-	$: resource.spec.regionId = regionID;
+	/* Project and region must be set before going further */
+	let step1Valid = $derived(projectID && regionID);
+
+	/* Cluster name must be valid, and it must be unique */
+	let names = $derived((clusters || []).map((x) => x.metadata.name));
+
+	let metadataValid = $state(false);
+
+	let step2Valid = $derived(metadataValid);
+
+	let poolValid: Array<boolean> = $state([false]);
 
 	function addPool(): void {
 		let pool: Compute.ComputeClusterWorkloadPool = {
@@ -239,13 +262,16 @@
 	import ComputeWorkloadPool from '$lib/ComputeWorkloadPool.svelte';
 
 	/* There must be at least one workload pool, all of them must be valid and every pool must have a unique name */
-	$: step3Valid =
+	let step3Valid = $derived(
 		resource.spec.workloadPools.length > 0 &&
-		poolValid.every((x) => x) &&
-		[...new Set(resource.spec.workloadPools.map((x) => x.name))].length ==
-			resource.spec.workloadPools.length;
+			poolValid.every((x) => x) &&
+			[...new Set(resource.spec.workloadPools.map((x) => x.name))].length ==
+				resource.spec.workloadPools.length
+	);
 
 	function complete() {
+		if (!projectID) return;
+
 		const parameters = {
 			organizationID: organizationInfo.id,
 			projectID: projectID,
@@ -262,7 +288,9 @@
 <ShellPage {settings}>
 	<Stepper on:complete={complete} buttonNext="variant-filled-primary">
 		<Step locked={!step1Valid}>
-			<svelte:fragment slot="header">Let's Get Started!</svelte:fragment>
+			{#snippet header()}
+				Let's Get Started!
+			{/snippet}
 
 			<ShellSection title="Environment Configuration">
 				<Select
@@ -290,12 +318,16 @@
 		</Step>
 
 		<Step locked={!step2Valid}>
-			<svelte:fragment slot="header">Basic Cluster Setup</svelte:fragment>
+			{#snippet header()}
+				Basic Cluster Setup
+			{/snippet}
 
 			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 		</Step>
 		<Step locked={!step3Valid}>
-			<svelte:fragment slot="header">Worker Setup</svelte:fragment>
+			{#snippet header()}
+				Worker Setup
+			{/snippet}
 
 			<p>
 				Workload pools provide compute resouce for your cluster. You may have as many as required
@@ -304,28 +336,41 @@
 				operational cost when not in use.
 			</p>
 
+			<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 			{#each resource.spec.workloadPools as pool, index}
 				<ShellSection title="Workload Pool {index + 1}">
-					<button
-						class="text-2xl"
-						on:click={() => removePool(index)}
-						on:keypress={() => removePool(index)}
-						slot="tools"
-					>
-						<iconify-icon icon="mdi:trash-can-outline" />
-					</button>
+					{#snippet tools()}
+						<button
+							class="text-2xl"
+							onclick={() => removePool(index)}
+							onkeypress={() => removePool(index)}
+							aria-label="delete workload pool"
+						>
+							<iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
+						</button>
+					{/snippet}
 
-					<ComputeWorkloadPool {index} {flavors} {images} bind:pool bind:valid={poolValid[index]} />
+					{#if flavors && images}
+						<ComputeWorkloadPool
+							{index}
+							{flavors}
+							{images}
+							bind:pool={resource.spec.workloadPools[index]}
+							bind:valid={poolValid[index]}
+						/>
+					{/if}
 				</ShellSection>
 			{/each}
 
-			<button class="btn flex gap-2 items-center w-full" on:click={addPool} on:keypress={addPool}>
-				<iconify-icon icon="mdi:add" />
+			<button class="btn flex gap-2 items-center w-full" onclick={addPool} onkeypress={addPool}>
+				<iconify-icon icon="mdi:add"></iconify-icon>
 				<span>Add New Pool</span>
 			</button>
 		</Step>
 		<Step>
-			<svelte:fragment slot="header">Confirmation</svelte:fragment>
+			{#snippet header()}
+				Confirmation
+			{/snippet}
 
 			<p>Insert a summary of what's about to be created...</p>
 		</Step>

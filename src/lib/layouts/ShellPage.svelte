@@ -1,7 +1,13 @@
 <script lang="ts">
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 
-	export let settings: ShellPageSettings;
+	interface Props {
+		settings: ShellPageSettings;
+		tools?: import('svelte').Snippet;
+		children?: import('svelte').Snippet;
+	}
+
+	let { settings, tools, children }: Props = $props();
 </script>
 
 <div class="p-8 w-full lg:max-w-[80em] mx-auto flex flex-col gap-16">
@@ -13,11 +19,11 @@
 		</div>
 
 		<div class="self-end">
-			<slot name="tools" />
+			{@render tools?.()}
 		</div>
 	</header>
 
 	<main class="flex flex-col gap-8">
-		<slot />
+		{@render children?.()}
 	</main>
 </div>

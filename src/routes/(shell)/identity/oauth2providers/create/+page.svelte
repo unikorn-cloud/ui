@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -23,31 +25,23 @@
 	import * as Identity from '$lib/openapi/identity';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
-	let organizationInfo: Stores.OrganizationInfo;
-	let providers: Array<Identity.Oauth2ProviderRead>;
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
-	let resource: Identity.Oauth2ProviderWrite = {
-		metadata: {
-			name: ''
-		},
-		spec: {
-			issuer: '',
-			clientID: ''
-		}
-	};
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
+	});
 
-	Stores.organizationStore.subscribe(
-		(value: Stores.OrganizationInfo) => (organizationInfo = value)
-	);
+	// Grab the acces token.
+	let at = $state() as InternalToken;
 
-	token.subscribe((token: InternalToken) => {
-		/* Setup the token on load */
-		if (!token || !organizationInfo) return;
-
+	token.subscribe((token: InternalToken): void => {
 		at = token;
+	});
 
-		/* Get top-level resources required for the first step */
+	let providers: Array<Identity.Oauth2ProviderRead> | undefined = $state();
+
+	function updateProviders() {
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -56,16 +50,30 @@
 			.apiV1OrganizationsOrganizationIDOauth2providersGet(parameters)
 			.then((v: Array<Identity.Oauth2ProviderRead>) => (providers = v))
 			.catch((e: Error) => Clients.error(e));
+	}
+
+	run(() => {
+		updateProviders();
 	});
 
-	$: names = (providers || []).map((x) => x.metadata.name);
+	let names = $derived((providers || []).map((x) => x.metadata.name));
 
-	let metadataValid = false;
-	let issuerValid: boolean = false;
-	let clientIdValid: boolean = false;
-	let clientSecretValid: boolean = false;
+	let resource: Identity.Oauth2ProviderWrite = $state({
+		metadata: {
+			name: ''
+		},
+		spec: {
+			issuer: '',
+			clientID: ''
+		}
+	});
 
-	$: valid = metadataValid && issuerValid && clientIdValid && clientSecretValid;
+	let metadataValid = $state(false);
+	let issuerValid: boolean = $state(false);
+	let clientIdValid: boolean = $state(false);
+	let clientSecretValid: boolean = $state(false);
+
+	let valid = $derived(metadataValid && issuerValid && clientIdValid && clientSecretValid);
 
 	function submit() {
 		const parameters = {
@@ -102,8 +110,12 @@
 				value={callback}
 				disabled
 			/>
-			<button class="variant-filled-primary" use:clipboard={{ input: 'callback' }}>
-				<iconify-icon icon="mdi:clipboard-outline" />
+			<button
+				class="variant-filled-primary"
+				use:clipboard={{ input: 'callback' }}
+				aria-label="copy to clipboard"
+			>
+				<iconify-icon icon="mdi:clipboard-outline"></iconify-icon>
 			</button>
 		</div>
 
@@ -136,8 +148,8 @@
 	<button
 		class="btn variant-filled-primary flex gap-2 items-center"
 		disabled={!valid}
-		on:click={submit}
-		on:keypress={submit}
+		onclick={submit}
+		onkeypress={submit}
 	>
 		Create
 	</button>

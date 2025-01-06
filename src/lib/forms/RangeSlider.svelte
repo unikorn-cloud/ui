@@ -2,24 +2,30 @@
 	import { RangeSlider } from '@skeletonlabs/skeleton';
 	import type { NumberFormatter } from '$lib/formatters';
 
-	// Unique element name.
-	export let name: string;
+	interface Props {
+		// Unique element name.
+		name: string;
+		// Label to attach describing the input.
+		label: string;
+		// Formatting hint.
+		hint?: string;
+		min: number;
+		max: number;
+		step: number;
+		value: number | undefined;
+		formatter?: NumberFormatter | null;
+	}
 
-	// Label to attach describing the input.
-	export let label: string;
-
-	// Formatting hint.
-	export let hint: string = '';
-
-	export let min: number;
-
-	export let max: number;
-
-	export let step: number;
-
-	export let value: number | undefined;
-
-	export let formatter: NumberFormatter | null = null;
+	let {
+		name,
+		label,
+		hint = '',
+		min,
+		max,
+		step,
+		value = $bindable(),
+		formatter = null
+	}: Props = $props();
 </script>
 
 <div class="flex flex-col gap-4">

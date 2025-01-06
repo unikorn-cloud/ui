@@ -1,26 +1,32 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import * as Compute from '$lib/openapi/compute';
 	import Select from '$lib/forms/Select.svelte';
 	import TextInput from '$lib/forms/TextInput.svelte';
 	import InputChips from '$lib/forms/InputChips.svelte';
 	import * as Validators from '$lib/validation';
 
-	// id uniqueuly identifies the workload pool and rule.
-	export let id: string;
+	interface Props {
+		// id uniqueuly identifies the workload pool and rule.
+		id: string;
+		// rule is the object we are filling in.
+		rule: Compute.FirewallRule;
+		// valid if the all field validators resolve to true.
+		valid?: boolean;
+	}
 
-	// rule is the object we are filling in.
-	export let rule: Compute.FirewallRule;
+	let { id, rule = $bindable(), valid = $bindable(false) }: Props = $props();
 
-	// valid if the all field validators resolve to true.
-	export let valid: boolean = false;
+	let port: string = $state('');
+	let portValid: boolean = $state(false);
 
-	let port: string;
-	let portValid: boolean = false;
+	let portMax: string = $state('');
+	let portMaxValid: boolean = $state(false);
 
-	let portMax: string;
-	let portMaxValid: boolean = false;
-
-	$: valid = portValid && portMaxValid && rule.prefixes.length > 0;
+	run(() => {
+		valid = portValid && portMaxValid && rule.prefixes.length > 0;
+	});
 
 	function updatePorts(port: string, portMax: string) {
 		const x = parseInt(port, 10);
@@ -42,7 +48,9 @@
 		}
 	}
 
-	$: updatePorts(port, portMax);
+	run(() => {
+		updatePorts(port, portMax);
+	});
 </script>
 
 <Select

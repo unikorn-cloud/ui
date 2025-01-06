@@ -4,7 +4,12 @@
 	import * as Status from '$lib/status';
 	import Badge from '$lib/layouts/Badge.svelte';
 
-	export let metadata: Kubernetes.ResourceReadMetadata;
+	interface Props {
+		metadata: Kubernetes.ResourceReadMetadata;
+		badges?: import('svelte').Snippet;
+	}
+
+	let { metadata, badges }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-4">
@@ -13,7 +18,7 @@
 			{metadata.provisioningStatus}
 		</Badge>
 
-		<slot name="badges" />
+		{@render badges?.()}
 	</div>
 
 	<h2 class="h2">{metadata.name}</h2>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import * as Compute from '$lib/openapi/compute';
 
 	import * as Formatters from '$lib/formatters';
@@ -15,22 +17,22 @@
 	import Image from '$lib/Image.svelte';
 	import ComputeWorkloadPoolSecurityRule from '$lib/ComputeWorkloadPoolSecurityRule.svelte';
 
-	/* The pool index allows us to fully qualify IDs so they are unique */
-	export let index: number;
+	interface Props {
+		/* The pool index allows us to fully qualify IDs so they are unique */
+		index: number;
+		/* The pool should be bound to expose the built configuration */
+		pool: Compute.ComputeClusterWorkloadPool;
+		/* Whether the configuration is valid */
+		valid: boolean;
+		/* Flavors allows the pool type to be populated */
+		flavors: Array<Compute.Flavor>;
+		/* Images allows the pool operating system image to be populated */
+		images: Array<Compute.Image>;
+	}
 
-	/* The pool should be bound to expose the built configuration */
-	export let pool: Compute.ComputeClusterWorkloadPool;
+	let { index, pool = $bindable(), valid = $bindable(), flavors, images }: Props = $props();
 
-	/* Whether the configuration is valid */
-	export let valid: boolean;
-
-	/* Flavors allows the pool type to be populated */
-	export let flavors: Array<Compute.Flavor>;
-
-	/* Images allows the pool operating system image to be populated */
-	export let images: Array<Compute.Image>;
-
-	let publicIP: boolean = false;
+	let publicIP: boolean = $state(false);
 
 	function updatePublicIP(publicIP: boolean) {
 		if (publicIP) {
@@ -42,16 +44,20 @@
 		}
 	}
 
-	$: updatePublicIP(publicIP);
+	run(() => {
+		updatePublicIP(publicIP);
+	});
 
-	let osVersions: Record<string, Array<string>> = {};
+	let osVersions: Record<string, Array<string>> = $state({});
 
 	function updateFlavors(flavors: Array<Compute.Flavor>): void {
 		if (!flavors || flavors.find((x) => x.metadata.id == pool.machine.flavorId)) return;
 		pool.machine.flavorId = flavors[0].metadata.id;
 	}
 
-	$: updateFlavors(flavors);
+	run(() => {
+		updateFlavors(flavors);
+	});
 
 	function osKey(distro: Compute.OsDistro, variant: string | undefined): string {
 		let key = distro;
@@ -95,9 +101,11 @@
 		};
 	}
 
-	$: updateImages(images);
+	run(() => {
+		updateImages(images);
+	});
 
-	let persistentStorage: boolean = Boolean(pool.machine.disk);
+	let persistentStorage: boolean = $state(Boolean(pool.machine.disk));
 
 	function updateDisk(
 		enabled: boolean,
@@ -125,9 +133,13 @@
 		}
 	}
 
-	$: updateDisk(persistentStorage, flavors, pool.machine.flavorId);
+	run(() => {
+		updateDisk(persistentStorage, flavors, pool.machine.flavorId);
+	});
 
-	$: valid = Validation.kubernetesNameValid(pool.name);
+	run(() => {
+		valid = Validation.kubernetesNameValid(pool.name);
+	});
 
 	function lookupFlavor(flavors: Array<Compute.Flavor>, flavorID: string): Compute.Flavor {
 		const flavor = flavors.find((x) => x.metadata.id == flavorID);
@@ -193,14 +205,8 @@
 		return lookupImage(images, distro, variant, version);
 	}
 
-	let tempRule: Compute.FirewallRule | null;
-
-	let tempRuleValid: boolean;
-
-	function addFirewallRule() {
-		tempRuleValid = false;
-
-		tempRule = {
+	function newFirewallRule(): Compute.FirewallRule {
+		return {
 			direction: Compute.FirewallRuleDirectionEnum.Ingress,
 			protocol: Compute.FirewallRuleProtocolEnum.Tcp,
 			port: 0,
@@ -208,8 +214,20 @@
 		};
 	}
 
+	let showRuleDefine: boolean = $state(false);
+
+	let tempRule: Compute.FirewallRule = $state(newFirewallRule());
+
+	let tempRuleValid: boolean = $state(false);
+
+	function addFirewallRule() {
+		tempRuleValid = false;
+		tempRule = newFirewallRule();
+		showRuleDefine = true;
+	}
+
 	function submitFirewallRule() {
-		if (!tempRule) return;
+		if (!showRuleDefine) return;
 
 		if (!pool.machine.firewall) {
 			pool.machine.firewall = [];
@@ -218,7 +236,7 @@
 		pool.machine.firewall.push(tempRule);
 		pool.machine.firewall = pool.machine.firewall;
 
-		tempRule = null;
+		showRuleDefine = false;
 	}
 
 	function deleteFirewallRule(index: number) {
@@ -248,14 +266,16 @@
 			hint="Allows the selection of the pool's available resources to be used by workloads per pool
 			member. This includes CPU, GPU and memory."
 		>
-			<Flavor slot="selected_body" flavor={lookupFlavor(flavors, pool.machine.flavorId)} />
-			<svelte:fragment>
+			{#snippet selected_body()}
+				<Flavor flavor={lookupFlavor(flavors, pool.machine.flavorId)} />
+			{/snippet}
+			{#snippet children()}
 				{#each flavors || [] as flavor}
 					<ListBoxItem bind:group={pool.machine.flavorId} name="foo" value={flavor.metadata.id}>
 						<Flavor {flavor} />
 					</ListBoxItem>
 				{/each}
-			</svelte:fragment>
+			{/snippet}
 		</SelectNew>
 
 		{#if !lookupFlavor(flavors, pool.machine.flavorId).spec.baremetal}
@@ -289,17 +309,18 @@
 			label="Choose an image ."
 			hint="Allows the selection of the pool's operating system image per pool."
 		>
-			<Image
-				slot="selected_body"
-				image={lookupImage(
-					images,
-					pool.machine.image.distro,
-					pool.machine.image.variant,
-					pool.machine.image.version
-				)}
-			/>
+			{#snippet selected_body()}
+				<Image
+					image={lookupImage(
+						images,
+						pool.machine.image.distro,
+						pool.machine.image.variant,
+						pool.machine.image.version
+					)}
+				/>
+			{/snippet}
 
-			<svelte:fragment>
+			{#snippet children()}
 				{#each Object.keys(osVersions) as os}
 					{#each osVersions[os] as version}
 						<ListBoxItem
@@ -312,7 +333,7 @@
 						</ListBoxItem>
 					{/each}
 				{/each}
-			</svelte:fragment>
+			{/snippet}
 		</SelectNew>
 	{/if}
 
@@ -356,10 +377,11 @@
 							<td>
 								<button
 									class="text-2xl"
-									on:click={() => deleteFirewallRule(i)}
-									on:keypress={() => deleteFirewallRule(i)}
+									onclick={() => deleteFirewallRule(i)}
+									onkeypress={() => deleteFirewallRule(i)}
+									aria-label="delete firewall rule"
 								>
-									<iconify-icon icon="mdi:trash-can-outline" />
+									<iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
 								</button>
 							</td>
 						</tr>
@@ -368,22 +390,22 @@
 			</table>
 		</div>
 
-		{#if tempRule}
+		{#if showRuleDefine}
 			<ComputeWorkloadPoolSecurityRule id="foo" rule={tempRule} bind:valid={tempRuleValid} />
 
 			<button
 				class="btn variant-filled-primary"
 				disabled={!tempRuleValid}
-				on:click={submitFirewallRule}
-				on:keypress={submitFirewallRule}>Submit</button
+				onclick={submitFirewallRule}
+				onkeypress={submitFirewallRule}>Submit</button
 			>
 		{:else}
 			<button
 				class="btn flex gap-2 items-center w-full"
-				on:click={addFirewallRule}
-				on:keypress={addFirewallRule}
+				onclick={addFirewallRule}
+				onkeypress={addFirewallRule}
 			>
-				<iconify-icon icon="mdi:add" />
+				<iconify-icon icon="mdi:add"></iconify-icon>
 				<span>Add New Rule</span>
 			</button>
 		{/if}

@@ -1,29 +1,39 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import * as Validation from '$lib/validation';
 
-	// Unique element ID.
-	export let id: string;
+	interface Props {
+		// Unique element ID.
+		id: string;
+		// Value to bind to.
+		value: string | undefined;
+		// Label to attach describing the input.
+		label: string;
+		// Formatting hint.
+		hint?: string;
+		// Placeholder.
+		placeholder?: string;
+		// A list of validators to apply to the input.
+		validators?: Validation.StringValidators;
+		// A valid flag to bind to.
+		valid?: boolean;
+	}
 
-	// Value to bind to.
-	export let value: string | undefined;
-
-	// Label to attach describing the input.
-	export let label: string;
-
-	// Formatting hint.
-	export let hint: string = '';
-
-	// Placeholder.
-	export let placeholder: string = '';
-
-	// A list of validators to apply to the input.
-	export let validators: Validation.StringValidators = [];
-
-	// A valid flag to bind to.
-	export let valid: boolean = false;
+	let {
+		id,
+		value = $bindable(),
+		label,
+		hint = '',
+		placeholder = '',
+		validators = [],
+		valid = $bindable(false)
+	}: Props = $props();
 
 	// Update the validation information when the value changes.
-	$: valid = Validation.validateString(value || '', validators);
+	run(() => {
+		valid = Validation.validateString(value || '', validators);
+	});
 </script>
 
 <div class="flex flex-col gap-4">
@@ -40,9 +50,10 @@
 			<input {id} class="input" type="text" {placeholder} bind:value />
 			<div class="input-group-shim">
 				{#if valid}
-					<iconify-icon class="text-success-500 text-lg" icon="mdi:tick-circle-outline" />
+					<iconify-icon class="text-success-500 text-lg" icon="mdi:tick-circle-outline"
+					></iconify-icon>
 				{:else}
-					<iconify-icon class="text-error-500 text-lg" icon="mdi:error-outline" />
+					<iconify-icon class="text-error-500 text-lg" icon="mdi:error-outline"></iconify-icon>
 				{/if}
 			</div>
 		</div>

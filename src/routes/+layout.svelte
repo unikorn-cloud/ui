@@ -1,6 +1,11 @@
 <script lang="ts">
 	/* Required for styling */
 	import '../app.postcss';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 <svelte:head>
@@ -9,4 +14,4 @@
 	<script src="/js/svg-inject.min.js"></script>
 </svelte:head>
 
-<slot />
+{@render children?.()}

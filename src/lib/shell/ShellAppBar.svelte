@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { browser } from '$app/environment';
 	import MD5 from 'crypto-js/md5';
 
@@ -26,9 +28,9 @@
 	import * as Identity from '$lib/openapi/identity';
 	import * as OIDC from '$lib/oidc';
 
-	let email: string;
-	let initials: string;
-	let picture: string;
+	let email: string | undefined = $state();
+	let initials: string | undefined = $state();
+	let picture: string | undefined = $state();
 
 	profile.subscribe((value: OIDC.IDToken) => {
 		if (!value) return;
@@ -45,8 +47,8 @@
 		}
 	});
 
-	let organizations: Array<Identity.OrganizationRead>;
-	let organizationID: string;
+	let organizations: Array<Identity.OrganizationRead> | undefined = $state();
+	let organizationID: string | undefined = $state();
 
 	let currentOrganizationInfo: Stores.OrganizationInfo;
 
@@ -56,9 +58,12 @@
 		currentOrganizationInfo = o;
 	});
 
-	let at: InternalToken;
+	// Grab the acces token.
+	let at = $state() as InternalToken;
 
-	token.subscribe((token: InternalToken) => (at = token));
+	token.subscribe((token: InternalToken): void => {
+		at = token;
+	});
 
 	function updateToken(at: InternalToken) {
 		if (!at) return;
@@ -78,9 +83,11 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateToken(at);
+	run(() => {
+		updateToken(at);
+	});
 
-	function updateOrganization(at: InternalToken, organizationID: string) {
+	function updateOrganization(at: InternalToken, organizationID: string | undefined) {
 		if (!organizationID || !at) return;
 
 		const parameters = {
@@ -98,7 +105,9 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateOrganization(at, organizationID);
+	run(() => {
+		updateOrganization(at, organizationID);
+	});
 
 	function doLogout(): void {
 		logout();
@@ -106,11 +115,15 @@
 </script>
 
 <AppBar shadow="shadow-lg">
-	<svelte:fragment slot="lead">
+	{#snippet lead()}
 		<div class="flex items-center gap-4">
 			<!-- Hamburger menu -->
-			<button on:click={showSideMenu} class="btn-icon btn-icon-sm text-2xl lg:!hidden">
-				<iconify-icon icon="material-symbols:menu" />
+			<button
+				onclick={showSideMenu}
+				class="btn-icon btn-icon-sm text-2xl lg:!hidden"
+				aria-label="resource menu"
+			>
+				<iconify-icon icon="material-symbols:menu"></iconify-icon>
 			</button>
 
 			<!-- Logo, crop to just the icon in responsive mode -->
@@ -118,13 +131,13 @@
 				<Logo class="h-8 w-auto" />
 			</div>
 		</div>
-	</svelte:fragment>
+	{/snippet}
 
-	<svelte:fragment slot="trail">
+	{#snippet trail()}
 		<!-- Oragnization -->
 		<div class="input-group input-group-divider grid-cols-[1fr_auto]">
 			<div class="input-group-shim">
-				<iconify-icon icon="mdi:office-building-outline" />
+				<iconify-icon icon="mdi:office-building-outline"></iconify-icon>
 			</div>
 			<select bind:value={organizationID}>
 				{#each organizations || [] as organization}
@@ -151,11 +164,16 @@
 
 				<section class="flex justify-between items-center">
 					<h6 class="h6">Logout</h6>
-					<button class="btn p-0 text-2xl" on:click={doLogout} on:keypress={doLogout}>
-						<iconify-icon icon="material-symbols:logout" />
+					<button
+						class="btn p-0 text-2xl"
+						onclick={doLogout}
+						onkeypress={doLogout}
+						aria-label="logout"
+					>
+						<iconify-icon icon="material-symbols:logout"></iconify-icon>
 					</button>
 				</section>
 			</div>
 		</div>
-	</svelte:fragment>
+	{/snippet}
 </AppBar>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -23,28 +25,23 @@
 	import * as Identity from '$lib/openapi/identity';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
-	let organizationInfo: Stores.OrganizationInfo;
-	let groups: Array<Identity.GroupRead>;
-	let availableRoles: Array<Identity.RoleRead>;
-	let availableGroups: Array<Identity.AvailableGroup>;
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
-	let resource: Identity.GroupWrite = {
-		metadata: {
-			name: ''
-		},
-		spec: {
-			roleIDs: [],
-			users: [],
-			providerGroups: []
-		}
-	};
+	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
+		organizationInfo = value;
+	});
 
-	Stores.organizationStore.subscribe(
-		(value: Stores.OrganizationInfo) => (organizationInfo = value)
-	);
+	// Grab the acces token.
+	let at = $state() as InternalToken;
 
-	token.subscribe((token: InternalToken) => (at = token));
+	token.subscribe((token: InternalToken): void => {
+		at = token;
+	});
+
+	let groups: Array<Identity.GroupRead> | undefined = $state();
+	let availableRoles: Array<Identity.RoleRead> | undefined = $state();
+	let availableGroups: Array<Identity.AvailableGroup> | undefined = $state();
 
 	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
 		if (!at || !organizationInfo) return;
@@ -72,16 +69,27 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: update(at, organizationInfo);
+	run(() => {
+		update(at, organizationInfo);
+	});
 
-	$: names = (groups || []).map((x) => x.metadata.name);
+	let names = $derived((groups || []).map((x) => x.metadata.name));
 
-	let metadataValid = false;
+	let resource: Identity.GroupWrite = $state({
+		metadata: {
+			name: ''
+		},
+		spec: {
+			roleIDs: [],
+			users: [],
+			providerGroups: []
+		}
+	});
+
+	let metadataValid = $state(false);
 
 	/* Cluster name must be valid, and it must be unique */
-	$: valid = metadataValid && resource.spec.roleIDs.length > 0;
-
-	$: console.log(metadataValid, resource.spec.roleIDs.length > 0);
+	let valid = $derived(metadataValid && resource.spec.roleIDs.length > 0);
 
 	function submit() {
 		const parameters = {
@@ -141,8 +149,8 @@
 	<button
 		class="btn variant-filled-primary flex gap-2 items-center"
 		disabled={!valid}
-		on:click={submit}
-		on:keypress={submit}
+		onclick={submit}
+		onkeypress={submit}
 	>
 		Create
 	</button>

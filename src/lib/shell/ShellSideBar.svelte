@@ -2,6 +2,11 @@
 	import { page } from '$app/stores';
 
 	import { AppRail, AppRailAnchor, AppRailTile, getDrawerStore } from '@skeletonlabs/skeleton';
+	interface Props {
+		[key: string]: any;
+	}
+
+	let { ...props }: Props = $props();
 	const drawerStore = getDrawerStore();
 
 	type NavItems = Array<{ label: string; href: string }>;
@@ -46,7 +51,7 @@
 		]
 	};
 
-	let railCategory: string;
+	let railCategory: string | undefined = $state();
 
 	page.subscribe((page) => {
 		const base: string = page.url.pathname.split('/')[1];
@@ -57,51 +62,52 @@
 		if (base === 'infrastructure') railCategory = '/infrastructure';
 	});
 
-	$: submenu = nav[railCategory ?? '/identity'];
-	$: itemActive = (href: string) =>
-		$page.url.pathname?.includes(href) ? 'bg-primary-active-token' : '';
+	let submenu = $derived(nav[railCategory ?? '/identity']);
+	let itemActive = $derived((href: string) =>
+		$page.url.pathname?.includes(href) ? 'bg-primary-active-token' : ''
+	);
 </script>
 
 <div
-	class="grid grid-cols-[auto_1fr] h-full bg-surface-50-900-token border-r border-surface-500/30 lg:w-[360px] overflow-hidden {$$props.class ||
+	class="grid grid-cols-[auto_1fr] h-full bg-surface-50-900-token border-r border-surface-500/30 lg:w-[360px] overflow-hidden {props.class ||
 		''}"
 >
 	<AppRail background="bg-transparent" border="border-r border-surface-500/30">
 		<AppRailAnchor href="/">
-			<svelte:fragment slot="lead">
-				<iconify-icon icon="mdi:home-outline" class="text-2xl" />
-			</svelte:fragment>
+			{#snippet lead()}
+				<iconify-icon icon="mdi:home-outline" class="text-2xl"></iconify-icon>
+			{/snippet}
 			<span>Home</span>
 		</AppRailAnchor>
 		<AppRailTile bind:group={railCategory} name="identity" value={'/identity'}>
-			<svelte:fragment slot="lead">
-				<iconify-icon icon="mdi:perm-identity" class="text-2xl" />
-			</svelte:fragment>
+			{#snippet lead()}
+				<iconify-icon icon="mdi:perm-identity" class="text-2xl"></iconify-icon>
+			{/snippet}
 			<span>Identity</span>
 		</AppRailTile>
 		<AppRailTile bind:group={railCategory} name="applications" value={'/applications'}>
-			<svelte:fragment slot="lead">
-				<iconify-icon icon="mdi:application-outline" class="text-2xl" />
-			</svelte:fragment>
+			{#snippet lead()}
+				<iconify-icon icon="mdi:application-outline" class="text-2xl"></iconify-icon>
+			{/snippet}
 			<span>Apps</span>
 		</AppRailTile>
 		<AppRailTile bind:group={railCategory} name="infrastructure" value={'/infrastructure'}>
-			<svelte:fragment slot="lead">
-				<iconify-icon icon="mdi:cloud-outline" class="text-2xl" />
-			</svelte:fragment>
+			{#snippet lead()}
+				<iconify-icon icon="mdi:cloud-outline" class="text-2xl"></iconify-icon>
+			{/snippet}
 			<span>Infra</span>
 		</AppRailTile>
 		<AppRailTile bind:group={railCategory} name="regions" value={'/regions'}>
-			<svelte:fragment slot="lead">
-				<iconify-icon icon="mdi:web" class="text-2xl" />
-			</svelte:fragment>
+			{#snippet lead()}
+				<iconify-icon icon="mdi:web" class="text-2xl"></iconify-icon>
+			{/snippet}
 			<span>Regions</span>
 		</AppRailTile>
 		<!-- Make this configurable -->
 		<AppRailAnchor href="https://github.com/unikorn-cloud">
-			<svelte:fragment slot="lead">
-				<iconify-icon icon="mdi:book-open-blank-variant" class="text-2xl" />
-			</svelte:fragment>
+			{#snippet lead()}
+				<iconify-icon icon="mdi:book-open-blank-variant" class="text-2xl"></iconify-icon>
+			{/snippet}
 			<span>Docs</span>
 		</AppRailAnchor>
 	</AppRail>
@@ -117,8 +123,8 @@
 							{href}
 							class={itemActive(href)}
 							data-sveltekit-preload-data="hover"
-							on:keypress={drawerStore.close}
-							on:click={drawerStore.close}
+							onkeypress={drawerStore.close}
+							onclick={drawerStore.close}
 						>
 							<li>
 								<span class="flex-auto">{label}</span>

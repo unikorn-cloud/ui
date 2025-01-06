@@ -1,11 +1,17 @@
 <script lang="ts">
-	export let icon: string;
-	export let href: string | null = null;
+	interface Props {
+		icon: string;
+		href?: string | null;
+		children?: import('svelte').Snippet;
+		clicked?: () => void;
+	}
+
+	let { icon, href = null, children, clicked }: Props = $props();
 </script>
 
 <li>
-	<a class="flex gap-4 items-center" {href} on:click on:keypress>
-		<iconify-icon {icon} />
-		<slot />
+	<a class="flex gap-4 items-center" {href} onclick={clicked} onkeypress={clicked}>
+		<iconify-icon {icon}></iconify-icon>
+		{@render children?.()}
 	</a>
 </li>

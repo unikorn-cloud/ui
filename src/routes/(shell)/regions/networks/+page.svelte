@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
@@ -28,16 +30,8 @@
 	import * as RBAC from '$lib/rbac';
 	import * as Stores from '$lib/stores';
 
-	let at: InternalToken;
-
-	let projects: Array<Identity.ProjectRead>;
-	let regions: Array<Region.RegionRead>;
-	let networks: Array<Region.NetworkRead>;
-
-	let organizationInfo: Stores.OrganizationInfo;
-
 	// Define required RBAC rules.
-	let allowed: boolean;
+	let allowed: boolean = $state(false);
 
 	let organizationScopes: Array<RBAC.OrganizationScope> = [
 		{
@@ -46,13 +40,24 @@
 		}
 	];
 
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
+
 	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
 		organizationInfo = value;
 	});
 
+	// Grab the acces token.
+	let at = $state() as InternalToken;
+
 	token.subscribe((token: InternalToken): void => {
 		at = token;
 	});
+
+	// Grab the main resources from the API.
+	let projects: Array<Identity.ProjectRead> | undefined = $state();
+	let regions: Array<Region.RegionRead> | undefined = $state();
+	let networks: Array<Region.NetworkRead> | undefined = $state();
 
 	function update(
 		at: InternalToken,
@@ -81,7 +86,9 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: update(at, organizationInfo, allowed);
+	run(() => {
+		update(at, organizationInfo, allowed);
+	});
 
 	const ticker = setInterval(() => update(at, organizationInfo, allowed), 5000);
 	onDestroy(() => clearInterval(ticker));
@@ -90,34 +97,36 @@
 <ShellPage {settings}>
 	<Protected {organizationScopes} bind:allowed>
 		<ShellList>
-			{#each networks || [] as resource}
-				<ShellListItem metadata={resource.metadata} {projects}>
-					<svelte:fragment slot="badges">
-						<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
-							{RegionUtil.name(regions, resource.spec.regionId)}
-						</Badge>
-					</svelte:fragment>
+			{#if networks && regions && projects}
+				{#each networks as resource}
+					<ShellListItem metadata={resource.metadata} {projects}>
+						{#snippet badges()}
+							<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+								{RegionUtil.name(regions, resource.spec.regionId)}
+							</Badge>
+						{/snippet}
 
-					<svelte:fragment slot="metadata">
-						<ShellMetadataItem icon="mdi:network-outline">
-							{resource.spec.prefix}
-						</ShellMetadataItem>
-						<ShellMetadataItem icon="mdi:dns-outline">
-							{resource.spec.dnsNameservers.join(', ')}
-						</ShellMetadataItem>
-						<ShellMetadataItem icon="mdi:nic">
-							{resource.spec.openstack?.vlanId}
-						</ShellMetadataItem>
-						{#if resource.metadata.tags}
-							<ShellMetadataItem icon="mdi:tag-outline">
-								{#each resource.metadata.tags as tag}
-									<div class="badge variant-soft">{tag.name}: {tag.value}</div>
-								{/each}
+						{#snippet extraMetadata()}
+							<ShellMetadataItem icon="mdi:network-outline">
+								{resource.spec.prefix}
 							</ShellMetadataItem>
-						{/if}
-					</svelte:fragment>
-				</ShellListItem>
-			{/each}
+							<ShellMetadataItem icon="mdi:dns-outline">
+								{resource.spec.dnsNameservers.join(', ')}
+							</ShellMetadataItem>
+							<ShellMetadataItem icon="mdi:nic">
+								{resource.spec.openstack?.vlanId}
+							</ShellMetadataItem>
+							{#if resource.metadata.tags}
+								<ShellMetadataItem icon="mdi:tag-outline">
+									{#each resource.metadata.tags as tag}
+										<div class="badge variant-soft">{tag.name}: {tag.value}</div>
+									{/each}
+								</ShellMetadataItem>
+							{/if}
+						{/snippet}
+					</ShellListItem>
+				{/each}
+			{/if}
 		</ShellList>
 	</Protected>
 </ShellPage>

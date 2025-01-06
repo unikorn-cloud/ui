@@ -1,15 +1,17 @@
 <script lang="ts">
-	// Unique element ID.
-	export let id: string;
+	interface Props {
+		// Unique element ID.
+		id: string;
+		// Value to bind to.
+		value: Array<string>;
+		// Label to attach describing the input.
+		label: string;
+		// Formatting hint.
+		hint?: string;
+		children?: import('svelte').Snippet;
+	}
 
-	// Value to bind to.
-	export let value: Array<string>;
-
-	// Label to attach describing the input.
-	export let label: string;
-
-	// Formatting hint.
-	export let hint: string = '';
+	let { id, value = $bindable(), label, hint = '', children }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-4">
@@ -22,6 +24,6 @@
 	</div>
 
 	<select {id} class="select" multiple bind:value>
-		<slot />
+		{@render children?.()}
 	</select>
 </div>

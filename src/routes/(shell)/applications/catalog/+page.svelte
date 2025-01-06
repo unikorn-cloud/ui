@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -20,19 +22,21 @@
 	import * as Application from '$lib/openapi/application';
 	import * as Stores from '$lib/stores';
 
-	let organizationInfo: Stores.OrganizationInfo;
+	// Grab the organization scope.
+	let organizationInfo = $state() as Stores.OrganizationInfo;
 
 	Stores.organizationStore.subscribe((value: Stores.OrganizationInfo) => {
 		organizationInfo = value;
 	});
 
-	let at: InternalToken;
+	// Grab the acces token.
+	let at = $state() as InternalToken;
 
 	token.subscribe((token: InternalToken): void => {
 		at = token;
 	});
 
-	let applications: Array<Application.ApplicationRead>;
+	let applications: Array<Application.ApplicationRead> | undefined = $state();
 
 	function updateApplications(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
 		if (!at || !organizationInfo) return;
@@ -48,7 +52,9 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	$: updateApplications(at, organizationInfo);
+	run(() => {
+		updateApplications(at, organizationInfo);
+	});
 
 	function applicationCategories(app: Application.ApplicationRead): Array<string> {
 		if (!app.metadata.tags) return [];

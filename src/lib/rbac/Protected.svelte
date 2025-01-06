@@ -1,16 +1,29 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import * as Identity from '$lib/openapi/identity';
 	import * as RBAC from '$lib/rbac';
 	import * as Stores from '$lib/stores';
 
 	// All protected content must have at least one scope, and they all must pass
-	// to show the content.
-	export let organizationScopes: Array<RBAC.OrganizationScope> | null = null;
-	export let projectScopes: Array<RBAC.ProjectScope> | null = null;
 
 	// Users can bind to this as a trigger to dispatch any async API calls
-	// once the RBAC checks have succeeded.
-	export let allowed: boolean = false;
+
+	interface Props {
+		// to show the content.
+		organizationScopes?: Array<RBAC.OrganizationScope> | null;
+		projectScopes?: Array<RBAC.ProjectScope> | null;
+		// once the RBAC checks have succeeded.
+		allowed?: boolean;
+		children?: import('svelte').Snippet;
+	}
+
+	let {
+		organizationScopes = null,
+		projectScopes = null,
+		allowed = $bindable(false),
+		children
+	}: Props = $props();
 
 	// Need an organization ID and  ACL.
 	let organizationInfo: Stores.OrganizationInfo;
@@ -56,14 +69,16 @@
 		allowed = organizationScopesAllowed(organizationScopes) && projectScopesAllowed(projectScopes);
 	}
 
-	$: update(organizationScopes, projectScopes);
+	run(() => {
+		update(organizationScopes, projectScopes);
+	});
 </script>
 
 {#if allowed}
-	<slot />
+	{@render children?.()}
 {:else}
 	<aside class="alert variant-filled-error shadow-lg">
-		<iconify-icon class="text-7xl" icon="mdi:shield-alert-outline" />
+		<iconify-icon class="text-7xl" icon="mdi:shield-alert-outline"></iconify-icon>
 
 		<div class="alert-message">
 			<h3 class="h3">Access Denied</h3>
