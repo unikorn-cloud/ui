@@ -35,6 +35,6 @@ export function unique(needle: string, haystack: Array<string> | undefined): boo
 	return !haystack.includes(needle);
 }
 
-export function GetKubernetesNameValidators(names: Array<string>): StringValidators {
+export function GetKubernetesNameValidators(names: Array<string> | undefined): StringValidators {
 	return [stringSet, kubernetesNameValid, (name: string) => unique(name, names)];
 }

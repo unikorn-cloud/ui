@@ -30,6 +30,9 @@ import type {
   ProjectRead,
   ProjectWrite,
   RoleRead,
+  ServiceAccountCreate,
+  ServiceAccountRead,
+  ServiceAccountWrite,
   Token,
   TokenRequestOptions,
   Userinfo,
@@ -65,6 +68,12 @@ import {
     ProjectWriteToJSON,
     RoleReadFromJSON,
     RoleReadToJSON,
+    ServiceAccountCreateFromJSON,
+    ServiceAccountCreateToJSON,
+    ServiceAccountReadFromJSON,
+    ServiceAccountReadToJSON,
+    ServiceAccountWriteFromJSON,
+    ServiceAccountWriteToJSON,
     TokenFromJSON,
     TokenToJSON,
     TokenRequestOptionsFromJSON,
@@ -162,6 +171,31 @@ export interface ApiV1OrganizationsOrganizationIDPutRequest {
 
 export interface ApiV1OrganizationsOrganizationIDRolesGetRequest {
     organizationID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDServiceaccountsGetRequest {
+    organizationID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDServiceaccountsPostRequest {
+    organizationID: string;
+    serviceAccountWrite: ServiceAccountWrite;
+}
+
+export interface ApiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDDeleteRequest {
+    organizationID: string;
+    serviceAccountID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDPutRequest {
+    organizationID: string;
+    serviceAccountID: string;
+    serviceAccountWrite: ServiceAccountWrite;
+}
+
+export interface ApiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePostRequest {
+    organizationID: string;
+    serviceAccountID: string;
 }
 
 export interface ApiV1OrganizationsPostRequest {
@@ -1010,6 +1044,206 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationIDRolesGet(requestParameters: ApiV1OrganizationsOrganizationIDRolesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<RoleRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDRolesGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Lists all service accounts.
+     */
+    async apiV1OrganizationsOrganizationIDServiceaccountsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDServiceaccountsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ServiceAccountRead>>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDServiceaccountsGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/serviceaccounts`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceAccountReadFromJSON));
+    }
+
+    /**
+     * Lists all service accounts.
+     */
+    async apiV1OrganizationsOrganizationIDServiceaccountsGet(requestParameters: ApiV1OrganizationsOrganizationIDServiceaccountsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ServiceAccountRead>> {
+        const response = await this.apiV1OrganizationsOrganizationIDServiceaccountsGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates a new service account and returns an access token,
+     */
+    async apiV1OrganizationsOrganizationIDServiceaccountsPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDServiceaccountsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ServiceAccountCreate>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDServiceaccountsPost.');
+        }
+
+        if (requestParameters.serviceAccountWrite === null || requestParameters.serviceAccountWrite === undefined) {
+            throw new runtime.RequiredError('serviceAccountWrite','Required parameter requestParameters.serviceAccountWrite was null or undefined when calling apiV1OrganizationsOrganizationIDServiceaccountsPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/serviceaccounts`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ServiceAccountWriteToJSON(requestParameters.serviceAccountWrite),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceAccountCreateFromJSON(jsonValue));
+    }
+
+    /**
+     * Creates a new service account and returns an access token,
+     */
+    async apiV1OrganizationsOrganizationIDServiceaccountsPost(requestParameters: ApiV1OrganizationsOrganizationIDServiceaccountsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServiceAccountCreate> {
+        const response = await this.apiV1OrganizationsOrganizationIDServiceaccountsPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Removes a service account and revokes an access token.
+     */
+    async apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDDelete.');
+        }
+
+        if (requestParameters.serviceAccountID === null || requestParameters.serviceAccountID === undefined) {
+            throw new runtime.RequiredError('serviceAccountID','Required parameter requestParameters.serviceAccountID was null or undefined when calling apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDDelete.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/serviceaccounts/{serviceAccountID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"serviceAccountID"}}`, encodeURIComponent(String(requestParameters.serviceAccountID))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Removes a service account and revokes an access token.
+     */
+    async apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDDelete(requestParameters: ApiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDDeleteRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Updates a service account.
+     */
+    async apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDPutRaw(requestParameters: ApiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ServiceAccountRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDPut.');
+        }
+
+        if (requestParameters.serviceAccountID === null || requestParameters.serviceAccountID === undefined) {
+            throw new runtime.RequiredError('serviceAccountID','Required parameter requestParameters.serviceAccountID was null or undefined when calling apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDPut.');
+        }
+
+        if (requestParameters.serviceAccountWrite === null || requestParameters.serviceAccountWrite === undefined) {
+            throw new runtime.RequiredError('serviceAccountWrite','Required parameter requestParameters.serviceAccountWrite was null or undefined when calling apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDPut.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/serviceaccounts/{serviceAccountID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"serviceAccountID"}}`, encodeURIComponent(String(requestParameters.serviceAccountID))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ServiceAccountWriteToJSON(requestParameters.serviceAccountWrite),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceAccountReadFromJSON(jsonValue));
+    }
+
+    /**
+     * Updates a service account.
+     */
+    async apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDPut(requestParameters: ApiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServiceAccountRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDPutRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Rotates a service account\'s access token.
+     */
+    async apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePostRaw(requestParameters: ApiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ServiceAccountCreate>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePost.');
+        }
+
+        if (requestParameters.serviceAccountID === null || requestParameters.serviceAccountID === undefined) {
+            throw new runtime.RequiredError('serviceAccountID','Required parameter requestParameters.serviceAccountID was null or undefined when calling apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/serviceaccounts/{serviceAccountID}/rotate`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"serviceAccountID"}}`, encodeURIComponent(String(requestParameters.serviceAccountID))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceAccountCreateFromJSON(jsonValue));
+    }
+
+    /**
+     * Rotates a service account\'s access token.
+     */
+    async apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePost(requestParameters: ApiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServiceAccountCreate> {
+        const response = await this.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -7,12 +7,6 @@
 
 This is a user-friendly user interface built on top of [Unikorn](https://github.com/spjmurray/unikorn) server.
 
-## Prerequisites
-
-As of Svelte 5, the link headers get somewhat bloated, and will cause Nginx to reject reload requests with a 502.
-See the discussion [here](https://github.com/sveltejs/kit/issues/11084) for any workarounds.
-Increating Nginx's buffer size has been tested and proven to work.
-
 ## Installing
 
 Install using your method of choice:

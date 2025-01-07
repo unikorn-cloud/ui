@@ -111,7 +111,7 @@
 	<Protected {organizationScopes} bind:allowed>
 		<ShellList>
 			{#each resources || [] as resource}
-				<ShellListItem metadata={resource.metadata}>
+				<ShellListItem icon="mdi:key-outline" metadata={resource.metadata}>
 					{#snippet tray()}
 						<BurgerMenu name="menu-{resource.metadata.id}">
 							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">

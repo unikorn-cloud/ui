@@ -99,7 +99,7 @@
 		<ShellList>
 			{#if networks && regions && projects}
 				{#each networks as resource}
-					<ShellListItem metadata={resource.metadata} {projects}>
+					<ShellListItem icon="mdi:network-outline" metadata={resource.metadata} {projects}>
 						{#snippet badges()}
 							<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
 								{RegionUtil.name(regions, resource.spec.regionId)}

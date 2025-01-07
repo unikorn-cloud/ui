@@ -37,6 +37,11 @@ models/ResourceWriteMetadata.ts
 models/ResponseType.ts
 models/RoleRead.ts
 models/Scope.ts
+models/ServiceAccountCreate.ts
+models/ServiceAccountRead.ts
+models/ServiceAccountSpec.ts
+models/ServiceAccountStatus.ts
+models/ServiceAccountWrite.ts
 models/SigningAlgorithm.ts
 models/StaticResourceMetadata.ts
 models/SystemOauth2ProviderRead.ts
