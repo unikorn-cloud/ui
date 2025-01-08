@@ -29,22 +29,26 @@
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow, size });
 
 	/* Shell components */
-	import { AppShell } from '@skeletonlabs/skeleton';
-	import ShellAppBar from '$lib/shell/ShellAppBar.svelte';
-	import ShellSideBar from '$lib/shell/ShellSideBar.svelte';
-	import ShellDrawer from '$lib/shell/ShellDrawer.svelte';
+	import Shell from '$lib/shell/Shell.svelte';
+	import AppBar from '$lib/shell/AppBar.svelte';
+	import SideBar from '$lib/shell/SideBar.svelte';
+	import Drawer from '$lib/shell/Drawer.svelte';
 </script>
 
 <Modal />
 <Toast />
-<ShellDrawer />
+<Drawer />
 
-<AppShell class="h-screen">
+<Shell>
 	{#snippet header()}
-		<ShellAppBar />
+		<AppBar />
 	{/snippet}
 
 	{#snippet sidebarLeft()}
-		<ShellSideBar class="hidden lg:block" />
+		<SideBar class="hidden lg:block" />
 	{/snippet}
-</AppShell>
+
+	{#snippet main()}
+		Empty
+	{/snippet}
+</Shell>
