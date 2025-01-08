@@ -7,6 +7,7 @@
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
+	import Button from '$lib/forms/Button.svelte';
 	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 	import * as Status from '$lib/status';
 
@@ -79,6 +80,8 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
+	update();
+
 	const ticker = setInterval(update, 5000);
 	onDestroy(() => clearInterval(ticker));
 
@@ -125,13 +128,7 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<a
-			href="/infrastructure/computeclusters/create"
-			class="btn variant-filled-primary flex gap-2 items-center"
-		>
-			<iconify-icon icon="material-symbols:add"></iconify-icon>
-			<span>Create</span>
-		</a>
+		<Button icon="mdi:add" label="Create" href="/infrastructure/computeclusters/create" />
 	{/snippet}
 
 	<ShellList>

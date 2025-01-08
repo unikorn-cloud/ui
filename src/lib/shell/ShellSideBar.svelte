@@ -1,12 +1,23 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
 	import { page } from '$app/stores';
 
 	import { AppRail, AppRailAnchor, AppRailTile, getDrawerStore } from '@skeletonlabs/skeleton';
+	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
+
+	import type { InternalToken } from '$lib/oauth2';
+	import { profile, token, logout } from '$lib/credentials';
+	import * as Clients from '$lib/clients';
+	import * as Identity from '$lib/openapi/identity';
+	import * as OIDC from '$lib/oidc';
+	import * as Stores from '$lib/stores';
+
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	const toastStore = getToastStore();
+
 	interface Props {
 		[key: string]: any;
 	}
-
-	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 
 	let { ...props }: Props = $props();
 	const drawerStore = getDrawerStore();
@@ -69,30 +80,109 @@
 	let itemActive = $derived((href: string) =>
 		$page.url.pathname?.includes(href) ? 'variant-glass-primary' : ''
 	);
+
+	// Grab the access token.
+	let at = $state() as InternalToken;
+
+	token.subscribe((token: InternalToken): void => {
+		at = token;
+	});
+
+	let organizations: Array<Identity.OrganizationRead> | undefined = $state();
+	let organizationID: string | undefined = $state();
+
+	let currentOrganizationInfo: Stores.OrganizationInfo;
+
+	// Grab the organization out of session storage first.
+	// TODO: make persistent storage!
+	Stores.organizationStore.subscribe((o: Stores.OrganizationInfo) => {
+		currentOrganizationInfo = o;
+	});
+
+	function updateToken(at: InternalToken) {
+		if (!at) return;
+
+		Clients.identity(toastStore, at)
+			.apiV1OrganizationsGet()
+			.then((v: Array<Identity.OrganizationRead>) => {
+				organizations = v;
+
+				// Try reuse the current organization if we can.
+				const existingOrganization = v.some((o) => o.metadata.id == currentOrganizationInfo?.id);
+
+				organizationID = existingOrganization
+					? currentOrganizationInfo.id
+					: organizations[0].metadata.id;
+			})
+			.catch((e: Error) => Clients.error(e));
+	}
+
+	run(() => updateToken(at));
+
+	function updateOrganization(at: InternalToken, organizationID: string | undefined) {
+		if (!organizationID || !at) return;
+
+		const parameters = {
+			organizationID: organizationID
+		};
+
+		Clients.identity(toastStore, at)
+			.apiV1OrganizationsOrganizationIDAclGet(parameters)
+			.then((v: Identity.Acl) => {
+				Stores.organizationStore.set({
+					id: organizationID,
+					acl: v
+				});
+			})
+			.catch((e: Error) => Clients.error(e));
+	}
+
+	run(() => {
+		updateOrganization(at, organizationID);
+	});
 </script>
 
 <div class="h-full bg-surface-50-900-token lg:w-[320px] overflow-hidden {props.class || ''}">
-	<Accordion autocollapse rounded="none">
-		{#each nav as entry}
-			<AccordionItem open={entry.title == category}>
-				{#snippet lead()}
-					<iconify-icon icon={entry.icon} class="text-2xl"></iconify-icon>
-				{/snippet}
-				{#snippet summary()}
-					{entry.title}
-				{/snippet}
-				{#snippet content()}
-					<ul class="list-nav text-sm ml-6">
-						{#each entry.items as item}
-							<a href={item.href} class={itemActive(item.href)}>
-								<li>
-									{item.label}
-								</li>
-							</a>
-						{/each}
-					</ul>
-				{/snippet}
-			</AccordionItem>
-		{/each}
-	</Accordion>
+	<!-- Oragnization -->
+	<div class="p-4 flex flex-col gap-4">
+		<div class="font-bold">Organization</div>
+
+		<div class="input-group input-group-divider grid-cols-[auto_1fr]">
+			<div class="input-group-shim">
+				<iconify-icon icon="mdi:office-building-outline"></iconify-icon>
+			</div>
+			<select bind:value={organizationID}>
+				{#each organizations || [] as organization}
+					<option value={organization.metadata.id}>{organization.metadata.name}</option>
+				{/each}
+			</select>
+		</div>
+	</div>
+
+	<div class="flex flex-col">
+		<div class="font-bold p-4">Resouces</div>
+		<Accordion autocollapse rounded="none">
+			{#each nav as entry}
+				<AccordionItem open={entry.title == category}>
+					{#snippet lead()}
+						<iconify-icon icon={entry.icon} class="text-2xl"></iconify-icon>
+					{/snippet}
+					{#snippet summary()}
+						{entry.title}
+					{/snippet}
+					{#snippet content()}
+						<ul class="list-nav text-sm ml-6">
+							{#each entry.items as item}
+								<a href={item.href} class={itemActive(item.href)}>
+									<li>
+										{item.label}
+									</li>
+								</a>
+							{/each}
+						</ul>
+					{/snippet}
+				</AccordionItem>
+			{/each}
+		</Accordion>
+	</div>
 </div>
