@@ -20,11 +20,17 @@ import { exists, mapValues } from '../runtime';
  */
 export interface ServiceAccountStatus {
     /**
+     * When the service token is due to expire.
+     * @type {Date}
+     * @memberof ServiceAccountStatus
+     */
+    expiry: Date;
+    /**
      * A long lived acccess token that can be exchanged for an API access token.
      * @type {string}
      * @memberof ServiceAccountStatus
      */
-    accessToken: string;
+    accessToken?: string;
 }
 
 /**
@@ -32,7 +38,7 @@ export interface ServiceAccountStatus {
  */
 export function instanceOfServiceAccountStatus(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "accessToken" in value;
+    isInstance = isInstance && "expiry" in value;
 
     return isInstance;
 }
@@ -47,7 +53,8 @@ export function ServiceAccountStatusFromJSONTyped(json: any, ignoreDiscriminator
     }
     return {
         
-        'accessToken': json['accessToken'],
+        'expiry': (new Date(json['expiry'])),
+        'accessToken': !exists(json, 'accessToken') ? undefined : json['accessToken'],
     };
 }
 
@@ -60,6 +67,7 @@ export function ServiceAccountStatusToJSON(value?: ServiceAccountStatus | null):
     }
     return {
         
+        'expiry': (value.expiry.toISOString()),
         'accessToken': value.accessToken,
     };
 }

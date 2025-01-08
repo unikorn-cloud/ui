@@ -25,6 +25,12 @@ import {
     ServiceAccountSpecFromJSONTyped,
     ServiceAccountSpecToJSON,
 } from './ServiceAccountSpec';
+import type { ServiceAccountStatus } from './ServiceAccountStatus';
+import {
+    ServiceAccountStatusFromJSON,
+    ServiceAccountStatusFromJSONTyped,
+    ServiceAccountStatusToJSON,
+} from './ServiceAccountStatus';
 
 /**
  * A service account.
@@ -43,7 +49,13 @@ export interface ServiceAccountRead {
      * @type {ServiceAccountSpec}
      * @memberof ServiceAccountRead
      */
-    spec: ServiceAccountSpec;
+    spec?: ServiceAccountSpec;
+    /**
+     * 
+     * @type {ServiceAccountStatus}
+     * @memberof ServiceAccountRead
+     */
+    status: ServiceAccountStatus;
 }
 
 /**
@@ -52,7 +64,7 @@ export interface ServiceAccountRead {
 export function instanceOfServiceAccountRead(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "metadata" in value;
-    isInstance = isInstance && "spec" in value;
+    isInstance = isInstance && "status" in value;
 
     return isInstance;
 }
@@ -68,7 +80,8 @@ export function ServiceAccountReadFromJSONTyped(json: any, ignoreDiscriminator: 
     return {
         
         'metadata': OrganizationScopedResourceReadMetadataFromJSON(json['metadata']),
-        'spec': ServiceAccountSpecFromJSON(json['spec']),
+        'spec': !exists(json, 'spec') ? undefined : ServiceAccountSpecFromJSON(json['spec']),
+        'status': ServiceAccountStatusFromJSON(json['status']),
     };
 }
 
@@ -83,6 +96,7 @@ export function ServiceAccountReadToJSON(value?: ServiceAccountRead | null): any
         
         'metadata': OrganizationScopedResourceReadMetadataToJSON(value.metadata),
         'spec': ServiceAccountSpecToJSON(value.spec),
+        'status': ServiceAccountStatusToJSON(value.status),
     };
 }
 

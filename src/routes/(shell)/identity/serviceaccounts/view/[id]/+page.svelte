@@ -8,6 +8,8 @@
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
+	import MultiSelect from '$lib/forms/MultiSelect.svelte';
+	import Button from '$lib/forms/Button.svelte';
 	import { clipboard } from '@skeletonlabs/skeleton';
 
 	const settings: ShellPageSettings = {
@@ -42,6 +44,7 @@
 
 	// Get root resources from the API.
 	let serviceAccounts: Array<Identity.ServiceAccountRead> | undefined = $state();
+	let groups: Array<Identity.GroupRead> | undefined = $state();
 
 	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
 		if (!at || !organizationInfo) return;
@@ -53,6 +56,11 @@
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDServiceaccountsGet(parameters)
 			.then((v: Array<Identity.ServiceAccountRead>) => (serviceAccounts = v))
+			.catch((e: Error) => Clients.error(e));
+
+		Clients.identity(toastStore, at)
+			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
+			.then((v: Array<Identity.GroupRead>) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -69,6 +77,10 @@
 		// Find our group based on ID.
 		const temp = serviceAccounts.find((x) => x.metadata.id == $page.params.id);
 		if (!temp) return;
+
+		// Add stuff to bind to...
+		if (!temp.spec) temp.spec = {};
+		if (!temp.spec.groupIDs) temp.spec.groupIDs = [];
 
 		serviceAccount = temp;
 	}
@@ -114,7 +126,7 @@
 		<ShellViewHeader metadata={newServiceAccount.metadata}>
 			{#snippet extraMetadata()}
 				<ShellMetadataItem icon="mdi:key-outline">
-					{newServiceAccount?.spec.expiry}
+					{newServiceAccount?.status.expiry}
 				</ShellMetadataItem>
 			{/snippet}
 		</ShellViewHeader>
@@ -143,7 +155,7 @@
 		<ShellViewHeader metadata={serviceAccount.metadata}>
 			{#snippet extraMetadata()}
 				<ShellMetadataItem icon="mdi:key-outline">
-					{serviceAccount?.spec.expiry}
+					{serviceAccount?.status.expiry}
 				</ShellMetadataItem>
 			{/snippet}
 		</ShellViewHeader>
@@ -151,22 +163,32 @@
 		<!-- Token subjects are bound to the user name, so names are immutable -->
 		<ShellMetadataSection metadata={serviceAccount.metadata} nameMutable={false} />
 
-		<div class="flex gap-4">
-			<button
-				class="btn variant-filled-primary flex gap-2 items-center"
-				onclick={rotate}
-				onkeypress={rotate}
-			>
-				Rotate Access Token
-			</button>
+		<ShellSection title="Access Control">
+			{#if serviceAccount.spec?.groupIDs}
+				<MultiSelect
+					id="sa-groups"
+					label="Groups"
+					hint="Select any groups that the service account should be a member of."
+					bind:value={serviceAccount.spec.groupIDs}
+				>
+					{#each groups || [] as group}
+						<option value={group.metadata.id}>
+							{group.metadata.name}
+						</option>
+					{/each}
+				</MultiSelect>
+			{/if}
+		</ShellSection>
 
-			<button
-				class="btn variant-filled-primary flex gap-2 items-center"
-				onclick={submit}
-				onkeypress={submit}
-			>
-				Update
-			</button>
+		<div class="flex gap-4">
+			<Button
+				icon="mdi:refresh"
+				label="Refresh Token"
+				variant="variant-filled-primary"
+				clicked={rotate}
+			/>
+
+			<Button icon="mdi:tick" label="Update" variant="variant-filled-primary" clicked={submit} />
 		</div>
 	{/if}
 </ShellPage>

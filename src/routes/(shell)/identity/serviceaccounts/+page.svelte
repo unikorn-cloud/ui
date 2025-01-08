@@ -120,7 +120,7 @@
 				>
 					{#snippet extraMetadata()}
 						<ShellMetadataItem icon="mdi:key-outline">
-							{resource.spec.expiry}
+							{resource.status.expiry}
 						</ShellMetadataItem>
 					{/snippet}
 
