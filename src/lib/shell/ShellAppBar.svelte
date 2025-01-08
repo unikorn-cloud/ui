@@ -7,13 +7,8 @@
 	import { AppBar, Avatar, LightSwitch, popup } from '@skeletonlabs/skeleton';
 	import type { DrawerSettings } from '@skeletonlabs/skeleton';
 
-	import { getToastStore } from '@skeletonlabs/skeleton';
-	const toastStore = getToastStore();
-
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
 	const drawerStore = getDrawerStore();
-
-	import * as Stores from '$lib/stores';
 
 	function showSideMenu(): void {
 		const settings: DrawerSettings = { id: 'sidebar' };
@@ -22,10 +17,7 @@
 
 	import Logo from '$lib/logos/Logo.svelte';
 
-	import type { InternalToken } from '$lib/oauth2';
-	import { profile, token, logout } from '$lib/credentials';
-	import * as Clients from '$lib/clients';
-	import * as Identity from '$lib/openapi/identity';
+	import { profile, logout } from '$lib/credentials';
 	import * as OIDC from '$lib/oidc';
 
 	let email: string | undefined = $state();
@@ -45,68 +37,6 @@
 		if (value.picture) {
 			picture = value.picture;
 		}
-	});
-
-	let organizations: Array<Identity.OrganizationRead> | undefined = $state();
-	let organizationID: string | undefined = $state();
-
-	let currentOrganizationInfo: Stores.OrganizationInfo;
-
-	// Grab the organization out of session storage first.
-	// TODO: make persistent storage!
-	Stores.organizationStore.subscribe((o: Stores.OrganizationInfo) => {
-		currentOrganizationInfo = o;
-	});
-
-	// Grab the acces token.
-	let at = $state() as InternalToken;
-
-	token.subscribe((token: InternalToken): void => {
-		at = token;
-	});
-
-	function updateToken(at: InternalToken) {
-		if (!at) return;
-
-		Clients.identity(toastStore, at)
-			.apiV1OrganizationsGet()
-			.then((v: Array<Identity.OrganizationRead>) => {
-				organizations = v;
-
-				// Try reuse the current organization if we can.
-				const existingOrganization = v.some((o) => o.metadata.id == currentOrganizationInfo?.id);
-
-				organizationID = existingOrganization
-					? currentOrganizationInfo.id
-					: organizations[0].metadata.id;
-			})
-			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateToken(at);
-	});
-
-	function updateOrganization(at: InternalToken, organizationID: string | undefined) {
-		if (!organizationID || !at) return;
-
-		const parameters = {
-			organizationID: organizationID
-		};
-
-		Clients.identity(toastStore, at)
-			.apiV1OrganizationsOrganizationIDAclGet(parameters)
-			.then((v: Identity.Acl) => {
-				Stores.organizationStore.set({
-					id: organizationID,
-					acl: v
-				});
-			})
-			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateOrganization(at, organizationID);
 	});
 
 	function doLogout(): void {
@@ -136,18 +66,6 @@
 	{/snippet}
 
 	{#snippet trail()}
-		<!-- Oragnization -->
-		<div class="input-group input-group-divider grid-cols-[1fr_auto]">
-			<div class="input-group-shim">
-				<iconify-icon icon="mdi:office-building-outline"></iconify-icon>
-			</div>
-			<select bind:value={organizationID}>
-				{#each organizations || [] as organization}
-					<option value={organization.metadata.id}>{organization.metadata.name}</option>
-				{/each}
-			</select>
-		</div>
-
 		<!-- User drop down -->
 		<button class="btn p-0" use:popup={{ event: 'click', target: 'user' }}>
 			<Avatar src={picture} {initials} class="!w-10 !h-10" />

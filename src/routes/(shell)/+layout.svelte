@@ -50,7 +50,7 @@
 	{/snippet}
 
 	{#snippet sidebarLeft()}
-		<ShellSideBar class="hidden lg:grid" />
+		<ShellSideBar class="hidden lg:block" />
 	{/snippet}
 
 	{@render children?.()}

@@ -9,6 +9,7 @@
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
+	import Button from '$lib/forms/Button.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -143,13 +144,7 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<a
-			href="/infrastructure/clusters/create"
-			class="btn variant-filled-primary flex gap-2 items-center"
-		>
-			<iconify-icon icon="material-symbols:add"></iconify-icon>
-			<span>Create</span>
-		</a>
+		<Button icon="mdi:add" label="Create" href="/infrastructure/clusters/create" />
 	{/snippet}
 
 	<ShellList>

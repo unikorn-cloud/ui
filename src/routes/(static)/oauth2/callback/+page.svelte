@@ -6,15 +6,14 @@
 
 	/* Required for configuration */
 	import * as OIDC from '$lib/oidc';
-	import type { InternalToken, Token } from '$lib/oauth2';
+	import type { InternalToken } from '$lib/oauth2';
 
 	/* Required for verification */
 	import { createRemoteJWKSet, jwtVerify } from 'jose';
 	import Base64url from 'crypto-js/enc-base64url';
 	import SHA256 from 'crypto-js/sha256';
 
-	import { setCredentials, pat } from '$lib/credentials';
-	import * as Login from '$lib/login';
+	import { setCredentials } from '$lib/credentials';
 
 	let error: string | undefined = $state();
 	let description: string | undefined = $state();
@@ -56,17 +55,7 @@
 			return;
 		}
 
-		if (!location.searchParams.has('state')) {
-			error = 'server_error';
-			description = 'state parameter not specified';
-			return;
-		}
-
 		const code = location.searchParams.get('code') || '';
-
-		const stateJSON = location.searchParams.get('state') || '';
-
-		const state: Login.Oauth2State = JSON.parse(stateJSON);
 
 		const discovery = await OIDC.discovery();
 
@@ -125,20 +114,16 @@
 			return;
 		}
 
-		if (state.type == Login.LoginType.Normal) {
-			const token = result as InternalToken;
+		const token = result as InternalToken;
 
-			// Set the expiry time so we know when to perform a rotation.
-			// Add a little wiggle room in there to account for any latency.
-			const expiry = new Date(Date.now());
+		// Set the expiry time so we know when to perform a rotation.
+		// Add a little wiggle room in there to account for any latency.
+		const expiry = new Date(Date.now());
 
-			expiry.setSeconds(expiry.getSeconds() + token.expires_in - 60);
-			token.expiry = expiry.toJSON();
+		expiry.setSeconds(expiry.getSeconds() + token.expires_in - 60);
+		token.expiry = expiry.toJSON();
 
-			setCredentials(token, id_token);
-		} else if (state.type == Login.LoginType.PAT) {
-			pat.set(result as Token);
-		}
+		setCredentials(token, id_token);
 
 		window.location.assign(window.sessionStorage.getItem('oauth2_location') || '/');
 	}

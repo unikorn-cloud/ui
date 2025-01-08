@@ -10,10 +10,6 @@ export const token = sessionstore<InternalToken>('token');
 // idToken is the user's idToken and contains OIDC information about them.
 export const profile = sessionstore<IDToken>('id_token');
 
-// pat is used to communicate a PAT from the oauth2 callback to the
-// client page.
-export const pat = sessionstore<Token>('pat');
-
 // This is called when the initial access token is acquired from the oauth
 // exchange.  It uses the token to rescope to a project, that's either selected
 // from persistent storage, and as a fallback, just selects the first one the

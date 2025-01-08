@@ -5,6 +5,7 @@
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
+	import Button from '$lib/forms/Button.svelte';
 	import Protected from '$lib/rbac/Protected.svelte';
 
 	const settings: ShellPageSettings = {
@@ -100,12 +101,7 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<form action="/identity/oauth2providers/create">
-			<button class="btn variant-filled-primary flex gap-2 items-center" disabled={!allowed}>
-				<iconify-icon icon="material-symbols:add"></iconify-icon>
-				<span>Create</span>
-			</button>
-		</form>
+		<Button icon="mdi:add" label="Create" href="/identity/oauth2providers/create" />
 	{/snippet}
 
 	<Protected {organizationScopes} bind:allowed>
