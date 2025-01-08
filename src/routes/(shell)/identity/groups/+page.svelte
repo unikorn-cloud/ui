@@ -116,15 +116,13 @@
 	<Protected {organizationScopes} bind:allowed>
 		<ShellList>
 			{#each groups || [] as resource}
-				<ShellListItem metadata={resource.metadata}>
+				<ShellListItem
+					icon="mdi:account-group-outline"
+					metadata={resource.metadata}
+					href="/identity/groups/view/{resource.metadata.id}"
+				>
 					{#snippet tray()}
 						<BurgerMenu name="menu-{resource.metadata.id}">
-							<BurgerMenuItem
-								href="/identity/groups/view/{resource.metadata.id}"
-								icon="mdi:edit-outline"
-							>
-								Edit
-							</BurgerMenuItem>
 							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
 								Delete
 							</BurgerMenuItem>

@@ -2,17 +2,19 @@
 	import { run } from 'svelte/legacy';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
+
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
+	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Protected from '$lib/rbac/Protected.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
-		name: 'Projects',
-		description: 'Manage your resources.'
+		name: 'Service Accounts',
+		description: "Manage your organization's service accounts."
 	};
 
 	import { onDestroy } from 'svelte';
@@ -37,7 +39,7 @@
 
 	let organizationScopes: Array<RBAC.OrganizationScope> = [
 		{
-			endpoint: 'identity:projects',
+			endpoint: 'identity:serviceaccounts',
 			operation: Identity.AclOperation.Create
 		}
 	];
@@ -56,13 +58,9 @@
 		at = token;
 	});
 
-	let resources: Array<Identity.ProjectRead> | undefined = $state();
+	let serviceAccounts: Array<Identity.ServiceAccountRead> | undefined = $state();
 
-	function update(
-		at: InternalToken,
-		organizationInfo: Stores.OrganizationInfo,
-		allowed: boolean
-	): void {
+	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo, allowed: boolean) {
 		if (!at || !organizationInfo || !allowed) return;
 
 		const parameters = {
@@ -70,8 +68,8 @@
 		};
 
 		Clients.identity(toastStore, at)
-			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
-			.then((v: Array<Identity.ProjectRead>) => (resources = v))
+			.apiV1OrganizationsOrganizationIDServiceaccountsGet(parameters)
+			.then((v: Array<Identity.ServiceAccountRead>) => (serviceAccounts = v))
 			.catch((e: Error) => Clients.error(e));
 	}
 
@@ -82,21 +80,22 @@
 	const ticker = setInterval(() => update(at, organizationInfo, allowed), 5000);
 	onDestroy(() => clearInterval(ticker));
 
-	function remove(resource: Identity.ProjectRead): void {
+	function remove(resource: Identity.ServiceAccountRead) {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: `Are you sure?`,
-			body: `Removing project "${resource.metadata.name}" will also remove all resources owned by it.`,
+			body: `Removing service account "${resource.metadata.name}" and revoke access token.`,
 			response: (ok: boolean) => {
 				if (!ok) return;
 
 				const parameters = {
 					organizationID: organizationInfo.id,
-					projectID: resource.metadata.id
+					serviceAccountID: resource.metadata.id
 				};
 
 				Clients.identity(toastStore, at)
-					.apiV1OrganizationsOrganizationIDProjectsProjectIDDelete(parameters)
+					.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDDelete(parameters)
+					.then(() => update(at, organizationInfo, allowed))
 					.catch((e: Error) => Clients.error(e));
 			}
 		};
@@ -107,7 +106,7 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<form action="/identity/projects/create">
+		<form action="/identity/serviceaccounts/create">
 			<button class="btn variant-filled-primary flex gap-2 items-center" disabled={!allowed}>
 				<iconify-icon icon="material-symbols:add"></iconify-icon>
 				<span>Create</span>
@@ -117,12 +116,18 @@
 
 	<Protected {organizationScopes} bind:allowed>
 		<ShellList>
-			{#each resources || [] as resource}
+			{#each serviceAccounts || [] as resource}
 				<ShellListItem
-					icon="mdi:account-group-outline"
+					icon="mdi:account-service-outline"
 					metadata={resource.metadata}
-					href="/identity/projects/view/{resource.metadata.id}"
+					href="/identity/serviceaccounts/view/{resource.metadata.id}"
 				>
+					{#snippet extraMetadata()}
+						<ShellMetadataItem icon="mdi:key-outline">
+							{resource.spec.expiry}
+						</ShellMetadataItem>
+					{/snippet}
+
 					{#snippet tray()}
 						<BurgerMenu name="menu-{resource.metadata.id}">
 							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">

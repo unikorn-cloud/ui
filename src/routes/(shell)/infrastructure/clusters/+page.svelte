@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -77,6 +79,10 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
+	run(() => {
+		update();
+	});
+
 	const ticker = setInterval(update, 5000);
 	onDestroy(() => clearInterval(ticker));
 
@@ -149,7 +155,12 @@
 	<ShellList>
 		{#if projects}
 			{#each resources || [] as resource}
-				<ShellListItem metadata={resource.metadata} {projects}>
+				<ShellListItem
+					icon="mdi:kubernetes"
+					metadata={resource.metadata}
+					href="/infrastructure/clusters/view/{resource.metadata.id}"
+					{projects}
+				>
 					{#snippet badges()}
 						<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
 							{RegionUtil.name(regions, resource.spec.regionId)}
@@ -158,12 +169,6 @@
 
 					{#snippet tray()}
 						<BurgerMenu name="menu-{resource.metadata.id}">
-							<BurgerMenuItem
-								href="/infrastructure/clusters/view/{resource.metadata.id}"
-								icon="mdi:edit-outline"
-							>
-								Edit
-							</BurgerMenuItem>
 							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
 								Delete
 							</BurgerMenuItem>

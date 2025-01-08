@@ -6,137 +6,93 @@
 		[key: string]: any;
 	}
 
+	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
+
 	let { ...props }: Props = $props();
 	const drawerStore = getDrawerStore();
 
 	type NavItems = Array<{ label: string; href: string }>;
 
-	const nav: Record<string, Array<{ title: string; items: NavItems }>> = {
-		'/identity': [
-			{
-				title: 'Identity',
-				items: [
-					{ label: 'Organization', href: '/identity/organizations' },
-					{ label: 'OAuth2 Providers', href: '/identity/oauth2providers' },
-					{ label: 'Groups', href: '/identity/groups' },
-					{ label: 'Projects', href: '/identity/projects' },
-					{ label: 'Tokens', href: '/identity/tokens' }
-				]
-			}
-		],
-		'/applications': [
-			{
-				title: 'Applications',
-				items: [{ label: 'Catalog', href: '/applications/catalog' }]
-			}
-		],
-		'/infrastructure': [
-			{
-				title: 'Infrastucture',
-				items: [
-					{ label: 'Kubernetes Clusters', href: '/infrastructure/clusters' },
-					{ label: 'Kubernetes Cluster Managers', href: '/infrastructure/clustermanagers' },
-					{ label: 'Compute Clusters', href: '/infrastructure/computeclusters' }
-				]
-			}
-		],
-		'/regions': [
-			{
-				title: 'Regions',
-				items: [
-					{ label: 'Identities', href: '/regions/identities' },
-					{ label: 'Networks', href: '/regions/networks' }
-				]
-			}
-		]
-	};
+	const nav: Array<{ base: string; title: string; icon: string; items: NavItems }> = [
+		{
+			base: '/identity',
+			title: 'Identity',
+			icon: 'mdi:perm-identity',
+			items: [
+				{ label: 'Organization', href: '/identity/organizations' },
+				{ label: 'OAuth2 Providers', href: '/identity/oauth2providers' },
+				{ label: 'Service Accounts', href: '/identity/serviceaccounts' },
+				{ label: 'Groups', href: '/identity/groups' },
+				{ label: 'Projects', href: '/identity/projects' }
+			]
+		},
+		{
+			base: '/applications',
+			title: 'Applications',
+			icon: 'mdi:application-outline',
+			items: [{ label: 'Catalog', href: '/applications/catalog' }]
+		},
+		{
+			base: '/infrastructure',
+			title: 'Infrastucture',
+			icon: 'mdi:cloud-outline',
+			items: [
+				{ label: 'Kubernetes Clusters', href: '/infrastructure/clusters' },
+				{ label: 'Kubernetes Cluster Managers', href: '/infrastructure/clustermanagers' },
+				{ label: 'Compute Clusters', href: '/infrastructure/computeclusters' }
+			]
+		},
+		{
+			base: '/regions',
+			title: 'Regions',
+			icon: 'mdi:web',
+			items: [
+				{ label: 'Identities', href: '/regions/identities' },
+				{ label: 'Networks', href: '/regions/networks' }
+			]
+		}
+	];
 
-	let railCategory: string | undefined = $state();
+	let category: string | undefined = $state();
+	let active: string | undefined = $state();
 
 	page.subscribe((page) => {
 		const base: string = page.url.pathname.split('/')[1];
 		if (!base) return;
 
-		if (base === 'identity') railCategory = '/identity';
-		if (base === 'applications') railCategory = '/applications';
-		if (base === 'infrastructure') railCategory = '/infrastructure';
+		const entry = nav.find((x) => x.base == '/' + base);
+		if (!entry) return;
+
+		category = entry.title;
 	});
 
-	let submenu = $derived(nav[railCategory ?? '/identity']);
 	let itemActive = $derived((href: string) =>
-		$page.url.pathname?.includes(href) ? 'bg-primary-active-token' : ''
+		$page.url.pathname?.includes(href) ? 'variant-glass-primary' : ''
 	);
 </script>
 
-<div
-	class="grid grid-cols-[auto_1fr] h-full bg-surface-50-900-token border-r border-surface-500/30 lg:w-[360px] overflow-hidden {props.class ||
-		''}"
->
-	<AppRail background="bg-transparent" border="border-r border-surface-500/30">
-		<AppRailAnchor href="/">
-			{#snippet lead()}
-				<iconify-icon icon="mdi:home-outline" class="text-2xl"></iconify-icon>
-			{/snippet}
-			<span>Home</span>
-		</AppRailAnchor>
-		<AppRailTile bind:group={railCategory} name="identity" value={'/identity'}>
-			{#snippet lead()}
-				<iconify-icon icon="mdi:perm-identity" class="text-2xl"></iconify-icon>
-			{/snippet}
-			<span>Identity</span>
-		</AppRailTile>
-		<AppRailTile bind:group={railCategory} name="applications" value={'/applications'}>
-			{#snippet lead()}
-				<iconify-icon icon="mdi:application-outline" class="text-2xl"></iconify-icon>
-			{/snippet}
-			<span>Apps</span>
-		</AppRailTile>
-		<AppRailTile bind:group={railCategory} name="infrastructure" value={'/infrastructure'}>
-			{#snippet lead()}
-				<iconify-icon icon="mdi:cloud-outline" class="text-2xl"></iconify-icon>
-			{/snippet}
-			<span>Infra</span>
-		</AppRailTile>
-		<AppRailTile bind:group={railCategory} name="regions" value={'/regions'}>
-			{#snippet lead()}
-				<iconify-icon icon="mdi:web" class="text-2xl"></iconify-icon>
-			{/snippet}
-			<span>Regions</span>
-		</AppRailTile>
-		<!-- Make this configurable -->
-		<AppRailAnchor href="https://github.com/unikorn-cloud">
-			{#snippet lead()}
-				<iconify-icon icon="mdi:book-open-blank-variant" class="text-2xl"></iconify-icon>
-			{/snippet}
-			<span>Docs</span>
-		</AppRailAnchor>
-	</AppRail>
-
-	<section class="p-4 pb-20 space-y-4 overflow-y-auto">
-		{#each submenu as segment, i}
-			<p class="font-bold pl-4 text-2xl">{segment.title}</p>
-
-			<nav class="list-nav">
-				<ul>
-					{#each segment.items as { label, href }}
-						<a
-							{href}
-							class={itemActive(href)}
-							data-sveltekit-preload-data="hover"
-							onkeypress={drawerStore.close}
-							onclick={drawerStore.close}
-						>
-							<li>
-								<span class="flex-auto">{label}</span>
-							</li>
-						</a>
-					{/each}
-				</ul>
-			</nav>
-
-			{#if i < Object.keys(nav).length - 1}
-				<hr class="!my-6 opacity-50" />
-			{/if}
+<div class="h-full bg-surface-50-900-token lg:w-[320px] overflow-hidden {props.class || ''}">
+	<Accordion autocollapse rounded="none">
+		{#each nav as entry}
+			<AccordionItem open={entry.title == category}>
+				{#snippet lead()}
+					<iconify-icon icon={entry.icon} class="text-2xl"></iconify-icon>
+				{/snippet}
+				{#snippet summary()}
+					{entry.title}
+				{/snippet}
+				{#snippet content()}
+					<ul class="list-nav text-sm ml-6">
+						{#each entry.items as item}
+							<a href={item.href} class={itemActive(item.href)}>
+								<li>
+									{item.label}
+								</li>
+							</a>
+						{/each}
+					</ul>
+				{/snippet}
+			</AccordionItem>
 		{/each}
-	</section>
+	</Accordion>
 </div>

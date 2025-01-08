@@ -11,15 +11,17 @@
 	import type { Snippet } from 'svelte';
 
 	interface Props {
+		icon: string;
 		metadata: Kubernetes.ResourceReadMetadata;
 		projects?: Array<Identity.ProjectRead>;
 		badges?: Snippet;
 		tray?: Snippet;
 		extraMetadata?: Snippet;
 		content?: Snippet;
+		href?: string;
 	}
 
-	let { metadata, projects, badges, tray, extraMetadata, content }: Props = $props();
+	let { icon, metadata, projects, badges, tray, extraMetadata, content, href }: Props = $props();
 
 	function lookupProject(id: string): string {
 		if (projects) {
@@ -49,54 +51,62 @@
 	});
 </script>
 
-<div
-	class="card bg-surface-50-900-token border border-surface-300-600-token shadow-sm flex flex-col p-4"
->
-	<div class="flex flex-col gap-3 w-full">
-		<div class="flex justify-between">
-			<div class="flex gap-2 items-center">
-				<Badge icon={Status.icon(metadata)} iconcolor={Status.color(metadata)}>
-					{metadata.provisioningStatus}
-				</Badge>
-
-				{@render badges?.()}
-			</div>
-
-			{#if tray}
-				<div class="flex gap-2 items-center">
-					{@render tray?.()}
-				</div>
-			{/if}
-		</div>
-
-		<div class="flex flex-col gap-1">
-			<div class="font-bold">
+{#snippet meta()}
+	<div class="flex flex-col gap-1">
+		<div class="flex gap-2 items-center">
+			<div class="h5 font-bold">
 				{#if scope}
 					{scope}/{metadata.name}
 				{:else}
 					{metadata.name}
 				{/if}
 			</div>
-
-			{#if metadata.description}
-				<div class="text-sm italic text-surface-600-300-token">{metadata.description}</div>
-			{/if}
 		</div>
 
-		<div class="flex flex-col gap-1 text-sm">
-			<ShellMetadataItem icon="mdi:clock-time-five-outline">
-				{Formatters.ageFormatter(metadata.creationTime)}
-			</ShellMetadataItem>
+		{#if metadata.description}
+			<div class="text-sm italic text-surface-600-300-token">{metadata.description}</div>
+		{/if}
+	</div>
+{/snippet}
 
-			{#if metadata.createdBy}
-				<ShellMetadataItem icon="mdi:user-outline">
-					{metadata.createdBy}
-				</ShellMetadataItem>
-			{/if}
+<article
+	class="flex flex-col gap-2 lg:gap-x-8 lg:gap-y-4 lg:col-span-full lg:grid lg:grid-cols-subgrid lg:items-center card shadow-lg p-4"
+>
+	<iconify-icon {icon} class="col-start-1 text-5xl text-primary-600-300-token"></iconify-icon>
 
-			{@render extraMetadata?.()}
-		</div>
+	<div class="col-start-2">
+		{#if href}
+			<a class="grow" {href}>
+				{@render meta()}
+			</a>
+		{:else}
+			{@render meta()}
+		{/if}
 	</div>
 
-	{@render content?.()}
-</div>
+	<div class="col-start-3 flex gap-2 items-center">
+		<Badge icon={Status.icon(metadata)} iconcolor={Status.color(metadata)}>
+			{metadata.provisioningStatus}
+		</Badge>
+
+		{@render badges?.()}
+	</div>
+
+	<div class="col-start-4 flex flex-col gap-1 text-sm">
+		<ShellMetadataItem icon="mdi:clock-time-five-outline">
+			{Formatters.ageFormatter(metadata.creationTime)}
+		</ShellMetadataItem>
+
+		{#if metadata.createdBy}
+			<ShellMetadataItem icon="mdi:user-outline">
+				{metadata.createdBy}
+			</ShellMetadataItem>
+		{/if}
+
+		{@render extraMetadata?.()}
+	</div>
+
+	<div class="col-start-5">
+		{@render tray?.()}
+	</div>
+</article>

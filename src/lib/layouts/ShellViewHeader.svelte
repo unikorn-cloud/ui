@@ -4,12 +4,15 @@
 	import * as Status from '$lib/status';
 	import Badge from '$lib/layouts/Badge.svelte';
 
+	import type { Snippet } from 'svelte';
+
 	interface Props {
 		metadata: Kubernetes.ResourceReadMetadata;
 		badges?: import('svelte').Snippet;
+		extraMetadata?: Snippet;
 	}
 
-	let { metadata, badges }: Props = $props();
+	let { metadata, badges, extraMetadata }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-4">
@@ -39,5 +42,7 @@
 				{metadata.createdBy}
 			</div>
 		{/if}
+
+		{@render extraMetadata?.()}
 	</div>
 </div>

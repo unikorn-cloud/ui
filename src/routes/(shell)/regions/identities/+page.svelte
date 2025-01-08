@@ -128,7 +128,7 @@
 		<ShellList>
 			{#if projects && regions && identities}
 				{#each identities as resource}
-					<ShellListItem metadata={resource.metadata} {projects}>
+					<ShellListItem icon="mdi:user-outline" metadata={resource.metadata} {projects}>
 						{#snippet badges()}
 							<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
 								{RegionUtil.name(regions, resource.spec.regionId)}

@@ -137,7 +137,12 @@
 	<ShellList>
 		{#if resources && regions && projects}
 			{#each resources as resource}
-				<ShellListItem metadata={resource.metadata} {projects}>
+				<ShellListItem
+					icon="mdi:server-network-outline"
+					metadata={resource.metadata}
+					href="/infrastructure/computeclusters/view/{resource.metadata.id}"
+					{projects}
+				>
 					{#snippet badges()}
 						<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
 							{RegionUtil.name(regions, resource.spec.regionId)}
@@ -146,12 +151,6 @@
 
 					{#snippet tray()}
 						<BurgerMenu name="menu-{resource.metadata.id}">
-							<BurgerMenuItem
-								href="/infrastructure/computeclusters/view/{resource.metadata.id}"
-								icon="mdi:edit-outline"
-							>
-								Edit
-							</BurgerMenuItem>
 							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
 								Delete
 							</BurgerMenuItem>

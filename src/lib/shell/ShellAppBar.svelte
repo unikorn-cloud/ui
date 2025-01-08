@@ -114,7 +114,7 @@
 	}
 </script>
 
-<AppBar shadow="shadow-lg">
+<AppBar background="bg-surface-50-900-token">
 	{#snippet lead()}
 		<div class="flex items-center gap-4">
 			<!-- Hamburger menu -->
@@ -127,9 +127,11 @@
 			</button>
 
 			<!-- Logo, crop to just the icon in responsive mode -->
-			<div class="w-8 lg:w-auto overflow-hidden">
-				<Logo class="h-8 w-auto" />
-			</div>
+			<a href="/">
+				<div class="w-8 lg:w-auto overflow-hidden">
+					<Logo class="h-8 w-auto" />
+				</div>
+			</a>
 		</div>
 	{/snippet}
 
