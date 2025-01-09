@@ -35,6 +35,7 @@ import type {
   ServiceAccountWrite,
   Token,
   TokenRequestOptions,
+  User,
   Userinfo,
 } from '../models/index';
 import {
@@ -78,6 +79,8 @@ import {
     TokenToJSON,
     TokenRequestOptionsFromJSON,
     TokenRequestOptionsToJSON,
+    UserFromJSON,
+    UserToJSON,
     UserinfoFromJSON,
     UserinfoToJSON,
 } from '../models/index';
@@ -196,6 +199,26 @@ export interface ApiV1OrganizationsOrganizationIDServiceaccountsServiceAccountID
 export interface ApiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePostRequest {
     organizationID: string;
     serviceAccountID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDUsersGetRequest {
+    organizationID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDUsersPostRequest {
+    organizationID: string;
+    user: User;
+}
+
+export interface ApiV1OrganizationsOrganizationIDUsersUsernameDeleteRequest {
+    organizationID: string;
+    username: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDUsersUsernamePutRequest {
+    organizationID: string;
+    username: string;
+    user: User;
 }
 
 export interface ApiV1OrganizationsPostRequest {
@@ -1244,6 +1267,167 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePost(requestParameters: ApiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServiceAccountCreate> {
         const response = await this.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Lists all users.
+     */
+    async apiV1OrganizationsOrganizationIDUsersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDUsersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<User>>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDUsersGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/users`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserFromJSON));
+    }
+
+    /**
+     * Lists all users.
+     */
+    async apiV1OrganizationsOrganizationIDUsersGet(requestParameters: ApiV1OrganizationsOrganizationIDUsersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<User>> {
+        const response = await this.apiV1OrganizationsOrganizationIDUsersGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates a new user and associates with a set of groups.
+     */
+    async apiV1OrganizationsOrganizationIDUsersPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDUsersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDUsersPost.');
+        }
+
+        if (requestParameters.user === null || requestParameters.user === undefined) {
+            throw new runtime.RequiredError('user','Required parameter requestParameters.user was null or undefined when calling apiV1OrganizationsOrganizationIDUsersPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/users`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UserToJSON(requestParameters.user),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
+    }
+
+    /**
+     * Creates a new user and associates with a set of groups.
+     */
+    async apiV1OrganizationsOrganizationIDUsersPost(requestParameters: ApiV1OrganizationsOrganizationIDUsersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+        const response = await this.apiV1OrganizationsOrganizationIDUsersPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Deletes a user and disassociates them with all groups they are a member of.
+     */
+    async apiV1OrganizationsOrganizationIDUsersUsernameDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDUsersUsernameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUsernameDelete.');
+        }
+
+        if (requestParameters.username === null || requestParameters.username === undefined) {
+            throw new runtime.RequiredError('username','Required parameter requestParameters.username was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUsernameDelete.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/users/{username}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"username"}}`, encodeURIComponent(String(requestParameters.username))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Deletes a user and disassociates them with all groups they are a member of.
+     */
+    async apiV1OrganizationsOrganizationIDUsersUsernameDelete(requestParameters: ApiV1OrganizationsOrganizationIDUsersUsernameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDUsersUsernameDeleteRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Updates a user.
+     */
+    async apiV1OrganizationsOrganizationIDUsersUsernamePutRaw(requestParameters: ApiV1OrganizationsOrganizationIDUsersUsernamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUsernamePut.');
+        }
+
+        if (requestParameters.username === null || requestParameters.username === undefined) {
+            throw new runtime.RequiredError('username','Required parameter requestParameters.username was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUsernamePut.');
+        }
+
+        if (requestParameters.user === null || requestParameters.user === undefined) {
+            throw new runtime.RequiredError('user','Required parameter requestParameters.user was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUsernamePut.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/users/{username}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"username"}}`, encodeURIComponent(String(requestParameters.username))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UserToJSON(requestParameters.user),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
+    }
+
+    /**
+     * Updates a user.
+     */
+    async apiV1OrganizationsOrganizationIDUsersUsernamePut(requestParameters: ApiV1OrganizationsOrganizationIDUsersUsernamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+        const response = await this.apiV1OrganizationsOrganizationIDUsersUsernamePutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

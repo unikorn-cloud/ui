@@ -151,6 +151,15 @@
 				</button>
 			</div>
 		</ShellSection>
+
+		<div class="flex">
+			<Button
+				icon="mdi:tick"
+				label="Done"
+				variant="variant-filled-primary"
+				href="/identity/serviceaccounts"
+			/>
+		</div>
 	{:else if serviceAccount}
 		<ShellViewHeader metadata={serviceAccount.metadata}>
 			{#snippet extraMetadata()}
