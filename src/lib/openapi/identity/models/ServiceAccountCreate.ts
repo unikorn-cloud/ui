@@ -49,7 +49,7 @@ export interface ServiceAccountCreate {
      * @type {ServiceAccountSpec}
      * @memberof ServiceAccountCreate
      */
-    spec: ServiceAccountSpec;
+    spec?: ServiceAccountSpec;
     /**
      * 
      * @type {ServiceAccountStatus}
@@ -64,7 +64,6 @@ export interface ServiceAccountCreate {
 export function instanceOfServiceAccountCreate(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "metadata" in value;
-    isInstance = isInstance && "spec" in value;
     isInstance = isInstance && "status" in value;
 
     return isInstance;
@@ -81,7 +80,7 @@ export function ServiceAccountCreateFromJSONTyped(json: any, ignoreDiscriminator
     return {
         
         'metadata': OrganizationScopedResourceReadMetadataFromJSON(json['metadata']),
-        'spec': ServiceAccountSpecFromJSON(json['spec']),
+        'spec': !exists(json, 'spec') ? undefined : ServiceAccountSpecFromJSON(json['spec']),
         'status': ServiceAccountStatusFromJSON(json['status']),
     };
 }

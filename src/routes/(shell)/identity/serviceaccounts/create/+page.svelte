@@ -7,6 +7,8 @@
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
+	import MultiSelect from '$lib/forms/MultiSelect.svelte';
+	import Button from '$lib/forms/Button.svelte';
 	import { clipboard } from '@skeletonlabs/skeleton';
 
 	const settings: ShellPageSettings = {
@@ -40,6 +42,7 @@
 	});
 
 	let serviceAccounts: Array<Identity.ServiceAccountRead> | undefined = $state();
+	let groups: Array<Identity.GroupRead> | undefined = $state();
 
 	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
 		if (!at || !organizationInfo) return;
@@ -52,6 +55,11 @@
 			.apiV1OrganizationsOrganizationIDServiceaccountsGet(parameters)
 			.then((v: Array<Identity.ServiceAccountRead>) => (serviceAccounts = v))
 			.catch((e: Error) => Clients.error(e));
+
+		Clients.identity(toastStore, at)
+			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
+			.then((v: Array<Identity.GroupRead>) => (groups = v))
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	run(() => {
@@ -63,6 +71,9 @@
 	let resource: Identity.ServiceAccountWrite = $state({
 		metadata: {
 			name: ''
+		},
+		spec: {
+			groupIDs: []
 		}
 	});
 
@@ -113,13 +124,31 @@
 	{:else}
 		<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
-		<button
-			class="btn variant-filled-primary flex gap-2 items-center"
-			disabled={!valid}
-			onclick={submit}
-			onkeypress={submit}
-		>
-			Create
-		</button>
+		<ShellSection title="Access Control">
+			{#if resource.spec?.groupIDs}
+				<MultiSelect
+					id="sa-groups"
+					label="Groups"
+					hint="Select any groups that the service account should be a member of."
+					bind:value={resource.spec.groupIDs}
+				>
+					{#each groups || [] as group}
+						<option value={group.metadata.id}>
+							{group.metadata.name}
+						</option>
+					{/each}
+				</MultiSelect>
+			{/if}
+		</ShellSection>
+
+		<div class="flex">
+			<Button
+				icon="mdi:tick"
+				label="Create"
+				variant="variant-filled-primary"
+				clicked={submit}
+				disabled={!valid}
+			/>
+		</div>
 	{/if}
 </ShellPage>

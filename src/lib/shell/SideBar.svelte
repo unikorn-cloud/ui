@@ -143,46 +143,49 @@
 </script>
 
 <div class="h-full bg-surface-50-900-token lg:w-[320px] overflow-hidden {props.class || ''}">
-	<!-- Oragnization -->
-	<div class="p-4 flex flex-col gap-4">
-		<div class="font-bold">Organization</div>
+	<div class="flex flex-col gap-4">
+		<!-- Oragnization -->
+		<div class="p-4 flex flex-col gap-4 text-sm">
+			<div>Organization Scope</div>
 
-		<div class="input-group input-group-divider grid-cols-[auto_1fr]">
-			<div class="input-group-shim">
-				<iconify-icon icon="mdi:office-building-outline"></iconify-icon>
+			<div class="input-group input-group-divider grid-cols-[auto_1fr]">
+				<div class="input-group-shim">
+					<iconify-icon icon="mdi:office-building-outline"></iconify-icon>
+				</div>
+				<select bind:value={organizationID}>
+					{#each organizations || [] as organization}
+						<option value={organization.metadata.id}>{organization.metadata.name}</option>
+					{/each}
+				</select>
 			</div>
-			<select bind:value={organizationID}>
-				{#each organizations || [] as organization}
-					<option value={organization.metadata.id}>{organization.metadata.name}</option>
-				{/each}
-			</select>
 		</div>
-	</div>
 
-	<div class="flex flex-col">
-		<div class="font-bold p-4">Resouces</div>
-		<Accordion autocollapse rounded="none">
-			{#each nav as entry}
-				<AccordionItem open={entry.title == category}>
-					{#snippet lead()}
-						<iconify-icon icon={entry.icon} class="text-2xl"></iconify-icon>
-					{/snippet}
-					{#snippet summary()}
-						{entry.title}
-					{/snippet}
-					{#snippet content()}
-						<ul class="list-nav text-sm ml-6">
-							{#each entry.items as item}
-								<a href={item.href} class={itemActive(item.href)}>
-									<li>
-										{item.label}
-									</li>
-								</a>
-							{/each}
-						</ul>
-					{/snippet}
-				</AccordionItem>
-			{/each}
-		</Accordion>
+		<div class="flex flex-col gap-4">
+			<div class="px-4 text-sm">Main Menu</div>
+
+			<Accordion autocollapse rounded="none">
+				{#each nav as entry}
+					<AccordionItem open={entry.title == category}>
+						{#snippet lead()}
+							<iconify-icon icon={entry.icon} class="text-2xl"></iconify-icon>
+						{/snippet}
+						{#snippet summary()}
+							{entry.title}
+						{/snippet}
+						{#snippet content()}
+							<ul class="list-nav text-sm ml-6">
+								{#each entry.items as item}
+									<a href={item.href} class={itemActive(item.href)}>
+										<li>
+											{item.label}
+										</li>
+									</a>
+								{/each}
+							</ul>
+						{/snippet}
+					</AccordionItem>
+				{/each}
+			</Accordion>
+		</div>
 	</div>
 </div>

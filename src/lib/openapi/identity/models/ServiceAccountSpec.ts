@@ -20,11 +20,11 @@ import { exists, mapValues } from '../runtime';
  */
 export interface ServiceAccountSpec {
     /**
-     * When the service token is due to expire.
-     * @type {Date}
+     * A list of group IDs.
+     * @type {Array<string>}
      * @memberof ServiceAccountSpec
      */
-    expiry: Date;
+    groupIDs?: Array<string>;
 }
 
 /**
@@ -32,7 +32,6 @@ export interface ServiceAccountSpec {
  */
 export function instanceOfServiceAccountSpec(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "expiry" in value;
 
     return isInstance;
 }
@@ -47,7 +46,7 @@ export function ServiceAccountSpecFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
-        'expiry': (new Date(json['expiry'])),
+        'groupIDs': !exists(json, 'groupIDs') ? undefined : json['groupIDs'],
     };
 }
 
@@ -60,7 +59,7 @@ export function ServiceAccountSpecToJSON(value?: ServiceAccountSpec | null): any
     }
     return {
         
-        'expiry': (value.expiry.toISOString()),
+        'groupIDs': value.groupIDs,
     };
 }
 

@@ -19,6 +19,12 @@ import {
     ResourceWriteMetadataFromJSONTyped,
     ResourceWriteMetadataToJSON,
 } from './ResourceWriteMetadata';
+import type { ServiceAccountSpec } from './ServiceAccountSpec';
+import {
+    ServiceAccountSpecFromJSON,
+    ServiceAccountSpecFromJSONTyped,
+    ServiceAccountSpecToJSON,
+} from './ServiceAccountSpec';
 
 /**
  * A service account creation request.
@@ -32,6 +38,12 @@ export interface ServiceAccountWrite {
      * @memberof ServiceAccountWrite
      */
     metadata: ResourceWriteMetadata;
+    /**
+     * 
+     * @type {ServiceAccountSpec}
+     * @memberof ServiceAccountWrite
+     */
+    spec?: ServiceAccountSpec;
 }
 
 /**
@@ -55,6 +67,7 @@ export function ServiceAccountWriteFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'metadata': ResourceWriteMetadataFromJSON(json['metadata']),
+        'spec': !exists(json, 'spec') ? undefined : ServiceAccountSpecFromJSON(json['spec']),
     };
 }
 
@@ -68,6 +81,7 @@ export function ServiceAccountWriteToJSON(value?: ServiceAccountWrite | null): a
     return {
         
         'metadata': ResourceWriteMetadataToJSON(value.metadata),
+        'spec': ServiceAccountSpecToJSON(value.spec),
     };
 }
 
