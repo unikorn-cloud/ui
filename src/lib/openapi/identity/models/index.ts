@@ -47,4 +47,5 @@ export * from './SystemOauth2ProviderRead';
 export * from './Tag';
 export * from './Token';
 export * from './TokenRequestOptions';
+export * from './User';
 export * from './Userinfo';

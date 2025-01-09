@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -80,7 +82,9 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	update();
+	run(() => {
+		update();
+	});
 
 	const ticker = setInterval(update, 5000);
 	onDestroy(() => clearInterval(ticker));

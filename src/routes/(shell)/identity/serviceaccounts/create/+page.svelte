@@ -121,6 +121,15 @@
 				</button>
 			</div>
 		</ShellSection>
+
+		<div class="flex">
+			<Button
+				icon="mdi:tick"
+				label="Done"
+				variant="variant-filled-primary"
+				href="/identity/serviceaccounts"
+			/>
+		</div>
 	{:else}
 		<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 

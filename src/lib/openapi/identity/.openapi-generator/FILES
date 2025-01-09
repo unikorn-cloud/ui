@@ -48,6 +48,7 @@ models/SystemOauth2ProviderRead.ts
 models/Tag.ts
 models/Token.ts
 models/TokenRequestOptions.ts
+models/User.ts
 models/Userinfo.ts
 models/index.ts
 runtime.ts

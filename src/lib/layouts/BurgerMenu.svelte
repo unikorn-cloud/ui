@@ -10,7 +10,7 @@
 </script>
 
 <button class="text-xl" use:popup={{ event: 'click', target: name }} aria-label="resource menu">
-	<iconify-icon icon="mdi:menu"></iconify-icon>
+	<iconify-icon icon="mdi:dots-vertical"></iconify-icon>
 </button>
 
 <div class="card w-48 shadow-xl p-2 z-10" data-popup={name}>

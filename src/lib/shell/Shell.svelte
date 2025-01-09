@@ -15,11 +15,11 @@
 		{@render header()}
 	</header>
 
-	<div class="flex h-full">
-		<div>
+	<div class="w-full h-full flex overflow-hidden">
+		<div class="flex-none overflow-x-hidden overflow-y-auto">
 			{@render sidebarLeft()}
 		</div>
-		<div class="flex-auto">
+		<div class="flex-1 overflow-x-hidden flex flex-col">
 			{@render main()}
 		</div>
 	</div>
