@@ -6,12 +6,17 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
+	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
+	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
+	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
 	import Button from '$lib/forms/Button.svelte';
+	/*
 	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 	import * as Status from '$lib/status';
+	*/
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -138,19 +143,20 @@
 	<ShellList>
 		{#if resources && regions && projects}
 			{#each resources as resource}
-				<ShellListItem
-					icon="mdi:server-network-outline"
-					metadata={resource.metadata}
-					href="/infrastructure/computeclusters/view/{resource.metadata.id}"
-					{projects}
-				>
-					{#snippet badges()}
-						<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
-							{RegionUtil.name(regions, resource.spec.regionId)}
-						</Badge>
-					{/snippet}
+				<ShellListItem icon="mdi:server-network-outline">
+					<ShellListItemHeader metadata={resource.metadata} {projects} />
 
-					{#snippet tray()}
+					<ShellListItemBadges metadata={resource.metadata}>
+						{#snippet extra()}
+							<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+								{RegionUtil.name(regions, resource.spec.regionId)}
+							</Badge>
+						{/snippet}
+					</ShellListItemBadges>
+
+					<ShellListItemMetadata metadata={resource.metadata} />
+
+					{#snippet trail()}
 						<BurgerMenu name="menu-{resource.metadata.id}">
 							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
 								Delete
@@ -161,6 +167,7 @@
 						</BurgerMenu>
 					{/snippet}
 
+					<!--
 					{#snippet content()}
 						<Accordion class="pt-4">
 							<AccordionItem padding="py-2" hover="">
@@ -209,6 +216,7 @@
 							</AccordionItem>
 						</Accordion>
 					{/snippet}
+					-->
 				</ShellListItem>
 			{/each}
 		{/if}

@@ -55,7 +55,9 @@
 		{@render extraMetadata?.()}
 	</div>
 
-	<div>
+	<div class="w-full"></div>
+
+	<div class="col-start-[-1]">
 		{@render tray?.()}
 	</div>
 </article>

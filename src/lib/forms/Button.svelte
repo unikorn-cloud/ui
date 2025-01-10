@@ -25,7 +25,7 @@
 
 {#if href}
 	<a {href}>
-		<div class="btn {variant} shadow-md flex gap-2 items-center">
+		<div class="btn {variant} shadow flex gap-2 items-center">
 			{@render content()}
 		</div>
 	</a>

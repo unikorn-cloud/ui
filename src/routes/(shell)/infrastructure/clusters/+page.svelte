@@ -6,6 +6,9 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
+	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
+	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
+	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
@@ -150,19 +153,24 @@
 	<ShellList>
 		{#if projects}
 			{#each resources || [] as resource}
-				<ShellListItem
-					icon="mdi:kubernetes"
-					metadata={resource.metadata}
-					href="/infrastructure/clusters/view/{resource.metadata.id}"
-					{projects}
-				>
-					{#snippet badges()}
-						<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
-							{RegionUtil.name(regions, resource.spec.regionId)}
-						</Badge>
-					{/snippet}
+				<ShellListItem icon="mdi:kubernetes">
+					<ShellListItemHeader
+						metadata={resource.metadata}
+						href="/infrastructure/clusters/view/{resource.metadata.id}"
+						{projects}
+					/>
 
-					{#snippet tray()}
+					<ShellListItemBadges metadata={resource.metadata}>
+						{#snippet extra()}
+							<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+								{RegionUtil.name(regions, resource.spec.regionId)}
+							</Badge>
+						{/snippet}
+					</ShellListItemBadges>
+
+					<ShellListItemMetadata metadata={resource.metadata} />
+
+					{#snippet trail()}
 						<BurgerMenu name="menu-{resource.metadata.id}">
 							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
 								Delete

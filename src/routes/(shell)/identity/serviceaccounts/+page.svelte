@@ -6,6 +6,9 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
+	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
+	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
+	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
@@ -113,18 +116,23 @@
 	<Protected {organizationScopes} bind:allowed>
 		<ShellList>
 			{#each serviceAccounts || [] as resource}
-				<ShellListItem
-					icon="mdi:account-service-outline"
-					metadata={resource.metadata}
-					href="/identity/serviceaccounts/view/{resource.metadata.id}"
-				>
-					{#snippet extraMetadata()}
-						<ShellMetadataItem icon="mdi:key-outline">
-							{resource.status.expiry}
-						</ShellMetadataItem>
-					{/snippet}
+				<ShellListItem icon="mdi:account-service-outline">
+					<ShellListItemHeader
+						metadata={resource.metadata}
+						href="/identity/serviceaccounts/view/{resource.metadata.id}"
+					/>
 
-					{#snippet tray()}
+					<ShellListItemBadges metadata={resource.metadata} />
+
+					<ShellListItemMetadata metadata={resource.metadata}>
+						{#snippet extra()}
+							<ShellMetadataItem icon="mdi:key-outline">
+								{resource.status.expiry}
+							</ShellMetadataItem>
+						{/snippet}
+					</ShellListItemMetadata>
+
+					{#snippet trail()}
 						<BurgerMenu name="menu-{resource.metadata.id}">
 							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
 								Delete
