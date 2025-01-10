@@ -5,6 +5,9 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
+	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
+	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
+	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
 	import Protected from '$lib/rbac/Protected.svelte';
@@ -99,31 +102,39 @@
 		<ShellList>
 			{#if networks && regions && projects}
 				{#each networks as resource}
-					<ShellListItem icon="mdi:network-outline" metadata={resource.metadata} {projects}>
-						{#snippet badges()}
-							<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
-								{RegionUtil.name(regions, resource.spec.regionId)}
-							</Badge>
-						{/snippet}
+					<ShellListItem icon="mdi:network-outline">
+						<ShellListItemHeader metadata={resource.metadata} {projects} />
 
-						{#snippet extraMetadata()}
-							<ShellMetadataItem icon="mdi:network-outline">
-								{resource.spec.prefix}
-							</ShellMetadataItem>
-							<ShellMetadataItem icon="mdi:dns-outline">
-								{resource.spec.dnsNameservers.join(', ')}
-							</ShellMetadataItem>
-							<ShellMetadataItem icon="mdi:nic">
-								{resource.spec.openstack?.vlanId}
-							</ShellMetadataItem>
-							{#if resource.metadata.tags}
-								<ShellMetadataItem icon="mdi:tag-outline">
-									{#each resource.metadata.tags as tag}
-										<div class="badge variant-soft">{tag.name}: {tag.value}</div>
-									{/each}
+						<ShellListItemBadges metadata={resource.metadata}>
+							{#snippet extra()}
+								<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+									{RegionUtil.name(regions, resource.spec.regionId)}
+								</Badge>
+							{/snippet}
+						</ShellListItemBadges>
+
+						<ShellListItemMetadata metadata={resource.metadata}>
+							{#snippet extra()}
+								<ShellMetadataItem icon="mdi:network-outline">
+									{resource.spec.prefix}
 								</ShellMetadataItem>
-							{/if}
-						{/snippet}
+								<ShellMetadataItem icon="mdi:dns-outline">
+									{resource.spec.dnsNameservers.join(', ')}
+								</ShellMetadataItem>
+								{#if resource.spec.openstack?.vlanId}
+									<ShellMetadataItem icon="mdi:nic">
+										{resource.spec.openstack.vlanId}
+									</ShellMetadataItem>
+								{/if}
+								{#if resource.metadata.tags}
+									<ShellMetadataItem icon="mdi:tag-outline">
+										{#each resource.metadata.tags as tag}
+											<div class="badge variant-soft">{tag.name}: {tag.value}</div>
+										{/each}
+									</ShellMetadataItem>
+								{/if}
+							{/snippet}
+						</ShellListItemMetadata>
 					</ShellListItem>
 				{/each}
 			{/if}

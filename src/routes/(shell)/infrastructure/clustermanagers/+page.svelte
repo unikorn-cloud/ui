@@ -5,6 +5,9 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
+	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
+	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
+	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 
@@ -104,8 +107,14 @@
 	<ShellList>
 		{#if resources && projects}
 			{#each resources as resource}
-				<ShellListItem icon="mdi:kubernetes" metadata={resource.metadata} {projects}>
-					{#snippet tray()}
+				<ShellListItem icon="mdi:kubernetes">
+					<ShellListItemHeader metadata={resource.metadata} {projects} />
+
+					<ShellListItemBadges metadata={resource.metadata} />
+
+					<ShellListItemMetadata metadata={resource.metadata} />
+
+					{#snippet trail()}
 						<BurgerMenu name="menu-{resource.metadata.id}">
 							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
 								Delete

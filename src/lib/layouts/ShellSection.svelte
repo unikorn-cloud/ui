@@ -8,11 +8,9 @@
 	let { title, tools, children }: Props = $props();
 </script>
 
-<div
-	class="card bg-surface-50-900-token border border-surface-300-600-token shadow-sm flex flex-col gap-6 p-4"
->
+<div class="flex flex-col gap-6">
 	<div class="flex items-center justify-between">
-		<h4 class="h4">{title}</h4>
+		<h3 class="h3">{title}</h3>
 
 		{@render tools?.()}
 	</div>

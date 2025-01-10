@@ -3,6 +3,9 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
+	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
+	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
+	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Button from '$lib/forms/Button.svelte';
@@ -107,8 +110,17 @@
 	<Protected {organizationScopes} bind:allowed>
 		<ShellList>
 			{#each resources || [] as resource}
-				<ShellListItem icon="mdi:key-outline" metadata={resource.metadata}>
-					{#snippet tray()}
+				<ShellListItem icon="mdi:key-outline">
+					<ShellListItemHeader
+						metadata={resource.metadata}
+						href="/identity/oauth2providers/view/{resource.metadata.id}"
+					/>
+
+					<ShellListItemBadges metadata={resource.metadata} />
+
+					<ShellListItemMetadata metadata={resource.metadata} />
+
+					{#snippet trail()}
 						<BurgerMenu name="menu-{resource.metadata.id}">
 							<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
 								Delete

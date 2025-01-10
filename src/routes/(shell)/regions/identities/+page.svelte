@@ -5,6 +5,9 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
+	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
+	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
+	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
@@ -128,29 +131,35 @@
 		<ShellList>
 			{#if projects && regions && identities}
 				{#each identities as resource}
-					<ShellListItem icon="mdi:user-outline" metadata={resource.metadata} {projects}>
-						{#snippet badges()}
-							<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
-								{RegionUtil.name(regions, resource.spec.regionId)}
-							</Badge>
-						{/snippet}
+					<ShellListItem icon="mdi:user-outline">
+						<ShellListItemHeader metadata={resource.metadata} {projects} />
 
-						{#snippet tray()}
+						<ShellListItemBadges metadata={resource.metadata}>
+							{#snippet extra()}
+								<Badge icon={RegionUtil.icon(regions, resource.spec.regionId)}>
+									{RegionUtil.name(regions, resource.spec.regionId)}
+								</Badge>
+							{/snippet}
+						</ShellListItemBadges>
+
+						<ShellListItemMetadata metadata={resource.metadata}>
+							{#snippet extra()}
+								{#if resource.metadata.tags}
+									<ShellMetadataItem icon="mdi:tag-outline">
+										{#each resource.metadata.tags as tag}
+											<div class="badge variant-soft">{tag.name}: {tag.value}</div>
+										{/each}
+									</ShellMetadataItem>
+								{/if}
+							{/snippet}
+						</ShellListItemMetadata>
+
+						{#snippet trail()}
 							<BurgerMenu name="menu-{resource.metadata.id}">
 								<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
 									Delete
 								</BurgerMenuItem>
 							</BurgerMenu>
-						{/snippet}
-
-						{#snippet extraMetadata()}
-							{#if resource.metadata.tags}
-								<ShellMetadataItem icon="mdi:tag-outline">
-									{#each resource.metadata.tags as tag}
-										<div class="badge variant-soft">{tag.name}: {tag.value}</div>
-									{/each}
-								</ShellMetadataItem>
-							{/if}
 						{/snippet}
 					</ShellListItem>
 				{/each}
