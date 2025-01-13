@@ -9,6 +9,7 @@
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import TextInput from '$lib/forms/TextInput.svelte';
 	import Clipboard from '$lib/forms/Clipboard.svelte';
+	import Button from '$lib/forms/Button.svelte';
 	import * as Validation from '$lib/validation';
 
 	const settings: ShellPageSettings = {
@@ -130,12 +131,13 @@
 		/>
 	</ShellSection>
 
-	<button
-		class="btn variant-filled-primary flex gap-2 items-center"
-		disabled={!valid}
-		onclick={submit}
-		onkeypress={submit}
-	>
-		Create
-	</button>
+	<div class="flex">
+		<Button
+			icon="mdi:tick"
+			label="Create"
+			variant="variant-filled-primary"
+			clicked={submit}
+			disabled={!valid}
+		/>
+	</div>
 </ShellPage>
