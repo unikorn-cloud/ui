@@ -30,7 +30,7 @@
 
 {#snippet header()}
 	<header class="flex flex-col gap-1">
-		<div class="h5 font-bold">
+		<div class="h5 font-bold overflow-hidden text-ellipsis whitespace-nowrap">
 			{#if title}
 				{title}
 			{:else if metadata}
