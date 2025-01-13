@@ -7,6 +7,8 @@
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import Select from '$lib/forms/Select.svelte';
+	import Stepper from '$lib/layouts/Stepper.svelte';
+	import KubernetesWorkloadPool from '$lib/KubernetesWorkloadPool.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -17,7 +19,7 @@
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	import { Stepper, Step } from '@skeletonlabs/skeleton';
+	//	import { Stepper, Step } from '@skeletonlabs/skeleton';
 
 	import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
 
@@ -255,14 +257,6 @@
 
 	let poolValid: Array<boolean> = $state([false]);
 
-	/* Project must be set */
-	let step1Valid = $derived(projectID);
-
-	let metadataValid = $state(false);
-
-	/* Cluster name must be valid, and it must be unique */
-	let step2Valid = $derived(metadataValid);
-
 	function addPool(): void {
 		let pool: Kubernetes.KubernetesClusterWorkloadPool = {
 			name: '',
@@ -294,16 +288,6 @@
 		poolValid = poolValid;
 	}
 
-	import KubernetesWorkloadPool from '$lib/KubernetesWorkloadPool.svelte';
-
-	/* There must be at least one workload pool, all of them must be valid and every pool must have a unique name */
-	let step3Valid = $derived(
-		resource.spec.workloadPools.length > 0 &&
-			poolValid.every((x) => x) &&
-			[...new Set(resource.spec.workloadPools.map((x) => x.name))].length ==
-				resource.spec.workloadPools.length
-	);
-
 	function complete() {
 		if (!projectID || !resource) return;
 
@@ -318,124 +302,151 @@
 			.then(() => window.location.assign('/infrastructure/clusters'))
 			.catch((e: Error) => Clients.error(e));
 	}
+
+	let step: number = $state(0);
+
+	// Step 1 requires a project ID and a region to have been selected.
+	let step1valid: boolean = $derived.by(() => {
+		if (step != 0) return true;
+
+		if (!projectID || !regionID) return false;
+
+		return true;
+	});
+
+	// Step 2 requires the metadata to be valid and a version to have been selected.
+	let metadataValid = $state(false);
+
+	let step2valid: boolean = $derived.by(() => {
+		if (step != 1) return true;
+
+		if (!metadataValid) return false;
+
+		return true;
+	});
+
+	// Step 3 requires a workload pool to be defined, every workload pool to be valid
+	// and all workload pool names to be unique.
+	let step3valid: boolean = $derived.by(() => {
+		if (step != 2) return true;
+
+		if (resource.spec.workloadPools.length == 0) return false;
+		if (!poolValid.every((x) => x)) return false;
+
+		const names = resource.spec.workloadPools.map((x) => x.name);
+		const uniqueNames = new Set(names);
+
+		if (names.length != uniqueNames.size) return false;
+
+		return true;
+	});
+
+	// Roll up the overall validity for the stepper to allow progress.
+	let valid = $derived(step1valid && step2valid && step3valid);
 </script>
 
 <ShellPage {settings}>
-	<Stepper on:complete={complete} buttonNext="variant-filled-primary">
-		<Step locked={!step1Valid}>
-			{#snippet header()}
-				Let's Get Started!
-			{/snippet}
+	<Stepper steps={3} bind:step {valid} {complete}>
+		{#snippet content(index: number)}
+			{#if index === 0}
+				<h2 class="h2">Basic Configuration</h2>
 
-			<ShellSection title="Environment Configuration">
-				<Select
-					id="project-name"
-					label="Choose a project."
-					hint="The cluster will be available to users linked to the project's groups."
-					bind:value={projectID}
-				>
-					{#each projects || [] as project}
-						<option value={project.metadata.id}>{project.metadata.name}</option>
-					{/each}
-				</Select>
-
-				<Select
-					id="region"
-					label="Choose a region."
-					hint="Defines the geographical region where the cluster will run."
-					bind:value={regionID}
-				>
-					{#each regions || [] as region}
-						<option value={region.metadata.id}>{region.metadata.name}</option>
-					{/each}
-				</Select>
-
-				{#if clustermanagers}
+				<ShellSection title="Environment">
 					<Select
-						id="clustermanager"
-						label="Choose the cluster manager."
-						hint="Allows the selection of the cluster manager, this allows horizonal scaling and isolation of clusters from one another."
-						bind:value={resource.spec.clusterManagerId}
+						id="project-name"
+						label="Choose a project."
+						hint="The cluster will be available to users linked to the project's groups."
+						bind:value={projectID}
 					>
-						{#each clustermanagers || [] as clustermanager}
-							<option value={clustermanager.metadata.id}>{clustermanager.metadata.name}</option>
+						{#each projects || [] as project}
+							<option value={project.metadata.id}>{project.metadata.name}</option>
 						{/each}
 					</Select>
-				{/if}
-			</ShellSection>
-		</Step>
 
-		<Step locked={!step2Valid}>
-			{#snippet header()}
-				Basic Cluster Setup
-			{/snippet}
+					<Select
+						id="region"
+						label="Choose a region."
+						hint="Defines the geographical region where the cluster will run."
+						bind:value={regionID}
+					>
+						{#each regions || [] as region}
+							<option value={region.metadata.id}>{region.metadata.name}</option>
+						{/each}
+					</Select>
 
-			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
+					{#if clustermanagers}
+						<Select
+							id="clustermanager"
+							label="Choose the cluster manager."
+							hint="Allows the selection of the cluster manager, this allows horizonal scaling and isolation of clusters from one another."
+							bind:value={resource.spec.clusterManagerId}
+						>
+							{#each clustermanagers || [] as clustermanager}
+								<option value={clustermanager.metadata.id}>{clustermanager.metadata.name}</option>
+							{/each}
+						</Select>
+					{/if}
+				</ShellSection>
+			{:else if index === 1}
+				<h2 class="h2">Platform Configuration</h2>
 
-			<ShellSection title="Platform Configuration">
-				<Select
-					id="kubernetes-version"
-					label="Choose a Kubernetes version."
-					hint="Kubernetes provides guarantees backward
+				<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
+
+				<ShellSection title="Kubernetes Configuration">
+					<Select
+						id="kubernetes-version"
+						label="Choose a Kubernetes version."
+						hint="Kubernetes provides guarantees backward
                                                 compatibility so choosing the newest is usually the right choice as that provides a rich
                                                 feature set and enhanced security. Certain applications &mdash; e.g. Kubeflow &mdash;
                                                 may require a specific version."
-					bind:value={resource.spec.version}
-				>
-					{#each versions || [] as version}
-						<option value={version}>{version}</option>
-					{/each}
-				</Select>
-			</ShellSection>
-		</Step>
-		<Step locked={!step3Valid}>
-			{#snippet header()}
-				Worker Setup
-			{/snippet}
-
-			<p>
-				Workload pools provide compute resouce for your cluster. You may have as many as required
-				for your workload. Each pool has a set of CPU, GPU and memory that can be selected from a
-				defined set of flavours. Workload pools support automatic scaling, thus reducing overall
-				operational cost when not in use.
-			</p>
-
-			<!-- eslint-disable @typescript-eslint/no-unused-vars -->
-			{#each resource.spec.workloadPools as pool, index}
-				<ShellSection title="Workload Pool {index + 1}">
-					{#snippet tools()}
-						<button
-							class="text-2xl"
-							onclick={() => removePool(index)}
-							onkeypress={() => removePool(index)}
-							aria-label="delete workload pool"
-						>
-							<iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
-						</button>
-					{/snippet}
-
-					{#if flavors}
-						<KubernetesWorkloadPool
-							{index}
-							{flavors}
-							bind:pool={resource.spec.workloadPools[index]}
-							bind:valid={poolValid[index]}
-						/>
-					{/if}
+						bind:value={resource.spec.version}
+					>
+						{#each versions || [] as version}
+							<option value={version}>{version}</option>
+						{/each}
+					</Select>
 				</ShellSection>
-			{/each}
+			{:else if index === 2}
+				<h2 class="h2">Workload Pool Configuration</h2>
 
-			<button class="btn flex gap-2 items-center w-full" onclick={addPool} onkeypress={addPool}>
-				<iconify-icon icon="mdi:add"></iconify-icon>
-				<span>Add New Pool</span>
-			</button>
-		</Step>
-		<Step>
-			{#snippet header()}
-				Confirmation
-			{/snippet}
+				<p>
+					Workload pools provide compute resouce for your cluster. You may have as many as required
+					for your workload. Each pool has a set of CPU, GPU and memory that can be selected from a
+					defined set of flavours. Workload pools support automatic scaling, thus reducing overall
+					operational cost when not in use.
+				</p>
 
-			<p>Insert a summary of what's about to be created...</p>
-		</Step>
+				<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+				{#each resource.spec.workloadPools as pool, index}
+					<ShellSection title="Workload Pool {index + 1}">
+						{#snippet tools()}
+							<button
+								class="text-2xl"
+								onclick={() => removePool(index)}
+								onkeypress={() => removePool(index)}
+								aria-label="delete workload pool"
+							>
+								<iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
+							</button>
+						{/snippet}
+
+						{#if flavors}
+							<KubernetesWorkloadPool
+								{index}
+								{flavors}
+								bind:pool={resource.spec.workloadPools[index]}
+								bind:valid={poolValid[index]}
+							/>
+						{/if}
+					</ShellSection>
+				{/each}
+
+				<button class="btn flex gap-2 items-center w-full" onclick={addPool} onkeypress={addPool}>
+					<iconify-icon icon="mdi:add"></iconify-icon>
+					<span>Add New Pool</span>
+				</button>
+			{/if}
+		{/snippet}
 	</Stepper>
 </ShellPage>

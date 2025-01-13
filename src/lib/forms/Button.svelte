@@ -31,7 +31,7 @@
 	</a>
 {:else if clicked}
 	<button
-		class="btn {variant} flex gap-2 items-center"
+		class="btn {variant} flex gap-2 items-center shadow"
 		{disabled}
 		onclick={clicked}
 		onkeypress={clicked}
