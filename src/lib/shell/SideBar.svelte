@@ -165,7 +165,7 @@
 		</div>
 
 		<div class="flex flex-col gap-4">
-			<div class="px-4 text-sm">Main Menu</div>
+			<div class="px-4 font-bold text-sm">Main Menu</div>
 
 			<Accordion autocollapse rounded="none">
 				{#each nav as entry}
