@@ -147,11 +147,14 @@
 	<div class="flex flex-col gap-4">
 		<!-- Oragnization -->
 		<div class="p-4 flex flex-col gap-4 text-sm">
-			<div>Organization Scope</div>
+			<div class="font-bold">Organization</div>
 
 			<div class="input-group input-group-divider grid-cols-[auto_1fr]">
 				<div class="input-group-shim">
-					<iconify-icon icon="mdi:office-building-outline"></iconify-icon>
+					<iconify-icon
+						icon="mdi:office-building-outline"
+						class="text-lg text-primary-600-300-token"
+					></iconify-icon>
 				</div>
 				<select bind:value={organizationID}>
 					{#each organizations || [] as organization}
@@ -168,7 +171,10 @@
 				{#each nav as entry}
 					<AccordionItem open={entry.title == category}>
 						{#snippet lead()}
-							<iconify-icon icon={entry.icon} class="text-2xl"></iconify-icon>
+							<iconify-icon
+								icon={entry.icon}
+								class="text-2xl text-primary-600-300-token align-middle"
+							></iconify-icon>
 						{/snippet}
 						{#snippet summary()}
 							{entry.title}
