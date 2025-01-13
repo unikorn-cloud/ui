@@ -14,15 +14,15 @@
 	let { metadata, extra }: Props = $props();
 </script>
 
-<div class="col-start-4 flex flex-col gap-1 text-sm">
-	<ShellMetadataItem icon="mdi:clock-time-five-outline">
-		{Formatters.ageFormatter(metadata.creationTime)}
-	</ShellMetadataItem>
+<div class="grid grid-cols-[repeat(3,max-content)] gap-2 text-sm items-center">
+	<ShellMetadataItem
+		icon="mdi:clock-time-five-outline"
+		label="Age"
+		value={Formatters.ageFormatter(metadata.creationTime)}
+	/>
 
 	{#if metadata.createdBy}
-		<ShellMetadataItem icon="mdi:user-outline">
-			{metadata.createdBy}
-		</ShellMetadataItem>
+		<ShellMetadataItem icon="mdi:user-outline" label="Owner" value={metadata.createdBy} />
 	{/if}
 
 	{@render extra?.()}

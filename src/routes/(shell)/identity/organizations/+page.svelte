@@ -9,6 +9,7 @@
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import TextInput from '$lib/forms/TextInput.svelte';
 	import Select from '$lib/forms/Select.svelte';
+	import Button from '$lib/forms/Button.svelte';
 	import Protected from '$lib/rbac/Protected.svelte';
 	import * as Validation from '$lib/validation';
 
@@ -216,14 +217,15 @@
 				</ShellSection>
 			{/if}
 
-			<button
-				class="btn variant-filled-primary flex gap-2 items-center self-end"
-				disabled={!valid}
-				onclick={submit}
-				onkeypress={submit}
-			>
-				Update
-			</button>
+			<div class="flex">
+				<Button
+					icon="mdi:tick"
+					label="Update"
+					variant="variant-filled-primary"
+					clicked={submit}
+					disabled={!valid}
+				/>
+			</div>
 		{/if}
 	</Protected>
 </ShellPage>

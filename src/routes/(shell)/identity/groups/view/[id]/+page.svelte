@@ -10,6 +10,7 @@
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import MultiSelect from '$lib/forms/MultiSelect.svelte';
 	import InputChips from '$lib/forms/InputChips.svelte';
+	import Button from '$lib/forms/Button.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -165,13 +166,14 @@
 			{/if}
 		</ShellSection>
 
-		<button
-			class="btn variant-filled-primary flex gap-2 items-center"
-			disabled={!valid}
-			onclick={submit}
-			onkeypress={submit}
-		>
-			Update
-		</button>
+		<div class="flex">
+			<Button
+				icon="mdi:tick"
+				label="Update"
+				variant="variant-filled-primary"
+				clicked={submit}
+				disabled={!valid}
+			/>
+		</div>
 	{/if}
 </ShellPage>

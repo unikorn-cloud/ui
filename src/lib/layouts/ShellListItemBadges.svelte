@@ -12,7 +12,7 @@
 	let { metadata, extra }: Props = $props();
 </script>
 
-<div class="col-start-3 flex gap-2 items-center">
+<div class="flex gap-2 items-center">
 	<Badge icon={Status.icon(metadata)} iconcolor={Status.color(metadata)}>
 		{metadata.provisioningStatus}
 	</Badge>
