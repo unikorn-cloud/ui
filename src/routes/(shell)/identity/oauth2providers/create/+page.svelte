@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { run } from 'svelte/legacy';
+	import { browser } from '$app/environment';
 
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
@@ -7,6 +8,7 @@
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import TextInput from '$lib/forms/TextInput.svelte';
+	import Clipboard from '$lib/forms/Clipboard.svelte';
 	import * as Validation from '$lib/validation';
 
 	const settings: ShellPageSettings = {
@@ -90,9 +92,6 @@
 	var callback: string = browser
 		? window.location.protocol + '://' + window.location.hostname + '/oauth2/callback'
 		: '';
-
-	import { browser } from '$app/environment';
-	import { clipboard } from '@skeletonlabs/skeleton';
 </script>
 
 <ShellPage {settings}>
@@ -103,21 +102,7 @@
 			>Oauth2 callback address. This is used to configure your OIDC application with before
 			continuing with the following fields.</label
 		>
-		<div class="input-group input-group-divider grid-cols-[1fr_auto]">
-			<input
-				class="input overflow-hidden text-ellipsis whitespace-nowrap"
-				data-clipboard="callback"
-				value={callback}
-				disabled
-			/>
-			<button
-				class="variant-filled-primary"
-				use:clipboard={{ input: 'callback' }}
-				aria-label="copy to clipboard"
-			>
-				<iconify-icon icon="mdi:clipboard-outline"></iconify-icon>
-			</button>
-		</div>
+		<Clipboard id="callback" value={callback} />
 
 		<TextInput
 			id="issuer"

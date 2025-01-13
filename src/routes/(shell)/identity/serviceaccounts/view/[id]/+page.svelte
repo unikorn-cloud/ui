@@ -10,7 +10,7 @@
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import MultiSelect from '$lib/forms/MultiSelect.svelte';
 	import Button from '$lib/forms/Button.svelte';
-	import { clipboard } from '@skeletonlabs/skeleton';
+	import Clipboard from '$lib/forms/Clipboard.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -135,21 +135,7 @@
 			<p>
 				<em>This token will only be shown once, so make a copy and keep it secure.</em>
 			</p>
-			<div class="flex gap-4 items-center">
-				<div
-					data-clipboard="pat"
-					class="p-2 overflow-hidden textarea text-ellipsis whitespace-nowrap"
-				>
-					{newServiceAccount.status.accessToken}
-				</div>
-				<button
-					use:clipboard={{ element: 'pat' }}
-					class="btn variant-filled-primary flex items-center"
-				>
-					<iconify-icon icon="mdi:clipboard-outline"></iconify-icon>
-					<span>Copy</span>
-				</button>
-			</div>
+			<Clipboard id="access-token" value={newServiceAccount.status.accessToken || ''} />
 		</ShellSection>
 
 		<div class="flex">
