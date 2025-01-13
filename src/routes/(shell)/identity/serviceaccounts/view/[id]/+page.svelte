@@ -125,9 +125,11 @@
 	{#if newServiceAccount}
 		<ShellViewHeader metadata={newServiceAccount.metadata}>
 			{#snippet extraMetadata()}
-				<ShellMetadataItem icon="mdi:key-outline">
-					{newServiceAccount?.status.expiry}
-				</ShellMetadataItem>
+				<ShellMetadataItem
+					icon="mdi:key-outline"
+					label="Expiry"
+					value={newServiceAccount?.status.expiry.toUTCString()}
+				/>
 			{/snippet}
 		</ShellViewHeader>
 
@@ -149,9 +151,11 @@
 	{:else if serviceAccount}
 		<ShellViewHeader metadata={serviceAccount.metadata}>
 			{#snippet extraMetadata()}
-				<ShellMetadataItem icon="mdi:key-outline">
-					{serviceAccount?.status.expiry}
-				</ShellMetadataItem>
+				<ShellMetadataItem
+					icon="mdi:key-outline"
+					label="Expiry"
+					value={serviceAccount?.status.expiry.toUTCString()}
+				/>
 			{/snippet}
 		</ShellViewHeader>
 
@@ -175,13 +179,8 @@
 			{/if}
 		</ShellSection>
 
-		<div class="flex gap-4">
-			<Button
-				icon="mdi:refresh"
-				label="Refresh Token"
-				variant="variant-filled-primary"
-				clicked={rotate}
-			/>
+		<div class="flex gap-4 justify-between">
+			<Button icon="mdi:refresh" label="Refresh Access Token" clicked={rotate} />
 
 			<Button icon="mdi:tick" label="Update" variant="variant-filled-primary" clicked={submit} />
 		</div>

@@ -3,6 +3,7 @@
 	import * as Formatters from '$lib/formatters';
 	import * as Status from '$lib/status';
 	import Badge from '$lib/layouts/Badge.svelte';
+	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 
 	import type { Snippet } from 'svelte';
 
@@ -24,23 +25,23 @@
 		{@render badges?.()}
 	</div>
 
-	<h2 class="h2">{metadata.name}</h2>
+	<div class="flex flex-col gap-1">
+		<h2 class="h2">{metadata.name}</h2>
 
-	{#if metadata.description}
-		<div class="text-sm italic">{metadata.description}</div>
-	{/if}
+		{#if metadata.description}
+			<div class="text-sm italic">{metadata.description}</div>
+		{/if}
+	</div>
 
-	<div class="flex flex-col gap-2 text-sm">
-		<div class="flex gap-2 items-center text-sm">
-			<iconify-icon icon="mdi:clock-time-five-outline"></iconify-icon>
-			{Formatters.ageFormatter(metadata.creationTime)}
-		</div>
+	<div class="grid grid-cols-[repeat(3,max-content)] gap-2 text-sm">
+		<ShellMetadataItem
+			icon="mdi:clock-time-five-outline"
+			label="Age"
+			value={Formatters.ageFormatter(metadata.creationTime)}
+		/>
 
 		{#if metadata.createdBy}
-			<div class="flex gap-2 items-center">
-				<iconify-icon icon="mdi:user-outline"></iconify-icon>
-				{metadata.createdBy}
-			</div>
+			<ShellMetadataItem icon="mdi:user-outline" label="Owner" value={metadata.createdBy} />
 		{/if}
 
 		{@render extraMetadata?.()}

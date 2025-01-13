@@ -126,9 +126,11 @@
 
 					<ShellListItemMetadata metadata={resource.metadata}>
 						{#snippet extra()}
-							<ShellMetadataItem icon="mdi:key-outline">
-								{resource.status.expiry}
-							</ShellMetadataItem>
+							<ShellMetadataItem
+								icon="mdi:key-outline"
+								label="Expiry"
+								value={resource.status.expiry.toUTCString()}
+							/>
 						{/snippet}
 					</ShellListItemMetadata>
 

@@ -115,19 +115,25 @@
 
 						<ShellListItemMetadata metadata={resource.metadata}>
 							{#snippet extra()}
-								<ShellMetadataItem icon="mdi:network-outline">
-									{resource.spec.prefix}
-								</ShellMetadataItem>
-								<ShellMetadataItem icon="mdi:dns-outline">
-									{resource.spec.dnsNameservers.join(', ')}
-								</ShellMetadataItem>
+								<ShellMetadataItem
+									icon="mdi:network-outline"
+									label="Prefix"
+									value={resource.spec.prefix}
+								/>
+								<ShellMetadataItem
+									icon="mdi:dns-outline"
+									label="DNS Nameservers"
+									value={resource.spec.dnsNameservers.join(', ')}
+								/>
 								{#if resource.spec.openstack?.vlanId}
-									<ShellMetadataItem icon="mdi:nic">
-										{resource.spec.openstack.vlanId}
-									</ShellMetadataItem>
+									<ShellMetadataItem
+										icon="mdi:nic"
+										label="VLAN ID"
+										value={resource.spec.openstack.vlanId.toString()}
+									/>
 								{/if}
 								{#if resource.metadata.tags}
-									<ShellMetadataItem icon="mdi:tag-outline">
+									<ShellMetadataItem icon="mdi:tag-outline" label="Tags">
 										{#each resource.metadata.tags as tag}
 											<div class="badge variant-soft">{tag.name}: {tag.value}</div>
 										{/each}

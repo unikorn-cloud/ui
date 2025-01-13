@@ -1,14 +1,24 @@
 <script lang="ts">
 	interface Props {
 		icon: string;
+		label: string;
+		value?: string;
 		children?: import('svelte').Snippet;
 	}
 
-	let { icon, children }: Props = $props();
+	let { icon, label, value, children }: Props = $props();
 </script>
 
-<div class="flex gap-2 items-center">
-	<iconify-icon class="text-lg" {icon}></iconify-icon>
+<iconify-icon class="text-lg" {icon}></iconify-icon>
 
-	{@render children?.()}
+<div class="font-bold">
+	{label}
 </div>
+
+{#if value}
+	<div>
+		{value}
+	</div>
+{:else if children}
+	{@render children()}
+{/if}
