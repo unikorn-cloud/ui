@@ -47,10 +47,7 @@
 					machine: {
 						replicas: 1,
 						flavorId: '',
-						image: {
-							distro: Compute.OsDistro.Ubuntu,
-							version: '24.04'
-						},
+						image: null,
 						publicIPAllocation: {
 							enabled: true
 						},
@@ -224,12 +221,9 @@
 			machine: {
 				replicas: 3,
 				flavorId: '',
-				image: {
-					distro: Compute.OsDistro.Ubuntu,
-					version: '24.04'
-				},
+				image: null,
 				publicIPAllocation: {
-					enabled: false
+					enabled: true
 				}
 			}
 		};

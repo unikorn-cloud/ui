@@ -13,18 +13,18 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ComputeImage } from './ComputeImage';
+import {
+    ComputeImageFromJSON,
+    ComputeImageFromJSONTyped,
+    ComputeImageToJSON,
+} from './ComputeImage';
 import type { FirewallRule } from './FirewallRule';
 import {
     FirewallRuleFromJSON,
     FirewallRuleFromJSONTyped,
     FirewallRuleToJSON,
 } from './FirewallRule';
-import type { ImageSelector } from './ImageSelector';
-import {
-    ImageSelectorFromJSON,
-    ImageSelectorFromJSONTyped,
-    ImageSelectorToJSON,
-} from './ImageSelector';
 import type { PublicIPAllocation } from './PublicIPAllocation';
 import {
     PublicIPAllocationFromJSON,
@@ -76,10 +76,10 @@ export interface MachinePool {
     publicIPAllocation?: PublicIPAllocation;
     /**
      * 
-     * @type {ImageSelector}
+     * @type {ComputeImage}
      * @memberof MachinePool
      */
-    image: ImageSelector;
+    image: ComputeImage | null;
     /**
      * UserData contains base64-encoded configuration information or scripts to use upon launch.
      * @type {string}
@@ -115,7 +115,7 @@ export function MachinePoolFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'disk': !exists(json, 'disk') ? undefined : VolumeFromJSON(json['disk']),
         'firewall': !exists(json, 'firewall') ? undefined : ((json['firewall'] as Array<any>).map(FirewallRuleFromJSON)),
         'publicIPAllocation': !exists(json, 'publicIPAllocation') ? undefined : PublicIPAllocationFromJSON(json['publicIPAllocation']),
-        'image': ImageSelectorFromJSON(json['image']),
+        'image': ComputeImageFromJSON(json['image']),
         'userData': !exists(json, 'userData') ? undefined : json['userData'],
     };
 }
@@ -134,7 +134,7 @@ export function MachinePoolToJSON(value?: MachinePool | null): any {
         'disk': VolumeToJSON(value.disk),
         'firewall': value.firewall === undefined ? undefined : ((value.firewall as Array<any>).map(FirewallRuleToJSON)),
         'publicIPAllocation': PublicIPAllocationToJSON(value.publicIPAllocation),
-        'image': ImageSelectorToJSON(value.image),
+        'image': ComputeImageToJSON(value.image),
         'userData': value.userData,
     };
 }

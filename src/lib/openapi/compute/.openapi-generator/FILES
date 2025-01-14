@@ -9,6 +9,7 @@ models/ComputeClusterStatus.ts
 models/ComputeClusterWorkloadPool.ts
 models/ComputeClusterWorkloadPoolStatus.ts
 models/ComputeClusterWrite.ts
+models/ComputeImage.ts
 models/FirewallRule.ts
 models/Flavor.ts
 models/FlavorSpec.ts
