@@ -14,17 +14,18 @@
 
 	let { title, metadata, projects, href }: Props = $props();
 
-	let scope = $derived.by(() => {
+	let project = $derived.by(() => {
 		if (!metadata || !projects || !('projectId' in metadata)) return;
 
 		const projectMetadata = metadata as Kubernetes.ProjectScopedResourceReadMetadata;
 
-		const project = projects.find(
+		const temp = projects.find(
 			(x: Identity.ProjectRead) => x.metadata.id == projectMetadata.projectId
 		);
-		if (!project) return projectMetadata.projectId;
 
-		return project.metadata.name;
+		if (!temp) return projectMetadata.projectId;
+
+		return temp.metadata.name;
 	});
 </script>
 
@@ -34,13 +35,16 @@
 			{#if title}
 				{title}
 			{:else if metadata}
-				{#if scope}
-					{scope}/{metadata.name}
-				{:else}
-					{metadata.name}
-				{/if}
+				{metadata.name}
 			{/if}
 		</div>
+
+		{#if project}
+			<div class="flex gap-2 items-center tex-sm overflow-hidden text-ellipsis whitespace-nowrap">
+				<iconify-icon icon="mdi:account-group-outline"></iconify-icon>
+				{project}
+			</div>
+		{/if}
 
 		{#if metadata?.description}
 			<div class="text-sm italic text-surface-600-300-token">

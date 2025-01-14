@@ -39,11 +39,11 @@ export interface ImageSelector {
      */
     variant?: string;
     /**
-     * The operating system version to use, if not defined it will use the latest.
+     * The operating system version to use.
      * @type {string}
      * @memberof ImageSelector
      */
-    version?: string;
+    version: string;
 }
 
 /**
@@ -52,6 +52,7 @@ export interface ImageSelector {
 export function instanceOfImageSelector(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "distro" in value;
+    isInstance = isInstance && "version" in value;
 
     return isInstance;
 }
@@ -68,7 +69,7 @@ export function ImageSelectorFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'distro': OsDistroFromJSON(json['distro']),
         'variant': !exists(json, 'variant') ? undefined : json['variant'],
-        'version': !exists(json, 'version') ? undefined : json['version'],
+        'version': json['version'],
     };
 }
 

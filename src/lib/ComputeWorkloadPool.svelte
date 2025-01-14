@@ -32,9 +32,12 @@
 
 	let { index, pool = $bindable(), valid = $bindable(), flavors, images }: Props = $props();
 
-	let publicIP: boolean = $state(false);
+	// Handle public IP addition or deletion for the pool.
+	let publicIP: boolean = $derived(
+		(pool.machine.publicIPAllocation && pool.machine.publicIPAllocation.enabled) || false
+	);
 
-	function updatePublicIP(publicIP: boolean) {
+	$effect.pre(() => {
 		if (publicIP) {
 			pool.machine.publicIPAllocation = {
 				enabled: true
@@ -42,81 +45,88 @@
 		} else {
 			delete pool.machine.publicIPAllocation;
 		}
-	}
-
-	run(() => {
-		updatePublicIP(publicIP);
 	});
 
-	let osVersions: Record<string, Array<string>> = $state({});
+	// Select a flavor for the workload pool if one is not already set or it no longer exists.
+	$effect.pre(() => {
+		if (flavors.find((x) => x.metadata.id == pool.machine.flavorId)) return;
 
-	function updateFlavors(flavors: Array<Compute.Flavor>): void {
-		if (!flavors || flavors.find((x) => x.metadata.id == pool.machine.flavorId)) return;
 		pool.machine.flavorId = flavors[0].metadata.id;
-	}
-
-	run(() => {
-		updateFlavors(flavors);
 	});
 
-	function osKey(distro: Compute.OsDistro, variant: string | undefined): string {
-		let key = distro;
+	// If a flavorID is selected, by the workload pool, extract that flavor.
+	let flavor = $derived(flavors.find((x) => x.metadata.id == pool.machine.flavorId));
 
-		if (variant) {
-			key = key + ':' + variant;
-		}
+	function osKey(distro: Compute.OsDistro, variant: string | undefined, version: string): string {
+		if (!variant) return distro + ':' + version;
 
-		return key;
+		return distro + ':' + variant + ':' + version;
 	}
 
 	function imageKey(image: Compute.Image): string {
-		return osKey(image.spec.os.distro, image.spec.os.variant);
+		return osKey(image.spec.os.distro, image.spec.os.variant, image.spec.os.version);
 	}
 
-	function updateImages(images: Array<Compute.Image>): void {
+	function selectorKey(selector: Compute.ImageSelector): string {
+		return osKey(selector.distro, selector.variant, selector.version);
+	}
+
+	// initialImage sets the image as either that defined by the pool
+	// or an aribtrary one from the image list.
+	function initialImage(): string {
+		if (pool.machine.image?.selector) {
+			return selectorKey(pool.machine.image.selector);
+		}
+
+		return selectorKey(images[0].spec.os);
+	}
+
+	let image = $state(initialImage());
+
+	// Create a mapping of operating system distribution (optionally variant) and version.
+	let osVersions: Record<string, Compute.Image> = $derived.by(() => {
+		let result: Record<string, Compute.Image> = {};
+
 		for (const image of images) {
 			const key = imageKey(image);
 
-			if (!osVersions[key]) {
-				osVersions[key] = [];
-			}
+			if (key in result) continue;
 
-			if (!osVersions[key].find((x) => x == image.spec.os.version)) {
-				osVersions[key].push(image.spec.os.version);
-			}
+			result[key] = image;
 		}
 
-		const key = osKey(pool.machine.image.distro, pool.machine.image.variant);
+		// If the current image is invalid, select and a new arbirary one.
+		if (!(image in result)) {
+			image = Object.keys(result)[0];
+		}
 
-		if (
-			!images ||
-			(osVersions[key] && osVersions[key].find((x) => x == pool.machine.image.version))
-		)
-			return;
-
-		pool.machine.image = {
-			distro: images[0].spec.os.distro,
-			variant: images[0].spec.os.variant,
-			version: images[0].spec.os.version
-		};
-	}
-
-	run(() => {
-		updateImages(images);
+		return result;
 	});
 
+	// When the image changes, update the pool.
+	$effect.pre(() => {
+		if (!osVersions || !(image in osVersions)) return;
+
+		const i = osVersions[image];
+
+		pool.machine.image = {
+			selector: {
+				distro: i.spec.os.distro,
+				variant: i.spec.os.variant,
+				version: i.spec.os.version
+			}
+		};
+	});
+
+	// Update whether persistent storage is allowed once the flavor ID is determined.
+	let persistentStorageAllowed = $derived(flavor && !flavor.spec.baremetal);
+
+	// Update persistent storage if requested by the user.
 	let persistentStorage: boolean = $state(Boolean(pool.machine.disk));
 
-	function updateDisk(
-		enabled: boolean,
-		flavors: Array<Compute.Flavor>,
-		flavorID: string | undefined
-	) {
-		if (!flavors || !flavorID) return;
-
-		/* Volumes cannot be used on baremetal nodes */
-		const allowed = !lookupFlavor(flavors, flavorID).spec.baremetal;
-		if (!allowed) {
+	$effect.pre(() => {
+		// Volumes cannot be used on baremetal nodes */
+		if (!persistentStorageAllowed) {
 			if (pool.machine.disk) {
 				delete pool.machine.disk;
 			}
@@ -124,86 +134,19 @@
 			return;
 		}
 
-		if (enabled && !pool.machine.disk) {
+		if (persistentStorage && !pool.machine.disk) {
 			pool.machine.disk = {
 				size: 50
 			};
-		} else if (!enabled && pool.machine.disk) {
+		} else if (!persistentStorage && pool.machine.disk) {
 			delete pool.machine.disk;
 		}
-	}
-
-	run(() => {
-		updateDisk(persistentStorage, flavors, pool.machine.flavorId);
 	});
 
-	run(() => {
+	// Pool is valid if the name is.
+	$effect.pre(() => {
 		valid = Validation.kubernetesNameValid(pool.name);
 	});
-
-	function lookupFlavor(flavors: Array<Compute.Flavor>, flavorID: string): Compute.Flavor {
-		const flavor = flavors.find((x) => x.metadata.id == flavorID);
-		if (!flavor) {
-			return {
-				metadata: {
-					id: 'undefined',
-					name: 'undefined',
-					creationTime: new Date()
-				},
-				spec: {
-					cpus: 0,
-					memory: 0,
-					disk: 0
-				}
-			};
-		}
-
-		return flavor;
-	}
-
-	function lookupImage(
-		images: Array<Compute.Image>,
-		distro: Compute.OsDistro,
-		variant: string | undefined,
-		version: string | undefined
-	): Compute.Image {
-		const key = osKey(distro, variant);
-
-		const image = images.find((x) => imageKey(x) == key && x.spec.os.version == version);
-		if (!image) {
-			return {
-				metadata: {
-					id: 'undefined',
-					name: 'undefined',
-					creationTime: new Date()
-				},
-				spec: {
-					virtualization: 'any',
-					sizeGiB: 0,
-					os: {
-						kernel: Compute.OsKernel.Linux,
-						family: Compute.OsFamily.Debian,
-						distro: Compute.OsDistro.Ubuntu,
-						version: 'undefined'
-					}
-				}
-			};
-		}
-
-		return image;
-	}
-
-	function lookupImageFromKey(
-		images: Array<Compute.Image>,
-		key: string,
-		version: string
-	): Compute.Image {
-		const parts = key.split(':');
-		const distro = parts[0] as Compute.OsDistro;
-		const variant = parts[1];
-
-		return lookupImage(images, distro, variant, version);
-	}
 
 	function newFirewallRule(): Compute.FirewallRule {
 		return {
@@ -259,7 +202,7 @@
 </ShellSection>
 
 <ShellSection title="Pool Topology">
-	{#if flavors && pool.machine.flavorId}
+	{#if pool.machine.flavorId}
 		<SelectNew
 			id="flavor-{index}"
 			label="Choose a pool type."
@@ -267,7 +210,9 @@
 			member. This includes CPU, GPU and memory."
 		>
 			{#snippet selected_body()}
-				<Flavor flavor={lookupFlavor(flavors, pool.machine.flavorId)} />
+				{#if flavor}
+					<Flavor {flavor} />
+				{/if}
 			{/snippet}
 			{#snippet children()}
 				{#each flavors || [] as flavor}
@@ -278,7 +223,7 @@
 			{/snippet}
 		</SelectNew>
 
-		{#if !lookupFlavor(flavors, pool.machine.flavorId).spec.baremetal}
+		{#if persistentStorageAllowed}
 			<SlideToggle
 				name="persistent-storage"
 				label="Enable persistent storage."
@@ -303,35 +248,21 @@
 		{/if}
 	{/if}
 
-	{#if osVersions && pool.machine.image}
+	{#if osVersions}
 		<SelectNew
 			id="image-{index}"
 			label="Choose an image ."
 			hint="Allows the selection of the pool's operating system image per pool."
 		>
 			{#snippet selected_body()}
-				<Image
-					image={lookupImage(
-						images,
-						pool.machine.image.distro,
-						pool.machine.image.variant,
-						pool.machine.image.version
-					)}
-				/>
+				<Image image={osVersions[image]} />
 			{/snippet}
 
 			{#snippet children()}
-				{#each Object.keys(osVersions) as os}
-					{#each osVersions[os] as version}
-						<ListBoxItem
-							bind:group={pool.machine.image}
-							name="foo"
-							,
-							value={{ os: os, version: version }}
-						>
-							<Image image={lookupImageFromKey(images, os, version)} />
-						</ListBoxItem>
-					{/each}
+				{#each Object.keys(osVersions) as value}
+					<ListBoxItem bind:group={image} name="foo" {value}>
+						<Image image={osVersions[value]} />
+					</ListBoxItem>
 				{/each}
 			{/snippet}
 		</SelectNew>
@@ -350,7 +281,7 @@
 		name="public_ip"
 		label="Enable Public Access."
 		hint="Selecting this option allocates a public IP address to each node in the pool."
-		bind:checked={publicIP}
+		checked={publicIP}
 	/>
 
 	<ShellSection title="Firewall Rules">

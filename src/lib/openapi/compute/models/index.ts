@@ -8,6 +8,7 @@ export * from './ComputeClusterStatus';
 export * from './ComputeClusterWorkloadPool';
 export * from './ComputeClusterWorkloadPoolStatus';
 export * from './ComputeClusterWrite';
+export * from './ComputeImage';
 export * from './FirewallRule';
 export * from './Flavor';
 export * from './FlavorSpec';
