@@ -12,12 +12,12 @@
 
 <div class="p-4 lg:px-16 lg:py-8 w-full mx-auto flex flex-col gap-8">
 	<div class="flex flex-col gap-4">
-		<h1 class="h2 font-bold">{settings.name}</h1>
-		<p>{settings.description}</p>
-	</div>
+		<div class="flex items-center justify-between">
+			<h1 class="h2 font-bold">{settings.name}</h1>
 
-	<div class="flex gap-2">
-		{@render tools?.()}
+			{@render tools?.()}
+		</div>
+		<p>{settings.description}</p>
 	</div>
 
 	<main class="flex flex-col gap-8">

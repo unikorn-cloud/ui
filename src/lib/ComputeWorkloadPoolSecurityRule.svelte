@@ -8,29 +8,28 @@
 	import * as Validators from '$lib/validation';
 
 	interface Props {
-		// id uniqueuly identifies the workload pool and rule.
-		id: string;
 		// rule is the object we are filling in.
 		rule: Compute.FirewallRule;
 		// valid if the all field validators resolve to true.
 		valid?: boolean;
 	}
 
-	let { id, rule = $bindable(), valid = $bindable(false) }: Props = $props();
+	let { rule = $bindable(), valid = $bindable(false) }: Props = $props();
 
-	let port: string = $state('');
+	let port: string = $state(rule.port != 0 ? rule.port.toString() : '');
 	let portValid: boolean = $state(false);
 
-	let portMax: string = $state('');
+	let portMax: string = $state(rule.portMax && rule.portMax != 0 ? rule.portMax.toString() : '');
 	let portMaxValid: boolean = $state(false);
 
-	run(() => {
-		valid = portValid && portMaxValid && rule.prefixes.length > 0;
+	let prefixes: Array<string> = $state(rule.prefixes);
+
+	$effect.pre(() => {
+		valid = portValid && portMaxValid && prefixes.length > 0;
 	});
 
-	function updatePorts(port: string, portMax: string) {
+	$effect.pre(() => {
 		const x = parseInt(port, 10);
-
 		if (!isNaN(x)) {
 			rule.port = x;
 		}
@@ -42,19 +41,18 @@
 		}
 
 		const y = parseInt(portMax, 10);
-
 		if (!isNaN(y)) {
 			rule.portMax = y;
 		}
-	}
+	});
 
-	run(() => {
-		updatePorts(port, portMax);
+	$effect.pre(() => {
+		rule.prefixes = prefixes;
 	});
 </script>
 
 <Select
-	id="direction-{id}"
+	id="direction"
 	label="Network Direction"
 	hint="Ingress allows traffic to the host, egress traffic from the host."
 	bind:value={rule.direction}
@@ -65,7 +63,7 @@
 </Select>
 
 <Select
-	id="protocol-{id}"
+	id="protocol"
 	label="Network Protocol"
 	hint="OSI layer 4 transport protocol"
 	bind:value={rule.protocol}
@@ -76,7 +74,7 @@
 </Select>
 
 <TextInput
-	id="port-{id}"
+	id="port"
 	label="Port"
 	hint="Port number, or start of range of ports (specified as 100-200 inclusive), to allow access to."
 	bind:value={port}
@@ -85,7 +83,7 @@
 />
 
 <TextInput
-	id="portmax-{id}"
+	id="portmax"
 	label="Port Range End"
 	hint="If specified this is the end of the port range, including this port number."
 	bind:value={portMax}
@@ -94,8 +92,8 @@
 />
 
 <InputChips
-	name="ingress-cidr-{id}"
+	name="ingress-cidr"
 	label="Address Ranges"
 	hint="Address ranges to allow access to the selected port.  0.0.0.0/0 allows traffic from any host."
-	bind:value={rule.prefixes}
+	bind:value={prefixes}
 />

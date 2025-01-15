@@ -147,7 +147,7 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<Button icon="mdi:add" label="Create" href="/infrastructure/clusters/create" />
+		<Button icon="mdi:add" label="Create" href="/infrastructure/clusters/create" variant="none" />
 	{/snippet}
 
 	<ShellList>

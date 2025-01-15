@@ -180,9 +180,14 @@
 		</ShellSection>
 
 		<div class="flex gap-4 justify-between">
-			<Button icon="mdi:refresh" label="Refresh Access Token" clicked={rotate} />
+			<Button
+				icon="mdi:refresh"
+				label="Refresh Access Token"
+				clicked={rotate}
+				class="btn variant-outline-primary"
+			/>
 
-			<Button icon="mdi:tick" label="Update" variant="variant-filled-primary" clicked={submit} />
+			<Button icon="mdi:tick" label="Update" clicked={submit} class="btn variant-filled-primary" />
 		</div>
 	{/if}
 </ShellPage>

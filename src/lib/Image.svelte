@@ -1,30 +1,38 @@
 <script lang="ts">
 	import * as Region from '$lib/openapi/region';
+	import * as Compute from '$lib/openapi/compute';
 
 	interface Props {
-		image: Region.Image;
+		image?: Region.Image;
+		selector?: Compute.ImageSelector;
 	}
 
-	let { image }: Props = $props();
+	let { image, selector }: Props = $props();
+
+	let distro = $derived(image?.spec.os.distro || selector?.distro);
+	let variant = $derived(image?.spec.os.variant || selector?.variant);
+	let version = $derived(image?.spec.os.version || selector?.version);
+	let family = $derived(image?.spec.os.family);
+	let kernel = $derived(image?.spec.os.kernel);
 
 	function getIcon(): string {
-		if (!image) return 'mdi:question-mark';
+		if (!distro) return 'mdi:question-mark';
 
-		switch (image.spec.os.distro) {
+		switch (distro) {
 			case Region.OsDistro.Rocky:
 				return 'logos:rocky-linux';
 			case Region.OsDistro.Ubuntu:
 				return 'logos:ubuntu';
 		}
 
-		switch (image.spec.os.family) {
+		switch (family) {
 			case Region.OsFamily.Redhat:
 				return 'logos:redhat';
 			case Region.OsFamily.Debian:
 				return 'logos:debian';
 		}
 
-		switch (image.spec.os.kernel) {
+		switch (kernel) {
 			case Region.OsKernel.Linux:
 				return 'logos:linux';
 		}
@@ -37,20 +45,16 @@
 	}
 </script>
 
-{#if image}
-	<div class="flex items-center gap-4">
+{#if distro && version}
+	<div class="flex items-center gap-2">
 		<iconify-icon class="pr-1 text-2xl" icon={getIcon()}></iconify-icon>
 
-		{toTitleCase(image.spec.os.distro)}
+		{toTitleCase(distro)}
 
-		{#if image.spec.os.variant}
-			{toTitleCase(image.spec.os.variant)}
+		{#if variant}
+			{toTitleCase(variant)}
 		{/if}
 
-		{image.spec.os.version}
-
-		{#if image.spec.os.codename}
-			({toTitleCase(image.spec.os.codename)})
-		{/if}
+		{version}
 	</div>
 {/if}
