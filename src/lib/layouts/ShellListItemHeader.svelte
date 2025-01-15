@@ -31,6 +31,13 @@
 
 {#snippet header()}
 	<header class="flex flex-col gap-1">
+		{#if project}
+			<div class="flex gap-2 items-center tex-sm overflow-hidden text-ellipsis whitespace-nowrap">
+				<iconify-icon icon="mdi:account-group-outline"></iconify-icon>
+				{project}
+			</div>
+		{/if}
+
 		<div class="h5 font-bold overflow-hidden text-ellipsis whitespace-nowrap">
 			{#if title}
 				{title}
@@ -38,13 +45,6 @@
 				{metadata.name}
 			{/if}
 		</div>
-
-		{#if project}
-			<div class="flex gap-2 items-center tex-sm overflow-hidden text-ellipsis whitespace-nowrap">
-				<iconify-icon icon="mdi:account-group-outline"></iconify-icon>
-				{project}
-			</div>
-		{/if}
 
 		{#if metadata?.description}
 			<div class="text-sm italic text-surface-600-300-token">

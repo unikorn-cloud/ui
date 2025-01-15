@@ -123,7 +123,7 @@
 		<Button
 			icon="mdi:tick"
 			label="Create"
-			variant="variant-filled-primary"
+			class="btn variant-filled-primary"
 			clicked={submit}
 			disabled={!valid}
 		/>

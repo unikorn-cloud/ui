@@ -123,7 +123,7 @@
 		</ShellSection>
 
 		<div class="flex">
-			<Button icon="mdi:tick" label="Update" variant="variant-filled-primary" clicked={submit} />
+			<Button icon="mdi:tick" label="Update" class="btn variant-filled-primary" clicked={submit} />
 		</div>
 	{/if}
 </ShellPage>

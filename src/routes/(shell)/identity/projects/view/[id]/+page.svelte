@@ -133,7 +133,7 @@
 			<Button
 				icon="mdi:tick"
 				label="Update"
-				variant="variant-filled-primary"
+				class="btn variant-filled-primary"
 				clicked={submit}
 				disabled={!valid}
 			/>

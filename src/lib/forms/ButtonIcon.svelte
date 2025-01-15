@@ -1,30 +1,32 @@
 <script lang="ts">
 	interface Props {
 		icon: string;
-		label: string;
 		disabled?: boolean;
 		href?: string;
 		clicked?: () => void;
-		[key: string]: any;
 	}
 
-	let { icon, label, disabled = $bindable(), href, clicked, ...props }: Props = $props();
+	let { icon, disabled = $bindable(), href, clicked }: Props = $props();
 </script>
 
 {#snippet content()}
 	<iconify-icon {icon}></iconify-icon>
-	<div>{label}</div>
 {/snippet}
 
 {#if href}
-	<a {href}>
-		<div class="btn flex gap-2 items-center {props.class || ''}">
+	{#if disabled}
+		<div class="text-surface-500">
 			{@render content()}
 		</div>
-	</a>
+	{:else}
+		<a {href} class="text-primary-600-300-token">
+			{@render content()}
+		</a>
+	{/if}
 {:else if clicked}
 	<button
-		class="flex gap-2 items-center {props.class || ''}"
+		class={disabled ? 'text-surface-300-600-token' : 'text-primary-600-300-token'}
+		class:text-surface-500-600-token={disabled}
 		{disabled}
 		onclick={clicked}
 		onkeypress={clicked}

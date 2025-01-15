@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { run } from 'svelte/legacy';
+	import type { Snippet } from 'svelte';
 
 	import * as Compute from '$lib/openapi/compute';
 
@@ -18,19 +19,19 @@
 	import ComputeWorkloadPoolSecurityRule from '$lib/ComputeWorkloadPoolSecurityRule.svelte';
 
 	interface Props {
-		/* The pool index allows us to fully qualify IDs so they are unique */
-		index: number;
-		/* The pool should be bound to expose the built configuration */
+		// The pool should be bound to expose the built configuration.
 		pool: Compute.ComputeClusterWorkloadPool;
-		/* Whether the configuration is valid */
+		// Whether the configuration is valid.
 		valid: boolean;
-		/* Flavors allows the pool type to be populated */
+		// Flavors allows the pool type to be populated.
 		flavors: Array<Compute.Flavor>;
-		/* Images allows the pool operating system image to be populated */
+		// Images allows the pool operating system image to be populated.
 		images: Array<Compute.Image>;
+		// Firewall rule dialog.
+		firewall: Snippet;
 	}
 
-	let { index, pool = $bindable(), valid = $bindable(), flavors, images }: Props = $props();
+	let { pool = $bindable(), valid = $bindable(), flavors, images, firewall }: Props = $props();
 
 	// Handle public IP addition or deletion for the pool.
 	let publicIP: boolean = $derived(
@@ -190,155 +191,101 @@
 	}
 </script>
 
-<ShellSection title="Pool Metadata">
-	<TextInput
-		id="pool-name"
-		label="Choose a name for your workload pool."
-		hint="Name should be unique, contain 0-9, a-z, . or - and be at most 63 characters."
-		validators={Validation.GetKubernetesNameValidators([])}
-		bind:value={pool.name}
-		bind:valid
-	/>
-</ShellSection>
+<div class="flex flex-col gap-8">
+	<ShellSection title="Pool Metadata">
+		<TextInput
+			id="pool-name"
+			label="Choose a name for your workload pool."
+			hint="Name should be unique, contain 0-9, a-z, . or - and be at most 63 characters."
+			validators={Validation.GetKubernetesNameValidators([])}
+			bind:value={pool.name}
+			bind:valid
+		/>
+	</ShellSection>
 
-<ShellSection title="Pool Topology">
-	{#if pool.machine.flavorId}
-		<SelectNew
-			id="flavor-{index}"
-			label="Choose a pool type."
-			hint="Allows the selection of the pool's available resources to be used by workloads per pool
+	<ShellSection title="Pool Topology">
+		{#if pool.machine.flavorId}
+			<SelectNew
+				id="flavor"
+				label="Choose a pool type."
+				hint="Allows the selection of the pool's available resources to be used by workloads per pool
 			member. This includes CPU, GPU and memory."
-		>
-			{#snippet selected_body()}
-				{#if flavor}
-					<Flavor {flavor} />
-				{/if}
-			{/snippet}
-			{#snippet children()}
-				{#each flavors || [] as flavor}
-					<ListBoxItem bind:group={pool.machine.flavorId} name="foo" value={flavor.metadata.id}>
+			>
+				{#snippet selected_body()}
+					{#if flavor}
 						<Flavor {flavor} />
-					</ListBoxItem>
-				{/each}
-			{/snippet}
-		</SelectNew>
+					{/if}
+				{/snippet}
+				{#snippet children()}
+					{#each flavors || [] as flavor}
+						<ListBoxItem bind:group={pool.machine.flavorId} name="foo" value={flavor.metadata.id}>
+							<Flavor {flavor} />
+						</ListBoxItem>
+					{/each}
+				{/snippet}
+			</SelectNew>
 
-		{#if persistentStorageAllowed}
-			<SlideToggle
-				name="persistent-storage"
-				label="Enable persistent storage."
-				hint="If not selected, the disk size will be
+			{#if persistentStorageAllowed}
+				<SlideToggle
+					name="persistent-storage"
+					label="Enable persistent storage."
+					hint="If not selected, the disk size will be
                 fixed to that offered by the pool type, and will be ephemeral with higher performance. If
                 selected, the disk will be network attached with higher availabilty and the option to change the
                 size."
-				bind:checked={persistentStorage}
-			/>
-
-			{#if pool.machine.disk}
-				<RangeSlider
-					name="storage-size"
-					label="Select the disk size per machine."
-					min={50}
-					max={4000}
-					step={50}
-					formatter={Formatters.formatGB}
-					bind:value={pool.machine.disk.size}
+					bind:checked={persistentStorage}
 				/>
+
+				{#if pool.machine.disk}
+					<RangeSlider
+						name="storage-size"
+						label="Select the disk size per machine."
+						min={50}
+						max={4000}
+						step={50}
+						formatter={Formatters.formatGB}
+						bind:value={pool.machine.disk.size}
+					/>
+				{/if}
 			{/if}
 		{/if}
-	{/if}
 
-	{#if osVersions}
-		<SelectNew
-			id="image-{index}"
-			label="Choose an image ."
-			hint="Allows the selection of the pool's operating system image per pool."
-		>
-			{#snippet selected_body()}
-				<Image image={osVersions[image]} />
-			{/snippet}
+		{#if osVersions}
+			<SelectNew
+				id="image"
+				label="Choose an image ."
+				hint="Allows the selection of the pool's operating system image per pool."
+			>
+				{#snippet selected_body()}
+					<Image image={osVersions[image]} />
+				{/snippet}
 
-			{#snippet children()}
-				{#each Object.keys(osVersions) as value}
-					<ListBoxItem bind:group={image} name="foo" {value}>
-						<Image image={osVersions[value]} />
-					</ListBoxItem>
-				{/each}
-			{/snippet}
-		</SelectNew>
-	{/if}
-
-	<RangeSlider
-		name="size"
-		label="Select the minimum number of replicas."
-		min={1}
-		max={100}
-		step={1}
-		bind:value={pool.machine.replicas}
-	/>
-
-	<SlideToggle
-		name="public_ip"
-		label="Enable Public Access."
-		hint="Selecting this option allocates a public IP address to each node in the pool."
-		checked={publicIP}
-	/>
-
-	<ShellSection title="Firewall Rules">
-		<div class="table-container">
-			<table class="table">
-				<thead>
-					<tr>
-						<th>Direction</th>
-						<th>Protocol</th>
-						<th>Port</th>
-						<th>Prefixes</th>
-						<th class="table-cell-fit"></th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each pool.machine.firewall || [] as rule, i}
-						<tr>
-							<td>{rule.direction}</td>
-							<td>{rule.protocol}</td>
-							<td
-								>{rule.port}{#if rule.portMax}-{rule.portMax}{/if}</td
-							>
-							<td>{rule.prefixes.join(', ')}</td>
-							<td>
-								<button
-									class="text-2xl"
-									onclick={() => deleteFirewallRule(i)}
-									onkeypress={() => deleteFirewallRule(i)}
-									aria-label="delete firewall rule"
-								>
-									<iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
-								</button>
-							</td>
-						</tr>
+				{#snippet children()}
+					{#each Object.keys(osVersions) as value}
+						<ListBoxItem bind:group={image} name="foo" {value}>
+							<Image image={osVersions[value]} />
+						</ListBoxItem>
 					{/each}
-				</tbody>
-			</table>
-		</div>
-
-		{#if showRuleDefine}
-			<ComputeWorkloadPoolSecurityRule id="foo" rule={tempRule} bind:valid={tempRuleValid} />
-
-			<button
-				class="btn variant-filled-primary"
-				disabled={!tempRuleValid}
-				onclick={submitFirewallRule}
-				onkeypress={submitFirewallRule}>Submit</button
-			>
-		{:else}
-			<button
-				class="btn flex gap-2 items-center w-full"
-				onclick={addFirewallRule}
-				onkeypress={addFirewallRule}
-			>
-				<iconify-icon icon="mdi:add"></iconify-icon>
-				<span>Add New Rule</span>
-			</button>
+				{/snippet}
+			</SelectNew>
 		{/if}
+
+		<RangeSlider
+			name="size"
+			label="Select the minimum number of replicas."
+			min={1}
+			max={100}
+			step={1}
+			bind:value={pool.machine.replicas}
+		/>
+
+		<SlideToggle
+			name="public_ip"
+			label="Enable Public Access."
+			hint="Selecting this option allocates a public IP address to each node in the pool."
+			checked={publicIP}
+		/>
+
+		{@render firewall()}
 	</ShellSection>
-</ShellSection>
+</div>
