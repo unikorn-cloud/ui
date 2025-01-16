@@ -15,8 +15,6 @@
 	import Flavor from '$lib/Flavor.svelte';
 
 	interface Props {
-		/* The pool index allows us to fully qualify IDs so they are unique */
-		index: number;
 		/* The pool should be bound to expose the built configuration */
 		pool: Kubernetes.KubernetesClusterWorkloadPool;
 		/* Whether the configuration is valid */
@@ -25,7 +23,7 @@
 		flavors: Array<Region.Flavor>;
 	}
 
-	let { index, pool = $bindable(), valid = $bindable(), flavors }: Props = $props();
+	let { pool = $bindable(), valid = $bindable(), flavors }: Props = $props();
 
 	function updateFlavors(flavors: Array<Region.Flavor>): void {
 		if (!flavors || flavors.find((x) => x.metadata.id == pool.machine.flavorId)) return;
@@ -121,7 +119,7 @@
 <ShellSection title="Pool Topology">
 	{#if flavors && pool.machine.flavorId}
 		<SelectNew
-			id="flavor-{index}"
+			id="flavor"
 			label="Choose a pool type."
 			hint="Allows the selection of the pool's available resources to be used by workloads per pool
 			member. This includes CPU, GPU and memory."
