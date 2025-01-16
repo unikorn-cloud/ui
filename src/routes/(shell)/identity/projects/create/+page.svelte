@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -42,7 +40,7 @@
 	let projects: Array<Identity.ProjectRead> | undefined = $state();
 	let groups: Array<Identity.GroupRead> | undefined = $state();
 
-	function update() {
+	$effect.pre(() => {
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -60,10 +58,6 @@
 			.apiV1OrganizationsOrganizationIDGroupsGet(groupsParameters)
 			.then((v: Array<Identity.GroupRead>) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		update();
 	});
 
 	let names: Array<string> = $derived((projects || []).map((x) => x.metadata.name));
@@ -119,7 +113,7 @@
 		<Button
 			icon="mdi:tick"
 			label="Create"
-			class="btn variant-filled-primary"
+			class="variant-filled-primary"
 			clicked={submit}
 			disabled={!valid}
 		/>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
 	import { page } from '$app/stores';
 
 	import { AppRail, AppRailAnchor, AppRailTile, getDrawerStore } from '@skeletonlabs/skeleton';
@@ -100,7 +99,7 @@
 		currentOrganizationInfo = o;
 	});
 
-	function updateToken(at: InternalToken) {
+	$effect.pre(() => {
 		if (!at) return;
 
 		Clients.identity(toastStore, at)
@@ -116,11 +115,9 @@
 					: organizations[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
-	}
+	});
 
-	run(() => updateToken(at));
-
-	function updateOrganization(at: InternalToken, organizationID: string | undefined) {
+	$effect.pre(() => {
 		if (!organizationID || !at) return;
 
 		const parameters = {
@@ -131,15 +128,11 @@
 			.apiV1OrganizationsOrganizationIDAclGet(parameters)
 			.then((v: Identity.Acl) => {
 				Stores.organizationStore.set({
-					id: organizationID,
+					id: organizationID || '',
 					acl: v
 				});
 			})
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateOrganization(at, organizationID);
 	});
 </script>
 

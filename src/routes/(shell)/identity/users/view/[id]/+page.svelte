@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
 	import { page } from '$app/stores';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
@@ -43,9 +42,7 @@
 	let users: Array<Identity.User> | undefined = $state();
 	let groups: Array<Identity.GroupRead> | undefined = $state();
 
-	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
-		if (!at || !organizationInfo) return;
-
+	$effect.pre(() => {
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -59,30 +56,20 @@
 			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
 			.then((v: Array<Identity.GroupRead>) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		update(at, organizationInfo);
 	});
 
 	// Once we know the users, select the one we are viewing.
-	let user: Identity.User | undefined = $state();
-
-	function updateUser(users: Array<Identity.User> | undefined) {
+	let user = $derived.by(() => {
 		if (!users) return;
 
 		// Find our group based on ID.
-		const temp = users.find((x) => x.name == $page.params.id);
-		if (!temp) return;
+		const user = users.find((x) => x.name == $page.params.id);
+		if (!user) return;
 
 		// Add stuff to bind to...
-		if (!temp.groupIDs) temp.groupIDs = [];
+		if (!user.groupIDs) user.groupIDs = [];
 
-		user = temp;
-	}
-
-	run(() => {
-		updateUser(users);
+		return user;
 	});
 
 	function submit() {
@@ -123,7 +110,7 @@
 		</ShellSection>
 
 		<div class="flex">
-			<Button icon="mdi:tick" label="Update" class="btn variant-filled-primary" clicked={submit} />
+			<Button icon="mdi:tick" label="Update" class="variant-filled-primary" clicked={submit} />
 		</div>
 	{/if}
 </ShellPage>

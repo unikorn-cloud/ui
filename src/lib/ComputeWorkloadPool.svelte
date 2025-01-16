@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
 	import type { Snippet } from 'svelte';
 
 	import * as Compute from '$lib/openapi/compute';

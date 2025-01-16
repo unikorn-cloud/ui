@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
@@ -68,12 +66,8 @@
 	let regions: Array<Region.RegionRead> | undefined = $state();
 	let identities: Array<Region.IdentityRead> | undefined = $state();
 
-	function update(
-		at: InternalToken,
-		organizationInfo: Stores.OrganizationInfo,
-		allowed: boolean
-	): void {
-		if (!at || !organizationInfo || !allowed) return;
+	function update(allowed: boolean): void {
+		if (!allowed) return;
 
 		const parameters = {
 			organizationID: organizationInfo.id
@@ -95,11 +89,11 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	run(() => {
-		update(at, organizationInfo, allowed);
+	$effect.pre(() => {
+		update(allowed);
 	});
 
-	const ticker = setInterval(() => update(at, organizationInfo, allowed), 5000);
+	const ticker = setInterval(() => update(allowed), 5000);
 	onDestroy(() => clearInterval(ticker));
 
 	function remove(resource: Region.IdentityRead): void {

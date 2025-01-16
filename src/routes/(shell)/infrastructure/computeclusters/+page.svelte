@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -65,8 +63,6 @@
 	let regions: Array<Region.RegionRead> | undefined = $state();
 
 	function update(): void {
-		if (!at || !organizationInfo) return;
-
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -87,7 +83,7 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	run(() => {
+	$effect.pre(() => {
 		update();
 	});
 
@@ -137,12 +133,7 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<Button
-			icon="mdi:add"
-			label="Create"
-			href="/infrastructure/computeclusters/create"
-			variant="none"
-		/>
+		<Button icon="mdi:add" label="Create" href="/infrastructure/computeclusters/create" />
 	{/snippet}
 
 	<ShellList>

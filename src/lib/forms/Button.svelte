@@ -24,7 +24,7 @@
 	</a>
 {:else if clicked}
 	<button
-		class="flex gap-2 items-center {props.class || ''}"
+		class="btn flex gap-2 items-center {props.class || ''}"
 		{disabled}
 		onclick={clicked}
 		onkeypress={clicked}

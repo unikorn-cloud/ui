@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import * as Validation from '$lib/validation';
 
 	interface Props {
@@ -31,7 +29,7 @@
 	}: Props = $props();
 
 	// Update the validation information when the value changes.
-	run(() => {
+	$effect.pre(() => {
 		valid = Validation.validateString(value || '', validators);
 	});
 </script>

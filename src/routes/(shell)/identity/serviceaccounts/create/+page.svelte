@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -44,9 +42,7 @@
 	let serviceAccounts: Array<Identity.ServiceAccountRead> | undefined = $state();
 	let groups: Array<Identity.GroupRead> | undefined = $state();
 
-	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
-		if (!at || !organizationInfo) return;
-
+	$effect.pre(() => {
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -60,10 +56,6 @@
 			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
 			.then((v: Array<Identity.GroupRead>) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		update(at, organizationInfo);
 	});
 
 	let names = $derived((serviceAccounts || []).map((x) => x.metadata.name));
@@ -112,7 +104,7 @@
 			<Button
 				icon="mdi:tick"
 				label="Done"
-				variant="variant-filled-primary"
+				class="variant-filled-primary"
 				href="/identity/serviceaccounts"
 			/>
 		</div>
@@ -140,7 +132,7 @@
 			<Button
 				icon="mdi:tick"
 				label="Create"
-				class="btn variant-filled-primary"
+				class="variant-filled-primary"
 				clicked={submit}
 				disabled={!valid}
 			/>

@@ -45,14 +45,14 @@
 		<Button
 			icon="mdi:arrow-left"
 			label="Previous"
-			class="btn variant-outline-primary"
+			class="variant-outline-primary"
 			clicked={left}
 			disabled={step === 0}
 		/>
 		<Button
 			icon="mdi:arrow-right"
 			label={rightLabel}
-			class="btn variant-filled-primary"
+			class="variant-filled-primary"
 			clicked={right}
 			disabled={!valid}
 		/>

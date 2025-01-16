@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -48,11 +46,12 @@
 
 	// Get the root resources.
 	let projects: Array<Identity.ProjectRead> | undefined = $state();
+	let regions: Array<Region.RegionRead> | undefined = $state();
+
 	let projectID: string | undefined = $state();
+	let regionID: string | undefined = $state();
 
-	function updateProjects(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
-		if (!at || !organizationInfo) return;
-
+	$effect.pre(() => {
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -60,51 +59,26 @@
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
 			.then((v: Array<Identity.ProjectRead>) => {
-				if (v.length == 0) return;
-
 				projects = v;
-				projectID = projects[0].metadata.id;
+				if (projects.length) projectID = projects[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
-	}
 
-	run(() => {
-		updateProjects(at, organizationInfo);
-	});
-
-	let regionID: string | undefined = $state();
-	let regions: Array<Region.RegionRead> | undefined = $state();
-
-	function updateRegions(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
-		if (!at || !organizationInfo) return;
-
-		const parameters = {
-			organizationID: organizationInfo.id
-		};
-
-		/* Get top-level resources required for the first step */
-		/* TODO: parallelize with Promise.all */
 		Clients.region(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRegionsGet(parameters)
 			.then((v: Array<Region.RegionRead>) => {
-				if (v.length == 0) return;
-
 				regions = v;
-				regionID = regions[0].metadata.id;
+				if (regions.length) regionID = regions[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateRegions(at, organizationInfo);
 	});
 
 	// Once we know the project ID, we can lookup clusters and cluster managers.
 	let clustermanagers: Array<Kubernetes.ClusterManagerRead> | undefined = $state();
 	let clusters: Array<Kubernetes.KubernetesClusterRead> | undefined = $state();
 
-	function updateClusterManagers(at: InternalToken, projectID: string | undefined) {
-		if (!at || !projectID) return;
+	$effect.pre(() => {
+		if (!projectID) return;
 
 		const parameters = {
 			organizationID: organizationInfo.id
@@ -113,53 +87,26 @@
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustermanagersGet(parameters)
 			.then((v: Array<Kubernetes.ClusterManagerRead>) => {
-				if (v.length == 0) return;
-
-				// TODO: a possible excuse for request query parameters?
 				clustermanagers = v.filter((x) => x.metadata.projectId == projectID);
-				resource.spec.clusterManagerId = clustermanagers[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateClusterManagers(at, projectID);
-	});
-
-	function updateClusters(at: InternalToken, projectID: string | undefined): void {
-		if (!at || !projectID) return;
-
-		const parameters = {
-			organizationID: organizationInfo.id
-		};
 
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
 			.then((v: Array<Kubernetes.KubernetesClusterRead>) => {
-				// As we are only chekcing names, then scope to the project.
-				const temp = v.filter((x) => x.metadata.projectId == projectID);
-				if (!temp) return;
-
-				clusters = temp;
+				clusters = v.filter((x) => x.metadata.projectId == projectID);
 			})
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateClusters(at, projectID);
 	});
 
 	let names = $derived((clusters || []).map((x) => x.metadata.name));
 
 	// Once we know the region, we can load up the images and flavors.
 	let images: Array<Region.Image> | undefined = $state();
+	let flavors: Array<Region.Flavor> | undefined = $state();
 
-	function updateImages(
-		at: InternalToken,
-		organizationInfo: Stores.OrganizationInfo,
-		regionID: string | undefined
-	): void {
-		if (!at || !organizationInfo || !regionID) return;
+	$effect.pre(() => {
+		if (!regionID) return;
 
 		const parameters = {
 			organizationID: organizationInfo.id,
@@ -170,57 +117,18 @@
 			.apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet(parameters)
 			.then((v: Array<Region.Image>) => (images = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateImages(at, organizationInfo, regionID);
-	});
-
-	let flavors: Array<Region.Flavor> | undefined = $state();
-
-	function updateFlavors(
-		at: InternalToken,
-		organizationInfo: Stores.OrganizationInfo,
-		regionID: string | undefined
-	): void {
-		if (!at || !organizationInfo || !regionID) return;
-
-		const parameters = {
-			organizationID: organizationInfo.id,
-			regionID: regionID
-		};
 
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet(parameters)
 			.then((v: Array<Region.Flavor>) => (flavors = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateFlavors(at, organizationInfo, regionID);
 	});
 
-	// Once we know the images, we can extract the Kubernetes versons available
-	// and select the most recent by default.
-	let versions: Array<string> | undefined = $state();
+	// Once we know the images, we can extract the Kubernetes versons available.
+	let versions: Array<string> | undefined = $derived.by(() => {
+		if (!images) return;
 
-	function updateVersions(at: InternalToken, images: Array<Region.Image> | undefined): void {
-		if (!at || !images) return;
-
-		versions = [
-			...new Set(
-				(images || []).map((x) => {
-					if (!x.spec.softwareVersions || !x.spec.softwareVersions.kubernetes) return '';
-					return x.spec.softwareVersions.kubernetes;
-				})
-			)
-		].reverse();
-
-		resource.spec.version = versions[0];
-	}
-
-	run(() => {
-		updateVersions(at, images);
+		return [...new Set(images.map((x) => x.spec.softwareVersions?.kubernetes || ''))].reverse();
 	});
 
 	let resource: Kubernetes.KubernetesClusterWrite = $state({
@@ -251,8 +159,19 @@
 		}
 	});
 
-	run(() => {
-		if (resource && regionID) resource.spec.regionId = regionID;
+	// Update the region ID when modified.
+	$effect.pre(() => {
+		if (regionID) resource.spec.regionId = regionID;
+	});
+
+	// When cluster managers are available, select a default.
+	$effect.pre(() => {
+		if (clustermanagers?.length) resource.spec.clusterManagerId = clustermanagers[0].metadata.id;
+	});
+
+	// Select a default Kubernetes version.
+	$effect.pre(() => {
+		if (versions?.length) resource.spec.version = versions[0];
 	});
 
 	let poolValid: Array<boolean> = $state([false]);

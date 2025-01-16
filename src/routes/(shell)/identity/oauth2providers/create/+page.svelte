@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
 	import { browser } from '$app/environment';
 
 	/* Page setup */
@@ -55,7 +54,7 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	run(() => {
+	$effect.pre(() => {
 		updateProviders();
 	});
 
@@ -135,7 +134,7 @@
 		<Button
 			icon="mdi:tick"
 			label="Create"
-			class="btn variant-filled-primary"
+			class="variant-filled-primary"
 			clicked={submit}
 			disabled={!valid}
 		/>

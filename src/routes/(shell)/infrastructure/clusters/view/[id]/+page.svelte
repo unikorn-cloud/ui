@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { page } from '$app/stores';
 
 	/* Page setup */
@@ -50,9 +48,7 @@
 	let allClusters: Array<Kubernetes.KubernetesClusterRead> | undefined = $state();
 	let regions: Array<Region.RegionRead> | undefined = $state();
 
-	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo): void {
-		if (!at || !organizationInfo) return;
-
+	$effect.pre(() => {
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -68,9 +64,7 @@
 			.apiV1OrganizationsOrganizationIDRegionsGet(parameters)
 			.then((v: Array<Region.RegionRead>) => (regions = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	$effect.pre(() => update(at, organizationInfo));
+	});
 
 	// Once we know have the clusters, we can extract the one we care about
 	// as identified by the ID, then derive the region and project ID.  From
@@ -81,12 +75,8 @@
 	let regionID: string | undefined = $state();
 	let poolValid: Array<boolean> = $state([]);
 
-	function updateCuster(
-		at: InternalToken,
-		organizationInfo: Stores.OrganizationInfo,
-		allClusters: Array<Kubernetes.KubernetesClusterRead> | undefined
-	) {
-		if (!at || !organizationInfo || !allClusters) return;
+	$effect.pre(() => {
+		if (!allClusters) return;
 
 		const temp = allClusters.find((x) => x.metadata.id == $page.params.id);
 		if (!temp) return;
@@ -103,38 +93,22 @@
 		}
 
 		poolValid = poolValid;
-	}
-
-	run(() => {
-		updateCuster(at, organizationInfo, allClusters);
 	});
 
-	let names: Array<string> | undefined = $state();
-
-	function updateNames(
-		allClusters: Array<Kubernetes.KubernetesClusterRead> | undefined,
-		projectID: string | undefined
-	) {
+	let names = $derived.by(() => {
 		if (!allClusters || !resource) return;
 
-		names = allClusters
+		return allClusters
 			.filter((x) => x.metadata.id != $page.params.id && x.metadata.projectId == projectID)
 			.map((x) => x.metadata.name);
-	}
-
-	run(() => {
-		updateNames(allClusters, projectID);
 	});
 
 	// Once we know the region ID, we can extract the images and flavors.
 	let images: Array<Region.Image> | undefined = $state();
+	let flavors: Array<Region.Flavor> | undefined = $state();
 
-	function updateImages(
-		at: InternalToken,
-		organizationInfo: Stores.OrganizationInfo,
-		regionID: string | undefined
-	): void {
-		if (!at || !organizationInfo || !regionID) return;
+	$effect.pre(() => {
+		if (!regionID) return;
 
 		const parameters = {
 			organizationID: organizationInfo.id,
@@ -145,58 +119,18 @@
 			.apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet(parameters)
 			.then((v: Array<Region.Image>) => (images = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateImages(at, organizationInfo, regionID);
-	});
-
-	let flavors: Array<Region.Flavor> | undefined = $state();
-
-	function updateFlavors(
-		at: InternalToken,
-		organizationInfo: Stores.OrganizationInfo,
-		regionID: string | undefined
-	): void {
-		if (!at || !organizationInfo || !regionID) return;
-
-		const parameters = {
-			organizationID: organizationInfo.id,
-			regionID: regionID
-		};
 
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet(parameters)
 			.then((v: Array<Region.Flavor>) => (flavors = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateFlavors(at, organizationInfo, regionID);
 	});
 
 	// Once we know the images, we can extract the Kubernetes versons available.
-	let versions: Array<string> | undefined = $state();
+	let versions: Array<string> | undefined = $derived.by(() => {
+		if (!images) return;
 
-	function updateVersions(
-		at: InternalToken,
-		resource: Kubernetes.KubernetesClusterRead | undefined,
-		images: Array<Region.Image> | undefined
-	): void {
-		if (!at || !resource || !images) return;
-
-		versions = [
-			...new Set(
-				(images || []).map((x) => {
-					if (!x.spec.softwareVersions || !x.spec.softwareVersions.kubernetes) return '';
-					return x.spec.softwareVersions.kubernetes;
-				})
-			)
-		].reverse();
-	}
-
-	run(() => {
-		updateVersions(at, resource, images);
+		return [...new Set(images.map((x) => x.spec.softwareVersions?.kubernetes || ''))].reverse();
 	});
 
 	function addPool(): void {
