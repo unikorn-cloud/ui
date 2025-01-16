@@ -43,7 +43,6 @@
 	// Get root resources from the API.
 	let groups: Array<Identity.GroupRead> | undefined = $state();
 	let availableRoles: Array<Identity.RoleRead> | undefined = $state();
-	let availableGroups: Array<Identity.AvailableGroup> | undefined = $state();
 
 	$effect.pre(() => {
 		const parameters = {
@@ -59,13 +58,6 @@
 			.apiV1OrganizationsOrganizationIDRolesGet(parameters)
 			.then((v: Array<Identity.RoleRead>) => (availableRoles = v))
 			.catch((e: Error) => Clients.error(e));
-
-		Clients.identity(toastStore, at)
-			.apiV1OrganizationsOrganizationIDAvailableGroupsGet(parameters)
-			.then((v: Array<Identity.AvailableGroup>) => {
-				availableGroups = v;
-			})
-			.catch((e: Error) => Clients.error(e));
 	});
 
 	// Once we know the groups, select the one we are viewing.
@@ -76,7 +68,6 @@
 	// Add in any defaults before we rnder the DOM so we have things to bind to.
 	$effect.pre(() => {
 		if (!group) return;
-		if (!group.spec.providerGroups) group.spec.providerGroups = [];
 		if (!group.spec.users) group.spec.users = [];
 	});
 
@@ -125,19 +116,6 @@
 		</ShellSection>
 
 		<ShellSection title="Users">
-			{#if availableGroups && group.spec.providerGroups}
-				<MultiSelect
-					id="provider-groups"
-					label="Include users with identity provider groups."
-					hint="To add and remove members edit the group with your identity provider."
-					bind:value={group.spec.providerGroups}
-				>
-					{#each availableGroups || [] as group}
-						<option value={group.name}>{group.displayName || group.name}</option>
-					{/each}
-				</MultiSelect>
-			{/if}
-
 			{#if group.spec.users}
 				<InputChips
 					name="users"

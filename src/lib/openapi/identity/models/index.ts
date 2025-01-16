@@ -5,7 +5,6 @@ export * from './AclEndpoint';
 export * from './AclOperation';
 export * from './AclScopedEndpoints';
 export * from './AuthMethod';
-export * from './AvailableGroup';
 export * from './Claim';
 export * from './CodeChallengeMethod';
 export * from './GrantType';

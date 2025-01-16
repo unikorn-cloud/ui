@@ -31,12 +31,6 @@ export interface GroupSpec {
      * @memberof GroupSpec
      */
     roleIDs: Array<string>;
-    /**
-     * A list of provider groups.
-     * @type {Array<string>}
-     * @memberof GroupSpec
-     */
-    providerGroups?: Array<string>;
 }
 
 /**
@@ -61,7 +55,6 @@ export function GroupSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         
         'users': !exists(json, 'users') ? undefined : json['users'],
         'roleIDs': json['roleIDs'],
-        'providerGroups': !exists(json, 'providerGroups') ? undefined : json['providerGroups'],
     };
 }
 
@@ -76,7 +69,6 @@ export function GroupSpecToJSON(value?: GroupSpec | null): any {
         
         'users': value.users,
         'roleIDs': value.roleIDs,
-        'providerGroups': value.providerGroups,
     };
 }
 
