@@ -10,7 +10,9 @@
 	import Badge from '$lib/layouts/Badge.svelte';
 	import Select from '$lib/forms/Select.svelte';
 	import Stepper from '$lib/layouts/Stepper.svelte';
+	import ResourceList from '$lib/layouts/ResourceList.svelte';
 	import KubernetesWorkloadPool from '$lib/KubernetesWorkloadPool.svelte';
+	import Flavor from '$lib/Flavor.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -45,7 +47,7 @@
 	});
 
 	// Get all clusters and regions.
-	let allClusters: Array<Kubernetes.KubernetesClusterRead> | undefined = $state();
+	let clusters: Array<Kubernetes.KubernetesClusterRead> | undefined = $state();
 	let regions: Array<Region.RegionRead> | undefined = $state();
 
 	$effect.pre(() => {
@@ -56,7 +58,7 @@
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDClustersGet(parameters)
 			.then((v: Array<Kubernetes.KubernetesClusterRead>) => {
-				allClusters = v;
+				clusters = v;
 			})
 			.catch((e: Error) => Clients.error(e));
 
@@ -71,36 +73,23 @@
 	// the project ID we can extract all clusters in the same project to use
 	// for name comparison.
 	let resource: Kubernetes.KubernetesClusterRead | undefined = $state();
-	let projectID: string;
-	let regionID: string | undefined = $state();
-	let poolValid: Array<boolean> = $state([]);
 
 	$effect.pre(() => {
-		if (!allClusters) return;
+		if (!clusters) return;
 
-		const temp = allClusters.find((x) => x.metadata.id == $page.params.id);
-		if (!temp) return;
+		const cluster = clusters.find((x) => x.metadata.id == $page.params.id);
+		if (!cluster) return;
 
-		resource = temp;
-
-		// Extract immutable data, or stuff that triggers API calls, we don't
-		// want them being invoked for every object update!
-		projectID = temp.metadata.projectId;
-		regionID = temp.spec.regionId;
-
-		for (let i = 0; i < resource.spec.workloadPools.length; i++) {
-			poolValid.push(false);
-		}
-
-		poolValid = poolValid;
+		resource = cluster;
 	});
 
-	let names = $derived.by(() => {
-		if (!allClusters || !resource) return;
+	let projectID = $derived(resource?.metadata.projectId);
+	let regionID = $derived(resource?.spec.regionId);
 
-		return allClusters
-			.filter((x) => x.metadata.id != $page.params.id && x.metadata.projectId == projectID)
-			.map((x) => x.metadata.name);
+	let names: Array<string> = $derived.by(() => {
+		if (!clusters || projectID) return [];
+
+		return clusters.filter((x) => x.metadata.projectId == projectID).map((x) => x.metadata.name);
 	});
 
 	// Once we know the region ID, we can extract the images and flavors.
@@ -133,16 +122,17 @@
 		return [...new Set(images.map((x) => x.spec.softwareVersions?.kubernetes || ''))].reverse();
 	});
 
-	function addPool(): void {
-		if (!resource) return;
+	let workloadPoolValid: boolean = $state(false);
+
+	let workloadPoolActive: boolean = $state(false);
+
+	function workloadPoolAdd(): number {
+		if (!resource) return 0;
 
 		let pool: Kubernetes.KubernetesClusterWorkloadPool = {
 			name: '',
 			machine: {
-				replicas: 3,
-				disk: {
-					size: 50
-				}
+				replicas: 3
 			},
 			autoscaling: {
 				minimumReplicas: 0
@@ -150,23 +140,28 @@
 		};
 
 		resource.spec.workloadPools.push(pool);
-		poolValid.push(false);
 
-		// Array so trigger an update.
-		resource.spec.workloadPools = resource.spec.workloadPools;
-		poolValid = poolValid;
+		return resource.spec.workloadPools.length - 1;
 	}
 
-	function removePool(index: number): void {
+	function workloadPoolRemove(index: number) {
 		if (!resource) return;
 
 		resource.spec.workloadPools.splice(index, 1);
-		poolValid.splice(index, 1);
-
-		// Array so trigger an update.
-		resource.spec.workloadPools = resource.spec.workloadPools;
-		poolValid = poolValid;
 	}
+
+	// A workload pool is valid if all the fields in the pool are valid and
+	// the name is unique among all other pools.
+	let workloadPoolValidFull: boolean = $derived.by(() => {
+		if (!resource || !workloadPoolValid) return false;
+
+		const names = resource.spec.workloadPools.map((x) => x.name);
+		const uniqueNames = new Set(names);
+
+		if (names.length != uniqueNames.size) return false;
+
+		return true;
+	});
 
 	let step: number = $state(0);
 
@@ -188,7 +183,6 @@
 
 		if (!resource) return false;
 		if (resource.spec.workloadPools.length == 0) return false;
-		if (!poolValid.every((x) => x)) return false;
 
 		const names = resource.spec.workloadPools.map((x) => x.name);
 		const uniqueNames = new Set(names);
@@ -201,8 +195,29 @@
 	// Roll up the overall validity for the stepper to allow progress.
 	let valid = $derived(step1valid && step2valid);
 
+	function lookupFlavor(flavorID: string | undefined): Kubernetes.Flavor | undefined {
+		if (!flavors || !flavorID) return;
+
+		return flavors.find((x) => x.metadata.id == flavorID);
+	}
+
+	function replicasString(pool: Kubernetes.KubernetesClusterWorkloadPool): string {
+		let out = '';
+
+		// TODO: should always be set!!
+		if (pool.autoscaling) out += pool.autoscaling.minimumReplicas.toString() + '-';
+		if (pool.machine.replicas) out += pool.machine.replicas.toString();
+
+		out += ' replica';
+
+		if (pool.autoscaling || pool.machine.replicas) out += 's';
+
+		return out;
+	}
+
 	function complete() {
 		if (!projectID || !resource) return;
+
 		const parameters = {
 			organizationID: organizationInfo.id,
 			projectID: projectID,
@@ -254,44 +269,46 @@
 						</ShellSection>
 					{/if}
 				{:else if step === 1}
-					<h2 class="h2">Worker Setup</h2>
-
-					<p>
-						Workload pools provide compute resouce for your cluster. You may have as many as
-						required for your workload. Each pool has a set of CPU, GPU and memory that can be
-						selected from a defined set of flavours. Workload pools support automatic scaling, thus
-						reducing overall operational cost when not in use.
-					</p>
-
-					<!-- eslint-disable @typescript-eslint/no-unused-vars -->
-					{#each resource?.spec.workloadPools || [] as pool, index}
-						<ShellSection title="Workload Pool {index + 1}">
-							{#snippet tools()}
-								<button
-									class="text-2xl"
-									onclick={() => removePool(index)}
-									onkeypress={() => removePool(index)}
-									aria-label="delete workload pool"
-								>
-									<iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
-								</button>
+					{#if resource}
+						<ResourceList
+							title="Workload Pool Configuration"
+							columns={3}
+							items={resource.spec.workloadPools}
+							bind:active={workloadPoolActive}
+							valid={workloadPoolValidFull}
+							add={workloadPoolAdd}
+							remove={workloadPoolRemove}
+						>
+							{#snippet description()}
+								<p>
+									Workload pools provide compute resouce for your cluster. You may have as many as
+									required for your workload. Each pool has a set of CPU, GPU and memory that can be
+									selected from a defined set of flavours. Workload pools support automatic scaling,
+									thus reducing overall operational cost when not in use.
+								</p>
 							{/snippet}
 
-							{#if flavors && resource}
-								<KubernetesWorkloadPool
-									{index}
-									{flavors}
-									bind:pool={resource.spec.workloadPools[index]}
-									bind:valid={poolValid[index]}
-								/>
-							{/if}
-						</ShellSection>
-					{/each}
+							<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+							{#snippet normal(pool: Kubernetes.KubernetesClusterWorkloadPool, index: number)}
+								<div class="h5 font-bold">{pool.name}</div>
 
-					<button class="btn flex gap-2 items-center" onclick={addPool} onkeypress={addPool}>
-						<iconify-icon icon="mdi:add"></iconify-icon>
-						<span>Add New Pool</span>
-					</button>
+								<div>{replicasString(pool)}</div>
+
+								<Flavor flavor={lookupFlavor(pool.machine.flavorId)} />
+							{/snippet}
+
+							<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+							{#snippet expanded(pool: Kubernetes.KubernetesClusterWorkloadPool, index: number)}
+								{#if resource && flavors}
+									<KubernetesWorkloadPool
+										{flavors}
+										bind:pool={resource.spec.workloadPools[index]}
+										bind:valid={workloadPoolValid}
+									/>
+								{/if}
+							{/snippet}
+						</ResourceList>
+					{/if}
 				{/if}
 			{/snippet}
 		</Stepper>

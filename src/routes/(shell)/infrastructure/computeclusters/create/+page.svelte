@@ -5,8 +5,6 @@
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import Select from '$lib/forms/Select.svelte';
-	import Button from '$lib/forms/Button.svelte';
-	import ButtonIcon from '$lib/forms/ButtonIcon.svelte';
 	import Stepper from '$lib/layouts/Stepper.svelte';
 	import ResourceList from '$lib/layouts/ResourceList.svelte';
 	import ComputeWorkloadPool from '$lib/ComputeWorkloadPool.svelte';
@@ -174,29 +172,6 @@
 			.catch((e: Error) => Clients.error(e));
 	});
 
-	let poolValid: boolean = $state(false);
-
-	function addPool(): void {
-		let pool: Compute.ComputeClusterWorkloadPool = {
-			name: '',
-			machine: {
-				replicas: 3,
-				flavorId: '',
-				image: null,
-				publicIPAllocation: {
-					enabled: true
-				},
-				firewall: []
-			}
-		};
-
-		resource.spec.workloadPools.push(pool);
-	}
-
-	function removePool(index: number): void {
-		resource.spec.workloadPools.splice(index, 1);
-	}
-
 	let step: number = $state(0);
 
 	// Step 1 requires a project ID and a region to have been selected.
@@ -219,20 +194,14 @@
 		return true;
 	});
 
-	// Step 3 requires a workload pool to be defined, every workload pool to be valid
-	// and all workload pool names to be unique.
+	// Step 3 requires a workload pool to be defined.
 	let step3valid: boolean = $derived.by(() => {
 		if (step != 2) return true;
 
-		if (workloadPoolActive >= 0) return false;
+		// If there is a workload pool active, it is potentially invalid.
+		if (workloadPoolActive) return false;
 
 		if (resource.spec.workloadPools.length == 0) return false;
-		if (!poolValid) return false;
-
-		const names = resource.spec.workloadPools.map((x) => x.name);
-		const uniqueNames = new Set(names);
-
-		if (names.length != uniqueNames.size) return false;
 
 		return true;
 	});
@@ -255,27 +224,14 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	let firewallRuleActive = $state(-1);
+	let firewallRuleValid: boolean = $state(false);
+
+	let firewallRuleActive: boolean = $state(false);
 
 	// Firewall rules are only active for one workload pool at a time.  The initial pool will
 	// get and SSH ingress, as that's what 99% of people will want e.g. being able to actually
 	// access their cluster.
-	let firewallRules: Array<Compute.FirewallRule> = $state([
-		{
-			direction: Compute.FirewallRuleDirectionEnum.Ingress,
-			protocol: Compute.FirewallRuleProtocolEnum.Tcp,
-			port: 22,
-			prefixes: ['0.0.0.0/0']
-		}
-	]);
-
-	function firewallRuleActivate(index: number) {
-		firewallRuleActive = index;
-	}
-
-	function firewallRuleDeactivate() {
-		firewallRuleActive = -1;
-	}
+	let firewallRules: Array<Compute.FirewallRule> = $state([]);
 
 	function firewallRuleAdd() {
 		firewallRules.push({
@@ -285,45 +241,54 @@
 			prefixes: ['0.0.0.0/0']
 		});
 
-		workloadPoolActivate(firewallRules.length - 1);
+		return firewallRules.length - 1;
 	}
 
 	function firewallRuleRemove(index: number) {
-		firewallRuleDeactivate();
 		firewallRules.splice(index, 1);
 	}
 
-	let firewallRuleValid = $state(false);
+	let workloadPoolValid: boolean = $state(false);
 
-	// Workload pools.
-	let workloadPoolActive = $state(0);
+	let workloadPoolActive: boolean = $state(false);
 
-	function workloadPoolAdd() {
-		addPool();
-		workloadPoolActivate(resource.spec.workloadPools.length - 1);
+	function workloadPoolAdd(): number {
+		let pool: Compute.ComputeClusterWorkloadPool = {
+			name: '',
+			machine: {
+				replicas: 1,
+				flavorId: '',
+				image: null,
+				publicIPAllocation: {
+					enabled: false
+				},
+				firewall: []
+			}
+		};
+
+		resource.spec.workloadPools.push(pool);
+
+		return resource.spec.workloadPools.length - 1;
 	}
 
 	function workloadPoolRemove(index: number) {
-		workloadPoolDeactivate(index);
-		removePool(index);
+		resource.spec.workloadPools.splice(index, 1);
 	}
 
 	// When editing a pool, make a local copy of the firewall rule.
 	function workloadPoolActivate(index: number) {
 		firewallRules = resource.spec.workloadPools[index].machine.firewall || [];
-		workloadPoolActive = index;
 	}
 
 	// When finishing editing a pool, copy the local version to the resource.
 	function workloadPoolDeactivate(index: number) {
 		resource.spec.workloadPools[index].machine.firewall = firewallRules;
-		workloadPoolActive = -1;
 	}
 
 	// A workload pool is valid if all the fields in the pool are valid and
 	// the name is unique among all other pools.
-	function workloadPoolValid(): boolean {
-		if (!poolValid) return false;
+	let workloadPoolValidFull: boolean = $derived.by(() => {
+		if (firewallRuleActive || !workloadPoolValid) return false;
 
 		const names = resource.spec.workloadPools.map((x) => x.name);
 		const uniqueNames = new Set(names);
@@ -331,7 +296,7 @@
 		if (names.length != uniqueNames.size) return false;
 
 		return true;
-	}
+	});
 
 	function lookupFlavor(flavorID: string): Compute.Flavor | undefined {
 		if (!flavors) return;
@@ -374,23 +339,26 @@
 
 				<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 			{:else if index === 2}
-				<div class="flex justify-between items-center">
-					<h2 class="h2">Workload Pools</h2>
-					<Button
-						icon="mdi:add"
-						label="Add"
-						clicked={workloadPoolAdd}
-						disabled={workloadPoolActive >= 0}
-					/>
-				</div>
+				<ResourceList
+					title="Workload Pool Configuration"
+					columns={4}
+					items={resource.spec.workloadPools}
+					initialItem={0}
+					bind:active={workloadPoolActive}
+					valid={workloadPoolValidFull}
+					add={workloadPoolAdd}
+					remove={workloadPoolRemove}
+					activate={workloadPoolActivate}
+					deactivate={workloadPoolDeactivate}
+				>
+					{#snippet description()}
+						<p>
+							Workload pools provide compute resouce for your cluster. You may have as many as
+							required for your workload. Each pool has a set of CPU, GPU and memory that can be
+							selected from a defined set of flavours.
+						</p>
+					{/snippet}
 
-				<p>
-					Workload pools provide compute resouce for your cluster. You may have as many as required
-					for your workload. Each pool has a set of CPU, GPU and memory that can be selected from a
-					defined set of flavours.
-				</p>
-
-				<ResourceList columns={5} items={resource.spec.workloadPools} active={workloadPoolActive}>
 					<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 					{#snippet normal(pool: Compute.ComputeClusterWorkloadPool, index: number)}
 						<div class="h5 font-bold">{pool.name}</div>
@@ -402,123 +370,61 @@
 						<Flavor flavor={lookupFlavor(pool.machine.flavorId)} />
 
 						<Image selector={pool.machine.image?.selector} />
-
-						<div class="text-2xl flex gap-2 text-primary-600-300-token justify-self-end">
-							<ButtonIcon
-								icon="mdi:edit-outline"
-								clicked={() => workloadPoolActivate(index)}
-								disabled={workloadPoolActive >= 0}
-							/>
-							<ButtonIcon
-								icon="mdi:trash-can-outline"
-								clicked={() => workloadPoolRemove(index)}
-								disabled={workloadPoolActive >= 0}
-							/>
-						</div>
 					{/snippet}
 
 					{#snippet expanded(pool: Compute.ComputeClusterWorkloadPool, index: number)}
-						<div class="flex flex-col gap-4">
-							{#if images && flavors}
-								<ComputeWorkloadPool
-									{flavors}
-									{images}
-									bind:pool={resource.spec.workloadPools[index]}
-									bind:valid={poolValid}
-								>
-									{#snippet firewall()}
-										<div class="flex flex-col gap-2">
-											<div class="flex justify-between items-center">
-												<h3 class="h3">Firewall Rules</h3>
-												<Button
-													icon="mdi:add"
-													label="Add"
-													clicked={firewallRuleAdd}
-													disabled={firewallRuleActive > 0}
+						{#if images && flavors}
+							<ComputeWorkloadPool
+								{flavors}
+								{images}
+								bind:pool={resource.spec.workloadPools[index]}
+								bind:valid={workloadPoolValid}
+							>
+								{#snippet firewall()}
+									<ResourceList
+										title="Firewall Rules"
+										titleClass="h3"
+										columns={4}
+										items={firewallRules}
+										bind:active={firewallRuleActive}
+										valid={firewallRuleValid}
+										add={firewallRuleAdd}
+										remove={firewallRuleRemove}
+									>
+										{#snippet normal(rule: Compute.FirewallRule, index: number)}
+											<div class="flex gap-2 items-center">
+												<iconify-icon icon="tabler:arrows-down-up" class="text-2xl"></iconify-icon>
+												{rule.direction}
+											</div>
+											<div class="flex gap-2 items-center">
+												<iconify-icon icon="tabler:protocol" class="text-2xl"></iconify-icon>
+												{rule.protocol}
+											</div>
+											<div class="flex gap-2 items-center">
+												<iconify-icon icon="fluent:usb-port-24-regular" class="text-2xl"
+												></iconify-icon>
+												{rule.port.toString() + (rule.portMax ? '-' + rule.portMax.toString() : '')}
+											</div>
+											<div class="flex gap-2 items-center">
+												<iconify-icon icon="mdi:check-network-outline" class="text-2xl"
+												></iconify-icon>
+
+												{rule.prefixes.join(', ')}
+											</div>
+										{/snippet}
+
+										{#snippet expanded(rule: Compute.FirewallRule, index: number)}
+											<div class="flex flex-col gap-4">
+												<ComputeWorkloadPoolSecurityRule
+													bind:rule={firewallRules[index]}
+													bind:valid={firewallRuleValid}
 												/>
 											</div>
-
-											<ResourceList columns={5} items={firewallRules} active={firewallRuleActive}>
-												{#snippet normal(rule: Compute.FirewallRule, index: number)}
-													<div class="flex gap-2">
-														<div class="font-bold">Direction</div>
-														{rule.direction}
-													</div>
-													<div class="flex gap-2">
-														<div class="font-bold">Protocol</div>
-														{rule.protocol}
-													</div>
-													<div class="flex gap-2">
-														<div class="font-bold">Port</div>
-														{rule.port}
-													</div>
-													<div class="flex gap-2">
-														<div class="font-bold">Prefixes</div>
-
-														{rule.prefixes.join(', ')}
-													</div>
-													<div
-														class="text-2xl flex gap-2 text-primary-600-300-token justify-self-end"
-													>
-														<ButtonIcon
-															icon="mdi:edit-outline"
-															clicked={() => firewallRuleActivate(index)}
-															disabled={firewallRuleActive >= 0}
-														/>
-														<ButtonIcon
-															icon="mdi:trash-can-outline"
-															clicked={() => firewallRuleRemove(index)}
-															disabled={firewallRuleActive >= 0}
-														/>
-													</div>
-												{/snippet}
-
-												{#snippet expanded(rule: Compute.FirewallRule, index: number)}
-													<div class="flex flex-col gap-4">
-														<ComputeWorkloadPoolSecurityRule
-															bind:rule={firewallRules[index]}
-															bind:valid={firewallRuleValid}
-														/>
-
-														<div class="flex justify-between">
-															<Button
-																icon="mdi-trash-can-outline"
-																label="Delete Rule"
-																class="variant-outline-error"
-																clicked={() => firewallRuleRemove(index)}
-															/>
-															<Button
-																icon="mdi:check"
-																label="Update Rule"
-																class="variant-filled-primary"
-																clicked={firewallRuleDeactivate}
-																disabled={!firewallRuleValid}
-															/>
-														</div>
-													</div>
-												{/snippet}
-											</ResourceList>
-										</div>
-									{/snippet}
-								</ComputeWorkloadPool>
-							{/if}
-
-							<div class="flex justify-between">
-								<Button
-									icon="mdi-trash-can-outline"
-									label="Delete Pool"
-									class="variant-outline-error"
-									clicked={() => workloadPoolRemove(index)}
-								/>
-								<Button
-									icon="mdi:check"
-									label="Update Pool"
-									class="variant-filled-primary"
-									clicked={() => workloadPoolDeactivate(index)}
-									disabled={firewallRuleActive >= 0 || !workloadPoolValid()}
-								/>
-							</div>
-						</div>
+										{/snippet}
+									</ResourceList>
+								{/snippet}
+							</ComputeWorkloadPool>
+						{/if}
 					{/snippet}
 				</ResourceList>
 			{/if}
