@@ -166,7 +166,13 @@
 			{/if}
 		</ShellSection>
 
-		<div class="flex gap-4 justify-between">
+		<div class="flex justify-between">
+			<Button
+				icon="mdi:cancel-bold"
+				label="Cancel"
+				class="variant-outline-primary"
+				href="/identity/serviceaccounts"
+			/>
 			<Button
 				icon="mdi:refresh"
 				label="Refresh Access Token"

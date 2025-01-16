@@ -128,7 +128,13 @@
 			{/if}
 		</ShellSection>
 
-		<div class="flex">
+		<div class="flex justify-between">
+			<Button
+				icon="mdi:cancel-bold"
+				label="Cancel"
+				class="variant-outline-primary"
+				href="/identity/serviceaccounts"
+			/>
 			<Button
 				icon="mdi:tick"
 				label="Create"
