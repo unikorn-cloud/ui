@@ -60,12 +60,8 @@
 
 	let resources: Array<Identity.Oauth2ProviderRead> | undefined = $state();
 
-	function update(
-		at: InternalToken,
-		organizationInfo: Stores.OrganizationInfo,
-		allowed: boolean
-	): void {
-		if (!at || !organizationInfo || !allowed) return;
+	function update() {
+		if (!allowed) return;
 
 		const parameters = {
 			organizationID: organizationInfo.id
@@ -77,7 +73,9 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	const ticker = setInterval(() => update(at, organizationInfo, allowed), 5000);
+	$effect.pre(() => update());
+
+	const ticker = setInterval(() => update(), 5000);
 	onDestroy(() => clearInterval(ticker));
 
 	function remove(resource: Identity.Oauth2ProviderRead): void {

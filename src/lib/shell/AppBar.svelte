@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { browser } from '$app/environment';
 	import MD5 from 'crypto-js/md5';
 

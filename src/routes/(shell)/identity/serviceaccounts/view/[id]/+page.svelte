@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
 	import { page } from '$app/stores';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
@@ -46,9 +45,7 @@
 	let serviceAccounts: Array<Identity.ServiceAccountRead> | undefined = $state();
 	let groups: Array<Identity.GroupRead> | undefined = $state();
 
-	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
-		if (!at || !organizationInfo) return;
-
+	$effect.pre(() => {
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -62,31 +59,21 @@
 			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
 			.then((v: Array<Identity.GroupRead>) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		update(at, organizationInfo);
 	});
 
 	// Once we know the service accounts, select the one we are viewing.
-	let serviceAccount: Identity.ServiceAccountRead | undefined = $state();
-
-	function updateServiceAccount(serviceAccounts: Array<Identity.ServiceAccountRead> | undefined) {
+	let serviceAccount = $derived.by(() => {
 		if (!serviceAccounts) return;
 
 		// Find our group based on ID.
-		const temp = serviceAccounts.find((x) => x.metadata.id == $page.params.id);
-		if (!temp) return;
+		const serviceAccount = serviceAccounts.find((x) => x.metadata.id == $page.params.id);
+		if (!serviceAccount) return;
 
 		// Add stuff to bind to...
-		if (!temp.spec) temp.spec = {};
-		if (!temp.spec.groupIDs) temp.spec.groupIDs = [];
+		if (!serviceAccount.spec) serviceAccount.spec = {};
+		if (!serviceAccount.spec.groupIDs) serviceAccount.spec.groupIDs = [];
 
-		serviceAccount = temp;
-	}
-
-	run(() => {
-		updateServiceAccount(serviceAccounts);
+		return serviceAccount;
 	});
 
 	function submit() {
@@ -144,7 +131,7 @@
 			<Button
 				icon="mdi:tick"
 				label="Done"
-				variant="variant-filled-primary"
+				class="variant-filled-primary"
 				href="/identity/serviceaccounts"
 			/>
 		</div>
@@ -183,11 +170,11 @@
 			<Button
 				icon="mdi:refresh"
 				label="Refresh Access Token"
+				class="variant-outline-primary"
 				clicked={rotate}
-				class="btn variant-outline-primary"
 			/>
 
-			<Button icon="mdi:tick" label="Update" clicked={submit} class="btn variant-filled-primary" />
+			<Button icon="mdi:tick" label="Update" class="variant-filled-primary" clicked={submit} />
 		</div>
 	{/if}
 </ShellPage>

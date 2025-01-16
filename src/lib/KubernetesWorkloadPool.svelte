@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as Region from '$lib/openapi/region';
 
@@ -34,7 +32,7 @@
 		pool.machine.flavorId = flavors[0].metadata.id;
 	}
 
-	run(() => {
+	$effect.pre(() => {
 		updateFlavors(flavors);
 	});
 
@@ -51,21 +49,17 @@
 		}
 	}
 
-	run(() => {
+	$effect.pre(() => {
 		updateAutoscaling(autoscaling);
 	});
 
 	let persistentStorage: boolean = $state(Boolean(pool.machine.disk));
 
-	function updateDisk(
-		enabled: boolean,
-		flavors: Array<Region.Flavor>,
-		flavorID: string | undefined
-	) {
-		if (!flavors || !flavorID) return;
+	$effect.pre(() => {
+		if (!flavors || !pool.machine.flavorId) return;
 
 		/* Volumes cannot be used on baremetal nodes */
-		const allowed = !lookupFlavor(flavors, flavorID).spec.baremetal;
+		const allowed = !lookupFlavor(flavors, pool.machine.flavorId).spec.baremetal;
 		if (!allowed) {
 			if (pool.machine.disk) {
 				delete pool.machine.disk;
@@ -74,20 +68,16 @@
 			return;
 		}
 
-		if (enabled && !pool.machine.disk) {
+		if (persistentStorage && !pool.machine.disk) {
 			pool.machine.disk = {
 				size: 50
 			};
-		} else if (!enabled && pool.machine.disk) {
+		} else if (!persistentStorage && pool.machine.disk) {
 			delete pool.machine.disk;
 		}
-	}
-
-	run(() => {
-		updateDisk(persistentStorage, flavors, pool.machine.flavorId);
 	});
 
-	run(() => {
+	$effect.pre(() => {
 		valid = Validation.kubernetesNameValid(pool.name);
 	});
 

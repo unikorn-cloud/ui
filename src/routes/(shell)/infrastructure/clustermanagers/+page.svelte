@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
@@ -53,8 +51,6 @@
 	let projects: Array<Identity.ProjectRead> | undefined = $state();
 
 	function update(): void {
-		if (!at || !organizationInfo) return;
-
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -70,7 +66,7 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	run(() => {
+	$effect.pre(() => {
 		update();
 	});
 

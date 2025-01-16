@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { page } from '$app/stores';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
@@ -47,9 +45,7 @@
 	let availableRoles: Array<Identity.RoleRead> | undefined = $state();
 	let availableGroups: Array<Identity.AvailableGroup> | undefined = $state();
 
-	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
-		if (!at || !organizationInfo) return;
-
+	$effect.pre(() => {
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -67,35 +63,21 @@
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDAvailableGroupsGet(parameters)
 			.then((v: Array<Identity.AvailableGroup>) => {
-				if (v.length == 0) return;
 				availableGroups = v;
 			})
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		update(at, organizationInfo);
 	});
 
 	// Once we know the groups, select the one we are viewing.
-	let group: Identity.GroupRead | undefined = $state();
+	let group: Identity.GroupRead | undefined = $derived.by(() => {
+		return (groups || []).find((x) => x.metadata.id == $page.params.id);
+	});
 
-	function updateGroup(groups: Array<Identity.GroupRead> | undefined) {
-		if (!groups) return;
-
-		// Find our group based on ID.
-		const temp = groups.find((x) => x.metadata.id == $page.params.id);
-		if (!temp) return;
-
-		// Add a provider groups array so the multiselet bind doesn't barf.
-		if (!temp.spec.providerGroups) temp.spec.providerGroups = [];
-		if (!temp.spec.users) temp.spec.users = [];
-
-		group = temp;
-	}
-
-	run(() => {
-		updateGroup(groups);
+	// Add in any defaults before we rnder the DOM so we have things to bind to.
+	$effect.pre(() => {
+		if (!group) return;
+		if (!group.spec.providerGroups) group.spec.providerGroups = [];
+		if (!group.spec.users) group.spec.users = [];
 	});
 
 	let names: Array<string> = $derived(
@@ -170,7 +152,7 @@
 			<Button
 				icon="mdi:tick"
 				label="Update"
-				class="btn variant-filled-primary"
+				class="variant-filled-primary"
 				clicked={submit}
 				disabled={!valid}
 			/>

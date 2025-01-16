@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -58,8 +56,8 @@
 	let providers: Array<Identity.Oauth2ProviderRead> | undefined = $state();
 	let organizationProviders: Array<Identity.Oauth2ProviderRead> | undefined = $state();
 
-	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo, allowed: boolean) {
-		if (!at || !organizationInfo || !allowed) {
+	$effect.pre(() => {
+		if (!allowed) {
 			return;
 		}
 
@@ -81,10 +79,6 @@
 			.apiV1OrganizationsOrganizationIDOauth2providersGet(parameters)
 			.then((v: Array<Identity.Oauth2ProviderRead>) => (organizationProviders = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		update(at, organizationInfo, allowed);
 	});
 
 	function submit() {
@@ -117,13 +111,14 @@
 
 	let metadataValid: boolean = $state(false);
 	let domainValid: boolean = $state(false);
-	let valid: boolean = $state(false);
 
-	run(() => {
-		valid =
-			metadataValid && organization?.spec.organizationType == Identity.OrganizationType.Domain
-				? domainValid
-				: true;
+	let valid: boolean = $derived.by(() => {
+		if (!organization) return false;
+		if (!metadataValid) return false;
+		if (organization.spec.organizationType == Identity.OrganizationType.Domain) {
+			if (!domainValid) return false;
+		}
+		return true;
 	});
 
 	let oauth2ProviderType = $derived(getOauth2ProviderType(providers, organization));
@@ -221,7 +216,7 @@
 				<Button
 					icon="mdi:tick"
 					label="Update"
-					class="btn variant-filled-primary"
+					class="variant-filled-primary"
 					clicked={submit}
 					disabled={!valid}
 				/>

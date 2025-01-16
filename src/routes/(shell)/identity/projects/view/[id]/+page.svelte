@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { page } from '$app/stores';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
@@ -44,9 +42,7 @@
 	let projects: Array<Identity.ProjectRead> | undefined = $state();
 	let groups: Array<Identity.GroupRead> | undefined = $state();
 
-	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
-		if (!at || !organizationInfo) return;
-
+	$effect.pre(() => {
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -60,23 +56,15 @@
 			.apiV1OrganizationsOrganizationIDGroupsGet(parameters)
 			.then((v: Array<Identity.GroupRead>) => (groups = v))
 			.catch((e: Error) => Clients.error(e));
-	}
+	});
 
-	let project: Identity.ProjectRead | undefined = $state();
+	let project = $derived.by(() => {
+		return (projects || []).find((x) => x.metadata.id == $page.params.id);
+	});
 
-	function updateProject(projects: Array<Identity.ProjectRead> | undefined) {
-		if (!projects) return;
-
-		const temp = projects.find((x) => x.metadata.id == $page.params.id);
-		if (!temp) return;
-
-		if (!temp.spec.groupIDs) temp.spec.groupIDs = [];
-
-		project = temp;
-	}
-
-	run(() => {
-		updateProject(projects);
+	$effect.pre(() => {
+		if (!project) return;
+		if (!project.spec.groupIDs) project.spec.groupIDs = [];
 	});
 
 	let names: Array<string> = $derived(
@@ -88,10 +76,6 @@
 	let valid = $derived(
 		metadataValid && project?.spec.groupIDs && project?.spec.groupIDs.length != 0
 	);
-
-	run(() => {
-		update(at, organizationInfo);
-	});
 
 	function submit() {
 		if (!project) return;
@@ -133,7 +117,7 @@
 			<Button
 				icon="mdi:tick"
 				label="Update"
-				class="btn variant-filled-primary"
+				class="variant-filled-primary"
 				clicked={submit}
 				disabled={!valid}
 			/>

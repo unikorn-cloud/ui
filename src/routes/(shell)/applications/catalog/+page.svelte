@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -38,9 +36,7 @@
 
 	let applications: Array<Application.ApplicationRead> | undefined = $state();
 
-	function updateApplications(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
-		if (!at || !organizationInfo) return;
-
+	$effect.pre(() => {
 		const parameters = {
 			organizationID: organizationInfo.id,
 			projectID: 'TODO'
@@ -50,10 +46,6 @@
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDApplicationsGet(parameters)
 			.then((v: Array<Application.ApplicationRead>) => (applications = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateApplications(at, organizationInfo);
 	});
 
 	function applicationCategories(app: Application.ApplicationRead): Array<string> {

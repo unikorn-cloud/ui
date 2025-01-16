@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import * as Compute from '$lib/openapi/compute';
 	import Select from '$lib/forms/Select.svelte';
 	import TextInput from '$lib/forms/TextInput.svelte';

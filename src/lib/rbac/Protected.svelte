@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import * as Identity from '$lib/openapi/identity';
 	import * as RBAC from '$lib/rbac';
 	import * as Stores from '$lib/stores';
@@ -30,8 +28,6 @@
 
 	Stores.organizationStore.subscribe((v: Stores.OrganizationInfo) => {
 		organizationInfo = v;
-
-		update(organizationScopes, projectScopes);
 	});
 
 	function organizationScopesAllowed(scopes: Array<RBAC.OrganizationScope> | null): boolean {
@@ -57,20 +53,13 @@
 		);
 	}
 
-	function update(
-		organizationScopes: Array<RBAC.OrganizationScope> | null,
-		projectScopes: Array<RBAC.ProjectScope> | null
-	) {
+	$effect.pre(() => {
 		if (!organizationScopes && !projectScopes) {
 			allowed = false;
 			return;
 		}
 
 		allowed = organizationScopesAllowed(organizationScopes) && projectScopesAllowed(projectScopes);
-	}
-
-	run(() => {
-		update(organizationScopes, projectScopes);
 	});
 </script>
 

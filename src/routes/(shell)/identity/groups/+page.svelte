@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -63,8 +61,8 @@
 
 	let groups: Array<Identity.GroupRead> | undefined = $state();
 
-	function update(at: InternalToken, organizationInfo: Stores.OrganizationInfo, allowed: boolean) {
-		if (!at || !organizationInfo || !allowed) return;
+	function update(allowed: boolean) {
+		if (!allowed) return;
 
 		const parameters = {
 			organizationID: organizationInfo.id
@@ -76,11 +74,11 @@
 			.catch((e: Error) => Clients.error(e));
 	}
 
-	run(() => {
-		update(at, organizationInfo, allowed);
+	$effect.pre(() => {
+		update(allowed);
 	});
 
-	const ticker = setInterval(() => update(at, organizationInfo, allowed), 5000);
+	const ticker = setInterval(() => update(allowed), 5000);
 	onDestroy(() => clearInterval(ticker));
 
 	function remove(resource: Identity.GroupRead) {
@@ -98,7 +96,7 @@
 
 				Clients.identity(toastStore, at)
 					.apiV1OrganizationsOrganizationIDGroupsGroupidDelete(parameters)
-					.then(() => update(at, organizationInfo, allowed))
+					.then(() => update(allowed))
 					.catch((e: Error) => Clients.error(e));
 			}
 		};

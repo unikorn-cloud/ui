@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	/* Page setup */
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -87,11 +85,12 @@
 
 	// Grab the root resources from the API.
 	let projects: Array<Identity.ProjectRead> | undefined = $state();
+	let regions: Array<Region.RegionRead> | undefined = $state();
+
 	let projectID: string | undefined = $state();
+	let regionID: string | undefined = $state();
 
-	function updateProjects(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
-		if (!at || !organizationInfo) return;
-
+	$effect.pre(() => {
 		const parameters = {
 			organizationID: organizationInfo.id
 		};
@@ -99,54 +98,30 @@
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsGet(parameters)
 			.then((v: Array<Identity.ProjectRead>) => {
-				if (v.length == 0) return;
-
 				projects = v;
-				projectID = projects[0].metadata.id;
+				if (projects.length) projectID = projects[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
-	}
 
-	run(() => {
-		updateProjects(at, organizationInfo);
-	});
-
-	let regions: Array<Region.RegionRead> | undefined = $state();
-	let regionID: string | undefined = $state();
-
-	function updateRegions(at: InternalToken, organizationInfo: Stores.OrganizationInfo) {
-		if (!at || !organizationInfo) return;
-
-		const parameters = {
-			organizationID: organizationInfo.id
-		};
-
-		/* Get top-level resources required for the first step */
-		/* TODO: parallelize with Promise.all */
 		Clients.region(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRegionsGet(parameters)
 			.then((v: Array<Region.RegionRead>) => {
-				if (v.length == 0) return;
-
 				regions = v;
-				regionID = regions[0].metadata.id;
+				if (regions.length) regionID = regions[0].metadata.id;
 			})
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateRegions(at, organizationInfo);
 	});
 
-	run(() => {
+	// When the region is updated, update the resource.
+	$effect.pre(() => {
 		if (regionID) resource.spec.regionId = regionID;
 	});
 
 	let clusters: Array<Compute.ComputeClusterRead> | undefined = $state();
 
 	// Once a project ID is set we can poll the clusters.
-	function updateClusters(at: InternalToken, projectID: string | undefined): void {
-		if (!at || !projectID) return;
+	$effect.pre(() => {
+		if (!projectID) return;
 
 		const parameters = {
 			organizationID: organizationInfo.id
@@ -162,10 +137,6 @@
 				clusters = temp;
 			})
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateClusters(at, projectID);
 	});
 
 	let names = $derived((clusters || []).map((x) => x.metadata.name));
@@ -173,12 +144,8 @@
 	// Once a region is set we can poll images and flavors.
 	let images: Array<Compute.Image> | undefined = $state();
 
-	function updateImages(
-		at: InternalToken,
-		organizationInfo: Stores.OrganizationInfo,
-		regionID: string | undefined
-	): void {
-		if (!at || !organizationInfo || !regionID) return;
+	$effect.pre(() => {
+		if (!regionID) return;
 
 		const parameters = {
 			organizationID: organizationInfo.id,
@@ -189,20 +156,12 @@
 			.apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet(parameters)
 			.then((v: Array<Compute.Image>) => (images = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateImages(at, organizationInfo, regionID);
 	});
 
 	let flavors: Array<Compute.Flavor> | undefined = $state();
 
-	function updateFlavors(
-		at: InternalToken,
-		organizationInfo: Stores.OrganizationInfo,
-		regionID: string | undefined
-	): void {
-		if (!at || !organizationInfo || !regionID) return;
+	$effect.pre(() => {
+		if (!regionID) return;
 
 		const parameters = {
 			organizationID: organizationInfo.id,
@@ -213,10 +172,6 @@
 			.apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet(parameters)
 			.then((v: Array<Compute.Flavor>) => (flavors = v))
 			.catch((e: Error) => Clients.error(e));
-	}
-
-	run(() => {
-		updateFlavors(at, organizationInfo, regionID);
 	});
 
 	let poolValid: boolean = $state(false);
@@ -426,7 +381,6 @@
 						label="Add"
 						clicked={workloadPoolAdd}
 						disabled={workloadPoolActive >= 0}
-						variant="none"
 					/>
 				</div>
 
@@ -481,7 +435,6 @@
 													label="Add"
 													clicked={firewallRuleAdd}
 													disabled={firewallRuleActive > 0}
-													variant="none"
 												/>
 											</div>
 
@@ -531,13 +484,13 @@
 															<Button
 																icon="mdi-trash-can-outline"
 																label="Delete Rule"
-																class="btn variant-outline-error"
+																class="variant-outline-error"
 																clicked={() => firewallRuleRemove(index)}
 															/>
 															<Button
 																icon="mdi:check"
 																label="Update Rule"
-																class="btn variant-filled-primary"
+																class="variant-filled-primary"
 																clicked={firewallRuleDeactivate}
 																disabled={!firewallRuleValid}
 															/>
@@ -554,13 +507,13 @@
 								<Button
 									icon="mdi-trash-can-outline"
 									label="Delete Pool"
-									class="btn variant-outline-error"
+									class="variant-outline-error"
 									clicked={() => workloadPoolRemove(index)}
 								/>
 								<Button
 									icon="mdi:check"
 									label="Update Pool"
-									class="btn variant-filled-primary"
+									class="variant-filled-primary"
 									clicked={() => workloadPoolDeactivate(index)}
 									disabled={firewallRuleActive >= 0 || !workloadPoolValid()}
 								/>
