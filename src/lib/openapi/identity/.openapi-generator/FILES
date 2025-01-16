@@ -6,7 +6,6 @@ models/AclEndpoint.ts
 models/AclOperation.ts
 models/AclScopedEndpoints.ts
 models/AuthMethod.ts
-models/AvailableGroup.ts
 models/Claim.ts
 models/CodeChallengeMethod.ts
 models/GrantType.ts
