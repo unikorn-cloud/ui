@@ -5,7 +5,7 @@
 	import Badge from '$lib/layouts/Badge.svelte';
 
 	interface Props {
-		metadata: Kubernetes.ResourceReadMetadata;
+		metadata?: Kubernetes.ResourceReadMetadata;
 		extra?: import('svelte').Snippet;
 	}
 
@@ -13,9 +13,11 @@
 </script>
 
 <div class="flex flex-col gap-2 items-center">
-	<Badge icon={Status.icon(metadata)} iconcolor={Status.color(metadata)}>
-		{metadata.provisioningStatus}
-	</Badge>
+	{#if metadata}
+		<Badge icon={Status.icon(metadata)} iconcolor={Status.color(metadata)}>
+			{metadata.provisioningStatus}
+		</Badge>
+	{/if}
 
 	{@render extra?.()}
 </div>

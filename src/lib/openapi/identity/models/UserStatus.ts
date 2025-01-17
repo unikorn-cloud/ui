@@ -14,51 +14,44 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * A group.
+ * Additional user metadata.
  * @export
- * @interface GroupSpec
+ * @interface UserStatus
  */
-export interface GroupSpec {
+export interface UserStatus {
     /**
-     * A list of strings.
-     * @type {Array<string>}
-     * @memberof GroupSpec
+     * The last time a user performed some action.  This is not guaranteed to
+     * be completely accurate depending on performance constraints.
+     * @type {Date}
+     * @memberof UserStatus
      */
-    userIDs?: Array<string>;
-    /**
-     * A list of strings.
-     * @type {Array<string>}
-     * @memberof GroupSpec
-     */
-    roleIDs: Array<string>;
+    lastActive?: Date;
 }
 
 /**
- * Check if a given object implements the GroupSpec interface.
+ * Check if a given object implements the UserStatus interface.
  */
-export function instanceOfGroupSpec(value: object): boolean {
+export function instanceOfUserStatus(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "roleIDs" in value;
 
     return isInstance;
 }
 
-export function GroupSpecFromJSON(json: any): GroupSpec {
-    return GroupSpecFromJSONTyped(json, false);
+export function UserStatusFromJSON(json: any): UserStatus {
+    return UserStatusFromJSONTyped(json, false);
 }
 
-export function GroupSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean): GroupSpec {
+export function UserStatusFromJSONTyped(json: any, ignoreDiscriminator: boolean): UserStatus {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'userIDs': !exists(json, 'userIDs') ? undefined : json['userIDs'],
-        'roleIDs': json['roleIDs'],
+        'lastActive': !exists(json, 'lastActive') ? undefined : (new Date(json['lastActive'])),
     };
 }
 
-export function GroupSpecToJSON(value?: GroupSpec | null): any {
+export function UserStatusToJSON(value?: UserStatus | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -67,8 +60,7 @@ export function GroupSpecToJSON(value?: GroupSpec | null): any {
     }
     return {
         
-        'userIDs': value.userIDs,
-        'roleIDs': value.roleIDs,
+        'lastActive': value.lastActive === undefined ? undefined : (value.lastActive.toISOString()),
     };
 }
 

@@ -227,7 +227,7 @@
 
 		Clients.kubernetes(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDPut(parameters)
-			.then(() => window.location.assign('/infrastructure/clusters'))
+			.then(() => window.location.assign('/kubernetes/clusters'))
 			.catch((e: Error) => Clients.error(e));
 	}
 </script>

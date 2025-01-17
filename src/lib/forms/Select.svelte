@@ -8,10 +8,12 @@
 		label: string;
 		// Formatting hint.
 		hint?: string;
+		// Whether the input is disabled.
+		disabled?: boolean;
 		children?: import('svelte').Snippet;
 	}
 
-	let { id, value = $bindable(), label, hint = '', children }: Props = $props();
+	let { id, value = $bindable(), label, hint = '', disabled = false, children }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-4">
@@ -23,7 +25,7 @@
 		{/if}
 	</div>
 
-	<select {id} class="select" bind:value>
+	<select {id} class="select" {disabled} bind:value>
 		{@render children?.()}
 	</select>
 </div>

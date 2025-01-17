@@ -7,7 +7,6 @@
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import MultiSelect from '$lib/forms/MultiSelect.svelte';
-	import InputChips from '$lib/forms/InputChips.svelte';
 	import Button from '$lib/forms/Button.svelte';
 
 	const settings: ShellPageSettings = {
@@ -42,7 +41,8 @@
 
 	// Get root resources from the API.
 	let groups: Array<Identity.GroupRead> | undefined = $state();
-	let availableRoles: Array<Identity.RoleRead> | undefined = $state();
+	let roles: Array<Identity.RoleRead> | undefined = $state();
+	let users: Array<Identity.UserRead> | undefined = $state();
 
 	$effect.pre(() => {
 		const parameters = {
@@ -56,19 +56,22 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRolesGet(parameters)
-			.then((v: Array<Identity.RoleRead>) => (availableRoles = v))
+			.then((v: Array<Identity.RoleRead>) => (roles = v))
+			.catch((e: Error) => Clients.error(e));
+
+		Clients.identity(toastStore, at)
+			.apiV1OrganizationsOrganizationIDUsersGet(parameters)
+			.then((v: Array<Identity.UserRead>) => (users = v))
 			.catch((e: Error) => Clients.error(e));
 	});
 
 	// Once we know the groups, select the one we are viewing.
-	let group: Identity.GroupRead | undefined = $derived.by(() => {
-		return (groups || []).find((x) => x.metadata.id == $page.params.id);
-	});
+	let group = $derived((groups || []).find((x) => x.metadata.id == $page.params.id));
 
 	// Add in any defaults before we rnder the DOM so we have things to bind to.
 	$effect.pre(() => {
 		if (!group) return;
-		if (!group.spec.users) group.spec.users = [];
+		if (!group.spec.userIDs) group.spec.userIDs = [];
 	});
 
 	let names: Array<string> = $derived(
@@ -101,14 +104,14 @@
 		<ShellMetadataSection metadata={group.metadata} {names} bind:valid={metadataValid} />
 
 		<ShellSection title="Roles">
-			{#if availableRoles}
+			{#if roles}
 				<MultiSelect
 					id="role-ids"
 					label="Select roles for group members."
 					hint="You must select at least one role."
 					bind:value={group.spec.roleIDs}
 				>
-					{#each availableRoles || [] as role}
+					{#each roles || [] as role}
 						<option value={role.metadata.id}>{role.metadata.name}</option>
 					{/each}
 				</MultiSelect>
@@ -116,13 +119,12 @@
 		</ShellSection>
 
 		<ShellSection title="Users">
-			{#if group.spec.users}
-				<InputChips
-					name="users"
-					label="Include users by email address."
-					hint="This must be the user's primary email address, not an alias."
-					bind:value={group.spec.users}
-				/>
+			{#if group.spec.userIDs}
+				<MultiSelect id="user-ids" label="Select group members." bind:value={group.spec.userIDs}>
+					{#each users || [] as user}
+						<option value={user.metadata.id}>{user.spec.subject}</option>
+					{/each}
+				</MultiSelect>
 			{/if}
 		</ShellSection>
 

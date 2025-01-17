@@ -38,19 +38,18 @@
 			]
 		},
 		{
-			base: '/applications',
-			title: 'Applications',
-			icon: 'mdi:application-outline',
-			items: [{ label: 'Catalog', href: '/applications/catalog' }]
+			base: '/compute',
+			title: 'Compute',
+			icon: 'mdi:computer',
+			items: [{ label: 'Clusters', href: '/compute/clusters' }]
 		},
 		{
-			base: '/infrastructure',
-			title: 'Infrastucture',
-			icon: 'mdi:cloud-outline',
+			base: '/kubernetes',
+			title: 'Kubernetes',
+			icon: 'mdi:kubernetes',
 			items: [
-				{ label: 'Kubernetes Clusters', href: '/infrastructure/clusters' },
-				{ label: 'Kubernetes Cluster Managers', href: '/infrastructure/clustermanagers' },
-				{ label: 'Compute Clusters', href: '/infrastructure/computeclusters' }
+				{ label: 'Clusters', href: '/kubernetes/clusters' },
+				{ label: 'Cluster Managers', href: '/kubernetes/clustermanagers' }
 			]
 		},
 		{

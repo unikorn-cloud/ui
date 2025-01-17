@@ -5,6 +5,7 @@
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellViewHeaderSimple from '$lib/layouts/ShellViewHeaderSimple.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
+	import Select from '$lib/forms/Select.svelte';
 	import MultiSelect from '$lib/forms/MultiSelect.svelte';
 	import Button from '$lib/forms/Button.svelte';
 
@@ -39,7 +40,7 @@
 	});
 
 	// Get root resources from the API.
-	let users: Array<Identity.User> | undefined = $state();
+	let users: Array<Identity.UserRead> | undefined = $state();
 	let groups: Array<Identity.GroupRead> | undefined = $state();
 
 	$effect.pre(() => {
@@ -49,7 +50,7 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDUsersGet(parameters)
-			.then((v: Array<Identity.User>) => (users = v))
+			.then((v: Array<Identity.UserRead>) => (users = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
@@ -59,17 +60,11 @@
 	});
 
 	// Once we know the users, select the one we are viewing.
-	let user = $derived.by(() => {
-		if (!users) return;
+	let user = $derived((users || []).find((x) => x.metadata.id == $page.params.id));
 
-		// Find our group based on ID.
-		const user = users.find((x) => x.name == $page.params.id);
+	$effect.pre(() => {
 		if (!user) return;
-
-		// Add stuff to bind to...
-		if (!user.groupIDs) user.groupIDs = [];
-
-		return user;
+		if (!user.spec.groupIDs) user.spec.groupIDs = [];
 	});
 
 	function submit() {
@@ -77,12 +72,12 @@
 
 		const parameters = {
 			organizationID: organizationInfo.id,
-			username: $page.params.id,
-			user: user
+			userID: $page.params.id,
+			userWrite: user
 		};
 
 		Clients.identity(toastStore, at)
-			.apiV1OrganizationsOrganizationIDUsersUsernamePut(parameters)
+			.apiV1OrganizationsOrganizationIDUsersUserIDPut(parameters)
 			.then(() => window.location.assign('/identity/users'))
 			.catch((e: Error) => Clients.error(e));
 	}
@@ -90,15 +85,29 @@
 
 <ShellPage {settings}>
 	{#if user}
-		<ShellViewHeaderSimple name={user.name} />
+		<ShellViewHeaderSimple name={user.spec.subject} />
 
 		<ShellSection title="Access Control">
-			{#if user.groupIDs}
+			<Select
+				id="sa-state"
+				label="Account State"
+				hint="Active users can login and do things, other states don't allow login but retail group memberships."
+				disabled={user.spec.state == Identity.UserState.Pending}
+				bind:value={user.spec.state}
+			>
+				<option value={Identity.UserState.Active}>Active</option>
+				{#if user.spec.state == Identity.UserState.Pending}
+					<option value={Identity.UserState.Pending}>Pending</option>
+				{/if}
+				<option value={Identity.UserState.Suspended}>Suspended</option>
+			</Select>
+
+			{#if user.spec.groupIDs}
 				<MultiSelect
 					id="sa-groups"
 					label="Groups"
 					hint="Select at least one group that the user should be a member of."
-					bind:value={user.groupIDs}
+					bind:value={user.spec.groupIDs}
 				>
 					{#each groups || [] as group}
 						<option value={group.metadata.id}>

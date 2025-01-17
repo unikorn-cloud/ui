@@ -38,7 +38,7 @@
 		at = token;
 	});
 
-	let users: Array<Identity.User> | undefined = $state();
+	let users: Array<Identity.UserRead> | undefined = $state();
 	let groups: Array<Identity.GroupRead> | undefined = $state();
 
 	$effect.pre(() => {
@@ -48,7 +48,7 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDUsersGet(parameters)
-			.then((v: Array<Identity.User>) => (users = v))
+			.then((v: Array<Identity.UserRead>) => (users = v))
 			.catch((e: Error) => Clients.error(e));
 
 		Clients.identity(toastStore, at)
@@ -57,22 +57,25 @@
 			.catch((e: Error) => Clients.error(e));
 	});
 
-	let names = $derived((users || []).map((x) => x.name));
+	let names = $derived((users || []).map((x) => x.spec.subject));
 
-	let resource: Identity.User = $state({
-		name: '',
-		groupIDs: []
+	let resource: Identity.UserWrite = $state({
+		spec: {
+			subject: '',
+			state: Identity.UserState.Active,
+			groupIDs: []
+		}
 	});
 
 	/* Cluster name must be valid, and it must be unique */
 	let usernameValid = $state(false);
 
-	let valid = $derived(usernameValid && resource.groupIDs.length > 0);
+	let valid = $derived(usernameValid && resource.spec.groupIDs.length > 0);
 
 	function submit() {
 		const parameters = {
 			organizationID: organizationInfo.id,
-			user: resource
+			userWrite: resource
 		};
 
 		Clients.identity(toastStore, at)
@@ -86,7 +89,7 @@
 	<ShellSection title="User Information">
 		<TextInput
 			id="name"
-			bind:value={resource.name}
+			bind:value={resource.spec.subject}
 			label="Email Address."
 			hint="Users canonical email address, use of email aliases will not work."
 			validators={[Validation.stringSet, (name: string) => Validation.unique(name, names)]}
@@ -95,12 +98,12 @@
 	</ShellSection>
 
 	<ShellSection title="Access Control">
-		{#if resource.groupIDs}
+		{#if resource.spec.groupIDs}
 			<MultiSelect
 				id="sa-groups"
 				label="Groups"
 				hint="Select at least one group that the user should be a member of."
-				bind:value={resource.groupIDs}
+				bind:value={resource.spec.groupIDs}
 			>
 				{#each groups || [] as group}
 					<option value={group.metadata.id}>

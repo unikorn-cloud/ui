@@ -34,7 +34,8 @@ import type {
   ServiceAccountWrite,
   Token,
   TokenRequestOptions,
-  User,
+  UserRead,
+  UserWrite,
   Userinfo,
 } from '../models/index';
 import {
@@ -76,8 +77,10 @@ import {
     TokenToJSON,
     TokenRequestOptionsFromJSON,
     TokenRequestOptionsToJSON,
-    UserFromJSON,
-    UserToJSON,
+    UserReadFromJSON,
+    UserReadToJSON,
+    UserWriteFromJSON,
+    UserWriteToJSON,
     UserinfoFromJSON,
     UserinfoToJSON,
 } from '../models/index';
@@ -200,18 +203,18 @@ export interface ApiV1OrganizationsOrganizationIDUsersGetRequest {
 
 export interface ApiV1OrganizationsOrganizationIDUsersPostRequest {
     organizationID: string;
-    user: User;
+    userWrite: UserWrite;
 }
 
-export interface ApiV1OrganizationsOrganizationIDUsersUsernameDeleteRequest {
+export interface ApiV1OrganizationsOrganizationIDUsersUserIDDeleteRequest {
     organizationID: string;
-    username: string;
+    userID: string;
 }
 
-export interface ApiV1OrganizationsOrganizationIDUsersUsernamePutRequest {
+export interface ApiV1OrganizationsOrganizationIDUsersUserIDPutRequest {
     organizationID: string;
-    username: string;
-    user: User;
+    userID: string;
+    userWrite: UserWrite;
 }
 
 export interface ApiV1OrganizationsPostRequest {
@@ -1231,7 +1234,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Lists all users.
      */
-    async apiV1OrganizationsOrganizationIDUsersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDUsersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<User>>> {
+    async apiV1OrganizationsOrganizationIDUsersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDUsersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<UserRead>>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDUsersGet.');
         }
@@ -1252,13 +1255,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserReadFromJSON));
     }
 
     /**
      * Lists all users.
      */
-    async apiV1OrganizationsOrganizationIDUsersGet(requestParameters: ApiV1OrganizationsOrganizationIDUsersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<User>> {
+    async apiV1OrganizationsOrganizationIDUsersGet(requestParameters: ApiV1OrganizationsOrganizationIDUsersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<UserRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDUsersGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -1266,13 +1269,13 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Creates a new user and associates with a set of groups.
      */
-    async apiV1OrganizationsOrganizationIDUsersPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDUsersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+    async apiV1OrganizationsOrganizationIDUsersPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDUsersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserRead>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
             throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDUsersPost.');
         }
 
-        if (requestParameters.user === null || requestParameters.user === undefined) {
-            throw new runtime.RequiredError('user','Required parameter requestParameters.user was null or undefined when calling apiV1OrganizationsOrganizationIDUsersPost.');
+        if (requestParameters.userWrite === null || requestParameters.userWrite === undefined) {
+            throw new runtime.RequiredError('userWrite','Required parameter requestParameters.userWrite was null or undefined when calling apiV1OrganizationsOrganizationIDUsersPost.');
         }
 
         const queryParameters: any = {};
@@ -1291,16 +1294,16 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: UserToJSON(requestParameters.user),
+            body: UserWriteToJSON(requestParameters.userWrite),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserReadFromJSON(jsonValue));
     }
 
     /**
      * Creates a new user and associates with a set of groups.
      */
-    async apiV1OrganizationsOrganizationIDUsersPost(requestParameters: ApiV1OrganizationsOrganizationIDUsersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+    async apiV1OrganizationsOrganizationIDUsersPost(requestParameters: ApiV1OrganizationsOrganizationIDUsersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserRead> {
         const response = await this.apiV1OrganizationsOrganizationIDUsersPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -1308,13 +1311,13 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Deletes a user and disassociates them with all groups they are a member of.
      */
-    async apiV1OrganizationsOrganizationIDUsersUsernameDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDUsersUsernameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiV1OrganizationsOrganizationIDUsersUserIDDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDUsersUserIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
-            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUsernameDelete.');
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUserIDDelete.');
         }
 
-        if (requestParameters.username === null || requestParameters.username === undefined) {
-            throw new runtime.RequiredError('username','Required parameter requestParameters.username was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUsernameDelete.');
+        if (requestParameters.userID === null || requestParameters.userID === undefined) {
+            throw new runtime.RequiredError('userID','Required parameter requestParameters.userID was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUserIDDelete.');
         }
 
         const queryParameters: any = {};
@@ -1327,7 +1330,7 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationID}/users/{username}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"username"}}`, encodeURIComponent(String(requestParameters.username))),
+            path: `/api/v1/organizations/{organizationID}/users/{userID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"userID"}}`, encodeURIComponent(String(requestParameters.userID))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -1339,24 +1342,24 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Deletes a user and disassociates them with all groups they are a member of.
      */
-    async apiV1OrganizationsOrganizationIDUsersUsernameDelete(requestParameters: ApiV1OrganizationsOrganizationIDUsersUsernameDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiV1OrganizationsOrganizationIDUsersUsernameDeleteRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDUsersUserIDDelete(requestParameters: ApiV1OrganizationsOrganizationIDUsersUserIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDUsersUserIDDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
      * Updates a user.
      */
-    async apiV1OrganizationsOrganizationIDUsersUsernamePutRaw(requestParameters: ApiV1OrganizationsOrganizationIDUsersUsernamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+    async apiV1OrganizationsOrganizationIDUsersUserIDPutRaw(requestParameters: ApiV1OrganizationsOrganizationIDUsersUserIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserRead>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
-            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUsernamePut.');
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUserIDPut.');
         }
 
-        if (requestParameters.username === null || requestParameters.username === undefined) {
-            throw new runtime.RequiredError('username','Required parameter requestParameters.username was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUsernamePut.');
+        if (requestParameters.userID === null || requestParameters.userID === undefined) {
+            throw new runtime.RequiredError('userID','Required parameter requestParameters.userID was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUserIDPut.');
         }
 
-        if (requestParameters.user === null || requestParameters.user === undefined) {
-            throw new runtime.RequiredError('user','Required parameter requestParameters.user was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUsernamePut.');
+        if (requestParameters.userWrite === null || requestParameters.userWrite === undefined) {
+            throw new runtime.RequiredError('userWrite','Required parameter requestParameters.userWrite was null or undefined when calling apiV1OrganizationsOrganizationIDUsersUserIDPut.');
         }
 
         const queryParameters: any = {};
@@ -1371,21 +1374,21 @@ export class DefaultApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/v1/organizations/{organizationID}/users/{username}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"username"}}`, encodeURIComponent(String(requestParameters.username))),
+            path: `/api/v1/organizations/{organizationID}/users/{userID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"userID"}}`, encodeURIComponent(String(requestParameters.userID))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: UserToJSON(requestParameters.user),
+            body: UserWriteToJSON(requestParameters.userWrite),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserReadFromJSON(jsonValue));
     }
 
     /**
      * Updates a user.
      */
-    async apiV1OrganizationsOrganizationIDUsersUsernamePut(requestParameters: ApiV1OrganizationsOrganizationIDUsersUsernamePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
-        const response = await this.apiV1OrganizationsOrganizationIDUsersUsernamePutRaw(requestParameters, initOverrides);
+    async apiV1OrganizationsOrganizationIDUsersUserIDPut(requestParameters: ApiV1OrganizationsOrganizationIDUsersUserIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDUsersUserIDPutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
