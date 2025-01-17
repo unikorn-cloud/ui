@@ -115,7 +115,7 @@
 			case Identity.UserState.Active:
 				return 'mdi:tick';
 			case Identity.UserState.Pending:
-				return 'mdi:wanring-outline';
+				return 'mdi:sleep';
 			case Identity.UserState.Suspended:
 				return 'mdi:error-outline';
 		}
