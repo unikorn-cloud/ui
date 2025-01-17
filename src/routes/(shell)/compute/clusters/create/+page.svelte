@@ -220,7 +220,7 @@
 
 		Clients.compute(toastStore, at)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(parameters)
-			.then(() => window.location.assign('/infrastructure/computeclusters'))
+			.then(() => window.location.assign('/compute/clusters'))
 			.catch((e: Error) => Clients.error(e));
 	}
 

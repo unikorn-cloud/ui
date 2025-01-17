@@ -143,7 +143,7 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<Button icon="mdi:add" label="Create" href="/infrastructure/clusters/create" />
+		<Button icon="mdi:add" label="Create" href="/kubernetes/clusters/create" />
 	{/snippet}
 
 	<ShellList>
@@ -152,7 +152,7 @@
 				<ShellListItem icon="mdi:kubernetes">
 					<ShellListItemHeader
 						metadata={resource.metadata}
-						href="/infrastructure/clusters/view/{resource.metadata.id}"
+						href="/kubernetes/clusters/view/{resource.metadata.id}"
 						{projects}
 					/>
 

@@ -5,7 +5,6 @@
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import MultiSelect from '$lib/forms/MultiSelect.svelte';
-	import InputChips from '$lib/forms/InputChips.svelte';
 	import Button from '$lib/forms/Button.svelte';
 
 	const settings: ShellPageSettings = {
@@ -39,7 +38,8 @@
 	});
 
 	let groups: Array<Identity.GroupRead> | undefined = $state();
-	let availableRoles: Array<Identity.RoleRead> | undefined = $state();
+	let roles: Array<Identity.RoleRead> | undefined = $state();
+	let users: Array<Identity.UserRead> | undefined = $state();
 
 	$effect.pre(() => {
 		const parameters = {
@@ -53,7 +53,12 @@
 
 		Clients.identity(toastStore, at)
 			.apiV1OrganizationsOrganizationIDRolesGet(parameters)
-			.then((v: Array<Identity.RoleRead>) => (availableRoles = v))
+			.then((v: Array<Identity.RoleRead>) => (roles = v))
+			.catch((e: Error) => Clients.error(e));
+
+		Clients.identity(toastStore, at)
+			.apiV1OrganizationsOrganizationIDUsersGet(parameters)
+			.then((v: Array<Identity.UserRead>) => (users = v))
 			.catch((e: Error) => Clients.error(e));
 	});
 
@@ -65,7 +70,7 @@
 		},
 		spec: {
 			roleIDs: [],
-			users: []
+			userIDs: []
 		}
 	});
 
@@ -91,14 +96,14 @@
 	<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
 	<ShellSection title="Roles">
-		{#if availableRoles}
+		{#if roles}
 			<MultiSelect
 				id="role-ids"
 				label="Select roles for group members."
 				hint="You must select at least one role."
 				bind:value={resource.spec.roleIDs}
 			>
-				{#each availableRoles || [] as role}
+				{#each roles || [] as role}
 					<option value={role.metadata.id}>{role.metadata.name}</option>
 				{/each}
 			</MultiSelect>
@@ -106,13 +111,12 @@
 	</ShellSection>
 
 	<ShellSection title="Users">
-		{#if resource.spec.users}
-			<InputChips
-				name="users"
-				label="Include users by email address."
-				hint="This must be the user's primary email address, not an alias."
-				bind:value={resource.spec.users}
-			/>
+		{#if resource.spec.userIDs}
+			<MultiSelect id="user-ids" label="Select group members." bind:value={resource.spec.userIDs}>
+				{#each users || [] as user}
+					<option value={user.metadata.id}>{user.spec.subject}</option>
+				{/each}
+			</MultiSelect>
 		{/if}
 	</ShellSection>
 

@@ -133,7 +133,7 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<Button icon="mdi:add" label="Create" href="/infrastructure/computeclusters/create" />
+		<Button icon="mdi:add" label="Create" href="/compute/clusters/create" />
 	{/snippet}
 
 	<ShellList>
