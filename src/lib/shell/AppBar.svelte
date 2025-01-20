@@ -1,4 +1,12 @@
 <script lang="ts">
+	import * as OIDC from '$lib/oidc';
+
+	interface Props {
+		profile: OIDC.IDToken;
+	}
+
+	let { profile }: Props = $props();
+
 	import { browser } from '$app/environment';
 	import MD5 from 'crypto-js/md5';
 
@@ -14,28 +22,11 @@
 	}
 
 	import Logo from '$lib/logos/Logo.svelte';
+	import { logout } from '$lib/credentials';
 
-	import { profile, logout } from '$lib/credentials';
-	import * as OIDC from '$lib/oidc';
-
-	let email: string | undefined = $state();
-	let initials: string | undefined = $state();
-	let picture: string | undefined = $state();
-
-	profile.subscribe((value: OIDC.IDToken) => {
-		if (!value) return;
-
-		email = value.email;
-
-		const givenName = value.given_name || '?';
-		const familyName = value.family_name || '?';
-
-		initials = givenName[0] + familyName[0];
-
-		if (value.picture) {
-			picture = value.picture;
-		}
-	});
+	let email = $derived(profile.email);
+	let initials = $derived(profile.given_name || '?' + profile.family_name || '?');
+	let picture = $derived(profile.picture);
 
 	function doLogout(): void {
 		logout();

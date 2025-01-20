@@ -1,0 +1,75 @@
+<script lang="ts">
+	import type { PageData } from './$types';
+	import { invalidate } from '$app/navigation';
+	import { onDestroy } from 'svelte';
+
+	let { data }: { data: PageData } = $props();
+
+	import * as RegionUtil from '$lib/regionutil';
+
+	import type { ShellPageSettings } from '$lib/layouts/types.ts';
+	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellList from '$lib/layouts/ShellList.svelte';
+	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
+	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
+	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
+	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
+	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
+	import Badge from '$lib/layouts/Badge.svelte';
+
+	const settings: ShellPageSettings = {
+		feature: 'Regions',
+		name: 'Networks',
+		description: 'Manage your networks'
+	};
+
+	const ticker = setInterval(() => invalidate('layout:networks'), 5000);
+	onDestroy(() => clearInterval(ticker));
+</script>
+
+<ShellPage {settings} allowed={data.allowed}>
+	<ShellList>
+		{#each data.networks as resource}
+			<ShellListItem icon="mdi:network-outline">
+				<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
+
+				<ShellListItemBadges metadata={resource.metadata}>
+					{#snippet extra()}
+						<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
+							{RegionUtil.name(data.regions, resource.spec.regionId)}
+						</Badge>
+					{/snippet}
+				</ShellListItemBadges>
+
+				<ShellListItemMetadata metadata={resource.metadata}>
+					{#snippet extra()}
+						<ShellMetadataItem
+							icon="mdi:network-outline"
+							label="Prefix"
+							value={resource.spec.prefix}
+						/>
+						<ShellMetadataItem
+							icon="mdi:dns-outline"
+							label="DNS Nameservers"
+							value={resource.spec.dnsNameservers.join(', ')}
+						/>
+						{#if resource.spec.openstack?.vlanId}
+							<ShellMetadataItem
+								icon="mdi:nic"
+								label="VLAN ID"
+								value={resource.spec.openstack.vlanId.toString()}
+							/>
+						{/if}
+						{#if resource.metadata.tags}
+							<ShellMetadataItem icon="mdi:tag-outline" label="Tags">
+								{#each resource.metadata.tags as tag}
+									<div class="badge variant-soft">{tag.name}: {tag.value}</div>
+								{/each}
+							</ShellMetadataItem>
+						{/if}
+					{/snippet}
+				</ShellListItemMetadata>
+			</ShellListItem>
+		{/each}
+	</ShellList>
+</ShellPage>
