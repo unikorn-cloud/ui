@@ -70,7 +70,9 @@
 
 	let activeCategory = $derived(nav.find((x) => $page.route.id?.startsWith(x.base)));
 	let activeItem = $derived(
-		activeCategory?.items.find((x) => $page.route.id == activeCategory.base + '/' + x.href)
+		activeCategory?.items.find((x) =>
+			$page.route.id?.startsWith(activeCategory.base + '/' + x.href)
+		)
 	);
 
 	let selectedOrganizationID = $state(organizationID);
