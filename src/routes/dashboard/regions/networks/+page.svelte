@@ -60,13 +60,6 @@
 								value={resource.spec.openstack.vlanId.toString()}
 							/>
 						{/if}
-						{#if resource.metadata.tags}
-							<ShellMetadataItem icon="mdi:tag-outline" label="Tags">
-								{#each resource.metadata.tags as tag}
-									<div class="badge variant-soft">{tag.name}: {tag.value}</div>
-								{/each}
-							</ShellMetadataItem>
-						{/if}
 					{/snippet}
 				</ShellListItemMetadata>
 			</ShellListItem>

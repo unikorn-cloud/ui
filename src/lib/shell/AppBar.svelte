@@ -25,7 +25,7 @@
 	import { logout } from '$lib/credentials';
 
 	let email = $derived(profile.email);
-	let initials = $derived(profile.given_name || '?' + profile.family_name || '?');
+	let initials = $derived((profile.given_name?.[0] || '?') + (profile.family_name?.[0] || '?'));
 	let picture = $derived(profile.picture);
 
 	function doLogout(): void {
@@ -57,30 +57,39 @@
 	{#snippet trail()}
 		<!-- User drop down -->
 		<button class="btn p-0" use:popup={{ event: 'click', target: 'user' }}>
-			<Avatar src={picture} {initials} class="!w-10 !h-10" />
+			<Avatar
+				src={picture}
+				{initials}
+				class="!w-10 !h-10"
+				fontSize={180}
+				fill="fill-on-primary-token"
+				background="bg-primary-500-400-token"
+			/>
 		</button>
 
-		<div class="card p-4 shadow-x1" data-popup="user">
-			<div class="space-y-4">
-				<section class="flex justify-between items-center">
+		<div data-popup="user">
+			<div class="card shadow p-4 flex flex-col gap-4">
+				<section class="flex gap-2 items-center">
+					<iconify-icon icon="mdi:perm-identity" class="text-2xl text-primary-500-400-token"
+					></iconify-icon>
 					{email}
 				</section>
 
-				<section class="flex justify-between items-center">
-					<h6 class="h6">Color Scheme</h6>
-					<LightSwitch />
+				<hr class="!border-t-2" />
+
+				<section class="flex gap-2 items-center">
+					<iconify-icon icon="mdi:theme-light-dark" class="text-2xl text-primary-500-400-token"
+					></iconify-icon>
+					<div class="flex gap-2 w-full justify-between">
+						<h6 class="h6">Color Scheme</h6>
+						<LightSwitch />
+					</div>
 				</section>
 
-				<section class="flex justify-between items-center">
-					<h6 class="h6">Logout</h6>
-					<button
-						class="btn p-0 text-2xl"
-						onclick={doLogout}
-						onkeypress={doLogout}
-						aria-label="logout"
-					>
-						<iconify-icon icon="material-symbols:logout"></iconify-icon>
-					</button>
+				<section class="flex gap-2 items-center">
+					<iconify-icon icon="material-symbols:logout" class="text-2xl text-primary-500-400-token"
+					></iconify-icon>
+					<button class="btn p-0" onclick={doLogout} onkeypress={doLogout}> Logout </button>
 				</section>
 			</div>
 		</div>

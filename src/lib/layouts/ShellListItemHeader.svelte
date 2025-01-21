@@ -47,7 +47,7 @@
 		</div>
 
 		{#if metadata?.description}
-			<div class="text-sm italic text-surface-600-300-token">
+			<div class="text-sm italic text-surface-500-400-token">
 				{metadata.description}
 			</div>
 		{/if}

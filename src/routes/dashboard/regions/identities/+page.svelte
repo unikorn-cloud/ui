@@ -23,7 +23,6 @@
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
-	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
 
 	const settings: ShellPageSettings = {
@@ -74,17 +73,7 @@
 					{/snippet}
 				</ShellListItemBadges>
 
-				<ShellListItemMetadata metadata={resource.metadata}>
-					{#snippet extra()}
-						{#if resource.metadata.tags}
-							<ShellMetadataItem icon="mdi:tag-outline" label="Tags">
-								{#each resource.metadata.tags as tag}
-									<div class="badge variant-soft">{tag.name}: {tag.value}</div>
-								{/each}
-							</ShellMetadataItem>
-						{/if}
-					{/snippet}
-				</ShellListItemMetadata>
+				<ShellListItemMetadata metadata={resource.metadata} />
 
 				{#snippet trail()}
 					<BurgerMenu name="menu-{resource.metadata.id}">
