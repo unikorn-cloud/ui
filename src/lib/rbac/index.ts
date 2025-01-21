@@ -62,7 +62,7 @@ function operationAllowedScopedEndpointsList(
 
 // This is used to see if the ACL is permitted to perform
 // an operation on a specific organization scoped endpoint.
-export function organizationOperationAllowed(
+function organizationOperationAllowed(
 	acl: Identity.Acl,
 	organizationID: string,
 	endpoint: string,
@@ -78,7 +78,7 @@ export function organizationOperationAllowed(
 
 // This is used to see if the ACL is permitted to perform
 // an operation on a specific project scoped endpoint.
-export function projectOperationAllowed(
+function projectOperationAllowed(
 	acl: Identity.Acl,
 	organizationID: string,
 	projectID: string,
@@ -90,5 +90,25 @@ export function projectOperationAllowed(
 	return (
 		organizationOperationAllowed(acl, organizationID, endpoint, operation) ||
 		operationAllowedScopedEndpointsList(acl.projects, projectID, endpoint, operation)
+	);
+}
+
+export function organizationScopesAllowed(
+	acl: Identity.Acl,
+	organizationID: string,
+	scopes: Array<OrganizationScope>
+): boolean {
+	return scopes.every((scope) =>
+		organizationOperationAllowed(acl, organizationID, scope.endpoint, scope.operation)
+	);
+}
+
+export function projectScopesAllowed(
+	acl: Identity.Acl,
+	organizationID: string,
+	scopes: Array<ProjectScope>
+): boolean {
+	return scopes.every((scope) =>
+		projectOperationAllowed(acl, organizationID, scope.projectID, scope.endpoint, scope.operation)
 	);
 }

@@ -32,8 +32,10 @@ export function removeCredentials() {
 
 // Fully logs out and forgets everything about a user.
 export function logout() {
-	profile.clear();
-	token.clear();
-	// This flushes any stores so we can see the access token is undefined.
-	if (browser) window.location.reload();
+	if (browser) {
+		window.sessionStorage.removeItem('profile');
+		window.sessionStorage.removeItem('token');
+
+		window.location.reload();
+	}
 }

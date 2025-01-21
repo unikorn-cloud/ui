@@ -1,11 +1,13 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
+	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
 
 	import { AppRail, AppRailAnchor, AppRailTile, getDrawerStore } from '@skeletonlabs/skeleton';
 	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 
 	import type { InternalToken } from '$lib/oauth2';
-	import { profile, token, logout } from '$lib/credentials';
+	import { logout } from '$lib/credentials';
 	import * as Clients from '$lib/clients';
 	import * as Identity from '$lib/openapi/identity';
 	import * as OIDC from '$lib/oidc';
@@ -15,123 +17,72 @@
 	const toastStore = getToastStore();
 
 	interface Props {
+		token: InternalToken;
+		organizations: Array<Identity.OrganizationRead>;
+		organizationID: string;
 		[key: string]: any;
 	}
 
-	let { ...props }: Props = $props();
+	let { token, organizations, organizationID, ...props }: Props = $props();
 	const drawerStore = getDrawerStore();
 
 	type NavItems = Array<{ label: string; href: string }>;
 
 	const nav: Array<{ base: string; title: string; icon: string; items: NavItems }> = [
 		{
-			base: '/identity',
+			base: '/dashboard/identity',
 			title: 'Identity',
 			icon: 'mdi:perm-identity',
 			items: [
-				{ label: 'Organization', href: '/identity/organizations' },
-				{ label: 'OAuth2 Providers', href: '/identity/oauth2providers' },
-				{ label: 'Users', href: '/identity/users' },
-				{ label: 'Service Accounts', href: '/identity/serviceaccounts' },
-				{ label: 'Groups', href: '/identity/groups' },
-				{ label: 'Projects', href: '/identity/projects' }
+				{ label: 'Organization', href: 'organizations' },
+				{ label: 'OAuth2 Providers', href: 'oauth2providers' },
+				{ label: 'Users', href: 'users' },
+				{ label: 'Service Accounts', href: 'serviceaccounts' },
+				{ label: 'Groups', href: 'groups' },
+				{ label: 'Projects', href: 'projects' }
 			]
 		},
 		{
-			base: '/compute',
+			base: '/dashboard/compute',
 			title: 'Compute',
 			icon: 'mdi:computer',
-			items: [{ label: 'Clusters', href: '/compute/clusters' }]
+			items: [{ label: 'Clusters', href: 'clusters' }]
 		},
 		{
-			base: '/kubernetes',
+			base: '/dashboard/kubernetes',
 			title: 'Kubernetes',
 			icon: 'mdi:kubernetes',
 			items: [
-				{ label: 'Clusters', href: '/kubernetes/clusters' },
-				{ label: 'Cluster Managers', href: '/kubernetes/clustermanagers' }
+				{ label: 'Clusters', href: 'clusters' },
+				{ label: 'Cluster Managers', href: 'clustermanagers' }
 			]
 		},
 		{
-			base: '/regions',
+			base: '/dashboard/regions',
 			title: 'Regions',
 			icon: 'mdi:web',
 			items: [
-				{ label: 'Identities', href: '/regions/identities' },
-				{ label: 'Networks', href: '/regions/networks' }
+				{ label: 'Identities', href: 'identities' },
+				{ label: 'Networks', href: 'networks' }
 			]
 		}
 	];
 
-	let category: string | undefined = $state();
-	let active: string | undefined = $state();
-
-	page.subscribe((page) => {
-		const base: string = page.url.pathname.split('/')[1];
-		if (!base) return;
-
-		const entry = nav.find((x) => x.base == '/' + base);
-		if (!entry) return;
-
-		category = entry.title;
-	});
-
-	let itemActive = $derived((href: string) =>
-		$page.url.pathname?.includes(href) ? 'variant-glass-primary' : ''
+	let activeCategory = $derived(nav.find((x) => $page.route.id?.startsWith(x.base)));
+	let activeItem = $derived(
+		activeCategory?.items.find((x) => $page.route.id == activeCategory.base + '/' + x.href)
 	);
 
-	// Grab the access token.
-	let at = $state() as InternalToken;
-
-	token.subscribe((token: InternalToken): void => {
-		at = token;
-	});
-
-	let organizations: Array<Identity.OrganizationRead> | undefined = $state();
-	let organizationID: string | undefined = $state();
-
-	let currentOrganizationInfo: Stores.OrganizationInfo;
-
-	// Grab the organization out of session storage first.
-	// TODO: make persistent storage!
-	Stores.organizationStore.subscribe((o: Stores.OrganizationInfo) => {
-		currentOrganizationInfo = o;
-	});
+	let selectedOrganizationID = $state(organizationID);
 
 	$effect.pre(() => {
-		if (!at) return;
+		if (!browser) return;
 
-		Clients.identity(toastStore, at)
-			.apiV1OrganizationsGet()
-			.then((v: Array<Identity.OrganizationRead>) => {
-				organizations = v;
+		if (selectedOrganizationID != organizationID) {
+			window.localStorage.setItem('organization_id', selectedOrganizationID);
 
-				// Try reuse the current organization if we can.
-				const existingOrganization = v.some((o) => o.metadata.id == currentOrganizationInfo?.id);
-
-				organizationID = existingOrganization
-					? currentOrganizationInfo.id
-					: organizations[0].metadata.id;
-			})
-			.catch((e: Error) => Clients.error(e));
-	});
-
-	$effect.pre(() => {
-		if (!organizationID || !at) return;
-
-		const parameters = {
-			organizationID: organizationID
-		};
-
-		Clients.identity(toastStore, at)
-			.apiV1OrganizationsOrganizationIDAclGet(parameters)
-			.then((v: Identity.Acl) => {
-				Stores.organizationStore.set({
-					id: organizationID || '',
-					acl: v
-				});
-			})
-			.catch((e: Error) => Clients.error(e));
+			invalidate('app:organization_id');
+		}
 	});
 </script>
 
@@ -148,7 +99,7 @@
 						class="text-lg text-primary-600-300-token"
 					></iconify-icon>
 				</div>
-				<select bind:value={organizationID}>
+				<select bind:value={selectedOrganizationID}>
 					{#each organizations || [] as organization}
 						<option value={organization.metadata.id}>{organization.metadata.name}</option>
 					{/each}
@@ -161,7 +112,7 @@
 
 			<Accordion autocollapse rounded="none">
 				{#each nav as entry}
-					<AccordionItem open={entry.title == category}>
+					<AccordionItem open={entry == activeCategory}>
 						{#snippet lead()}
 							<iconify-icon
 								icon={entry.icon}
@@ -174,7 +125,10 @@
 						{#snippet content()}
 							<ul class="list-nav text-sm ml-6">
 								{#each entry.items as item}
-									<a href={item.href} class={itemActive(item.href)}>
+									<a
+										href={entry.base + '/' + item.href}
+										class={item == activeItem ? 'variant-glass-primary' : ''}
+									>
 										<li>
 											{item.label}
 										</li>
