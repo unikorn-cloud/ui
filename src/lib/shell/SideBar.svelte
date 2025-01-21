@@ -96,7 +96,7 @@
 				<div class="input-group-shim">
 					<iconify-icon
 						icon="mdi:office-building-outline"
-						class="text-lg text-primary-600-300-token"
+						class="text-lg text-primary-500-400-token"
 					></iconify-icon>
 				</div>
 				<select bind:value={selectedOrganizationID}>
@@ -116,7 +116,7 @@
 						{#snippet lead()}
 							<iconify-icon
 								icon={entry.icon}
-								class="text-2xl text-primary-600-300-token align-middle"
+								class="text-2xl text-primary-500-400-token align-middle"
 							></iconify-icon>
 						{/snippet}
 						{#snippet summary()}

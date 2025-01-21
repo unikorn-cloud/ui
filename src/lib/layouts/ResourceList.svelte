@@ -133,7 +133,7 @@
 			>
 				{@render normal(item, index)}
 
-				<div class="text-2xl flex gap-2 text-primary-600-300-token justify-self-end">
+				<div class="text-2xl flex gap-2 text-primary-500-400-token justify-self-end">
 					<ButtonIcon
 						icon="mdi:edit-outline"
 						clicked={() => itemActivate(index)}
