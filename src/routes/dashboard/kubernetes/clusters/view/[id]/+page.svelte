@@ -32,7 +32,9 @@
 	let regionID = $derived(resource?.spec.regionId);
 
 	let clusters = $derived(data.clusters.filter((x) => x.metadata.projectId == projectID));
-	let names = $derived((clusters || []).map((x) => x.metadata.name));
+	let names: Array<string> = $derived(
+		(clusters || []).filter((x) => x.metadata.id != $page.params.id).map((x) => x.metadata.name)
+	);
 
 	let images: Array<Region.Image> | undefined = $state();
 	let flavors: Array<Region.Flavor> | undefined = $state();

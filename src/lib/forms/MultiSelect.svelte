@@ -23,7 +23,7 @@
 		{/if}
 	</div>
 
-	<select {id} class="select" multiple bind:value>
+	<select {id} class="select shadow-lg" multiple bind:value>
 		{@render children?.()}
 	</select>
 </div>

@@ -25,7 +25,7 @@
 		{/if}
 	</div>
 
-	<select {id} class="select" {disabled} bind:value>
+	<select {id} class="select shadow-lg" {disabled} bind:value>
 		{@render children?.()}
 	</select>
 </div>

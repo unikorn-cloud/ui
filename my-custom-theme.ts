@@ -9,9 +9,9 @@ export const myCustomTheme: CustomThemeConfig = {
 		"--theme-font-family-heading": `Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'`,
 		"--theme-font-color-base": "var(--color-primary-900)",
 		"--theme-font-color-dark": "var(--color-primary-50)",
-		"--theme-rounded-base": "16px",
+		"--theme-rounded-base": "12px",
 		"--theme-rounded-container": "16px",
-		"--theme-border-base": "2px",
+		"--theme-border-base": "1px",
 		// =~= Theme On-X Colors =~=
 		"--on-primary": "255 255 255",
 		"--on-secondary": "255 255 255",

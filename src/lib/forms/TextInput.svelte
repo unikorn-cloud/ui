@@ -44,7 +44,7 @@
 	</div>
 
 	{#if validators.length}
-		<div class="input-group input-group-divider grid-cols-[1fr_auto]">
+		<div class="input-group input-group-divider grid-cols-[1fr_auto] shadow-lg">
 			<input {id} class="input" type="text" {placeholder} bind:value />
 			<div class="input-group-shim">
 				{#if valid}
@@ -56,6 +56,6 @@
 			</div>
 		</div>
 	{:else}
-		<input {id} class="input" type="text" {placeholder} bind:value />
+		<input {id} class="input shadow-lg" type="text" {placeholder} bind:value />
 	{/if}
 </div>
