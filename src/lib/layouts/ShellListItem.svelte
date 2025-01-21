@@ -11,9 +11,9 @@
 </script>
 
 <article
-	class="flex flex-col lg:gap-x-6 lg:col-span-full lg:grid lg:grid-cols-subgrid lg:items-center card bg-surface-50-900-token shadow p-4"
+	class="flex flex-col lg:gap-x-6 lg:col-span-full lg:grid lg:grid-cols-subgrid lg:items-center card bg-surface-50-900-token shadow-lg p-4"
 >
-	<iconify-icon {icon} class="text-5xl text-primary-500-400-token"></iconify-icon>
+	<iconify-icon {icon} class="text-5xl text-primary-500"></iconify-icon>
 
 	{@render children?.()}
 

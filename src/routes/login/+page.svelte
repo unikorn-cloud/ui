@@ -42,53 +42,55 @@
 	}
 </script>
 
-<div class="w-screen h-screen lg:w-96 p-8 flex flex-col gap-8 rounded bg-surface-100-800-token">
-	<header id="login-header">
-		<Logo />
-	</header>
-	<main>
-		<form id="login_form" class="flex flex-col gap-8" method="post" action={callback}>
-			<input name="state" type="hidden" value={serverState} />
-			<input id="provider" name="provider" type="hidden" />
+<div class="grid grid-cols-[1fr_max-content_1fr] grid-rows-[1fr_max-content_1fr] w-full h-screen">
+	<div class="col-start-2 row-start-2 flex flex-col gap-8 items-center">
+		<header class="h-16 w-auto">
+			<Logo class="h-16 w-auto" />
+		</header>
+
+		<main class="flex flex-col gap-4 items-center">
+			<form id="login_form" class="flex flex-col gap-8" method="post" action={callback}>
+				<input name="state" type="hidden" value={serverState} />
+				<input id="provider" name="provider" type="hidden" />
+
+				<section class="flex flex-col gap-4 items-center">
+					<p>Enter your email address</p>
+
+					<input
+						class="input shadow-lg"
+						name="email"
+						type="email"
+						placeholder="jane.doe@acme.com"
+						autocomplete="email"
+						required
+					/>
+				</section>
+			</form>
+
+			<em class="text-surface-400">or</em>
 
 			<section class="flex flex-col gap-4">
-				<p>enter your email address if your organization requires a domain login</p>
-				<input
-					class="input"
-					name="email"
-					type="email"
-					placeholder="jane.doe@acme.com"
-					autocomplete="email"
-				/>
-				<input class="btn variant-filled-primary" type="submit" value="Login" />
-			</section>
+				<p>Choose a generic provider</p>
 
-			<section class="flex flex-col gap-4">
-				<p>or login with your chosen provider</p>
-				<button
-					class="btn variant-filled-primary flex align-center"
-					onclick={google}
-					onkeypress={google}
-				>
-					<iconify-icon icon="logos:google-icon"></iconify-icon>
-					<span>Google</span>
-				</button>
-				<button
-					class="btn variant-filled-primary flex align-center"
-					onclick={microsoft}
-					onkeypress={microsoft}
-				>
-					<iconify-icon icon="logos:microsoft-icon"></iconify-icon>
-					<span>Microsoft</span>
-				</button>
+				<div class="flex justify-center gap-4">
+					<button
+						class="btn variant-ghost-surface shadow-lg flex align-center"
+						onclick={google}
+						onkeypress={google}
+						aria-label="Google"
+					>
+						<iconify-icon icon="logos:google-icon"></iconify-icon>
+					</button>
+					<button
+						class="btn variant-ghost-surface shadow-lg flex align-center"
+						onclick={microsoft}
+						onkeypress={microsoft}
+						aria-label="Mircosoft"
+					>
+						<iconify-icon icon="logos:microsoft-icon"></iconify-icon>
+					</button>
+				</div>
 			</section>
-		</form>
-	</main>
+		</main>
+	</div>
 </div>
-
-<style>
-	#login-header > :global(svg) {
-		height: 2em;
-		width: auto;
-	}
-</style>

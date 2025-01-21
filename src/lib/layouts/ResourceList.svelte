@@ -107,7 +107,7 @@
 	{#each items as item, index}
 		{#if activeItem == index}
 			<div
-				class="col-span-full flex flex-col gap-4 p-4 grid card bg-surface-50-900-token shadow-sm"
+				class="col-span-full flex flex-col gap-4 p-4 grid card bg-surface-50-900-token shadow-lg"
 			>
 				{@render expanded(item, index)}
 
@@ -115,13 +115,13 @@
 					<Button
 						icon="mdi-trash-can-outline"
 						label="Delete"
-						class="variant-outline-error"
+						class="variant-outline-error shadow-lg"
 						clicked={() => itemRemove(index)}
 					/>
 					<Button
 						icon="mdi:check"
 						label="Update"
-						class="variant-filled-primary"
+						class="variant-filled-primary shadow-lg"
 						clicked={() => itemDeactivate(index)}
 						disabled={!valid}
 					/>
@@ -129,11 +129,11 @@
 			</div>
 		{:else}
 			<div
-				class="col-span-full grid grid-cols-subgrid items-center card bg-surface-50-900-token shadow-sm p-4"
+				class="col-span-full grid grid-cols-subgrid items-center card bg-surface-50-900-token shadow-lg p-4"
 			>
 				{@render normal(item, index)}
 
-				<div class="text-2xl flex gap-2 text-primary-500-400-token justify-self-end">
+				<div class="text-2xl flex gap-2 text-primary-500 justify-self-end">
 					<ButtonIcon
 						icon="mdi:edit-outline"
 						clicked={() => itemActivate(index)}

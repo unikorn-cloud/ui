@@ -63,22 +63,22 @@
 				class="!w-10 !h-10"
 				fontSize={180}
 				fill="fill-on-primary-token"
-				background="bg-primary-500-400-token"
+				background="bg-primary-500"
+				shadow="shadow-lg"
 			/>
 		</button>
 
 		<div data-popup="user">
-			<div class="card shadow p-4 flex flex-col gap-4">
+			<div class="card shadow-lg p-4 flex flex-col gap-4">
 				<section class="flex gap-2 items-center">
-					<iconify-icon icon="mdi:perm-identity" class="text-2xl text-primary-500-400-token"
-					></iconify-icon>
+					<iconify-icon icon="mdi:perm-identity" class="text-2xl text-primary-500"></iconify-icon>
 					{email}
 				</section>
 
-				<hr class="!border-t-2" />
+				<hr class="!border-t-1" />
 
 				<section class="flex gap-2 items-center">
-					<iconify-icon icon="mdi:theme-light-dark" class="text-2xl text-primary-500-400-token"
+					<iconify-icon icon="mdi:theme-light-dark" class="text-2xl text-primary-500"
 					></iconify-icon>
 					<div class="flex gap-2 w-full justify-between">
 						<h6 class="h6">Color Scheme</h6>
@@ -87,7 +87,7 @@
 				</section>
 
 				<section class="flex gap-2 items-center">
-					<iconify-icon icon="material-symbols:logout" class="text-2xl text-primary-500-400-token"
+					<iconify-icon icon="material-symbols:logout" class="text-2xl text-primary-500"
 					></iconify-icon>
 					<button class="btn p-0" onclick={doLogout} onkeypress={doLogout}> Logout </button>
 				</section>

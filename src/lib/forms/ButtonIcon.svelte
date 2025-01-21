@@ -19,13 +19,13 @@
 			{@render content()}
 		</div>
 	{:else}
-		<a {href} class="text-primary-500-400-token">
+		<a {href} class="text-primary-500">
 			{@render content()}
 		</a>
 	{/if}
 {:else if clicked}
 	<button
-		class={disabled ? 'text-surface-300-600-token' : 'text-primary-500-400-token'}
+		class={disabled ? 'text-surface-300-600-token' : 'text-primary-500'}
 		class:text-surface-500-600-token={disabled}
 		{disabled}
 		onclick={clicked}

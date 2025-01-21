@@ -43,7 +43,7 @@
 	{/if}
 </div>
 
-<button class="btn variant-ghost w-full justify-between" use:popup={settings}>
+<button class="btn variant-ghost shadow-lg w-full justify-between" use:popup={settings}>
 	{@render selected_body?.()}
 	<iconify-icon icon="ph:caret-down-bold"></iconify-icon>
 </button>
