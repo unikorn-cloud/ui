@@ -13,6 +13,10 @@ export function name(regions: Array<Region.RegionRead> | undefined, regionID: st
 	return region.metadata.name;
 }
 
+export function iconIcon(region: Region.RegionRead): string {
+	return `circle-flags:${region.metadata.name.split('-')[0]}`;
+}
+
 export function icon(regions: Array<Region.RegionRead> | undefined, regionID: string): string {
 	const regionName = name(regions, regionID);
 	if (regionName === 'unknown') {

@@ -24,7 +24,7 @@
 
 	{#if footer}
 		<div class="col-span-full">
-			<details open>
+			<details>
 				<summary class="list-none flex justify-center">
 					<div class="bg-surface-200-700-token rounded shadow h-1 w-16"></div>
 				</summary>

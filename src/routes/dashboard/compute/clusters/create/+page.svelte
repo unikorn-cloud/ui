@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { page } from '$app/state';
 
 	let { data }: { data: PageData } = $props();
 
@@ -11,8 +12,6 @@
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
-	import ShellSection from '$lib/layouts/ShellSection.svelte';
-	import Select from '$lib/forms/Select.svelte';
 	import Stepper from '$lib/layouts/Stepper.svelte';
 	import ResourceList from '$lib/layouts/ResourceList.svelte';
 	import ComputeWorkloadPool from '$lib/ComputeWorkloadPool.svelte';
@@ -26,8 +25,8 @@
 		description: 'Create and deploy a new compute cluster.'
 	};
 
-	let projectID = $state(data.projects.length > 0 ? data.projects[0].metadata.id : undefined);
-	let regionID = $state(data.regions.length > 0 ? data.regions[0].metadata.id : undefined);
+	let projectID = $derived(page.url.searchParams.get('projectID'));
+	let regionID = $derived(page.url.searchParams.get('regionID'));
 	let clusters = $derived(data.clusters.filter((x) => x.metadata.projectId == projectID));
 	let names = $derived((clusters || []).map((x) => x.metadata.name));
 
@@ -94,29 +93,20 @@
 
 	let step: number = $state(0);
 
-	// Step 1 requires a project ID and a region to have been selected.
-	let step1valid: boolean = $derived.by(() => {
-		if (step != 0) return true;
-
-		if (!projectID || !regionID) return false;
-
-		return true;
-	});
-
-	// Step 2 requires the metadata to be valid and a version to have been selected.
+	// Step 1 requires the metadata to be valid and a version to have been selected.
 	let metadataValid = $state(false);
 
-	let step2valid: boolean = $derived.by(() => {
-		if (step != 1) return true;
+	let step1valid: boolean = $derived.by(() => {
+		if (step != 0) return true;
 
 		if (!metadataValid) return false;
 
 		return true;
 	});
 
-	// Step 3 requires a workload pool to be defined.
-	let step3valid: boolean = $derived.by(() => {
-		if (step != 2) return true;
+	// Step 2 requires a workload pool to be defined.
+	let step2valid: boolean = $derived.by(() => {
+		if (step != 1) return true;
 
 		// If there is a workload pool active, it is potentially invalid.
 		if (workloadPoolActive) return false;
@@ -127,7 +117,7 @@
 	});
 
 	// Roll up the overall validity for the stepper to allow progress.
-	let valid = $derived(step1valid && step2valid && step3valid);
+	let valid = $derived(step1valid && step2valid);
 
 	function complete() {
 		if (!projectID) return;
@@ -231,34 +221,8 @@
 			{#if index === 0}
 				<h2 class="h2">Basic Configuration</h2>
 
-				<ShellSection title="Environment Configuration">
-					<Select
-						id="project-name"
-						label="Choose a project."
-						hint="The cluster will be available to users linked to the project's groups."
-						bind:value={projectID}
-					>
-						{#each data.projects as project}
-							<option value={project.metadata.id}>{project.metadata.name}</option>
-						{/each}
-					</Select>
-
-					<Select
-						id="region"
-						label="Choose a region."
-						hint="Defines the geographical region where the cluster will run."
-						bind:value={regionID}
-					>
-						{#each data.regions as region}
-							<option value={region.metadata.id}>{region.metadata.name}</option>
-						{/each}
-					</Select>
-				</ShellSection>
-			{:else if index === 1}
-				<h2 class="h2">Platform Configuration</h2>
-
 				<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
-			{:else if index === 2}
+			{:else if index === 1}
 				<ResourceList
 					title="Workload Pool Configuration"
 					columns={4}
