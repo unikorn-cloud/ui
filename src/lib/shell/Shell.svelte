@@ -19,7 +19,7 @@
 		<div class="flex-none overflow-x-hidden overflow-y-auto">
 			{@render sidebarLeft()}
 		</div>
-		<div class="flex-1 overflow-x-hidden flex flex-col">
+		<div class="flex-1 overflow-x-hidden flex flex-col shadow-inner">
 			{@render main()}
 		</div>
 	</div>

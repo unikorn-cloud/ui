@@ -4,10 +4,11 @@
 	interface Props {
 		icon: string;
 		trail?: Snippet;
+		footer?: Snippet;
 		children?: Snippet;
 	}
 
-	let { icon, trail, children }: Props = $props();
+	let { icon, trail, footer, children }: Props = $props();
 </script>
 
 <article
@@ -20,4 +21,16 @@
 	<div class="col-start-[-1]">
 		{@render trail?.()}
 	</div>
+
+	{#if footer}
+		<div class="col-span-full">
+			<details open>
+				<summary class="list-none flex justify-center">
+					<div class="bg-surface-200-700-token rounded shadow h-1 w-16"></div>
+				</summary>
+
+				{@render footer()}
+			</details>
+		</div>
+	{/if}
 </article>
