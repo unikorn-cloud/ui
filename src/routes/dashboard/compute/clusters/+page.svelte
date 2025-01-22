@@ -26,6 +26,7 @@
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
 	import Button from '$lib/forms/Button.svelte';
+	import * as Status from '$lib/status';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -108,56 +109,41 @@
 					</BurgerMenu>
 				{/snippet}
 
-				<!--
-					{#snippet content()}
-						<Accordion class="pt-4">
-							<AccordionItem padding="py-2" hover="">
-								{#snippet summary()}
-									<span>Cluster Overview</span>
-								{/snippet}
+				{#snippet footer()}
+					<div class="flex flex-col gap-4 pt-4">
+						{#if resource.status?.workloadPools}
+							<div class="grid grid-cols-[repeat(4,max-content)_1fr] gap-4 items-center">
+								<div class="col-span-full flex gap-2 items-center">
+									<div class="h4">Machine Status</div>
+								</div>
 
-								{#snippet content()}
-									{#each resource.status?.workloadPools || [] as pool}
-										<div class="flex gap-2 items-center">
-											<iconify-icon icon="mdi:server-outline" class="text-2xl"></iconify-icon>
-											<div class="h4">Pool {pool.name}</div>
-										</div>
+								{#each resource.status.workloadPools || [] as pool}
+									{#each pool.machines || [] as machine}
+										<div class="font-bold col-start-1">{machine.hostname}</div>
+										<Badge
+											icon={Status.statusIcon(machine.status)}
+											iconcolor={Status.statusColor(machine.status)}>{machine.status}</Badge
+										>
 
-										{#each pool.machines || [] as machine}
-											<div class="flex gap-2">
-												<Badge
-													icon={Status.statusIcon(machine.status)}
-													iconcolor={Status.statusColor(machine.status)}
-												/>
-												<div class="flex flex-col gap-2">
-													<div class="flex gap-2">
-														<div class="font-bold">{machine.hostname}</div>
-													</div>
-
-													<div class="flex gap-2 text-xs">
-														{#if machine.privateIP}
-															<div>
-																<span class="font-bold">Private IP:</span>
-																{machine.privateIP}
-															</div>
-														{/if}
-
-														{#if machine.publicIP}
-															<div>
-																<span class="font-bold">Public IP:</span>
-																{machine.publicIP}
-															</div>
-														{/if}
-													</div>
-												</div>
+										{#if machine.privateIP}
+											<div class="text-sm">
+												<span class="font-bold">Private IP</span>
+												{machine.privateIP}
 											</div>
-										{/each}
+										{/if}
+
+										{#if machine.publicIP}
+											<div class="text-sm">
+												<span class="font-bold">Public IP</span>
+												{machine.publicIP}
+											</div>
+										{/if}
 									{/each}
-								{/snippet}
-							</AccordionItem>
-						</Accordion>
-					{/snippet}
-					-->
+								{/each}
+							</div>
+						{/if}
+					</div>
+				{/snippet}
 			</ShellListItem>
 		{/each}
 	</ShellList>
