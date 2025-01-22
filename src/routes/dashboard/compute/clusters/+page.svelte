@@ -12,12 +12,13 @@
 	const modalStore = getModalStore();
 
 	import * as Clients from '$lib/clients';
+	import * as Identity from '$lib/openapi/identity';
 	import * as Compute from '$lib/openapi/compute';
 	import * as RegionUtil from '$lib/regionutil';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
-	import ShellList from '$lib/layouts/ShellList.svelte';
+	import GroupedList from '$lib/layouts/GroupedList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
@@ -25,7 +26,7 @@
 	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
-	import Button from '$lib/forms/Button.svelte';
+	import PopupButton from '$lib/forms/PopupButton.svelte';
 	import * as Status from '$lib/status';
 
 	const settings: ShellPageSettings = {
@@ -36,6 +37,23 @@
 
 	const ticker = setInterval(() => invalidate('layout:clusters'), 5000);
 	onDestroy(() => clearInterval(ticker));
+
+	let groups = $derived.by(() => {
+		let temp: Record<string, Array<Compute.ComputeClusterRead>> = {};
+
+		// Sort by name.
+		const names = data.projects.map((x) => ({ id: x.metadata.id, name: x.metadata.name }));
+		names.sort((x, y) => x.name.localeCompare(y.name));
+
+		names.forEach((x) => (temp[x.id] = []));
+		data.clusters.forEach((x) => temp[x.metadata.projectId].push(x));
+
+		return temp;
+	});
+
+	function project(id: string): Identity.ProjectRead {
+		return data.projects.find((x) => x.metadata.id == id) as Identity.ProjectRead;
+	}
 
 	function remove(resource: Compute.ComputeClusterRead): void {
 		const modal: ModalSettings = {
@@ -79,12 +97,38 @@
 </script>
 
 <ShellPage {settings} allowed={data.allowed}>
-	{#snippet tools()}
-		<Button icon="mdi:add" label="Create" href="/dashboard/compute/clusters/create" />
-	{/snippet}
+	<GroupedList {groups}>
+		{#snippet header(projectID: string)}
+			<header class="flex justify-between">
+				<div class="flex gap-4 items-center">
+					<iconify-icon icon="mdi:account-group-outline" class="text-3xl text-primary-500"
+					></iconify-icon>
 
-	<ShellList>
-		{#each data.clusters as resource}
+					<div class="h4">{project(projectID).metadata.name}</div>
+				</div>
+
+				<PopupButton id="create-{projectID}" icon="mdi:add" class="self-end" label="Create">
+					{#snippet content()}
+						<div class="pb-4">Select region</div>
+
+						<div class="flex flex-col gap-2">
+							{#each data.regions as region}
+								<a
+									href="/dashboard/compute/clusters/create?projectID={projectID}&regionID={region
+										.metadata.id}"
+									class="flex gap-4 items-center"
+								>
+									<iconify-icon icon={RegionUtil.iconIcon(region)}></iconify-icon>
+									{region.metadata.name}
+								</a>
+							{/each}
+						</div>
+					{/snippet}
+				</PopupButton>
+			</header>
+		{/snippet}
+
+		{#snippet item(resource: Compute.ComputeClusterRead)}
 			<ShellListItem icon="mdi:server-network-outline">
 				<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
 
@@ -145,6 +189,6 @@
 					</div>
 				{/snippet}
 			</ShellListItem>
-		{/each}
-	</ShellList>
+		{/snippet}
+	</GroupedList>
 </ShellPage>

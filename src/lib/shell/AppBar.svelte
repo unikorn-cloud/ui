@@ -56,7 +56,7 @@
 
 	{#snippet trail()}
 		<!-- User drop down -->
-		<button class="btn p-0" use:popup={{ event: 'click', target: 'user' }}>
+		<button class="btn p-0" use:popup={{ event: 'click', target: 'user', placement: 'bottom-end' }}>
 			<Avatar
 				src={picture}
 				{initials}
