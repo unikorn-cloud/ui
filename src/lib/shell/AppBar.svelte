@@ -25,7 +25,18 @@
 	import { logout } from '$lib/credentials';
 
 	let email = $derived(profile.email);
-	let initials = $derived((profile.given_name?.[0] || '?') + (profile.family_name?.[0] || '?'));
+	let initials = $derived.by(() => {
+		if (profile.given_name && profile.family_name) {
+			return profile.given_name[0] + profile.family_name[0];
+		} else if (profile.name) {
+			return profile.name
+				.split(' ')
+				.map((x) => x[0])
+				.join('');
+		}
+
+		return '??';
+	});
 	let picture = $derived(profile.picture);
 
 	function doLogout(): void {
