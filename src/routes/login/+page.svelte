@@ -40,6 +40,10 @@
 	function microsoft() {
 		login('microsoft');
 	}
+
+	function github() {
+		login('github');
+	}
 </script>
 
 <div class="grid grid-cols-[1fr_max-content_1fr] grid-rows-[1fr_max-content_1fr] w-full h-screen">
@@ -88,6 +92,14 @@
 						aria-label="Mircosoft"
 					>
 						<iconify-icon icon="logos:microsoft-icon"></iconify-icon>
+					</button>
+					<button
+						class="btn variant-ghost-surface shadow-lg flex align-center"
+						onclick={github}
+						onkeypress={github}
+						aria-label="GitHub"
+					>
+						<iconify-icon icon="logos:github-icon"></iconify-icon>
 					</button>
 				</div>
 			</section>
