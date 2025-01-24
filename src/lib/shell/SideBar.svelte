@@ -30,7 +30,7 @@
 
 	const nav: Array<{ base: string; title: string; icon: string; items: NavItems }> = [
 		{
-			base: '/dashboard/identity',
+			base: '/identity',
 			title: 'Identity',
 			icon: 'mdi:perm-identity',
 			items: [
@@ -43,13 +43,13 @@
 			]
 		},
 		{
-			base: '/dashboard/compute',
+			base: '/compute',
 			title: 'Compute',
 			icon: 'mdi:computer',
 			items: [{ label: 'Clusters', href: 'clusters' }]
 		},
 		{
-			base: '/dashboard/kubernetes',
+			base: '/kubernetes',
 			title: 'Kubernetes',
 			icon: 'mdi:kubernetes',
 			items: [
@@ -58,7 +58,7 @@
 			]
 		},
 		{
-			base: '/dashboard/regions',
+			base: '/regions',
 			title: 'Regions',
 			icon: 'mdi:web',
 			items: [
@@ -68,10 +68,10 @@
 		}
 	];
 
-	let activeCategory = $derived(nav.find((x) => $page.route.id?.startsWith(x.base)));
+	let activeCategory = $derived(nav.find((x) => $page.url.pathname.startsWith(x.base)));
 	let activeItem = $derived(
 		activeCategory?.items.find((x) =>
-			$page.route.id?.startsWith(activeCategory.base + '/' + x.href)
+			$page.url.pathname.startsWith(activeCategory.base + '/' + x.href)
 		)
 	);
 
