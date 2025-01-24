@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { beforeNavigate } from '$app/navigation';
+
 	import { getDrawerStore, Drawer } from '@skeletonlabs/skeleton';
 	import SideBar from '$lib/shell/SideBar.svelte';
 
@@ -14,6 +16,10 @@
 	}
 
 	let { token, organizations, organizationID }: Props = $props();
+
+	beforeNavigate((navigation) => {
+		drawerStore.close();
+	});
 </script>
 
 <Drawer>
