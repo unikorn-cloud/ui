@@ -1431,6 +1431,31 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
+     * Complete the user signup process.
+     */
+    async apiV1SignupGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/v1/signup`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Complete the user signup process.
+     */
+    async apiV1SignupGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1SignupGetRaw(initOverrides);
+    }
+
+    /**
      * Provides authentication and authorisation as per the OAuth2 specification. This particular implementation requires a \"code\" type response, and PKCE. You may specify the \"openid\" scope in order to have an OpenID Connect identity token returned during code exchange.
      */
     async oauth2V2AuthorizationGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {

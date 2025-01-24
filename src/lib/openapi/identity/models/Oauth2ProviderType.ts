@@ -19,7 +19,8 @@
  */
 export const Oauth2ProviderType = {
     Google: 'google',
-    Microsoft: 'microsoft'
+    Microsoft: 'microsoft',
+    Github: 'github'
 } as const;
 export type Oauth2ProviderType = typeof Oauth2ProviderType[keyof typeof Oauth2ProviderType];
 

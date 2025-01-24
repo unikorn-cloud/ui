@@ -144,11 +144,9 @@
 <ShellPage {settings} allowed={data.allowed}>
 	<ShellViewHeader metadata={data.cluster.metadata}>
 		{#snippet badges()}
-			{#if data.cluster}
-				<Badge icon={RegionUtil.icon(data.regions, data.cluster.spec.regionId)}>
-					{RegionUtil.name(data.regions, data.cluster.spec.regionId)}
-				</Badge>
-			{/if}
+			<Badge icon={RegionUtil.icon(data.regions, data.cluster.spec.regionId)}>
+				{RegionUtil.name(data.regions, data.cluster.spec.regionId)}
+			</Badge>
 		{/snippet}
 	</ShellViewHeader>
 
