@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { invalidate } from '$app/navigation';
-	import { onDestroy } from 'svelte';
+	import { invalidate, beforeNavigate } from '$app/navigation';
 
 	let { data }: { data: PageData } = $props();
 
@@ -33,7 +32,7 @@
 	};
 
 	const ticker = setInterval(() => invalidate('layout:users'), 5000);
-	onDestroy(() => clearInterval(ticker));
+	beforeNavigate(() => clearInterval(ticker));
 
 	function remove(resource: Identity.UserRead) {
 		const modal: ModalSettings = {
