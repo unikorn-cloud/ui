@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { invalidate } from '$app/navigation';
+	import { invalidate, beforeNavigate } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { onDestroy } from 'svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -36,7 +35,7 @@
 	};
 
 	const ticker = setInterval(() => invalidate('layout:clusters'), 5000);
-	onDestroy(() => clearInterval(ticker));
+	beforeNavigate(() => clearInterval(ticker));
 
 	let groups = $derived.by(() => {
 		let temp: Record<string, Array<Compute.ComputeClusterRead>> = {};

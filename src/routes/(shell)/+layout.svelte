@@ -42,13 +42,11 @@
 
 {#if loading}
 	<div
-		class="bg-transparent absolute h-screen w-screen z-10 backdrop-blur grid grid-cols-3 grid-rows-3 items-center justify-items-center"
-		transition:fade={{ delay: 500 }}
+		class="bg-transparent absolute h-screen w-screen z-10 backdrop-blur flex items-center justify-center"
+		in:fade={{ duration: 1000 }}
+		out:fade={{ duration: 200 }}
 	>
-		<iconify-icon
-			icon="svg-spinners:bars-scale-fade"
-			class="text-primary-500 col-start-2 row-start-2 text-5xl"
-		>
+		<iconify-icon icon="svg-spinners:bars-scale-fade" class="text-primary-500 text-5xl">
 		</iconify-icon>
 	</div>
 {/if}
