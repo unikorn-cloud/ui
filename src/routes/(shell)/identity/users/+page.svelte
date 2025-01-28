@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { invalidate, beforeNavigate } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { invalidate } from '$app/navigation';
+	import { navigating } from '$app/state';
 
 	let { data }: { data: PageData } = $props();
 
@@ -31,8 +33,11 @@
 		description: "Manage your organization's users."
 	};
 
-	const ticker = setInterval(() => invalidate('layout:users'), 5000);
-	beforeNavigate(() => clearInterval(ticker));
+	onMount(() => {
+		const interval = setInterval(() => navigating.to || invalidate('layout:users'), 5000);
+
+		return () => clearInterval(interval);
+	});
 
 	function remove(resource: Identity.UserRead) {
 		const modal: ModalSettings = {

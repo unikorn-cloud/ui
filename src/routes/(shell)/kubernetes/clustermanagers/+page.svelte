@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { invalidate, beforeNavigate } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { invalidate } from '$app/navigation';
+	import { navigating } from '$app/state';
 
 	let { data }: { data: PageData } = $props();
 
@@ -28,8 +30,11 @@
 		description: 'Manage your Kubernetes cluster life-cycle managers.'
 	};
 
-	const ticker = setInterval(() => invalidate('layout:clustermanagers'), 5000);
-	beforeNavigate(() => clearInterval(ticker));
+	onMount(() => {
+		const interval = setInterval(() => navigating.to || invalidate('layout:clustermanagers'), 5000);
+
+		return () => clearInterval(interval);
+	});
 
 	function remove(resource: Kubernetes.ClusterManagerRead): void {
 		const modal: ModalSettings = {
