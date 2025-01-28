@@ -3,24 +3,29 @@
 
 	interface Props {
 		icon: string;
+		main: Snippet;
 		trail?: Snippet;
 		footer?: Snippet;
 		children?: Snippet;
 	}
 
-	let { icon, trail, footer, children }: Props = $props();
+	let { icon, main, trail, footer, children }: Props = $props();
 </script>
 
-<article
-	class="flex flex-col lg:gap-x-6 lg:col-span-full lg:grid lg:grid-cols-subgrid lg:items-center card bg-surface-50-900-token shadow-lg p-4"
->
-	<iconify-icon {icon} class="text-5xl text-primary-500"></iconify-icon>
+<article class="flex flex-col gap-4 card bg-surface-50-900-token shadow-lg p-4">
+	<div class="flex gap-4 items-center">
+		<iconify-icon {icon} class="text-5xl text-primary-500"></iconify-icon>
+
+		<div class="overflow-hidden text-ellipsis">
+			{@render main()}
+		</div>
+
+		<div class="ml-auto">
+			{@render trail?.()}
+		</div>
+	</div>
 
 	{@render children?.()}
-
-	<div class="col-start-[-1]">
-		{@render trail?.()}
-	</div>
 
 	{#if footer}
 		<div class="col-span-full">

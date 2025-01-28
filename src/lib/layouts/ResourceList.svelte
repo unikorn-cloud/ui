@@ -106,9 +106,7 @@
 <div class="grid gap-x-6 gap-y-2" {style}>
 	{#each items as item, index}
 		{#if activeItem == index}
-			<div
-				class="col-span-full flex flex-col gap-4 p-4 grid card bg-surface-50-900-token shadow-lg"
-			>
+			<div class="col-span-full flex flex-col gap-4 p-4 card bg-surface-50-900-token shadow-lg">
 				{@render expanded(item, index)}
 
 				<div class="flex justify-between">

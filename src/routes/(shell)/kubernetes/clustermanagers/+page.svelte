@@ -67,7 +67,9 @@
 	<ShellList>
 		{#each data.clustermanagers as resource}
 			<ShellListItem icon="mdi:kubernetes">
-				<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
+				{#snippet main()}
+					<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
+				{/snippet}
 
 				<ShellListItemBadges metadata={resource.metadata} />
 

@@ -68,10 +68,12 @@
 	<ShellList>
 		{#each data.oauth2providers || [] as resource}
 			<ShellListItem icon="mdi:key-outline">
-				<ShellListItemHeader
-					metadata={resource.metadata}
-					href="/identity/oauth2providers/view/{resource.metadata.id}"
-				/>
+				{#snippet main()}
+					<ShellListItemHeader
+						metadata={resource.metadata}
+						href="/identity/oauth2providers/view/{resource.metadata.id}"
+					/>
+				{/snippet}
 
 				<ShellListItemBadges metadata={resource.metadata} />
 

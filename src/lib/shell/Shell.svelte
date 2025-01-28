@@ -10,7 +10,7 @@
 	let { header, sidebarLeft, main } = $props();
 </script>
 
-<div class="w-full h-screen flex flex-col">
+<div class="w-full lg:h-screen flex flex-col">
 	<header>
 		{@render header()}
 	</header>

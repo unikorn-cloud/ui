@@ -70,10 +70,12 @@
 	<ShellList>
 		{#each data.serviceAccounts || [] as resource}
 			<ShellListItem icon="mdi:account-service-outline">
-				<ShellListItemHeader
-					metadata={resource.metadata}
-					href="/identity/serviceaccounts/view/{resource.metadata.id}"
-				/>
+				{#snippet main()}
+					<ShellListItemHeader
+						metadata={resource.metadata}
+						href="/identity/serviceaccounts/view/{resource.metadata.id}"
+					/>
+				{/snippet}
 
 				<ShellListItemBadges metadata={resource.metadata} />
 

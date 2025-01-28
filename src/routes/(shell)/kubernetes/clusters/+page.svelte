@@ -147,11 +147,13 @@
 
 		{#snippet item(resource: Kubernetes.KubernetesClusterRead)}
 			<ShellListItem icon="mdi:kubernetes">
-				<ShellListItemHeader
-					metadata={resource.metadata}
-					href="/kubernetes/clusters/view/{resource.metadata.id}"
-					projects={data.projects}
-				/>
+				{#snippet main()}
+					<ShellListItemHeader
+						metadata={resource.metadata}
+						href="/kubernetes/clusters/view/{resource.metadata.id}"
+						projects={data.projects}
+					/>
+				{/snippet}
 
 				<ShellListItemBadges metadata={resource.metadata}>
 					{#snippet extra()}

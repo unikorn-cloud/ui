@@ -13,6 +13,7 @@
 
 	import * as Clients from '$lib/clients';
 	import * as Identity from '$lib/openapi/identity';
+	import * as Formatters from '$lib/formatters';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -63,7 +64,7 @@
 	}
 
 	function userLastActive(user: Identity.UserRead): string {
-		return user.status.lastActive ? user.status.lastActive.toUTCString() : 'never';
+		return user.status.lastActive ? Formatters.ageFormatter(user.status.lastActive) : 'never';
 	}
 
 	function stateIcon(user: Identity.UserRead): string {
@@ -101,10 +102,12 @@
 	<ShellList>
 		{#each data.users || [] as resource}
 			<ShellListItem icon="mdi:user-outline">
-				<ShellListItemHeader
-					title={resource.spec.subject}
-					href="/identity/users/view/{resource.metadata.id}"
-				/>
+				{#snippet main()}
+					<ShellListItemHeader
+						title={resource.spec.subject}
+						href="/identity/users/view/{resource.metadata.id}"
+					/>
+				{/snippet}
 
 				<ShellListItemBadges>
 					{#snippet extra()}
