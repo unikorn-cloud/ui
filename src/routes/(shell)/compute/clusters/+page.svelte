@@ -162,32 +162,36 @@
 				{#snippet footer()}
 					<div class="flex flex-col gap-4 pt-4">
 						{#if resource.status?.workloadPools}
-							<div class="grid grid-cols-[repeat(4,max-content)_1fr] gap-4 items-center">
+							<div class="flex flex-col gap-4">
 								<div class="col-span-full flex gap-2 items-center">
 									<div class="h4">Machine Status</div>
 								</div>
 
 								{#each resource.status.workloadPools || [] as pool}
 									{#each pool.machines || [] as machine}
-										<div class="font-bold col-start-1">{machine.hostname}</div>
-										<Badge
-											icon={Status.statusIcon(machine.status)}
-											iconcolor={Status.statusColor(machine.status)}>{machine.status}</Badge
-										>
+										<div class="flex gap-4 items-center">
+											<div class="font-bold col-start-1">{machine.hostname}</div>
+											<Badge
+												icon={Status.statusIcon(machine.status)}
+												iconcolor={Status.statusColor(machine.status)}>{machine.status}</Badge
+											>
 
-										{#if machine.privateIP}
-											<div class="text-sm">
-												<span class="font-bold">Private IP</span>
-												{machine.privateIP}
-											</div>
-										{/if}
+											<div class="flex flex-col gap-2">
+												{#if machine.privateIP}
+													<div class="text-sm">
+														<span class="font-bold">Private IP</span>
+														{machine.privateIP}
+													</div>
+												{/if}
 
-										{#if machine.publicIP}
-											<div class="text-sm">
-												<span class="font-bold">Public IP</span>
-												{machine.publicIP}
+												{#if machine.publicIP}
+													<div class="text-sm">
+														<span class="font-bold">Public IP</span>
+														{machine.publicIP}
+													</div>
+												{/if}
 											</div>
-										{/if}
+										</div>
 									{/each}
 								{/each}
 							</div>
