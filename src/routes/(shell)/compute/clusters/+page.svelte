@@ -134,7 +134,9 @@
 
 		{#snippet item(resource: Compute.ComputeClusterRead)}
 			<ShellListItem icon="mdi:server-network-outline">
-				<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
+				{#snippet main()}
+					<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
+				{/snippet}
 
 				<ShellListItemBadges metadata={resource.metadata}>
 					{#snippet extra()}

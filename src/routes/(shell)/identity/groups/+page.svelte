@@ -69,10 +69,12 @@
 	<ShellList>
 		{#each data.groups || [] as resource}
 			<ShellListItem icon="mdi:account-group-outline">
-				<ShellListItemHeader
-					metadata={resource.metadata}
-					href="/identity/groups/view/{resource.metadata.id}"
-				/>
+				{#snippet main()}
+					<ShellListItemHeader
+						metadata={resource.metadata}
+						href="/identity/groups/view/{resource.metadata.id}"
+					/>
+				{/snippet}
 
 				<ShellListItemBadges metadata={resource.metadata} />
 

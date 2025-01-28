@@ -67,7 +67,9 @@
 	<ShellList>
 		{#each data.identities as resource}
 			<ShellListItem icon="mdi:user-outline">
-				<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
+				{#snippet main()}
+					<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
+				{/snippet}
 
 				<ShellListItemBadges metadata={resource.metadata}>
 					{#snippet extra()}

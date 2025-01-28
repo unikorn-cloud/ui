@@ -35,7 +35,9 @@
 	<ShellList>
 		{#each data.networks as resource}
 			<ShellListItem icon="mdi:network-outline">
-				<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
+				{#snippet main()}
+					<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
+				{/snippet}
 
 				<ShellListItemBadges metadata={resource.metadata}>
 					{#snippet extra()}

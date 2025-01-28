@@ -30,7 +30,7 @@
 </script>
 
 {#snippet header()}
-	<header class="flex flex-col gap-1">
+	<header class="flex flex-col gap-1 bg-surface-50-900-token">
 		{#if project}
 			<div class="flex gap-2 items-center tex-sm overflow-hidden text-ellipsis whitespace-nowrap">
 				<iconify-icon icon="mdi:account-group-outline"></iconify-icon>
@@ -47,7 +47,7 @@
 		</div>
 
 		{#if metadata?.description}
-			<div class="text-sm italic text-surface-500">
+			<div class="text-sm italic text-surface-500 bg-surface-50-900-token whitespace-nowrap">
 				{metadata.description}
 			</div>
 		{/if}

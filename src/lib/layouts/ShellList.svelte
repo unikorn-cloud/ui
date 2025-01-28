@@ -6,8 +6,6 @@
 	let { children }: Props = $props();
 </script>
 
-<div
-	class="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(6,minmax(0,max-content)),auto,max-content] lg:gap-x-8"
->
+<div class="grid grid-cols-[repeat(auto-fit,minmax(320px,480px))] gap-4">
 	{@render children?.()}
 </div>
