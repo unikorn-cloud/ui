@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { invalidate, beforeNavigate } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { invalidate } from '$app/navigation';
+	import { navigating } from '$app/state';
 	import { browser } from '$app/environment';
 
 	let { data }: { data: PageData } = $props();
@@ -33,8 +35,11 @@
 		description: 'Manage your Kubernetes clusters.'
 	};
 
-	const ticker = setInterval(() => invalidate('layout:clusters'), 5000);
-	beforeNavigate(() => clearInterval(ticker));
+	onMount(() => {
+		const interval = setInterval(() => navigating.to || invalidate('layout:clusters'), 5000);
+
+		return () => clearInterval(interval);
+	});
 
 	let groups = $derived.by(() => {
 		let temp: Record<string, Array<Kubernetes.KubernetesClusterRead>> = {};
