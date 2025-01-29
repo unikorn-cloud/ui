@@ -28,7 +28,6 @@
 	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
 	import PopupButton from '$lib/forms/PopupButton.svelte';
-	import * as Status from '$lib/status';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -135,7 +134,11 @@
 		{#snippet item(resource: Compute.ComputeClusterRead)}
 			<ShellListItem icon="mdi:server-network-outline">
 				{#snippet main()}
-					<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
+					<ShellListItemHeader
+						metadata={resource.metadata}
+						projects={data.projects}
+						href="/compute/clusters/view/{resource.metadata.id}"
+					/>
 				{/snippet}
 
 				<ShellListItemBadges metadata={resource.metadata}>
@@ -157,46 +160,6 @@
 							SSH Key
 						</BurgerMenuItem>
 					</BurgerMenu>
-				{/snippet}
-
-				{#snippet footer()}
-					<div class="flex flex-col gap-4 pt-4">
-						{#if resource.status?.workloadPools}
-							<div class="flex flex-col gap-4">
-								<div class="col-span-full flex gap-2 items-center">
-									<div class="h4">Machine Status</div>
-								</div>
-
-								{#each resource.status.workloadPools || [] as pool}
-									{#each pool.machines || [] as machine}
-										<div class="flex gap-4 items-center">
-											<div class="font-bold col-start-1">{machine.hostname}</div>
-											<Badge
-												icon={Status.statusIcon(machine.status)}
-												iconcolor={Status.statusColor(machine.status)}>{machine.status}</Badge
-											>
-
-											<div class="flex flex-col gap-2">
-												{#if machine.privateIP}
-													<div class="text-sm">
-														<span class="font-bold">Private IP</span>
-														{machine.privateIP}
-													</div>
-												{/if}
-
-												{#if machine.publicIP}
-													<div class="text-sm">
-														<span class="font-bold">Public IP</span>
-														{machine.publicIP}
-													</div>
-												{/if}
-											</div>
-										</div>
-									{/each}
-								{/each}
-							</div>
-						{/if}
-					</div>
 				{/snippet}
 			</ShellListItem>
 		{/snippet}
