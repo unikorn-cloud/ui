@@ -16,7 +16,7 @@
 	</header>
 
 	<div class="w-full h-full flex overflow-hidden">
-		<div class="flex-none overflow-x-hidden overflow-y-auto">
+		<div class="flex-none">
 			{@render sidebarLeft()}
 		</div>
 		<div class="flex-1 overflow-x-hidden flex flex-col shadow-inner">

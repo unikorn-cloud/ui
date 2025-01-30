@@ -24,7 +24,7 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 	const profile = getSessionData<OIDC.IDToken>('profile');
 
 	if (!token) {
-		const oidc = await OIDC.discovery();
+		const oidc = await OIDC.discovery(fetch);
 
 		const nonceBytes = new Uint8Array(16);
 		crypto.getRandomValues(nonceBytes);

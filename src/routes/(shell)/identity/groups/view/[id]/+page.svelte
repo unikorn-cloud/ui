@@ -20,13 +20,15 @@
 		description: 'Manage your group membership.'
 	};
 
-	// Once we know the groups, select the one we are viewing.
-	let group = $derived(data.groups.find((x) => x.metadata.id == $page.params.id));
+	let group = $derived.by(() => {
+		let group = $state(data.group);
+		return group;
+	});
 
 	// Add in any defaults before we rnder the DOM so we have things to bind to.
 	$effect.pre(() => {
-		if (!group) return;
 		if (!group.spec.userIDs) group.spec.userIDs = [];
+		if (!group.spec.serviceAccountIDs) group.spec.serviceAccountIDs = [];
 	});
 
 	let names: Array<string> = $derived(
@@ -38,8 +40,6 @@
 	let valid = $derived(metadataValid && group?.spec.roleIDs.length != 0);
 
 	function submit() {
-		if (!group) return;
-
 		const parameters = {
 			organizationID: data.organizationID,
 			groupid: $page.params.id,
@@ -54,47 +54,59 @@
 </script>
 
 <ShellPage {settings} allowed={data.allowed}>
-	{#if group}
-		<ShellViewHeader metadata={group.metadata} />
-		<ShellMetadataSection metadata={group.metadata} {names} bind:valid={metadataValid} />
+	<ShellViewHeader metadata={group.metadata} />
+	<ShellMetadataSection metadata={group.metadata} {names} bind:valid={metadataValid} />
 
-		<ShellSection title="Roles">
-			<MultiSelect
-				id="role-ids"
-				label="Select roles for group members."
-				hint="You must select at least one role."
-				bind:value={group.spec.roleIDs}
-			>
-				{#each data.roles as role}
-					<option value={role.metadata.id}>{role.metadata.name}</option>
+	<ShellSection title="Roles">
+		<MultiSelect
+			id="role-ids"
+			label="Select roles for group members."
+			hint="You must select at least one role."
+			bind:value={group.spec.roleIDs}
+		>
+			{#each data.roles as role}
+				<option value={role.metadata.id}>{role.metadata.name}</option>
+			{/each}
+		</MultiSelect>
+	</ShellSection>
+
+	<ShellSection title="Users">
+		{#if group.spec.userIDs}
+			<MultiSelect id="user-ids" label="Select group members." bind:value={group.spec.userIDs}>
+				{#each data.users as user}
+					<option value={user.metadata.id}>{user.spec.subject}</option>
 				{/each}
 			</MultiSelect>
-		</ShellSection>
+		{/if}
+	</ShellSection>
 
-		<ShellSection title="Users">
-			{#if group.spec.userIDs}
-				<MultiSelect id="user-ids" label="Select group members." bind:value={group.spec.userIDs}>
-					{#each data.users as user}
-						<option value={user.metadata.id}>{user.spec.subject}</option>
-					{/each}
-				</MultiSelect>
-			{/if}
-		</ShellSection>
+	<ShellSection title="Service Accounts">
+		{#if group.spec.serviceAccountIDs}
+			<MultiSelect
+				id="sa-ids"
+				label="Select group members."
+				bind:value={group.spec.serviceAccountIDs}
+			>
+				{#each data.serviceAccounts as serviceAccount}
+					<option value={serviceAccount.metadata.id}>{serviceAccount.metadata.name}</option>
+				{/each}
+			</MultiSelect>
+		{/if}
+	</ShellSection>
 
-		<div class="flex justify-between">
-			<Button
-				icon="mdi:cancel-bold"
-				label="Cancel"
-				class="variant-outline-primary"
-				href="/identity/groups"
-			/>
-			<Button
-				icon="mdi:tick"
-				label="Update"
-				class="variant-filled-primary"
-				clicked={submit}
-				disabled={!valid}
-			/>
-		</div>
-	{/if}
+	<div class="flex justify-between">
+		<Button
+			icon="mdi:cancel-bold"
+			label="Cancel"
+			class="variant-outline-primary"
+			href="/identity/groups"
+		/>
+		<Button
+			icon="mdi:tick"
+			label="Update"
+			class="variant-filled-primary"
+			clicked={submit}
+			disabled={!valid}
+		/>
+	</div>
 </ShellPage>

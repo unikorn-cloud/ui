@@ -28,6 +28,14 @@
 
 	type NavItems = Array<{ label: string; href: string }>;
 
+	const navStatic: Array<{ href: string; title: string; icon: string }> = [
+		{
+			href: '/',
+			title: 'Dashboard',
+			icon: 'mdi:gauge'
+		}
+	];
+
 	const nav: Array<{ base: string; title: string; icon: string; items: NavItems }> = [
 		{
 			base: '/identity',
@@ -36,6 +44,7 @@
 			items: [
 				{ label: 'Organization', href: 'organizations' },
 				{ label: 'OAuth2 Providers', href: 'oauth2providers' },
+				{ label: 'Quotas', href: 'quotas' },
 				{ label: 'Users', href: 'users' },
 				{ label: 'Service Accounts', href: 'serviceaccounts' },
 				{ label: 'Groups', href: 'groups' },
@@ -70,7 +79,7 @@
 
 	let activeCategory = $derived(nav.find((x) => $page.url.pathname.startsWith(x.base)));
 	let activeItem = $derived(
-		activeCategory?.items.find((x) =>
+		activeCategory?.items?.find((x) =>
 			$page.url.pathname.startsWith(activeCategory.base + '/' + x.href)
 		)
 	);
@@ -89,7 +98,7 @@
 </script>
 
 <div class="h-full bg-surface-50-900-token lg:w-[320px] overflow-hidden {props.class || ''}">
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col">
 		<!-- Oragnization -->
 		<div class="p-4 flex flex-col gap-4 text-sm">
 			<div class="font-bold">Organization</div>
@@ -107,8 +116,16 @@
 			</div>
 		</div>
 
-		<div class="flex flex-col gap-4">
-			<div class="px-4 font-bold text-sm">Main Menu</div>
+		<div class="flex flex-col">
+			<div class="p-4 font-bold text-sm">Main Menu</div>
+
+			{#each navStatic as entry}
+				<a href={entry.href} class="flex gap-4 hover:bg-primary-hover-token p-2 px-4">
+					<iconify-icon icon={entry.icon} class="text-2xl text-primary-500 align-middle"
+					></iconify-icon>
+					{entry.title}
+				</a>
+			{/each}
 
 			<Accordion autocollapse rounded="none">
 				{#each nav as entry}

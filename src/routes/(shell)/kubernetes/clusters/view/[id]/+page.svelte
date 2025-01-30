@@ -26,6 +26,11 @@
 		description: 'Update an existing Kubernetes cluster.'
 	};
 
+	let cluster = $derived.by(() => {
+		let cluster = $state(data.cluster);
+		return cluster;
+	});
+
 	let clusters = $derived(
 		data.clusters.filter((x) => x.metadata.projectId == data.cluster.metadata.projectId)
 	);
@@ -55,13 +60,13 @@
 			}
 		};
 
-		data.cluster.spec.workloadPools.push(pool);
+		cluster.spec.workloadPools.push(pool);
 
-		return data.cluster.spec.workloadPools.length - 1;
+		return cluster.spec.workloadPools.length - 1;
 	}
 
 	function workloadPoolRemove(index: number) {
-		data.cluster.spec.workloadPools.splice(index, 1);
+		cluster.spec.workloadPools.splice(index, 1);
 	}
 
 	// A workload pool is valid if all the fields in the pool are valid and
@@ -69,7 +74,7 @@
 	let workloadPoolValidFull: boolean = $derived.by(() => {
 		if (!workloadPoolValid) return false;
 
-		const names = data.cluster.spec.workloadPools.map((x) => x.name);
+		const names = cluster.spec.workloadPools.map((x) => x.name);
 		const uniqueNames = new Set(names);
 
 		if (names.length != uniqueNames.size) return false;
@@ -95,9 +100,9 @@
 	let step2valid: boolean = $derived.by(() => {
 		if (step != 1) return true;
 
-		if (data.cluster.spec.workloadPools.length == 0) return false;
+		if (cluster.spec.workloadPools.length == 0) return false;
 
-		const names = data.cluster.spec.workloadPools.map((x) => x.name);
+		const names = cluster.spec.workloadPools.map((x) => x.name);
 		const uniqueNames = new Set(names);
 
 		if (names.length != uniqueNames.size) return false;
@@ -129,9 +134,9 @@
 	function complete() {
 		const parameters = {
 			organizationID: data.organizationID,
-			projectID: data.cluster.metadata.projectId,
-			clusterID: data.cluster.metadata.id,
-			kubernetesClusterWrite: data.cluster
+			projectID: cluster.metadata.projectId,
+			clusterID: cluster.metadata.id,
+			kubernetesClusterWrite: cluster
 		};
 
 		Clients.kubernetes(data.token)
@@ -142,10 +147,10 @@
 </script>
 
 <ShellPage {settings} allowed={data.allowed}>
-	<ShellViewHeader metadata={data.cluster.metadata}>
+	<ShellViewHeader metadata={cluster.metadata}>
 		{#snippet badges()}
-			<Badge icon={RegionUtil.icon(data.regions, data.cluster.spec.regionId)}>
-				{RegionUtil.name(data.regions, data.cluster.spec.regionId)}
+			<Badge icon={RegionUtil.icon(data.regions, cluster.spec.regionId)}>
+				{RegionUtil.name(data.regions, cluster.spec.regionId)}
 			</Badge>
 		{/snippet}
 	</ShellViewHeader>
@@ -155,7 +160,7 @@
 			{#if index === 0}
 				<h2 class="h2">Basic Cluster Setup</h2>
 
-				<ShellMetadataSection metadata={data.cluster.metadata} {names} bind:valid={metadataValid} />
+				<ShellMetadataSection metadata={cluster.metadata} {names} bind:valid={metadataValid} />
 
 				<ShellSection title="Platform Configuration">
 					<Select
@@ -165,7 +170,7 @@
                                                 compatibility so choosing the newest is usually the right choice as that provides a rich
                                                 feature set and enhanced security. Certain applications &mdash; e.g. Kubeflow &mdash;
 						may require a specific version."
-						bind:value={data.cluster.spec.version}
+						bind:value={cluster.spec.version}
 					>
 						{#each versions || [] as version}
 							<option value={version}>{version}</option>
@@ -176,7 +181,7 @@
 				<ResourceList
 					title="Workload Pool Configuration"
 					columns={3}
-					items={data.cluster.spec.workloadPools}
+					items={cluster.spec.workloadPools}
 					bind:active={workloadPoolActive}
 					valid={workloadPoolValidFull}
 					add={workloadPoolAdd}
@@ -204,7 +209,7 @@
 					{#snippet expanded(pool: Kubernetes.KubernetesClusterWorkloadPool, index: number)}
 						<KubernetesWorkloadPool
 							flavors={data.flavors}
-							bind:pool={data.cluster.spec.workloadPools[index]}
+							bind:pool={cluster.spec.workloadPools[index]}
 							bind:valid={workloadPoolValid}
 						/>
 					{/snippet}

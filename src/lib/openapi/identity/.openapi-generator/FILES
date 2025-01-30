@@ -5,6 +5,9 @@ models/Acl.ts
 models/AclEndpoint.ts
 models/AclOperation.ts
 models/AclScopedEndpoints.ts
+models/AllocationRead.ts
+models/AllocationSpec.ts
+models/AllocationWrite.ts
 models/AuthMethod.ts
 models/Claim.ts
 models/CodeChallengeMethod.ts
@@ -26,9 +29,14 @@ models/OrganizationSpec.ts
 models/OrganizationType.ts
 models/OrganizationWrite.ts
 models/ProjectRead.ts
+models/ProjectScopedResourceReadMetadata.ts
 models/ProjectSpec.ts
 models/ProjectWrite.ts
 models/ProviderScope.ts
+models/Quota.ts
+models/QuotaDetailed.ts
+models/QuotasRead.ts
+models/QuotasWrite.ts
 models/ResourceMetadata.ts
 models/ResourceProvisioningStatus.ts
 models/ResourceReadMetadata.ts

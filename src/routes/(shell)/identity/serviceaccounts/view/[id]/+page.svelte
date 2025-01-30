@@ -23,17 +23,17 @@
 		description: 'Manage your service account.'
 	};
 
-	let serviceAccount = $derived(data.serviceAccounts.find((x) => x.metadata.id == $page.params.id));
+	let serviceAccount = $derived.by(() => {
+		let serviceAccount = $state(data.serviceAccount);
+		return serviceAccount;
+	});
 
 	$effect.pre(() => {
-		if (!serviceAccount) return;
 		if (!serviceAccount.spec) serviceAccount.spec = {};
 		if (!serviceAccount.spec.groupIDs) serviceAccount.spec.groupIDs = [];
 	});
 
 	function submit() {
-		if (!serviceAccount) return;
-
 		const parameters = {
 			organizationID: data.organizationID,
 			serviceAccountID: $page.params.id,
@@ -88,7 +88,7 @@
 				href="/identity/serviceaccounts"
 			/>
 		</div>
-	{:else if serviceAccount}
+	{:else}
 		<ShellViewHeader metadata={serviceAccount.metadata}>
 			{#snippet extraMetadata()}
 				<ShellMetadataItem

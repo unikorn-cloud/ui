@@ -22,16 +22,16 @@
 	};
 
 	// Once we know the users, select the one we are viewing.
-	let user = $derived(data.users.find((x) => x.metadata.id == $page.params.id));
+	let user = $derived.by(() => {
+		let user = $state(data.user);
+		return user;
+	});
 
 	$effect.pre(() => {
-		if (!user) return;
 		if (!user.spec.groupIDs) user.spec.groupIDs = [];
 	});
 
 	function submit() {
-		if (!user) return;
-
 		const parameters = {
 			organizationID: data.organizationID,
 			userID: $page.params.id,
@@ -46,48 +46,46 @@
 </script>
 
 <ShellPage {settings} allowed={data.allowed}>
-	{#if user}
-		<ShellViewHeaderSimple name={user.spec.subject} />
+	<ShellViewHeaderSimple name={user.spec.subject} />
 
-		<ShellSection title="Access Control">
-			<Select
-				id="sa-state"
-				label="Account State"
-				hint="Active users can login and do things, other states don't allow login but retail group memberships."
-				disabled={user.spec.state == Identity.UserState.Pending}
-				bind:value={user.spec.state}
-			>
-				<option value={Identity.UserState.Active}>Active</option>
-				{#if user.spec.state == Identity.UserState.Pending}
-					<option value={Identity.UserState.Pending}>Pending</option>
-				{/if}
-				<option value={Identity.UserState.Suspended}>Suspended</option>
-			</Select>
-
-			{#if user.spec.groupIDs}
-				<MultiSelect
-					id="sa-groups"
-					label="Groups"
-					hint="Select at least one group that the user should be a member of."
-					bind:value={user.spec.groupIDs}
-				>
-					{#each data.groups as group}
-						<option value={group.metadata.id}>
-							{group.metadata.name}
-						</option>
-					{/each}
-				</MultiSelect>
+	<ShellSection title="Access Control">
+		<Select
+			id="sa-state"
+			label="Account State"
+			hint="Active users can login and do things, other states don't allow login but retail group memberships."
+			disabled={user.spec.state == Identity.UserState.Pending}
+			bind:value={user.spec.state}
+		>
+			<option value={Identity.UserState.Active}>Active</option>
+			{#if user.spec.state == Identity.UserState.Pending}
+				<option value={Identity.UserState.Pending}>Pending</option>
 			{/if}
-		</ShellSection>
+			<option value={Identity.UserState.Suspended}>Suspended</option>
+		</Select>
 
-		<div class="flex justify-between">
-			<Button
-				icon="mdi:cancel-bold"
-				label="Cancel"
-				class="variant-outline-primary"
-				href="/identity/users"
-			/>
-			<Button icon="mdi:tick" label="Update" class="variant-filled-primary" clicked={submit} />
-		</div>
-	{/if}
+		{#if user.spec.groupIDs}
+			<MultiSelect
+				id="sa-groups"
+				label="Groups"
+				hint="Select at least one group that the user should be a member of."
+				bind:value={user.spec.groupIDs}
+			>
+				{#each data.groups as group}
+					<option value={group.metadata.id}>
+						{group.metadata.name}
+					</option>
+				{/each}
+			</MultiSelect>
+		{/if}
+	</ShellSection>
+
+	<div class="flex justify-between">
+		<Button
+			icon="mdi:cancel-bold"
+			label="Cancel"
+			class="variant-outline-primary"
+			href="/identity/users"
+		/>
+		<Button icon="mdi:tick" label="Update" class="variant-filled-primary" clicked={submit} />
+	</div>
 </ShellPage>

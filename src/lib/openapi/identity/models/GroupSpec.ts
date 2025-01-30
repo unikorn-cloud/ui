@@ -30,6 +30,12 @@ export interface GroupSpec {
      * @type {Array<string>}
      * @memberof GroupSpec
      */
+    serviceAccountIDs?: Array<string>;
+    /**
+     * A list of strings.
+     * @type {Array<string>}
+     * @memberof GroupSpec
+     */
     roleIDs: Array<string>;
 }
 
@@ -54,6 +60,7 @@ export function GroupSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     return {
         
         'userIDs': !exists(json, 'userIDs') ? undefined : json['userIDs'],
+        'serviceAccountIDs': !exists(json, 'serviceAccountIDs') ? undefined : json['serviceAccountIDs'],
         'roleIDs': json['roleIDs'],
     };
 }
@@ -68,6 +75,7 @@ export function GroupSpecToJSON(value?: GroupSpec | null): any {
     return {
         
         'userIDs': value.userIDs,
+        'serviceAccountIDs': value.serviceAccountIDs,
         'roleIDs': value.roleIDs,
     };
 }

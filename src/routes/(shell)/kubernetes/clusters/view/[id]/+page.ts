@@ -10,7 +10,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
 
 	const cluster = clusters.find((x) => params['id'] == x.metadata.id);
 	if (!cluster) {
-		error(400, 'unable to find cluster by ID');
+		error(404, 'kubernetes cluster not found');
 	}
 
 	const clustermanagers = Clients.kubernetes(

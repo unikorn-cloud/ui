@@ -63,14 +63,14 @@ function traceContextMiddleware(): Identity.Middleware {
 // accessToken is a callback to get the Authorization header.  Crucially this
 // also has a reference to the full token, so san see when the access token
 // has expired and refresh it using the refresh token.
-async function accessToken(tokens: InternalToken): Promise<string> {
+async function accessToken(tokens: InternalToken, fetchImpl?: typeof fetch): Promise<string> {
 	if (!tokens) return '';
 
 	// TODO: we could get multiple API calls concurrently, at which point
 	// we are repeating the operation, be nice if we could handle this
 	// somehow.
 	if (new Date(Date.now()).toJSON() > tokens.expiry) {
-		const discovery = await OIDC.discovery();
+		const discovery = await OIDC.discovery(fetchImpl || fetch);
 
 		const form = new URLSearchParams({
 			grant_type: 'refresh_token',
@@ -119,26 +119,23 @@ async function accessToken(tokens: InternalToken): Promise<string> {
 }
 
 // client gets a new initialized client with auth and any additional middlewares.
-export function kubernetes(
-	tokens: InternalToken,
-	fetch?: Kubernetes.FetchAPI
-): Kubernetes.DefaultApi {
+export function kubernetes(tokens: InternalToken, fetchImpl?: typeof fetch): Kubernetes.DefaultApi {
 	const config = new Kubernetes.Configuration({
 		basePath: env.PUBLIC_KUBERNETES_HOST,
-		accessToken: async () => accessToken(tokens),
+		accessToken: async () => accessToken(tokens, fetchImpl),
 		middleware: [authenticationMiddleware(), traceContextMiddleware()],
-		fetchApi: fetch
+		fetchApi: fetchImpl
 	});
 
 	return new Kubernetes.DefaultApi(config);
 }
 
-export function compute(tokens: InternalToken, fetch?: Compute.FetchAPI): Compute.DefaultApi {
+export function compute(tokens: InternalToken, fetchImpl?: typeof fetch): Compute.DefaultApi {
 	const config = new Compute.Configuration({
 		basePath: env.PUBLIC_COMPUTE_HOST,
-		accessToken: async () => accessToken(tokens),
+		accessToken: async () => accessToken(tokens, fetchImpl),
 		middleware: [authenticationMiddleware(), traceContextMiddleware()],
-		fetchApi: fetch
+		fetchApi: fetchImpl
 	});
 
 	return new Compute.DefaultApi(config);
@@ -146,35 +143,35 @@ export function compute(tokens: InternalToken, fetch?: Compute.FetchAPI): Comput
 
 export function application(
 	tokens: InternalToken,
-	fetch?: Application.FetchAPI
+	fetchImpl?: typeof fetch
 ): Application.DefaultApi {
 	const config = new Application.Configuration({
 		basePath: env.PUBLIC_APPLICATION_HOST,
-		accessToken: async () => accessToken(tokens),
+		accessToken: async () => accessToken(tokens, fetchImpl),
 		middleware: [authenticationMiddleware(), traceContextMiddleware()],
-		fetchApi: fetch
+		fetchApi: fetchImpl
 	});
 
 	return new Application.DefaultApi(config);
 }
 
-export function identity(tokens: InternalToken, fetch?: Identity.FetchAPI): Identity.DefaultApi {
+export function identity(tokens: InternalToken, fetchImpl?: typeof fetch): Identity.DefaultApi {
 	const config = new Identity.Configuration({
 		basePath: env.PUBLIC_OAUTH2_ISSUER,
-		accessToken: async () => accessToken(tokens),
+		accessToken: async () => accessToken(tokens, fetchImpl),
 		middleware: [authenticationMiddleware(), traceContextMiddleware()],
-		fetchApi: fetch
+		fetchApi: fetchImpl
 	});
 
 	return new Identity.DefaultApi(config);
 }
 
-export function region(tokens: InternalToken, fetch?: Region.FetchAPI): Region.DefaultApi {
+export function region(tokens: InternalToken, fetchImpl?: typeof fetch): Region.DefaultApi {
 	const config = new Region.Configuration({
 		basePath: env.PUBLIC_REGION_HOST,
-		accessToken: async () => accessToken(tokens),
+		accessToken: async () => accessToken(tokens, fetchImpl),
 		middleware: [authenticationMiddleware(), traceContextMiddleware()],
-		fetchApi: fetch
+		fetchApi: fetchImpl
 	});
 
 	return new Region.DefaultApi(config);
