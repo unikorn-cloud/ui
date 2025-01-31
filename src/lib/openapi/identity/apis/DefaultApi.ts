@@ -16,6 +16,8 @@
 import * as runtime from '../runtime';
 import type {
   Acl,
+  AllocationRead,
+  AllocationWrite,
   GroupRead,
   GroupWrite,
   JsonWebKeySet,
@@ -28,6 +30,8 @@ import type {
   OrganizationWrite,
   ProjectRead,
   ProjectWrite,
+  QuotasRead,
+  QuotasWrite,
   RoleRead,
   ServiceAccountCreate,
   ServiceAccountRead,
@@ -41,6 +45,10 @@ import type {
 import {
     AclFromJSON,
     AclToJSON,
+    AllocationReadFromJSON,
+    AllocationReadToJSON,
+    AllocationWriteFromJSON,
+    AllocationWriteToJSON,
     GroupReadFromJSON,
     GroupReadToJSON,
     GroupWriteFromJSON,
@@ -65,6 +73,10 @@ import {
     ProjectReadToJSON,
     ProjectWriteFromJSON,
     ProjectWriteToJSON,
+    QuotasReadFromJSON,
+    QuotasReadToJSON,
+    QuotasWriteFromJSON,
+    QuotasWriteToJSON,
     RoleReadFromJSON,
     RoleReadToJSON,
     ServiceAccountCreateFromJSON,
@@ -86,6 +98,10 @@ import {
 } from '../models/index';
 
 export interface ApiV1OrganizationsOrganizationIDAclGetRequest {
+    organizationID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDAllocationsGetRequest {
     organizationID: string;
 }
 
@@ -147,6 +163,31 @@ export interface ApiV1OrganizationsOrganizationIDProjectsPostRequest {
     projectWrite: ProjectWrite;
 }
 
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDDeleteRequest {
+    organizationID: string;
+    projectID: string;
+    allocationID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDGetRequest {
+    organizationID: string;
+    projectID: string;
+    allocationID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDPutRequest {
+    organizationID: string;
+    projectID: string;
+    allocationID: string;
+    allocationWrite: AllocationWrite;
+}
+
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsPostRequest {
+    organizationID: string;
+    projectID: string;
+    allocationWrite: AllocationWrite;
+}
+
 export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDDeleteRequest {
     organizationID: string;
     projectID: string;
@@ -166,6 +207,15 @@ export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDPutRequest {
 export interface ApiV1OrganizationsOrganizationIDPutRequest {
     organizationID: string;
     organizationWrite: OrganizationWrite;
+}
+
+export interface ApiV1OrganizationsOrganizationIDQuotasGetRequest {
+    organizationID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDQuotasPutRequest {
+    organizationID: string;
+    quotasWrite: QuotasWrite;
 }
 
 export interface ApiV1OrganizationsOrganizationIDRolesGetRequest {
@@ -359,6 +409,41 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationIDAclGet(requestParameters: ApiV1OrganizationsOrganizationIDAclGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Acl> {
         const response = await this.apiV1OrganizationsOrganizationIDAclGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Lists all allocation.
+     */
+    async apiV1OrganizationsOrganizationIDAllocationsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDAllocationsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<AllocationRead>>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDAllocationsGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/allocations`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(AllocationReadFromJSON));
+    }
+
+    /**
+     * Lists all allocation.
+     */
+    async apiV1OrganizationsOrganizationIDAllocationsGet(requestParameters: ApiV1OrganizationsOrganizationIDAllocationsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<AllocationRead>> {
+        const response = await this.apiV1OrganizationsOrganizationIDAllocationsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -834,6 +919,187 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
+     * Updates an allocation.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDDelete.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDDelete.');
+        }
+
+        if (requestParameters.allocationID === null || requestParameters.allocationID === undefined) {
+            throw new runtime.RequiredError('allocationID','Required parameter requestParameters.allocationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDDelete.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/allocations/{allocationID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"allocationID"}}`, encodeURIComponent(String(requestParameters.allocationID))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Updates an allocation.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDDelete(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDDeleteRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Gets an allocation.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AllocationRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDGet.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDGet.');
+        }
+
+        if (requestParameters.allocationID === null || requestParameters.allocationID === undefined) {
+            throw new runtime.RequiredError('allocationID','Required parameter requestParameters.allocationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/allocations/{allocationID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"allocationID"}}`, encodeURIComponent(String(requestParameters.allocationID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AllocationReadFromJSON(jsonValue));
+    }
+
+    /**
+     * Gets an allocation.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AllocationRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Updates an allocation.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDPutRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AllocationRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDPut.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDPut.');
+        }
+
+        if (requestParameters.allocationID === null || requestParameters.allocationID === undefined) {
+            throw new runtime.RequiredError('allocationID','Required parameter requestParameters.allocationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDPut.');
+        }
+
+        if (requestParameters.allocationWrite === null || requestParameters.allocationWrite === undefined) {
+            throw new runtime.RequiredError('allocationWrite','Required parameter requestParameters.allocationWrite was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDPut.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/allocations/{allocationID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"allocationID"}}`, encodeURIComponent(String(requestParameters.allocationID))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: AllocationWriteToJSON(requestParameters.allocationWrite),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AllocationReadFromJSON(jsonValue));
+    }
+
+    /**
+     * Updates an allocation.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDPut(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AllocationRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsAllocationIDPutRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates an allocation.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AllocationRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsPost.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsPost.');
+        }
+
+        if (requestParameters.allocationWrite === null || requestParameters.allocationWrite === undefined) {
+            throw new runtime.RequiredError('allocationWrite','Required parameter requestParameters.allocationWrite was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/allocations`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: AllocationWriteToJSON(requestParameters.allocationWrite),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AllocationReadFromJSON(jsonValue));
+    }
+
+    /**
+     * Creates an allocation.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AllocationRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDAllocationsPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Deletes the project associated with the authenticated user\'s scoped authorisation token. This is a cascading operation and will delete all contained cluster managers and clusters.
      */
     async apiV1OrganizationsOrganizationIDProjectsProjectIDDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -994,6 +1260,83 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationIDPut(requestParameters: ApiV1OrganizationsOrganizationIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.apiV1OrganizationsOrganizationIDPutRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Gets quotas for the organization.
+     */
+    async apiV1OrganizationsOrganizationIDQuotasGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDQuotasGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<QuotasRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDQuotasGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/quotas`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => QuotasReadFromJSON(jsonValue));
+    }
+
+    /**
+     * Gets quotas for the organization.
+     */
+    async apiV1OrganizationsOrganizationIDQuotasGet(requestParameters: ApiV1OrganizationsOrganizationIDQuotasGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<QuotasRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDQuotasGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Sets quotas for the organization.
+     */
+    async apiV1OrganizationsOrganizationIDQuotasPutRaw(requestParameters: ApiV1OrganizationsOrganizationIDQuotasPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<QuotasRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDQuotasPut.');
+        }
+
+        if (requestParameters.quotasWrite === null || requestParameters.quotasWrite === undefined) {
+            throw new runtime.RequiredError('quotasWrite','Required parameter requestParameters.quotasWrite was null or undefined when calling apiV1OrganizationsOrganizationIDQuotasPut.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/quotas`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: QuotasWriteToJSON(requestParameters.quotasWrite),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => QuotasReadFromJSON(jsonValue));
+    }
+
+    /**
+     * Sets quotas for the organization.
+     */
+    async apiV1OrganizationsOrganizationIDQuotasPut(requestParameters: ApiV1OrganizationsOrganizationIDQuotasPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<QuotasRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDQuotasPutRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**

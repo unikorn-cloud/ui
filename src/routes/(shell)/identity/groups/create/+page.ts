@@ -28,6 +28,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
 		return {
 			roles: [] as Array<Identity.RoleRead>,
 			users: [] as Array<Identity.UserRead>,
+			serviceAccounts: [] as Array<Identity.ServiceAccountRead>,
 			allowed: false
 		};
 	}
@@ -40,9 +41,17 @@ export const load: PageLoad = async ({ fetch, parent }) => {
 		organizationID: organizationID
 	});
 
+	const serviceAccounts = Clients.identity(
+		token,
+		fetch
+	).apiV1OrganizationsOrganizationIDServiceaccountsGet({
+		organizationID: organizationID
+	});
+
 	return {
 		roles: await roles,
 		users: await users,
+		serviceAccounts: await serviceAccounts,
 		allowed: true
 	};
 };

@@ -1,19 +1,16 @@
 export const ssr = false;
 
-import type { LayoutLoad } from './$types';
+import type { PageLoad } from './$types';
 
 import * as RBAC from '$lib/rbac';
 import * as Identity from '$lib/openapi/identity';
-import * as Region from '$lib/openapi/region';
 import * as Clients from '$lib/clients';
 
-export const load: LayoutLoad = async ({ depends, fetch, parent }) => {
-	depends('layout:identities');
-
+export const load: PageLoad = async ({ fetch, parent }) => {
 	const scopes: Array<RBAC.OrganizationScope> = [
 		{
-			endpoint: 'region:identities',
-			operation: Identity.AclOperation.Read
+			endpoint: 'identity:quotas',
+			operation: Identity.AclOperation.Update
 		}
 	];
 
@@ -21,17 +18,17 @@ export const load: LayoutLoad = async ({ depends, fetch, parent }) => {
 
 	if (!allowed || !RBAC.organizationScopesAllowed(acl, organizationID, scopes)) {
 		return {
-			identities: [] as Array<Region.IdentityRead>,
+			quotas: {} as Identity.QuotasRead,
 			allowed: false
 		};
 	}
 
-	const identities = Clients.region(token, fetch).apiV1OrganizationsOrganizationIDIdentitiesGet({
+	const quotas = Clients.identity(token, fetch).apiV1OrganizationsOrganizationIDQuotasGet({
 		organizationID: organizationID
 	});
 
 	return {
-		identities: await identities,
+		quotas: await quotas,
 		allowed: true
 	};
 };

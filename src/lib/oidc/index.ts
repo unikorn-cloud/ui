@@ -43,13 +43,13 @@ export type DiscoveryInfo = {
 };
 
 // Return something that promises to return discovery data.
-export function discovery(): Promise<DiscoveryInfo> {
+export function discovery(fetchImpl: typeof fetch): Promise<DiscoveryInfo> {
 	const discoveryURL = `${issuer}/.well-known/openid-configuration`;
 	const discoveryOptions = {
 		method: 'GET'
 	};
 
-	return fetch(discoveryURL, discoveryOptions)
+	return fetchImpl(discoveryURL, discoveryOptions)
 		.then((response) => response.json())
 		.catch((error) => console.log(error));
 }

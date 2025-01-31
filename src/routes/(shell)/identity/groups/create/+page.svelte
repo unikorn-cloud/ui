@@ -27,7 +27,8 @@
 		},
 		spec: {
 			roleIDs: [],
-			userIDs: []
+			userIDs: [],
+			serviceAccountIDs: []
 		}
 	});
 
@@ -70,6 +71,20 @@
 			<MultiSelect id="user-ids" label="Select group members." bind:value={resource.spec.userIDs}>
 				{#each data.users as user}
 					<option value={user.metadata.id}>{user.spec.subject}</option>
+				{/each}
+			</MultiSelect>
+		{/if}
+	</ShellSection>
+
+	<ShellSection title="Service Accounts">
+		{#if resource.spec.serviceAccountIDs}
+			<MultiSelect
+				id="sa-ids"
+				label="Select group members."
+				bind:value={resource.spec.serviceAccountIDs}
+			>
+				{#each data.serviceAccounts as serviceAccount}
+					<option value={serviceAccount.metadata.id}>{serviceAccount.metadata.name}</option>
 				{/each}
 			</MultiSelect>
 		{/if}

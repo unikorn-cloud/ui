@@ -44,7 +44,7 @@ export const load: PageLoad = async ({ url, fetch }) => {
 	}
 
 	// Code exchange...
-	const discovery = await OIDC.discovery();
+	const discovery = await OIDC.discovery(fetch);
 
 	const body = new URLSearchParams({
 		grant_type: 'authorization_code',
