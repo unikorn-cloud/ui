@@ -57,6 +57,7 @@
 	token={data.token}
 	organizations={data.organizations}
 	organizationID={data.organizationID}
+	acl={data.acl}
 />
 
 <Shell>
@@ -70,6 +71,7 @@
 			token={data.token}
 			organizations={data.organizations}
 			organizationID={data.organizationID}
+			acl={data.acl}
 		/>
 	{/snippet}
 

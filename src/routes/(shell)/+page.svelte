@@ -38,7 +38,7 @@
 	};
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	<ShellSection title="Resource Utilization">
 		<div class="flex flex-col lg:flex-row lg:flex-wrap gap-4">
 			{#each data.quotas.capacity as quota, i}

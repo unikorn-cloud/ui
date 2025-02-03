@@ -190,7 +190,7 @@
 	}
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	<Stepper steps={3} bind:step {complete} {valid}>
 		{#snippet content(index: number)}
 			{#if index === 0}

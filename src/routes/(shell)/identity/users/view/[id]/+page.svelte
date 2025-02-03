@@ -45,7 +45,7 @@
 	}
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	<ShellViewHeaderSimple name={user.spec.subject} />
 
 	<ShellSection title="Access Control">

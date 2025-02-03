@@ -46,11 +46,15 @@
 		servers: {
 			title: 'Servers',
 			description: 'All servers and virtual machines.'
+		},
+		gpus: {
+			title: 'GPUs',
+			description: 'General purpose GPUs.'
 		}
 	};
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	<ShellSection title="Quotas">
 		{#each quotas.capacity as quota, i}
 			<NumberInput

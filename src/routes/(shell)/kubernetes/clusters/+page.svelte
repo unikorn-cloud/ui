@@ -113,7 +113,7 @@
 	}
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	<GroupedList {groups}>
 		{#snippet header(projectID: string)}
 			<header class="flex justify-between">

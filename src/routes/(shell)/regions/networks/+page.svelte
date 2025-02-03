@@ -31,7 +31,7 @@
 	});
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	<ShellList>
 		{#each data.networks as resource}
 			<ShellListItem icon="mdi:network-outline">

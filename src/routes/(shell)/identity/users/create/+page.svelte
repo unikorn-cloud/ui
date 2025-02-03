@@ -48,7 +48,7 @@
 	}
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	<ShellSection title="User Information">
 		<TextInput
 			id="name"

@@ -63,7 +63,7 @@
 	}
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	<ShellList>
 		{#each data.identities as resource}
 			<ShellListItem icon="mdi:user-outline">

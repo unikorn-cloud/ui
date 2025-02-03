@@ -91,7 +91,6 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 		token: token,
 		organizations: organizations,
 		organizationID: organizationID,
-		acl: acl,
-		allowed: true
+		acl: acl
 	};
 };

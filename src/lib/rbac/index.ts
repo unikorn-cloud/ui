@@ -2,13 +2,13 @@ import * as Identity from '$lib/openapi/identity';
 
 export type OrganizationScope = {
 	endpoint: string;
-	operation: Identity.AclOperation;
+	operations: Array<Identity.AclOperation>;
 };
 
 export type ProjectScope = {
 	projectID: string;
 	endpoint: string;
-	operation: Identity.AclOperation;
+	operations: Array<Identity.AclOperation>;
 };
 
 // This is the core of RBAC, we can do something if a named endpoint matches with
@@ -16,21 +16,21 @@ export type ProjectScope = {
 function operationAllowedEndpoint(
 	e: Identity.AclEndpoint,
 	endpoint: string,
-	operation: Identity.AclOperation
+	operations: Array<Identity.AclOperation>
 ): boolean {
-	return e.name == endpoint && e.operations.includes(operation);
+	return e.name == endpoint && operations.every((x) => e.operations.includes(x));
 }
 
 // This finds a maching endpoint in a list.
 function operationAllowedEndpoints(
 	endpoints: Array<Identity.AclEndpoint> | undefined,
 	endpoint: string,
-	operation: Identity.AclOperation
+	operations: Array<Identity.AclOperation>
 ): boolean {
 	if (!endpoints) return false;
 
 	return endpoints.some((e: Identity.AclEndpoint): boolean =>
-		operationAllowedEndpoint(e, endpoint, operation)
+		operationAllowedEndpoint(e, endpoint, operations)
 	);
 }
 
@@ -39,11 +39,11 @@ function operationAllowedScopedEndpoints(
 	endpoints: Identity.AclScopedEndpoints | undefined,
 	id: string,
 	endpoint: string,
-	operation: Identity.AclOperation
+	operations: Array<Identity.AclOperation>
 ): boolean {
 	if (!endpoints) return false;
 
-	return id == endpoints.id && operationAllowedEndpoints(endpoints.endpoints, endpoint, operation);
+	return id == endpoints.id && operationAllowedEndpoints(endpoints.endpoints, endpoint, operations);
 }
 
 // This finds a matching endpoint if the ID exists in a list of scoped endpoints.
@@ -51,12 +51,12 @@ function operationAllowedScopedEndpointsList(
 	endpoints: Array<Identity.AclScopedEndpoints> | undefined,
 	id: string,
 	endpoint: string,
-	operation: Identity.AclOperation
+	operations: Array<Identity.AclOperation>
 ): boolean {
 	if (!endpoints) return false;
 
 	return endpoints.some((e: Identity.AclScopedEndpoints): boolean =>
-		operationAllowedScopedEndpoints(e, id, endpoint, operation)
+		operationAllowedScopedEndpoints(e, id, endpoint, operations)
 	);
 }
 
@@ -66,13 +66,11 @@ function organizationOperationAllowed(
 	acl: Identity.Acl,
 	organizationID: string,
 	endpoint: string,
-	operation: Identity.AclOperation
+	operations: Array<Identity.AclOperation>
 ): boolean {
-	if (!acl) return false;
-
 	return (
-		operationAllowedEndpoints(acl.global, endpoint, operation) ||
-		operationAllowedScopedEndpoints(acl.organization, organizationID, endpoint, operation)
+		operationAllowedEndpoints(acl.global, endpoint, operations) ||
+		operationAllowedScopedEndpoints(acl.organization, organizationID, endpoint, operations)
 	);
 }
 
@@ -83,13 +81,11 @@ function projectOperationAllowed(
 	organizationID: string,
 	projectID: string,
 	endpoint: string,
-	operation: Identity.AclOperation
+	operations: Array<Identity.AclOperation>
 ): boolean {
-	if (!acl) return false;
-
 	return (
-		organizationOperationAllowed(acl, organizationID, endpoint, operation) ||
-		operationAllowedScopedEndpointsList(acl.projects, projectID, endpoint, operation)
+		organizationOperationAllowed(acl, organizationID, endpoint, operations) ||
+		operationAllowedScopedEndpointsList(acl.projects, projectID, endpoint, operations)
 	);
 }
 
@@ -99,7 +95,7 @@ export function organizationScopesAllowed(
 	scopes: Array<OrganizationScope>
 ): boolean {
 	return scopes.every((scope) =>
-		organizationOperationAllowed(acl, organizationID, scope.endpoint, scope.operation)
+		organizationOperationAllowed(acl, organizationID, scope.endpoint, scope.operations)
 	);
 }
 
@@ -109,6 +105,6 @@ export function projectScopesAllowed(
 	scopes: Array<ProjectScope>
 ): boolean {
 	return scopes.every((scope) =>
-		projectOperationAllowed(acl, organizationID, scope.projectID, scope.endpoint, scope.operation)
+		projectOperationAllowed(acl, organizationID, scope.projectID, scope.endpoint, scope.operations)
 	);
 }
