@@ -50,7 +50,7 @@
 	}
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
 	<ShellSection title="Groups">

@@ -61,7 +61,7 @@
 	}
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	{#if newServiceAccount}
 		<ShellViewHeader metadata={newServiceAccount.metadata}>
 			{#snippet extraMetadata()}

@@ -13,9 +13,10 @@
 		token: InternalToken;
 		organizations: Array<Identity.OrganizationRead>;
 		organizationID: string;
+		acl: Identity.Acl;
 	}
 
-	let { token, organizations, organizationID }: Props = $props();
+	let { token, organizations, organizationID, acl }: Props = $props();
 
 	beforeNavigate((navigation) => {
 		drawerStore.close();
@@ -24,7 +25,7 @@
 
 <Drawer>
 	{#if $drawerStore.id === 'sidebar'}
-		<SideBar {token} {organizations} {organizationID} />
+		<SideBar {token} {organizations} {organizationID} {acl} />
 	{:else}
 		Invalid $drawerstore.id.
 	{/if}

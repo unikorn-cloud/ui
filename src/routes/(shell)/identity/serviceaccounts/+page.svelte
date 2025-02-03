@@ -62,7 +62,7 @@
 	}
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	{#snippet tools()}
 		<Button icon="mdi:add" label="Create" href="/identity/serviceaccounts/create" />
 	{/snippet}

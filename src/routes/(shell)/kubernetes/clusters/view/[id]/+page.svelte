@@ -146,7 +146,7 @@
 	}
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	<ShellViewHeader metadata={cluster.metadata}>
 		{#snippet badges()}
 			<Badge icon={RegionUtil.icon(data.regions, cluster.spec.regionId)}>

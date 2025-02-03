@@ -3,31 +3,10 @@ export const ssr = false;
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
-import * as RBAC from '$lib/rbac';
-import * as Identity from '$lib/openapi/identity';
 import * as Clients from '$lib/clients';
 
 export const load: PageLoad = async ({ fetch, parent, params }) => {
-	const scopes: Array<RBAC.OrganizationScope> = [
-		{
-			endpoint: 'identity:projects',
-			operation: Identity.AclOperation.Update
-		},
-		{
-			endpoint: 'identity:groups',
-			operation: Identity.AclOperation.Read
-		}
-	];
-
-	const { token, organizationID, acl, allowed, projects } = await parent();
-
-	if (!allowed || !RBAC.organizationScopesAllowed(acl, organizationID, scopes)) {
-		return {
-			project: {} as Identity.ProjectRead,
-			groups: [] as Array<Identity.GroupRead>,
-			allowed: false
-		};
-	}
+	const { token, organizationID, projects } = await parent();
 
 	const project = projects.find((x) => x.metadata.id == params['id']);
 	if (!project) {
@@ -40,7 +19,6 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
 
 	return {
 		project: project,
-		groups: await groups,
-		allowed: true
+		groups: await groups
 	};
 };

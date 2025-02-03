@@ -12,6 +12,7 @@
 	import * as Identity from '$lib/openapi/identity';
 	import * as OIDC from '$lib/oidc';
 	import * as Stores from '$lib/stores';
+	import * as RBAC from '$lib/rbac';
 
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
@@ -20,13 +21,15 @@
 		token: InternalToken;
 		organizations: Array<Identity.OrganizationRead>;
 		organizationID: string;
+		acl: Identity.Acl;
 		[key: string]: any;
 	}
 
-	let { token, organizations, organizationID, ...props }: Props = $props();
+	let { token, organizations, organizationID, acl, ...props }: Props = $props();
 	const drawerStore = getDrawerStore();
 
-	type NavItems = Array<{ label: string; href: string }>;
+	type NavItems = Array<{ label: string; href: string; rbac?: Array<RBAC.OrganizationScope> }>;
+	type Nav = Array<{ base: string; title: string; icon: string; items: NavItems }>;
 
 	const navStatic: Array<{ href: string; title: string; icon: string }> = [
 		{
@@ -36,46 +39,164 @@
 		}
 	];
 
-	const nav: Array<{ base: string; title: string; icon: string; items: NavItems }> = [
-		{
-			base: '/identity',
-			title: 'Identity',
-			icon: 'mdi:perm-identity',
-			items: [
-				{ label: 'Organization', href: 'organizations' },
-				{ label: 'OAuth2 Providers', href: 'oauth2providers' },
-				{ label: 'Quotas', href: 'quotas' },
-				{ label: 'Users', href: 'users' },
-				{ label: 'Service Accounts', href: 'serviceaccounts' },
-				{ label: 'Groups', href: 'groups' },
-				{ label: 'Projects', href: 'projects' }
-			]
-		},
-		{
-			base: '/compute',
-			title: 'Compute',
-			icon: 'mdi:computer',
-			items: [{ label: 'Clusters', href: 'clusters' }]
-		},
-		{
-			base: '/kubernetes',
-			title: 'Kubernetes',
-			icon: 'mdi:kubernetes',
-			items: [
-				{ label: 'Clusters', href: 'clusters' },
-				{ label: 'Cluster Managers', href: 'clustermanagers' }
-			]
-		},
-		{
-			base: '/regions',
-			title: 'Regions',
-			icon: 'mdi:web',
-			items: [
-				{ label: 'Identities', href: 'identities' },
-				{ label: 'Networks', href: 'networks' }
-			]
+	const nav: Nav = $derived.by(() => {
+		const nav = [
+			{
+				base: '/identity',
+				title: 'Identity',
+				icon: 'mdi:perm-identity',
+				items: [
+					{
+						label: 'Organization',
+						href: 'organizations',
+						rbac: [
+							{
+								endpoint: 'identity:organizations',
+								operations: [Identity.AclOperation.Update]
+							}
+						]
+					},
+					{
+						label: 'OAuth2 Providers',
+						href: 'oauth2providers',
+						rbac: [
+							{
+								endpoint: 'identity:oauth2providers',
+								operations: [Identity.AclOperation.Read]
+							}
+						]
+					},
+					{
+						label: 'Quotas',
+						href: 'quotas',
+						rbac: [
+							{
+								endpoint: 'identity:quotas',
+								operations: [Identity.AclOperation.Update]
+							}
+						]
+					},
+					{
+						label: 'Users',
+						href: 'users',
+						rbac: [
+							{
+								endpoint: 'identity:users',
+								operations: [Identity.AclOperation.Read]
+							}
+						]
+					},
+					{
+						label: 'Service Accounts',
+						href: 'serviceaccounts',
+						rbac: [
+							{
+								endpoint: 'identity:serviceaccounts',
+								operations: [Identity.AclOperation.Read]
+							}
+						]
+					},
+					{
+						label: 'Groups',
+						href: 'groups',
+						rbac: [
+							{
+								endpoint: 'identity:groups',
+								operations: [Identity.AclOperation.Read]
+							}
+						]
+					},
+					{
+						label: 'Projects',
+						href: 'projects',
+						rbac: [
+							{
+								endpoint: 'identity:projects',
+								operations: [Identity.AclOperation.Read]
+							}
+						]
+					}
+				]
+			},
+			{
+				base: '/compute',
+				title: 'Compute',
+				icon: 'mdi:computer',
+				items: [
+					{
+						label: 'Clusters',
+						href: 'clusters'
+					}
+				]
+			},
+			{
+				base: '/kubernetes',
+				title: 'Kubernetes',
+				icon: 'mdi:kubernetes',
+				items: [
+					{
+						label: 'Clusters',
+						href: 'clusters'
+					},
+					{
+						label: 'Cluster Managers',
+						href: 'clustermanagers',
+						rbac: [
+							{
+								endpoint: 'kubernetes:clustermanagers',
+								operations: [Identity.AclOperation.Read]
+							}
+						]
+					}
+				]
+			},
+			{
+				base: '/regions',
+				title: 'Regions',
+				icon: 'mdi:web',
+				items: [
+					{
+						label: 'Identities',
+						href: 'identities',
+						rbac: [
+							{
+								endpoint: 'region:identities',
+								operations: [Identity.AclOperation.Read]
+							}
+						]
+					},
+					{
+						label: 'Networks',
+						href: 'networks',
+						rbac: [
+							{
+								endpoint: 'region:networks',
+								operations: [Identity.AclOperation.Read]
+							}
+						]
+					}
+				]
+			}
+		];
+
+		let filteredNav: Nav = [];
+
+		for (const item of nav) {
+			const filtered = item.items.filter(
+				(x) => !x.rbac || RBAC.organizationScopesAllowed(acl, organizationID, x.rbac)
+			);
+			if (!filtered.length) continue;
+
+			filteredNav.push({
+				base: item.base,
+				title: item.title,
+				icon: item.icon,
+				items: filtered
+			});
 		}
-	];
+
+		return filteredNav;
+	});
 
 	let activeCategory = $derived(nav.find((x) => $page.url.pathname.startsWith(x.base)));
 	let activeItem = $derived(

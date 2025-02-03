@@ -61,7 +61,7 @@
 	});
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	<ShellViewHeader metadata={organization.metadata} />
 	<ShellMetadataSection metadata={organization.metadata} names={[]} bind:valid={metadataValid} />
 

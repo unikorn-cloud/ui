@@ -63,7 +63,7 @@
 	}
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	<ShellList>
 		{#each data.clustermanagers as resource}
 			<ShellListItem icon="mdi:kubernetes">

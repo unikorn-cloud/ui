@@ -52,7 +52,7 @@
 	}
 </script>
 
-<ShellPage {settings} allowed={data.allowed}>
+<ShellPage {settings}>
 	{#if serviceAccount}
 		<ShellViewHeader metadata={serviceAccount.metadata} />
 
