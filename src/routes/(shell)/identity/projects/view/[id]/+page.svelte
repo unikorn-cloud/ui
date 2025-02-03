@@ -4,6 +4,10 @@
 
 	let { data }: { data: PageData } = $props();
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+
+	const toastStore = getToastStore();
+
 	import * as Clients from '$lib/clients';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
@@ -49,7 +53,7 @@
 		Clients.identity(data.token)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDPut(parameters)
 			.then(() => window.location.assign('/identity/projects'))
-			.catch((e: Error) => Clients.error(e));
+			.catch((e: Error) => Clients.error(toastStore, e));
 	}
 </script>
 

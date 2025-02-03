@@ -3,6 +3,10 @@
 
 	let { data }: { data: PageData } = $props();
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+
+	const toastStore = getToastStore();
+
 	import * as Clients from '$lib/clients';
 	import * as Identity from '$lib/openapi/identity';
 
@@ -48,7 +52,7 @@
 		Clients.identity(data.token)
 			.apiV1OrganizationsOrganizationIDServiceaccountsPost(parameters)
 			.then((v: Identity.ServiceAccountCreate) => (serviceAccount = v))
-			.catch((e: Error) => Clients.error(e));
+			.catch((e: Error) => Clients.error(toastStore, e));
 	}
 </script>
 

@@ -7,9 +7,10 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 
+	const toastStore = getToastStore();
 	const modalStore = getModalStore();
 
 	import * as Clients from '$lib/clients';
@@ -75,7 +76,7 @@
 				Clients.kubernetes(data.token)
 					.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDDelete(parameters)
 					.then(() => invalidate('layout:clusters'))
-					.catch((e: Error) => Clients.error(e));
+					.catch((e: Error) => Clients.error(toastStore, e));
 			}
 		};
 
@@ -109,7 +110,7 @@
 					window.URL.revokeObjectURL(url);
 				}
 			})
-			.catch((e: Error) => Clients.error(e));
+			.catch((e: Error) => Clients.error(toastStore, e));
 	}
 </script>
 

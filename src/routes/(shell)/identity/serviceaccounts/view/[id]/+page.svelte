@@ -4,6 +4,10 @@
 
 	let { data }: { data: PageData } = $props();
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+
+	const toastStore = getToastStore();
+
 	import * as Clients from '$lib/clients';
 	import * as Identity from '$lib/openapi/identity';
 
@@ -43,7 +47,7 @@
 		Clients.identity(data.token)
 			.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDPut(parameters)
 			.then(() => window.location.assign('/identity/serviceaccounts'))
-			.catch((e: Error) => Clients.error(e));
+			.catch((e: Error) => Clients.error(toastStore, e));
 	}
 
 	let newServiceAccount: Identity.ServiceAccountCreate | undefined = $state();
@@ -57,7 +61,7 @@
 		Clients.identity(data.token)
 			.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePost(parameters)
 			.then((v: Identity.ServiceAccountCreate) => (newServiceAccount = v))
-			.catch((e: Error) => Clients.error(e));
+			.catch((e: Error) => Clients.error(toastStore, e));
 	}
 </script>
 
