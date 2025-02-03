@@ -6,6 +6,8 @@ on:
     - synchronize
     - reopened
     - ready_for_review
+permissions:
+  contents: read
 jobs:
   Lint:
     runs-on: ubuntu-latest
