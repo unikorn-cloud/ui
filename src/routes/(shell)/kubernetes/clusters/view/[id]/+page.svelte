@@ -4,6 +4,10 @@
 
 	let { data }: { data: PageData } = $props();
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+
+	const toastStore = getToastStore();
+
 	import * as Clients from '$lib/clients';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as RegionUtil from '$lib/regionutil';
@@ -142,7 +146,7 @@
 		Clients.kubernetes(data.token)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDPut(parameters)
 			.then(() => window.location.assign('/kubernetes/clusters'))
-			.catch((e: Error) => Clients.error(e));
+			.catch((e: Error) => Clients.error(toastStore, e));
 	}
 </script>
 

@@ -14,9 +14,6 @@
 	import * as Stores from '$lib/stores';
 	import * as RBAC from '$lib/rbac';
 
-	import { getToastStore } from '@skeletonlabs/skeleton';
-	const toastStore = getToastStore();
-
 	interface Props {
 		token: InternalToken;
 		organizations: Array<Identity.OrganizationRead>;

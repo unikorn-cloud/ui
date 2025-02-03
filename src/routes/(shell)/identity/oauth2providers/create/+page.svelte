@@ -4,6 +4,10 @@
 
 	let { data }: { data: PageData } = $props();
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+
+	const toastStore = getToastStore();
+
 	import * as Clients from '$lib/clients';
 	import * as Identity from '$lib/openapi/identity';
 
@@ -50,7 +54,7 @@
 		Clients.identity(data.token)
 			.apiV1OrganizationsOrganizationIDOauth2providersPost(parameters)
 			.then(() => window.location.assign('/identity/oauth2providers'))
-			.catch((e: Error) => Clients.error(e));
+			.catch((e: Error) => Clients.error(toastStore, e));
 	}
 
 	var callback: string = browser

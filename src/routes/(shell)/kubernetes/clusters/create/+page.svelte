@@ -6,6 +6,10 @@
 
 	import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+
+	const toastStore = getToastStore();
+
 	import * as Clients from '$lib/clients';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 
@@ -127,7 +131,7 @@
 		Clients.kubernetes(data.token)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(parameters)
 			.then(() => window.location.assign('/kubernetes/clusters'))
-			.catch((e: Error) => Clients.error(e));
+			.catch((e: Error) => Clients.error(toastStore, e));
 	}
 
 	let step: number = $state(0);

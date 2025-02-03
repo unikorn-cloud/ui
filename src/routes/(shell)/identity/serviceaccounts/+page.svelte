@@ -6,9 +6,10 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 
+	const toastStore = getToastStore();
 	const modalStore = getModalStore();
 
 	import * as Clients from '$lib/clients';
@@ -54,7 +55,7 @@
 				Clients.identity(data.token)
 					.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDDelete(parameters)
 					.then(() => invalidate('layout:serviceaccounts'))
-					.catch((e: Error) => Clients.error(e));
+					.catch((e: Error) => Clients.error(toastStore, e));
 			}
 		};
 

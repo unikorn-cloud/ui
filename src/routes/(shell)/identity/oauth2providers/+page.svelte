@@ -7,8 +7,9 @@
 	let { data }: { data: PageData } = $props();
 
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
 
+	const toastStore = getToastStore();
 	const modalStore = getModalStore();
 
 	import * as Clients from '$lib/clients';
@@ -52,7 +53,7 @@
 				Clients.identity(data.token)
 					.apiV1OrganizationsOrganizationIDOauth2providersProviderIDDelete(parameters)
 					.then(() => invalidate('layout:oauth2providers'))
-					.catch((e: Error) => Clients.error(e));
+					.catch((e: Error) => Clients.error(toastStore, e));
 			}
 		};
 
