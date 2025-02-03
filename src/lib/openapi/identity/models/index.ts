@@ -34,6 +34,7 @@ export * from './ProjectWrite';
 export * from './ProviderScope';
 export * from './Quota';
 export * from './QuotaDetailed';
+export * from './QuotaMetadata';
 export * from './QuotasRead';
 export * from './QuotasWrite';
 export * from './ResourceMetadata';

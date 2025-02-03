@@ -35,6 +35,7 @@ models/ProjectWrite.ts
 models/ProviderScope.ts
 models/Quota.ts
 models/QuotaDetailed.ts
+models/QuotaMetadata.ts
 models/QuotasRead.ts
 models/QuotasWrite.ts
 models/ResourceMetadata.ts

@@ -30,6 +30,7 @@ import type {
   OrganizationWrite,
   ProjectRead,
   ProjectWrite,
+  QuotaMetadata,
   QuotasRead,
   QuotasWrite,
   RoleRead,
@@ -73,6 +74,8 @@ import {
     ProjectReadToJSON,
     ProjectWriteFromJSON,
     ProjectWriteToJSON,
+    QuotaMetadataFromJSON,
+    QuotaMetadataToJSON,
     QuotasReadFromJSON,
     QuotasReadToJSON,
     QuotasWriteFromJSON,
@@ -1770,6 +1773,37 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsPost(requestParameters: ApiV1OrganizationsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OrganizationRead> {
         const response = await this.apiV1OrganizationsPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Return a list of quotas and their metadata.
+     */
+    async apiV1QuotasGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<QuotaMetadata>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/quotas`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(QuotaMetadataFromJSON));
+    }
+
+    /**
+     * Return a list of quotas and their metadata.
+     */
+    async apiV1QuotasGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<QuotaMetadata>> {
+        const response = await this.apiV1QuotasGetRaw(initOverrides);
         return await response.value();
     }
 
