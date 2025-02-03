@@ -36,37 +36,20 @@
 			.apiV1OrganizationsOrganizationIDQuotasPut(parameters)
 			.catch((e: Error) => Clients.error(toastStore, e));
 	}
-
-	type QuotaMetadata = {
-		title: string;
-		description: string;
-	};
-
-	const metadata: Record<string, QuotaMetadata> = {
-		clusters: {
-			title: 'Clusters',
-			description: 'All cluster types e.g. Kubernetes, compute, etc.'
-		},
-		servers: {
-			title: 'Servers',
-			description: 'All servers and virtual machines.'
-		},
-		gpus: {
-			title: 'GPUs',
-			description: 'General purpose GPUs.'
-		}
-	};
 </script>
 
 <ShellPage {settings}>
 	<ShellSection title="Quotas">
 		{#each quotas.capacity as quota, i}
-			<NumberInput
-				id={quota.kind}
-				label={metadata[quota.kind].title}
-				hint={metadata[quota.kind].description}
-				bind:value={quotas.capacity[i].quantity}
-			/>
+			{@const metadata = data.quotaMetadata.find((x) => x.name == quota.kind)}
+			{#if metadata}
+				<NumberInput
+					id={quota.kind}
+					label={metadata.displayName}
+					hint={metadata.description}
+					bind:value={quotas.capacity[i].quantity}
+				/>
+			{/if}
 		{/each}
 	</ShellSection>
 
