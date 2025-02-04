@@ -102,6 +102,10 @@
 
 <ShellPage {settings}>
 	<GroupedList {groups}>
+		{#snippet option(projectID: string)}
+			{project(projectID).metadata.name}
+		{/snippet}
+
 		{#snippet header(projectID: string)}
 			<header class="flex justify-between">
 				<div class="flex gap-4 items-center">

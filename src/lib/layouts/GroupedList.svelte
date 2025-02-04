@@ -6,24 +6,42 @@
 	interface Props {
 		groups: Record<string, Array<any>>;
 		header: Snippet<[string]>;
+		option: Snippet<[string]>;
 		item: Snippet<[any]>;
 	}
 
-	let { groups, header, item }: Props = $props();
+	let { groups, header, option, item }: Props = $props();
+
+	let value = $state('');
 </script>
 
 <div class="flex flex-col gap-4">
-	{#each Object.keys(groups) as key}
-		{@render header(key)}
+	<div class="input-group input-group-divider grid-cols-[auto_1fr] shadow-lg max-w-max">
+		<div class="input-group-shim">
+			<iconify-icon icon="mdi:filter-outline" class="text-primary-500 text-lg"></iconify-icon>
+		</div>
+		<select bind:value>
+			<option value="">all</option>
 
-		{#if groups[key].length}
-			<ShellList>
-				{#each groups[key] as group}
-					{@render item(group)}
-				{/each}
-			</ShellList>
-		{:else}
-			There are no resources in this group, create one to get started.
+			{#each Object.keys(groups) as key}
+				<option value={key}>
+					{@render option(key)}
+				</option>
+			{/each}
+		</select>
+	</div>
+
+	{#each Object.keys(groups) as key}
+		{#if !value || value == key}
+			{@render header(key)}
+
+			{#if groups[key].length}
+				<ShellList>
+					{#each groups[key] as group}
+						{@render item(group)}
+					{/each}
+				</ShellList>
+			{/if}
 		{/if}
 	{/each}
 </div>
