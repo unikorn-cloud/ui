@@ -13,52 +13,53 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { QuotaWrite } from './QuotaWrite';
-import {
-    QuotaWriteFromJSON,
-    QuotaWriteFromJSONTyped,
-    QuotaWriteToJSON,
-} from './QuotaWrite';
-
 /**
- * A list of quotas.
+ * A single quota.
  * @export
- * @interface QuotasWrite
+ * @interface QuotaWrite
  */
-export interface QuotasWrite {
+export interface QuotaWrite {
     /**
-     * A list of quotas.
-     * @type {Array<QuotaWrite>}
-     * @memberof QuotasWrite
+     * The kind of resource.
+     * @type {string}
+     * @memberof QuotaWrite
      */
-    quotas: Array<QuotaWrite>;
+    kind: string;
+    /**
+     * Tha maximum amount of that resource.
+     * @type {number}
+     * @memberof QuotaWrite
+     */
+    quantity: number;
 }
 
 /**
- * Check if a given object implements the QuotasWrite interface.
+ * Check if a given object implements the QuotaWrite interface.
  */
-export function instanceOfQuotasWrite(value: object): boolean {
+export function instanceOfQuotaWrite(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "quotas" in value;
+    isInstance = isInstance && "kind" in value;
+    isInstance = isInstance && "quantity" in value;
 
     return isInstance;
 }
 
-export function QuotasWriteFromJSON(json: any): QuotasWrite {
-    return QuotasWriteFromJSONTyped(json, false);
+export function QuotaWriteFromJSON(json: any): QuotaWrite {
+    return QuotaWriteFromJSONTyped(json, false);
 }
 
-export function QuotasWriteFromJSONTyped(json: any, ignoreDiscriminator: boolean): QuotasWrite {
+export function QuotaWriteFromJSONTyped(json: any, ignoreDiscriminator: boolean): QuotaWrite {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'quotas': ((json['quotas'] as Array<any>).map(QuotaWriteFromJSON)),
+        'kind': json['kind'],
+        'quantity': json['quantity'],
     };
 }
 
-export function QuotasWriteToJSON(value?: QuotasWrite | null): any {
+export function QuotaWriteToJSON(value?: QuotaWrite | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -67,7 +68,8 @@ export function QuotasWriteToJSON(value?: QuotasWrite | null): any {
     }
     return {
         
-        'quotas': ((value.quotas as Array<any>).map(QuotaWriteToJSON)),
+        'kind': value.kind,
+        'quantity': value.quantity,
     };
 }
 

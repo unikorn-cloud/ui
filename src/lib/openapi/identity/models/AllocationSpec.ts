@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { QuotaDetailed } from './QuotaDetailed';
+import type { ResourceAllocation } from './ResourceAllocation';
 import {
-    QuotaDetailedFromJSON,
-    QuotaDetailedFromJSONTyped,
-    QuotaDetailedToJSON,
-} from './QuotaDetailed';
+    ResourceAllocationFromJSON,
+    ResourceAllocationFromJSONTyped,
+    ResourceAllocationToJSON,
+} from './ResourceAllocation';
 
 /**
  * A set of resource allocations.
@@ -40,10 +40,10 @@ export interface AllocationSpec {
     id: string;
     /**
      * A list of quotas.
-     * @type {Array<QuotaDetailed>}
+     * @type {Array<ResourceAllocation>}
      * @memberof AllocationSpec
      */
-    allocations: Array<QuotaDetailed>;
+    allocations: Array<ResourceAllocation>;
 }
 
 /**
@@ -70,7 +70,7 @@ export function AllocationSpecFromJSONTyped(json: any, ignoreDiscriminator: bool
         
         'kind': json['kind'],
         'id': json['id'],
-        'allocations': ((json['allocations'] as Array<any>).map(QuotaDetailedFromJSON)),
+        'allocations': ((json['allocations'] as Array<any>).map(ResourceAllocationFromJSON)),
     };
 }
 
@@ -85,7 +85,7 @@ export function AllocationSpecToJSON(value?: AllocationSpec | null): any {
         
         'kind': value.kind,
         'id': value.id,
-        'allocations': ((value.allocations as Array<any>).map(QuotaDetailedToJSON)),
+        'allocations': ((value.allocations as Array<any>).map(ResourceAllocationToJSON)),
     };
 }
 
