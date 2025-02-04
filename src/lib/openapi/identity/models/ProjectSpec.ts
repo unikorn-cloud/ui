@@ -24,7 +24,7 @@ export interface ProjectSpec {
      * @type {Array<string>}
      * @memberof ProjectSpec
      */
-    groupIDs?: Array<string>;
+    groupIDs: Array<string>;
 }
 
 /**
@@ -32,6 +32,7 @@ export interface ProjectSpec {
  */
 export function instanceOfProjectSpec(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "groupIDs" in value;
 
     return isInstance;
 }
@@ -46,7 +47,7 @@ export function ProjectSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean
     }
     return {
         
-        'groupIDs': !exists(json, 'groupIDs') ? undefined : json['groupIDs'],
+        'groupIDs': json['groupIDs'],
     };
 }
 

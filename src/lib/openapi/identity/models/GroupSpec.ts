@@ -24,13 +24,13 @@ export interface GroupSpec {
      * @type {Array<string>}
      * @memberof GroupSpec
      */
-    userIDs?: Array<string>;
+    userIDs: Array<string>;
     /**
      * A list of strings.
      * @type {Array<string>}
      * @memberof GroupSpec
      */
-    serviceAccountIDs?: Array<string>;
+    serviceAccountIDs: Array<string>;
     /**
      * A list of strings.
      * @type {Array<string>}
@@ -44,6 +44,8 @@ export interface GroupSpec {
  */
 export function instanceOfGroupSpec(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "userIDs" in value;
+    isInstance = isInstance && "serviceAccountIDs" in value;
     isInstance = isInstance && "roleIDs" in value;
 
     return isInstance;
@@ -59,8 +61,8 @@ export function GroupSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
-        'userIDs': !exists(json, 'userIDs') ? undefined : json['userIDs'],
-        'serviceAccountIDs': !exists(json, 'serviceAccountIDs') ? undefined : json['serviceAccountIDs'],
+        'userIDs': json['userIDs'],
+        'serviceAccountIDs': json['serviceAccountIDs'],
         'roleIDs': json['roleIDs'],
     };
 }

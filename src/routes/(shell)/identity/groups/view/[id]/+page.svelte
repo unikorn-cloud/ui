@@ -4,6 +4,7 @@
 
 	let { data }: { data: PageData } = $props();
 
+	import type { AutocompleteOption } from '@skeletonlabs/skeleton';
 	import { getToastStore } from '@skeletonlabs/skeleton';
 
 	const toastStore = getToastStore();
@@ -29,12 +30,6 @@
 		return group;
 	});
 
-	// Add in any defaults before we rnder the DOM so we have things to bind to.
-	$effect.pre(() => {
-		if (!group.spec.userIDs) group.spec.userIDs = [];
-		if (!group.spec.serviceAccountIDs) group.spec.serviceAccountIDs = [];
-	});
-
 	let names: Array<string> = $derived(
 		data.groups.filter((x) => x.metadata.id != $page.params.id).map((x) => x.metadata.name)
 	);
@@ -55,6 +50,24 @@
 			.then(() => window.location.assign('/identity/groups'))
 			.catch((e: Error) => Clients.error(toastStore, e));
 	}
+
+	let roles = $derived(
+		data.roles.map(
+			(x) => ({ label: x.metadata.name, value: x.metadata.id }) as AutocompleteOption<string>
+		)
+	);
+
+	let users = $derived(
+		data.users.map(
+			(x) => ({ label: x.spec.subject, value: x.metadata.id }) as AutocompleteOption<string>
+		)
+	);
+
+	let serviceAccounts = $derived(
+		data.serviceAccounts.map(
+			(x) => ({ label: x.metadata.name, value: x.metadata.id }) as AutocompleteOption<string>
+		)
+	);
 </script>
 
 <ShellPage {settings}>
@@ -66,36 +79,45 @@
 			id="role-ids"
 			label="Select roles for group members."
 			hint="You must select at least one role."
-			bind:value={group.spec.roleIDs}
+			options={roles}
+			value={group.spec.roleIDs}
+			add={(value: string) => group.spec.roleIDs.push(value)}
+			remove={(index: number) => group.spec.roleIDs.splice(index, 1)}
 		>
-			{#each data.roles as role}
-				<option value={role.metadata.id}>{role.metadata.name}</option>
-			{/each}
+			{#snippet selected(value: string)}
+				{data.roles.find((x) => x.metadata.id == value)?.metadata.name}
+			{/snippet}
 		</MultiSelect>
 	</ShellSection>
 
 	<ShellSection title="Users">
-		{#if group.spec.userIDs}
-			<MultiSelect id="user-ids" label="Select group members." bind:value={group.spec.userIDs}>
-				{#each data.users as user}
-					<option value={user.metadata.id}>{user.spec.subject}</option>
-				{/each}
-			</MultiSelect>
-		{/if}
+		<MultiSelect
+			id="user-ids"
+			label="Select group members."
+			options={users}
+			value={group.spec.userIDs}
+			add={(value: string) => group.spec.userIDs.push(value)}
+			remove={(index: number) => group.spec.userIDs.splice(index, 1)}
+		>
+			{#snippet selected(value: string)}
+				{data.users.find((x) => x.metadata.id == value)?.spec.subject}
+			{/snippet}
+		</MultiSelect>
 	</ShellSection>
 
 	<ShellSection title="Service Accounts">
-		{#if group.spec.serviceAccountIDs}
-			<MultiSelect
-				id="sa-ids"
-				label="Select group members."
-				bind:value={group.spec.serviceAccountIDs}
-			>
-				{#each data.serviceAccounts as serviceAccount}
-					<option value={serviceAccount.metadata.id}>{serviceAccount.metadata.name}</option>
-				{/each}
-			</MultiSelect>
-		{/if}
+		<MultiSelect
+			id="sa-ids"
+			label="Select group members."
+			options={serviceAccounts}
+			value={group.spec.serviceAccountIDs}
+			add={(value: string) => group.spec.serviceAccountIDs.push(value)}
+			remove={(index: number) => group.spec.serviceAccountIDs.splice(index, 1)}
+		>
+			{#snippet selected(value: string)}
+				{data.serviceAccounts.find((x) => x.metadata.id == value)?.metadata.name}
+			{/snippet}
+		</MultiSelect>
 	</ShellSection>
 
 	<div class="flex justify-between">

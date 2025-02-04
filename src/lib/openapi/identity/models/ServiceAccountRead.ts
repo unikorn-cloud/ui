@@ -49,7 +49,7 @@ export interface ServiceAccountRead {
      * @type {ServiceAccountSpec}
      * @memberof ServiceAccountRead
      */
-    spec?: ServiceAccountSpec;
+    spec: ServiceAccountSpec;
     /**
      * 
      * @type {ServiceAccountStatus}
@@ -64,6 +64,7 @@ export interface ServiceAccountRead {
 export function instanceOfServiceAccountRead(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "metadata" in value;
+    isInstance = isInstance && "spec" in value;
     isInstance = isInstance && "status" in value;
 
     return isInstance;
@@ -80,7 +81,7 @@ export function ServiceAccountReadFromJSONTyped(json: any, ignoreDiscriminator: 
     return {
         
         'metadata': OrganizationScopedResourceReadMetadataFromJSON(json['metadata']),
-        'spec': !exists(json, 'spec') ? undefined : ServiceAccountSpecFromJSON(json['spec']),
+        'spec': ServiceAccountSpecFromJSON(json['spec']),
         'status': ServiceAccountStatusFromJSON(json['status']),
     };
 }
