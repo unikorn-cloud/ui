@@ -4,6 +4,7 @@
 
 	let { data }: { data: PageData } = $props();
 
+	import type { AutocompleteOption } from '@skeletonlabs/skeleton';
 	import { getToastStore } from '@skeletonlabs/skeleton';
 
 	const toastStore = getToastStore();
@@ -32,11 +33,6 @@
 		return serviceAccount;
 	});
 
-	$effect.pre(() => {
-		if (!serviceAccount.spec) serviceAccount.spec = {};
-		if (!serviceAccount.spec.groupIDs) serviceAccount.spec.groupIDs = [];
-	});
-
 	function submit() {
 		const parameters = {
 			organizationID: data.organizationID,
@@ -63,6 +59,12 @@
 			.then((v: Identity.ServiceAccountCreate) => (newServiceAccount = v))
 			.catch((e: Error) => Clients.error(toastStore, e));
 	}
+
+	let groups = $derived(
+		data.groups.map(
+			(x) => ({ label: x.metadata.name, value: x.metadata.id }) as AutocompleteOption<string>
+		)
+	);
 </script>
 
 <ShellPage {settings}>
@@ -107,20 +109,19 @@
 		<ShellMetadataSection metadata={serviceAccount.metadata} nameMutable={false} />
 
 		<ShellSection title="Access Control">
-			{#if serviceAccount.spec?.groupIDs}
-				<MultiSelect
-					id="sa-groups"
-					label="Groups"
-					hint="Select any groups that the service account should be a member of."
-					bind:value={serviceAccount.spec.groupIDs}
-				>
-					{#each data.groups as group}
-						<option value={group.metadata.id}>
-							{group.metadata.name}
-						</option>
-					{/each}
-				</MultiSelect>
-			{/if}
+			<MultiSelect
+				id="group-ids"
+				label="Select group access."
+				hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
+				options={groups}
+				value={serviceAccount.spec.groupIDs}
+				add={(value: string) => serviceAccount.spec.groupIDs.push(value)}
+				remove={(index: number) => serviceAccount.spec.groupIDs.splice(index, 1)}
+			>
+				{#snippet selected(value: string)}
+					{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
+				{/snippet}
+			</MultiSelect>
 		</ShellSection>
 
 		<div class="flex justify-between">

@@ -4,6 +4,7 @@
 
 	let { data }: { data: PageData } = $props();
 
+	import type { AutocompleteOption } from '@skeletonlabs/skeleton';
 	import { getToastStore } from '@skeletonlabs/skeleton';
 
 	const toastStore = getToastStore();
@@ -31,10 +32,6 @@
 		return user;
 	});
 
-	$effect.pre(() => {
-		if (!user.spec.groupIDs) user.spec.groupIDs = [];
-	});
-
 	function submit() {
 		const parameters = {
 			organizationID: data.organizationID,
@@ -47,6 +44,12 @@
 			.then(() => window.location.assign('/identity/users'))
 			.catch((e: Error) => Clients.error(toastStore, e));
 	}
+
+	let groups = $derived(
+		data.groups.map(
+			(x) => ({ label: x.metadata.name, value: x.metadata.id }) as AutocompleteOption<string>
+		)
+	);
 </script>
 
 <ShellPage {settings}>
@@ -67,20 +70,19 @@
 			<option value={Identity.UserState.Suspended}>Suspended</option>
 		</Select>
 
-		{#if user.spec.groupIDs}
-			<MultiSelect
-				id="sa-groups"
-				label="Groups"
-				hint="Select at least one group that the user should be a member of."
-				bind:value={user.spec.groupIDs}
-			>
-				{#each data.groups as group}
-					<option value={group.metadata.id}>
-						{group.metadata.name}
-					</option>
-				{/each}
-			</MultiSelect>
-		{/if}
+		<MultiSelect
+			id="group-ids"
+			label="Select group access."
+			hint="Groups associate users with users and grant them permissions to create, view, edit and delete."
+			options={groups}
+			value={user.spec.groupIDs}
+			add={(value: string) => user.spec.groupIDs.push(value)}
+			remove={(index: number) => user.spec.groupIDs.splice(index, 1)}
+		>
+			{#snippet selected(value: string)}
+				{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
+			{/snippet}
+		</MultiSelect>
 	</ShellSection>
 
 	<div class="flex justify-between">

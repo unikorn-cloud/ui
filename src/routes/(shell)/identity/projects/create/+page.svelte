@@ -3,6 +3,7 @@
 
 	let { data }: { data: PageData } = $props();
 
+	import type { AutocompleteOption } from '@skeletonlabs/skeleton';
 	import { getToastStore } from '@skeletonlabs/skeleton';
 
 	const toastStore = getToastStore();
@@ -52,6 +53,12 @@
 			.then(() => window.location.assign('/identity/projects'))
 			.catch((e: Error) => Clients.error(toastStore, e));
 	}
+
+	let groups = $derived(
+		data.groups.map(
+			(x) => ({ label: x.metadata.name, value: x.metadata.id }) as AutocompleteOption<string>
+		)
+	);
 </script>
 
 <ShellPage {settings}>
@@ -62,11 +69,14 @@
 			id="group-ids"
 			label="Select group access."
 			hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
-			bind:value={resource.spec.groupIDs as Array<string>}
+			options={groups}
+			value={resource.spec.groupIDs}
+			add={(value: string) => resource.spec.groupIDs.push(value)}
+			remove={(index: number) => resource.spec.groupIDs.splice(index, 1)}
 		>
-			{#each data.groups as group}
-				<option value={group.metadata.id}>{group.metadata.name}</option>
-			{/each}
+			{#snippet selected(value: string)}
+				{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
+			{/snippet}
 		</MultiSelect>
 	</ShellSection>
 

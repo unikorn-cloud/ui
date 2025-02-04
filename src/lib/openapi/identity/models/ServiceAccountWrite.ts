@@ -43,7 +43,7 @@ export interface ServiceAccountWrite {
      * @type {ServiceAccountSpec}
      * @memberof ServiceAccountWrite
      */
-    spec?: ServiceAccountSpec;
+    spec: ServiceAccountSpec;
 }
 
 /**
@@ -52,6 +52,7 @@ export interface ServiceAccountWrite {
 export function instanceOfServiceAccountWrite(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "metadata" in value;
+    isInstance = isInstance && "spec" in value;
 
     return isInstance;
 }
@@ -67,7 +68,7 @@ export function ServiceAccountWriteFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'metadata': ResourceWriteMetadataFromJSON(json['metadata']),
-        'spec': !exists(json, 'spec') ? undefined : ServiceAccountSpecFromJSON(json['spec']),
+        'spec': ServiceAccountSpecFromJSON(json['spec']),
     };
 }
 

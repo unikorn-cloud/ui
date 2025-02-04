@@ -24,7 +24,7 @@ export interface ServiceAccountSpec {
      * @type {Array<string>}
      * @memberof ServiceAccountSpec
      */
-    groupIDs?: Array<string>;
+    groupIDs: Array<string>;
 }
 
 /**
@@ -32,6 +32,7 @@ export interface ServiceAccountSpec {
  */
 export function instanceOfServiceAccountSpec(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "groupIDs" in value;
 
     return isInstance;
 }
@@ -46,7 +47,7 @@ export function ServiceAccountSpecFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
-        'groupIDs': !exists(json, 'groupIDs') ? undefined : json['groupIDs'],
+        'groupIDs': json['groupIDs'],
     };
 }
 
