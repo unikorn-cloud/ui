@@ -40,16 +40,13 @@
 
 <ShellPage {settings}>
 	<ShellSection title="Quotas">
-		{#each quotas.capacity as quota, i}
-			{@const metadata = data.quotaMetadata.find((x) => x.name == quota.kind)}
-			{#if metadata}
-				<NumberInput
-					id={quota.kind}
-					label={metadata.displayName}
-					hint={metadata.description}
-					bind:value={quotas.capacity[i].quantity}
-				/>
-			{/if}
+		{#each quotas.quotas as quota}
+			<NumberInput
+				id={quota.kind}
+				label={quota.displayName}
+				hint={quota.description}
+				bind:value={quota.quantity}
+			/>
 		{/each}
 	</ShellSection>
 

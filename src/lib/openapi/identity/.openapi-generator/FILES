@@ -33,11 +33,11 @@ models/ProjectScopedResourceReadMetadata.ts
 models/ProjectSpec.ts
 models/ProjectWrite.ts
 models/ProviderScope.ts
-models/Quota.ts
-models/QuotaDetailed.ts
-models/QuotaMetadata.ts
+models/QuotaRead.ts
+models/QuotaWrite.ts
 models/QuotasRead.ts
 models/QuotasWrite.ts
+models/ResourceAllocation.ts
 models/ResourceMetadata.ts
 models/ResourceProvisioningStatus.ts
 models/ResourceReadMetadata.ts

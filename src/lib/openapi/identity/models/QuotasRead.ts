@@ -13,43 +13,25 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Quota } from './Quota';
+import type { QuotaRead } from './QuotaRead';
 import {
-    QuotaFromJSON,
-    QuotaFromJSONTyped,
-    QuotaToJSON,
-} from './Quota';
-import type { QuotaDetailed } from './QuotaDetailed';
-import {
-    QuotaDetailedFromJSON,
-    QuotaDetailedFromJSONTyped,
-    QuotaDetailedToJSON,
-} from './QuotaDetailed';
+    QuotaReadFromJSON,
+    QuotaReadFromJSONTyped,
+    QuotaReadToJSON,
+} from './QuotaRead';
 
 /**
- * A list of quotas, free resources and a detailed view of allocated ones.
+ * A list of quotas.
  * @export
  * @interface QuotasRead
  */
 export interface QuotasRead {
     /**
      * A list of quotas.
-     * @type {Array<Quota>}
+     * @type {Array<QuotaRead>}
      * @memberof QuotasRead
      */
-    capacity: Array<Quota>;
-    /**
-     * A list of quotas.
-     * @type {Array<Quota>}
-     * @memberof QuotasRead
-     */
-    free: Array<Quota>;
-    /**
-     * A list of quotas.
-     * @type {Array<QuotaDetailed>}
-     * @memberof QuotasRead
-     */
-    allocated: Array<QuotaDetailed>;
+    quotas: Array<QuotaRead>;
 }
 
 /**
@@ -57,9 +39,7 @@ export interface QuotasRead {
  */
 export function instanceOfQuotasRead(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "capacity" in value;
-    isInstance = isInstance && "free" in value;
-    isInstance = isInstance && "allocated" in value;
+    isInstance = isInstance && "quotas" in value;
 
     return isInstance;
 }
@@ -74,9 +54,7 @@ export function QuotasReadFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'capacity': ((json['capacity'] as Array<any>).map(QuotaFromJSON)),
-        'free': ((json['free'] as Array<any>).map(QuotaFromJSON)),
-        'allocated': ((json['allocated'] as Array<any>).map(QuotaDetailedFromJSON)),
+        'quotas': ((json['quotas'] as Array<any>).map(QuotaReadFromJSON)),
     };
 }
 
@@ -89,9 +67,7 @@ export function QuotasReadToJSON(value?: QuotasRead | null): any {
     }
     return {
         
-        'capacity': ((value.capacity as Array<any>).map(QuotaToJSON)),
-        'free': ((value.free as Array<any>).map(QuotaToJSON)),
-        'allocated': ((value.allocated as Array<any>).map(QuotaDetailedToJSON)),
+        'quotas': ((value.quotas as Array<any>).map(QuotaReadToJSON)),
     };
 }
 
