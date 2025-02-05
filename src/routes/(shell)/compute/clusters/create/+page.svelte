@@ -195,7 +195,7 @@
 </script>
 
 <ShellPage {settings}>
-	<Stepper steps={3} bind:step {complete} {valid}>
+	<Stepper steps={2} bind:step {complete} {valid}>
 		{#snippet content(index: number)}
 			{#if index === 0}
 				<h2 class="h2">Basic Configuration</h2>
