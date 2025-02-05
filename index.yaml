@@ -2,6 +2,21 @@ apiVersion: v1
 entries:
   unikorn-ui:
   - apiVersion: v2
+    appVersion: v0.3.5
+    created: "2025-02-05T12:32:44.59436923Z"
+    dependencies:
+    - name: unikorn-common
+      repository: https://unikorn-cloud.github.io/helm-common
+      version: v0.1.13
+    description: A Helm chart for deploying Unikorn UI
+    digest: ca4342dfc3a8b15a83f90e31e1d175a6ff918a8d460926d7b94ef6ef385ab2e2
+    icon: https://assets.unikorn-cloud.org/assets/images/logos/dark-on-light/icon.png
+    name: unikorn-ui
+    type: application
+    urls:
+    - https://github.com/unikorn-cloud/ui/releases/download/v0.3.5/unikorn-ui-v0.3.5.tgz
+    version: v0.3.5
+  - apiVersion: v2
     appVersion: v0.3.5-rc6
     created: "2025-02-04T15:31:58.066344282Z"
     dependencies:
@@ -1112,4 +1127,4 @@ entries:
     urls:
     - https://github.com/unikorn-cloud/ui/releases/download/v0.1.4/unikorn-ui-v0.1.4.tgz
     version: v0.1.4
-generated: "2025-02-04T15:31:58.0666765Z"
+generated: "2025-02-05T12:32:44.594611521Z"
