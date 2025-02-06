@@ -58,7 +58,7 @@
 
 	<div class="flex flex-col gap-2">
 		{#each value as v, i}
-			<div class="card shadow-lg bg-surface-50-900-token flex justify-between items-center p-4">
+			<div class="card shadow-lg bg-surface-50-900-token flex justify-between items-center p-3">
 				{@render selected(v)}
 				<button onclick={() => remove(i)} onkeypress={() => remove(i)} aria-label="Remove item">
 					<iconify-icon icon="mdi:trash-can-outline" class="text-xl text-primary-500"
@@ -78,7 +78,7 @@
 			use:popup={popupSettings}
 		/>
 
-		<div class="card p-4 shadow-lg max-h-32 overflow-y-auto" data-popup={'popupAutocomplete-' + id}>
+		<div class="card p-2 shadow-lg max-h-32 overflow-y-auto" data-popup={'popupAutocomplete-' + id}>
 			<Autocomplete
 				bind:input={svalue}
 				{options}
