@@ -118,14 +118,10 @@
 					{/snippet}
 				</ShellListItemBadges>
 
-				<ShellListItemMetadata metadata={resource.metadata}>
-					{#snippet extra()}
-						<ShellMetadataItem
-							icon="mdi:run"
-							label="Last Active"
-							value={userLastActive(resource)}
-						/>
-					{/snippet}
+				<ShellListItemMetadata metadata={resource.metadata} />
+
+				<ShellListItemMetadata>
+					<ShellMetadataItem icon="mdi:run" label="Last Active" value={userLastActive(resource)} />
 				</ShellListItemMetadata>
 
 				{#snippet trail()}

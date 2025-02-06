@@ -80,14 +80,14 @@
 
 				<ShellListItemBadges metadata={resource.metadata} />
 
-				<ShellListItemMetadata metadata={resource.metadata}>
-					{#snippet extra()}
-						<ShellMetadataItem
-							icon="mdi:key-outline"
-							label="Expiry"
-							value={resource.status.expiry.toUTCString()}
-						/>
-					{/snippet}
+				<ShellListItemMetadata metadata={resource.metadata} />
+
+				<ShellListItemMetadata>
+					<ShellMetadataItem
+						icon="mdi:key-outline"
+						label="Expiry"
+						value={resource.status.expiry.toUTCString()}
+					/>
 				</ShellListItemMetadata>
 
 				{#snippet trail()}

@@ -7,23 +7,27 @@
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 
 	interface Props {
-		metadata: Kubernetes.ResourceReadMetadata;
-		extra?: Snippet;
+		metadata?: Kubernetes.ResourceReadMetadata;
+		children?: Snippet;
 	}
 
-	let { metadata, extra }: Props = $props();
+	let { metadata, children }: Props = $props();
 </script>
 
-<div class="grid grid-cols-[repeat(3,max-content)] gap-2 text-sm items-center">
-	<ShellMetadataItem
-		icon="mdi:clock-time-five-outline"
-		label="Age"
-		value={Formatters.ageFormatter(metadata.creationTime)}
-	/>
+<div class="grid grid-cols-[repeat(3,max-content)] gap-2 text-sm self-start">
+	{#if metadata}
+		<ShellMetadataItem
+			icon="mdi:clock-time-five-outline"
+			label="Age"
+			value={Formatters.ageFormatter(metadata.creationTime)}
+		/>
 
-	{#if metadata.createdBy}
-		<ShellMetadataItem icon="mdi:user-outline" label="Owner" value={metadata.createdBy} />
+		<ShellMetadataItem
+			icon="mdi:user-outline"
+			label="Owner"
+			value={metadata.createdBy || 'unknown'}
+		/>
 	{/if}
 
-	{@render extra?.()}
+	{@render children?.()}
 </div>
