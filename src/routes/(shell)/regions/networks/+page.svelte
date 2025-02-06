@@ -47,26 +47,26 @@
 					{/snippet}
 				</ShellListItemBadges>
 
-				<ShellListItemMetadata metadata={resource.metadata}>
-					{#snippet extra()}
+				<ShellListItemMetadata metadata={resource.metadata} />
+
+				<ShellListItemMetadata>
+					<ShellMetadataItem
+						icon="mdi:network-outline"
+						label="Prefix"
+						value={resource.spec.prefix}
+					/>
+					<ShellMetadataItem
+						icon="mdi:dns-outline"
+						label="DNS Nameservers"
+						value={resource.spec.dnsNameservers.join(', ')}
+					/>
+					{#if resource.spec.openstack?.vlanId}
 						<ShellMetadataItem
-							icon="mdi:network-outline"
-							label="Prefix"
-							value={resource.spec.prefix}
+							icon="mdi:nic"
+							label="VLAN ID"
+							value={resource.spec.openstack.vlanId.toString()}
 						/>
-						<ShellMetadataItem
-							icon="mdi:dns-outline"
-							label="DNS Nameservers"
-							value={resource.spec.dnsNameservers.join(', ')}
-						/>
-						{#if resource.spec.openstack?.vlanId}
-							<ShellMetadataItem
-								icon="mdi:nic"
-								label="VLAN ID"
-								value={resource.spec.openstack.vlanId.toString()}
-							/>
-						{/if}
-					{/snippet}
+					{/if}
 				</ShellListItemMetadata>
 			</ShellListItem>
 		{/each}
