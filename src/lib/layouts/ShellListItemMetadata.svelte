@@ -14,7 +14,7 @@
 	let { metadata, children }: Props = $props();
 </script>
 
-<div class="grid grid-cols-[repeat(3,max-content)] gap-2 text-sm self-start">
+<div class="grid grid-cols-[repeat(3,max-content)] gap-2 text-sm">
 	{#if metadata}
 		<ShellMetadataItem
 			icon="mdi:clock-time-five-outline"
