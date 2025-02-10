@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { error } from '@sveltejs/kit';
 	import { page } from '$app/state';
 
 	let { data }: { data: PageData } = $props();
@@ -29,17 +30,18 @@
 		description: 'Create and deploy a new Kubernetes cluster.'
 	};
 
-	let projectID = $derived(page.url.searchParams.get('projectID'));
-	let regionID = $derived(page.url.searchParams.get('regionID'));
+	if (!page.url.searchParams.has('projectID') || page.url.searchParams.get('regionID')) {
+		error(400, 'project ID and regions ID must be provided as page query parameters');
+	}
+
+	const projectID = page.url.searchParams.get('projectID') as string;
+	const regionID = page.url.searchParams.get('regionID') as string;
+	const versions = [
+		...new Set(data.images.map((x) => x.spec.softwareVersions?.kubernetes || ''))
+	].reverse();
+
 	let clusters = $derived(data.clusters.filter((x) => x.metadata.projectId == projectID));
 	let names: Array<string> = $derived((clusters || []).map((x) => x.metadata.name));
-
-	// Once we know the images, we can extract the Kubernetes versons available.
-	let versions: Array<string> | undefined = $derived.by(() => {
-		return [
-			...new Set(data.images.map((x) => x.spec.softwareVersions?.kubernetes || ''))
-		].reverse();
-	});
 
 	let resource: Kubernetes.KubernetesClusterWrite = $state({
 		metadata: {
@@ -50,8 +52,8 @@
 			})
 		},
 		spec: {
-			regionId: '',
-			version: '',
+			regionId: regionID,
+			version: versions[0],
 			workloadPools: [
 				{
 					name: 'default',
@@ -64,22 +66,6 @@
 				}
 			]
 		}
-	});
-
-	// Update the region ID when modified.
-	$effect.pre(() => {
-		if (regionID) resource.spec.regionId = regionID;
-	});
-
-	// When cluster managers are available, select a default.
-	$effect.pre(() => {
-		if (data.clustermanagers.length)
-			resource.spec.clusterManagerId = data.clustermanagers[0].metadata.id;
-	});
-
-	// Select a default Kubernetes version.
-	$effect.pre(() => {
-		if (versions?.length) resource.spec.version = versions[0];
 	});
 
 	let workloadPoolValid: boolean = $state(false);
@@ -120,8 +106,6 @@
 	});
 
 	function complete() {
-		if (!projectID) return;
-
 		const parameters = {
 			organizationID: data.organizationID,
 			projectID: projectID,
@@ -201,7 +185,7 @@
                                                 may require a specific version."
 						bind:value={resource.spec.version}
 					>
-						{#each versions || [] as version}
+						{#each versions as version}
 							<option value={version}>{version}</option>
 						{/each}
 					</Select>

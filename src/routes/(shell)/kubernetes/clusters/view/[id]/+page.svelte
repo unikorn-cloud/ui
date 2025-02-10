@@ -30,24 +30,26 @@
 		description: 'Update an existing Kubernetes cluster.'
 	};
 
+	// TODO: move into +page.ts
 	let cluster = $derived.by(() => {
 		let cluster = $state(data.cluster);
 		return cluster;
 	});
 
+	// TODO: move into +page.ts
 	let clusters = $derived(
 		data.clusters.filter((x) => x.metadata.projectId == data.cluster.metadata.projectId)
 	);
+
+	// TODO: move into +page.ts
 	let names: Array<string> = $derived(
 		(clusters || []).filter((x) => x.metadata.id != page.params.id).map((x) => x.metadata.name)
 	);
 
-	// Once we know the images, we can extract the Kubernetes versons available.
-	let versions: Array<string> | undefined = $derived.by(() => {
-		return [
-			...new Set(data.images.map((x) => x.spec.softwareVersions?.kubernetes || ''))
-		].reverse();
-	});
+	// TODO: move into +page.ts
+	const versions = [
+		...new Set(data.images.map((x) => x.spec.softwareVersions?.kubernetes || ''))
+	].reverse();
 
 	let workloadPoolValid: boolean = $state(false);
 
@@ -176,7 +178,7 @@
 						may require a specific version."
 						bind:value={cluster.spec.version}
 					>
-						{#each versions || [] as version}
+						{#each versions as version}
 							<option value={version}>{version}</option>
 						{/each}
 					</Select>

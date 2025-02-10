@@ -13,6 +13,18 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { KubernetesClusterAPI } from './KubernetesClusterAPI';
+import {
+    KubernetesClusterAPIFromJSON,
+    KubernetesClusterAPIFromJSONTyped,
+    KubernetesClusterAPIToJSON,
+} from './KubernetesClusterAPI';
+import type { KubernetesClusterNetwork } from './KubernetesClusterNetwork';
+import {
+    KubernetesClusterNetworkFromJSON,
+    KubernetesClusterNetworkFromJSONTyped,
+    KubernetesClusterNetworkToJSON,
+} from './KubernetesClusterNetwork';
 import type { KubernetesClusterWorkloadPool } from './KubernetesClusterWorkloadPool';
 import {
     KubernetesClusterWorkloadPoolFromJSON,
@@ -51,6 +63,18 @@ export interface KubernetesClusterSpec {
      * @memberof KubernetesClusterSpec
      */
     workloadPools: Array<KubernetesClusterWorkloadPool>;
+    /**
+     * 
+     * @type {KubernetesClusterAPI}
+     * @memberof KubernetesClusterSpec
+     */
+    api?: KubernetesClusterAPI;
+    /**
+     * 
+     * @type {KubernetesClusterNetwork}
+     * @memberof KubernetesClusterSpec
+     */
+    networking?: KubernetesClusterNetwork;
 }
 
 /**
@@ -79,6 +103,8 @@ export function KubernetesClusterSpecFromJSONTyped(json: any, ignoreDiscriminato
         'clusterManagerId': !exists(json, 'clusterManagerId') ? undefined : json['clusterManagerId'],
         'version': json['version'],
         'workloadPools': ((json['workloadPools'] as Array<any>).map(KubernetesClusterWorkloadPoolFromJSON)),
+        'api': !exists(json, 'api') ? undefined : KubernetesClusterAPIFromJSON(json['api']),
+        'networking': !exists(json, 'networking') ? undefined : KubernetesClusterNetworkFromJSON(json['networking']),
     };
 }
 
@@ -95,6 +121,8 @@ export function KubernetesClusterSpecToJSON(value?: KubernetesClusterSpec | null
         'clusterManagerId': value.clusterManagerId,
         'version': value.version,
         'workloadPools': ((value.workloadPools as Array<any>).map(KubernetesClusterWorkloadPoolToJSON)),
+        'api': KubernetesClusterAPIToJSON(value.api),
+        'networking': KubernetesClusterNetworkToJSON(value.networking),
     };
 }
 
