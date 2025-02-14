@@ -13,6 +13,11 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
 		error(400, 'region ID not in query');
 	}
 
+	const projectID = url.searchParams.get('projectID');
+	if (!projectID) {
+		error(400, 'project ID not in query');
+	}
+
 	const images = Clients.kubernetes(
 		token,
 		fetch
@@ -30,6 +35,8 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
 	});
 
 	return {
+		projectID: projectID,
+		regionID: regionID,
 		images: await images,
 		flavors: await flavors
 	};

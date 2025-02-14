@@ -1,7 +1,5 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { error } from '@sveltejs/kit';
-	import { page } from '$app/state';
 
 	let { data }: { data: PageData } = $props();
 
@@ -30,17 +28,11 @@
 		description: 'Create and deploy a new Kubernetes cluster.'
 	};
 
-	if (!page.url.searchParams.has('projectID') || page.url.searchParams.get('regionID')) {
-		error(400, 'project ID and regions ID must be provided as page query parameters');
-	}
-
-	const projectID = page.url.searchParams.get('projectID') as string;
-	const regionID = page.url.searchParams.get('regionID') as string;
 	const versions = [
 		...new Set(data.images.map((x) => x.spec.softwareVersions?.kubernetes || ''))
 	].reverse();
 
-	let clusters = $derived(data.clusters.filter((x) => x.metadata.projectId == projectID));
+	let clusters = $derived(data.clusters.filter((x) => x.metadata.projectId == data.projectID));
 	let names: Array<string> = $derived((clusters || []).map((x) => x.metadata.name));
 
 	let resource: Kubernetes.KubernetesClusterWrite = $state({
@@ -52,7 +44,7 @@
 			})
 		},
 		spec: {
-			regionId: regionID,
+			regionId: data.regionID,
 			version: versions[0],
 			workloadPools: [
 				{
@@ -108,7 +100,7 @@
 	function complete() {
 		const parameters = {
 			organizationID: data.organizationID,
-			projectID: projectID,
+			projectID: data.projectID,
 			kubernetesClusterWrite: resource
 		};
 
