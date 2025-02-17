@@ -80,6 +80,8 @@ async function accessToken(tokens: InternalToken, fetchImpl?: typeof fetch): Pro
 
 		const form = new URLSearchParams({
 			grant_type: 'refresh_token',
+			client_id: OIDC.clientID,
+			client_secret: OIDC.clientSecret,
 			refresh_token: tokens.refresh_token
 		});
 

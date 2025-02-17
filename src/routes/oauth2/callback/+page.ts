@@ -49,6 +49,7 @@ export const load: PageLoad = async ({ url, fetch }) => {
 	const body = new URLSearchParams({
 		grant_type: 'authorization_code',
 		client_id: OIDC.clientID,
+		client_secret: OIDC.clientSecret,
 		redirect_uri: `${window.location.protocol}//${window.location.host}/oauth2/callback`,
 		code: code,
 		code_verifier: code_verifier

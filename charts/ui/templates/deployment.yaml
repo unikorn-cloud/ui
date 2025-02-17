@@ -46,6 +46,8 @@ spec:
           {{- else }}
           value: {{ .Values.oauth2.clientID }}
           {{- end }}
+        - name: PUBLIC_OAUTH2_CLIENT_SECRET
+          value: {{ .Values.oauth2.clientSecret }}
         securityContext:
           readOnlyRootFilesystem: true
       serviceAccountName: unikorn-ui
