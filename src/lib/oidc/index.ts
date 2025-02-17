@@ -8,6 +8,7 @@ import { env } from '$env/dynamic/public';
 // These are required variables from the environment.
 export const issuer = env.PUBLIC_OAUTH2_ISSUER || '';
 export const clientID = env.PUBLIC_OAUTH2_CLIENT_ID || '';
+export const clientSecret = env.PUBLIC_OAUTH2_CLIENT_SECRET || '';
 
 export type IDToken = {
 	// openid scope.
