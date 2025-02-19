@@ -76,40 +76,26 @@ async function accessToken(tokens: InternalToken, fetchImpl?: typeof fetch): Pro
 	// we are repeating the operation, be nice if we could handle this
 	// somehow.
 	if (new Date(Date.now()).toJSON() > tokens.expiry) {
-		const discovery = await OIDC.discovery(fetchImpl || fetch);
-
-		const form = new URLSearchParams({
-			grant_type: 'refresh_token',
-			client_id: OIDC.clientID,
-			client_secret: OIDC.clientSecret,
+		const query = new URLSearchParams({
 			refresh_token: tokens.refresh_token
 		});
 
-		const options = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
-			},
-			body: form.toString()
-		};
+		const target = new URL(`${window.location.protocol}//${window.location.host}/oauth2/refresh`);
+		target.search = query.toString();
 
-		const response = await fetch(discovery.token_endpoint, options);
-
-		const result = await response.json();
-
+		const response = await fetch(target.toString());
 		if (!response.ok) {
-			const err = result as Identity.ModelError;
-
-			if (err.error == Identity.ModelErrorErrorEnum.InvalidGrant) {
-				removeCredentials();
-			}
-
-			// This will utimately turn into a 400 due to missing headers.
-			// TODO: Not the best way to handle things to be honest.
+			removeCredentials();
 			return '';
 		}
 
-		const new_token = result as InternalToken;
+		const tokenRaw = response.headers.get('X-Unikorn-Token');
+		if (!tokenRaw) {
+			console.log('token header missing');
+			return '';
+		}
+
+		const new_token = JSON.parse(tokenRaw) as InternalToken;
 
 		// Set the expiry time so we know when to perform a rotation.
 		// Add a little wiggle room in there to account for any latency.
@@ -165,7 +151,7 @@ export function application(
 
 export function identity(tokens: InternalToken, fetchImpl?: typeof fetch): Identity.DefaultApi {
 	const config = new Identity.Configuration({
-		basePath: env.PUBLIC_OAUTH2_ISSUER,
+		basePath: env.PUBLIC_IDENTITY_HOST,
 		accessToken: async () => accessToken(tokens, fetchImpl),
 		middleware: [authenticationMiddleware(), traceContextMiddleware()],
 		fetchApi: fetchImpl

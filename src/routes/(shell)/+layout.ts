@@ -1,8 +1,5 @@
 export const ssr = false;
 
-import Base64url from 'crypto-js/enc-base64url';
-import SHA256 from 'crypto-js/sha256';
-
 import type { LayoutLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 
@@ -23,45 +20,12 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 	const token = getSessionData<InternalToken>('token');
 	const profile = getSessionData<OIDC.IDToken>('profile');
 
+	// Not logged in, redirect to the start of the login flow, remembering where
+	// we were.
 	if (!token) {
-		const oidc = await OIDC.discovery(fetch);
+		window.sessionStorage.setItem('oidc_location', window.location.pathname);
 
-		const nonceBytes = new Uint8Array(16);
-		crypto.getRandomValues(nonceBytes);
-
-		const nonce = btoa(nonceBytes.toString());
-		const nonceHash = SHA256(nonce).toString(Base64url);
-
-		window.sessionStorage.setItem('oidc_nonce', nonce);
-
-		/* Kck off the oauth2/oidc authentication code flow */
-		const codeChallengeVerifierBytes = new Uint8Array(32);
-		crypto.getRandomValues(codeChallengeVerifierBytes);
-
-		const codeChallengeVerifier = btoa(codeChallengeVerifierBytes.toString());
-		const codeChallenge = SHA256(codeChallengeVerifier).toString(Base64url);
-
-		window.sessionStorage.setItem('oauth2_code_challenge_verifier', codeChallengeVerifier);
-		window.sessionStorage.setItem('oauth2_location', window.location.pathname);
-
-		const query = new URLSearchParams({
-			response_type: 'code',
-			client_id: OIDC.clientID,
-			redirect_uri: `${window.location.protocol}//${window.location.host}/oauth2/callback`,
-			code_challenge_method: 'S256',
-			code_challenge: codeChallenge,
-			scope: 'openid email profile',
-			nonce: nonceHash
-		});
-
-		if (profile?.email) {
-			query.set('login_hint', profile.email);
-		}
-
-		const url = new URL(oidc.authorization_endpoint);
-		url.search = query.toString();
-
-		redirect(307, url.toString());
+		redirect(307, '/oauth2/login');
 	}
 
 	if (!profile) {
