@@ -55,6 +55,11 @@ oauth2:
   # and then hashed into a predictlable ID.  Overrides the ID.
   # clientName: foo
 
+tls:
+  # When marked as private, this will mount the ingress secret into the
+  # pod and expose the CA certificate to Node.
+  private: false
+
 ingress:
   # Sets the ingress class to use.
   class: ~
