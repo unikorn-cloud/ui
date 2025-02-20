@@ -51,9 +51,9 @@ oauth2:
   clientID: 3fc34852-9186-4884-b580-78bf4bcf628a
   # The client secret.
   clientSecret: yoz}wepat4Shmy
-  # The client name, which can be shared with the identity configuration
-  # and then hashed into a predictlable ID.  Overrides the ID.
-  # clientName: foo
+  # The client ID/secret sourced from a secret.  This trumps the normal clientID/clientSecret
+  # configuration.  Must contain the keys OIDC_CLIENT_ID and OIDC_CLIENT_SECRET.
+  # clientSecretSecretName: my-client-secret
 
 tls:
   # When marked as private, this will mount the ingress secret into the

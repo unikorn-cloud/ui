@@ -40,18 +40,18 @@ spec:
           value: https://{{ include "unikorn.application.host" . }}
         - name: PUBLIC_COMPUTE_HOST
           value: https://{{ include "unikorn.compute.host" . }}
-        - name: OIDC_CLIENT_ID
-          {{- if .Values.oauth2.clientName }}
-          value: {{ include "resource.id" .Values.oauth2.clientName }}
-          {{- else }}
-          value: {{ .Values.oauth2.clientID }}
-          {{- end }}
-        - name: OIDC_CLIENT_SECRET
-          value: {{ .Values.oauth2.clientSecret }}
         {{- if .Values.tls.private }}
         - name: NODE_EXTRA_CA_CERTS
           value: /var/run/secrets/unikorn-cloud.org/ca.crt
         {{- end }}
+        envFrom:
+        - secretRef:
+            {{- if .Values.oauth2.clientSecretSecretName }}
+            name: {{ .Values.oauth2.clientSecretSecretName }}
+            {{- else }}
+            name: unikorn-ui-oidc-secret
+            {{- end }}
+            optional: false
         securityContext:
           readOnlyRootFilesystem: true
         {{- if .Values.tls.private }}
