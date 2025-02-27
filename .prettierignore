@@ -7,3 +7,4 @@ yarn.lock
 /static
 /.github
 /my-custom-theme.ts
+README.md
