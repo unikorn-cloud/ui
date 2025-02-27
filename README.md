@@ -5,18 +5,63 @@
 
 ## Overview
 
-This is a user-friendly user interface built on top of [Unikorn](https://github.com/spjmurray/unikorn) server.
+This is a user-friendly user interface built on top of [Unikorn](https://github.com/unikorn-cloud) server.
 
 ## Installing
+
+### Prerequisites
+
+First install the [Unikorn Identity Service](https://github.com/unikorn-cloud/identity) creating an OIDC client for your UI.
+
+Your identity `values.yaml` for Helm should have something similar to this:
+
+```yaml
+clients:
+  unikorn-ui:
+    redirectURI: https://console.unikorn-cloud.org/oauth2/callback
+    loginURI: https://console.unikorn-cloud.org/login
+    errorURI: https://console.unikorn-cloud.org/error
+```
+
+The host names will be used/created later during deployment.
+When that has finished deploying, you will need to retrieve your OIDC client ID and secret.
+
+```shell
+$ kubectl get oauth2clients.identity.unikorn-cloud.org -A 
+NAMESPACE          NAME                                   DISPLAY NAME       REDIRECT URI                                                        SECRET                                        AGE
+unikorn-identity   f9f78f4a-e715-4d5c-8f44-f6d0203a0a50   unikorn-ui         https://console.unikorn-cloud.org/oauth2/callback/oauth2/callback   taw7mc-ZTnpNXeSB4wVelpN7bDc9Gk-xPoygkZlkhNU   239d
+```
+
+### Deployment
 
 Install using your method of choice:
 
 <details>
 <summary>Helm</summary>
 
+Define your `values.yaml`:
+
+```yaml
+ui:
+  host: console.unikorn-cloud.org
+identity:
+  host: identity.unikorn-cloud.org
+region:
+  host: region.unikorn-cloud.org
+kubernetes:
+  host: kubernetes.unikorn-cloud.org
+compute:
+  host: compute.unikorn-cloud.org
+oauth2:
+  clientID: f9f78f4a-e715-4d5c-8f44-f6d0203a0a50
+  clientSecret: taw7mc-ZTnpNXeSB4wVelpN7bDc9Gk-xPoygkZlkhNU
+ingress:
+  externalDns: true
+```
+
 ```shell
 helm repo add unikorn-ui https::/unikorn-cloud.github.io/ui
-helm install unikorn-ui unikorn-ui/ui --namespace unikorn --create-namespace
+helm install unikorn-ui unikorn-ui/ui --namespace unikorn --create-namespace -f values.yaml
 ```
 
 </details>
@@ -38,8 +83,22 @@ spec:
     targetRevision: v0.1.0
     helm:
       parameters:
-        - name: dockerConfig
-          value: # output of "base64 -w0 ~/.docker/config.json"
+      - name: ui.host
+        value: console.unikorn-cloud.org
+      - name: identity.host
+        value: identity.unikorn-cloud.org
+      - name: region.host
+        value: region.unikorn-cloud.org
+      - name: kubernetes.host
+        value: kubernetes.unikorn-cloud.org
+      - name: compute.host
+        value: compute.unikorn-cloud.org
+      - name: oauth2.clientID
+        value: f9f78f4a-e715-4d5c-8f44-f6d0203a0a50
+      - name: oauth2.clientSecret
+        value: taw7mc-ZTnpNXeSB4wVelpN7bDc9Gk-xPoygkZlkhNU
+      - name: ingress.externalDns
+        value: 'true'
   destination:
     namespace: unikorn
     server: https://kubernetes.default.svc
