@@ -1,57 +1,63 @@
 <script lang="ts">
-	import { popup } from '@skeletonlabs/skeleton';
-	import { ListBox } from '@skeletonlabs/skeleton';
-	import type { PopupSettings } from '@skeletonlabs/skeleton';
-	import type { SizeOptions } from '@floating-ui/dom';
+	import type { Snippet } from 'svelte';
 
 	interface Props {
-		// Unique element ID.
-		id: string;
 		// Label to attach describing the input.
 		label: string;
+		// The current value.
+		value: string;
+		// Called when the value changes.
+		onValueChange: (e: { value: string }) => void;
+		// A list of possible values to select.
+		options: Array<string>;
 		// Formatting hint.
 		hint?: string;
-		selected_body?: import('svelte').Snippet;
-		children?: import('svelte').Snippet;
+		// Contents snippet.
+		contents: Snippet<[string]>;
 	}
 
-	let { id, label, hint = '', selected_body, children }: Props = $props();
+	let { label, hint = '', value, onValueChange, options, contents }: Props = $props();
 
-	let sizeOptions: SizeOptions = {
-		apply({ rects, elements }) {
-			Object.assign(elements.floating.style, {
-				width: `${rects.reference.width}px`
-			});
-		}
-	};
+	import { Popover } from '@skeletonlabs/skeleton-svelte';
 
-	let settings: PopupSettings = {
-		event: 'click',
-		target: `select-${id}`,
-		closeQuery: '.listbox-item',
-		middleware: {
-			size: sizeOptions
-		}
-	};
+	let open = $state(false);
+
+	function select(o: string) {
+		onValueChange({ value: o });
+		open = false;
+	}
 </script>
 
 <div class="flex flex-col gap-1">
 	<div>{label}</div>
 
 	{#if hint}
-		<div class="text-xs italic text-surface-500">{hint}</div>
+		<div class="text-xs italic text-surface-700">{hint}</div>
 	{/if}
 </div>
 
-<button class="btn variant-ghost shadow-lg w-full justify-between" use:popup={settings}>
-	{@render selected_body?.()}
-	<iconify-icon icon="ph:caret-down-bold"></iconify-icon>
-</button>
+<Popover
+	{open}
+	onOpenChange={(e) => (open = e.open)}
+	contentBase="card bg-surface-50-950 p-2 shadow-xl"
+	triggerBase="rounded p-2 preset-tonal border border-surface-500 shadow-lg w-full flex justify-between items-center"
+>
+	{#snippet trigger()}
+		{@render contents(value)}
+		<iconify-icon icon="ph:caret-down-bold"></iconify-icon>
+	{/snippet}
 
-<div class="z-10" data-popup={`select-${id}`}>
-	<div class="card shadow-xl">
-		<ListBox>
-			{@render children?.()}
-		</ListBox>
-	</div>
-</div>
+	{#snippet content()}
+		<div class="flex flex-col">
+			{#each options as o}
+				<button
+					class="p-2 hover:bg-surface-100-900"
+					onclick={() => select(o)}
+					onkeypress={() => select(o)}
+				>
+					{@render contents(o)}
+				</button>
+			{/each}
+		</div>
+	{/snippet}
+</Popover>

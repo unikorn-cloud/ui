@@ -6,14 +6,7 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-	const modalStore = getModalStore();
-
 	import * as Clients from '$lib/clients';
-	import * as Identity from '$lib/openapi/identity';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -22,9 +15,8 @@
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
-	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
-	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Button from '$lib/forms/Button.svelte';
+	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -38,27 +30,16 @@
 		return () => clearInterval(interval);
 	});
 
-	function remove(resource: Identity.ProjectRead): void {
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: `Are you sure?`,
-			body: `Removing project "${resource.metadata.name}" will also remove all resources owned by it.`,
-			response: (ok: boolean) => {
-				if (!ok) return;
-
-				const parameters = {
-					organizationID: data.organizationID,
-					projectID: resource.metadata.id
-				};
-
-				Clients.identity(data.token)
-					.apiV1OrganizationsOrganizationIDProjectsProjectIDDelete(parameters)
-					.then(() => invalidate('layout:projects'))
-					.catch((e: Error) => Clients.error(toastStore, e));
-			}
+	function confirm(id: string): void {
+		const parameters = {
+			organizationID: data.organizationID,
+			projectID: id
 		};
 
-		modalStore.trigger(modal);
+		Clients.identity(data.token)
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDDelete(parameters)
+			.then(() => invalidate('layout:projects'))
+			.catch((e: Error) => Clients.error(e));
 	}
 </script>
 
@@ -82,11 +63,13 @@
 				<ShellListItemMetadata metadata={resource.metadata} />
 
 				{#snippet trail()}
-					<BurgerMenu name="menu-{resource.metadata.id}">
-						<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
-							Delete
-						</BurgerMenuItem>
-					</BurgerMenu>
+					<ModalIcon
+						icon="mdi:trash-can-outline"
+						title="Are you sure?"
+						confirm={() => confirm(resource.metadata.id)}
+					>
+						Removing project "{resource.metadata.name}" will remove all infrastructure owned by it.
+					</ModalIcon>
 				{/snippet}
 			</ShellListItem>
 		{/each}

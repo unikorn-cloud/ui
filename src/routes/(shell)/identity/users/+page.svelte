@@ -6,12 +6,6 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-	const modalStore = getModalStore();
-
 	import * as Clients from '$lib/clients';
 	import * as Identity from '$lib/openapi/identity';
 	import * as Formatters from '$lib/formatters';
@@ -25,9 +19,8 @@
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
-	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
-	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Button from '$lib/forms/Button.svelte';
+	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -41,27 +34,16 @@
 		return () => clearInterval(interval);
 	});
 
-	function remove(resource: Identity.UserRead) {
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: `Are you sure?`,
-			body: `Removing user "${resource.spec.subject}" and revoke access token.`,
-			response: (ok: boolean) => {
-				if (!ok) return;
-
-				const parameters = {
-					organizationID: data.organizationID,
-					userID: resource.metadata.id
-				};
-
-				Clients.identity(data.token)
-					.apiV1OrganizationsOrganizationIDUsersUserIDDelete(parameters)
-					.then(() => invalidate('layout:users'))
-					.catch((e: Error) => Clients.error(toastStore, e));
-			}
+	function confirm(id: string) {
+		const parameters = {
+			organizationID: data.organizationID,
+			userID: id
 		};
 
-		modalStore.trigger(modal);
+		Clients.identity(data.token)
+			.apiV1OrganizationsOrganizationIDUsersUserIDDelete(parameters)
+			.then(() => invalidate('layout:users'))
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	function userLastActive(user: Identity.UserRead): string {
@@ -91,7 +73,7 @@
 				return 'text-error-500';
 		}
 
-		return 'text-surface-500';
+		return 'text-surface-700';
 	}
 </script>
 
@@ -125,11 +107,13 @@
 				</ShellListItemMetadata>
 
 				{#snippet trail()}
-					<BurgerMenu name="menu-{resource.metadata.id}">
-						<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
-							Delete
-						</BurgerMenuItem>
-					</BurgerMenu>
+					<ModalIcon
+						icon="mdi:trash-can-outline"
+						title="Are you sure?"
+						confirm={() => confirm(resource.metadata.id)}
+					>
+						Removing user "{resource.spec.subject}" will remove their access to this organization.
+					</ModalIcon>
 				{/snippet}
 			</ShellListItem>
 		{/each}

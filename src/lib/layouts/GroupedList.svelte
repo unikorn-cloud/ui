@@ -16,11 +16,11 @@
 </script>
 
 <div class="flex flex-col gap-4">
-	<div class="input-group input-group-divider grid-cols-[auto_1fr] shadow-lg max-w-max">
-		<div class="input-group-shim">
+	<div class="input-group grid-cols-[auto_1fr] shadow-lg max-w-max">
+		<div class="ig-cell">
 			<iconify-icon icon="mdi:filter-outline" class="text-primary-500 text-lg"></iconify-icon>
 		</div>
-		<select bind:value>
+		<select class="select" bind:value>
 			<option value="">all</option>
 
 			{#each Object.keys(groups) as key}

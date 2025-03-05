@@ -52,7 +52,7 @@
 		<Button
 			icon="mdi:arrow-right"
 			label={rightLabel}
-			class="variant-filled-primary shadow-lg"
+			class="preset-filled-primary-500 shadow-lg"
 			clicked={right}
 			disabled={!valid}
 		/>

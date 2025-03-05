@@ -10,8 +10,6 @@
 	import SlideToggle from '$lib/forms/SlideToggle.svelte';
 	import SelectNew from '$lib/forms/SelectNew.svelte';
 	import RangeSlider from '$lib/forms/RangeSlider.svelte';
-	import { popup } from '@skeletonlabs/skeleton';
-	import { ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
 	import Select from '$lib/forms/Select.svelte';
 	import Flavor from '$lib/Flavor.svelte';
 	import Image from '$lib/Image.svelte';
@@ -188,6 +186,10 @@
 		pool.machine.firewall.splice(index, 1);
 		pool.machine.firewall = pool.machine.firewall;
 	}
+
+	function lookupFlavor(id: string): Compute.Flavor {
+		return flavors.find((x) => x.metadata.id == id) as Compute.Flavor;
+	}
 </script>
 
 <div class="flex flex-col gap-8">
@@ -205,22 +207,15 @@
 	<ShellSection title="Pool Topology">
 		{#if pool.machine.flavorId}
 			<SelectNew
-				id="flavor"
+				value={pool.machine.flavorId}
+				onValueChange={(e) => (pool.machine.flavorId = e.value)}
+				options={flavors.map((x) => x.metadata.id)}
 				label="Choose a pool type."
 				hint="Allows the selection of the pool's available resources to be used by workloads per pool
 			member. This includes CPU, GPU and memory."
 			>
-				{#snippet selected_body()}
-					{#if flavor}
-						<Flavor {flavor} />
-					{/if}
-				{/snippet}
-				{#snippet children()}
-					{#each flavors || [] as flavor}
-						<ListBoxItem bind:group={pool.machine.flavorId} name="foo" value={flavor.metadata.id}>
-							<Flavor {flavor} />
-						</ListBoxItem>
-					{/each}
+				{#snippet contents(id: string)}
+					<Flavor flavor={lookupFlavor(id)} />
 				{/snippet}
 			</SelectNew>
 
@@ -235,7 +230,7 @@
 					bind:checked={persistentStorage}
 				/>
 
-				{#if pool.machine.disk}
+				{#if pool.machine.disk?.size}
 					<RangeSlider
 						name="storage-size"
 						label="Select the disk size per machine."
@@ -243,7 +238,12 @@
 						max={4000}
 						step={50}
 						formatter={Formatters.formatGB}
-						bind:value={pool.machine.disk.size}
+						value={[pool.machine.disk.size]}
+						onValueChange={(e) => {
+							if (pool.machine.disk) {
+								pool.machine.disk.size = e.value[0];
+							}
+						}}
 					/>
 				{/if}
 			{/if}
@@ -251,20 +251,14 @@
 
 		{#if osVersions}
 			<SelectNew
-				id="image"
+				value={image}
+				onValueChange={(e) => (image = e.value)}
+				options={Object.keys(osVersions)}
 				label="Choose an image ."
 				hint="Allows the selection of the pool's operating system image per pool."
 			>
-				{#snippet selected_body()}
-					<Image image={osVersions[image]} />
-				{/snippet}
-
-				{#snippet children()}
-					{#each Object.keys(osVersions) as value}
-						<ListBoxItem bind:group={image} name="foo" {value}>
-							<Image image={osVersions[value]} />
-						</ListBoxItem>
-					{/each}
+				{#snippet contents(id: string)}
+					<Image image={osVersions[id]} />
 				{/snippet}
 			</SelectNew>
 		{/if}
@@ -275,7 +269,8 @@
 			min={1}
 			max={100}
 			step={1}
-			bind:value={pool.machine.replicas}
+			value={[pool.machine.replicas]}
+			onValueChange={(e) => (pool.machine.replicas = e.value[0])}
 		/>
 
 		<SlideToggle

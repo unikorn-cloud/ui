@@ -4,11 +4,6 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import type { AutocompleteOption } from '@skeletonlabs/skeleton';
-	import { getToastStore } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-
 	import * as Clients from '$lib/clients';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
@@ -48,25 +43,15 @@
 		Clients.identity(data.token)
 			.apiV1OrganizationsOrganizationIDGroupsGroupidPut(parameters)
 			.then(() => window.location.assign('/identity/groups'))
-			.catch((e: Error) => Clients.error(toastStore, e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
-	let roles = $derived(
-		data.roles.map(
-			(x) => ({ label: x.metadata.name, value: x.metadata.id }) as AutocompleteOption<string>
-		)
-	);
+	let roles = $derived(data.roles.map((x) => ({ label: x.metadata.name, value: x.metadata.id })));
 
-	let users = $derived(
-		data.users.map(
-			(x) => ({ label: x.spec.subject, value: x.metadata.id }) as AutocompleteOption<string>
-		)
-	);
+	let users = $derived(data.users.map((x) => ({ label: x.spec.subject, value: x.metadata.id })));
 
 	let serviceAccounts = $derived(
-		data.serviceAccounts.map(
-			(x) => ({ label: x.metadata.name, value: x.metadata.id }) as AutocompleteOption<string>
-		)
+		data.serviceAccounts.map((x) => ({ label: x.metadata.name, value: x.metadata.id }))
 	);
 </script>
 
@@ -81,8 +66,7 @@
 			hint="You must select at least one role."
 			options={roles}
 			value={group.spec.roleIDs}
-			add={(value: string) => group.spec.roleIDs.push(value)}
-			remove={(index: number) => group.spec.roleIDs.splice(index, 1)}
+			onValueChange={(e) => (group.spec.roleIDs = e.value)}
 		>
 			{#snippet selected(value: string)}
 				{data.roles.find((x) => x.metadata.id == value)?.metadata.name}
@@ -96,8 +80,7 @@
 			label="Select group members."
 			options={users}
 			value={group.spec.userIDs}
-			add={(value: string) => group.spec.userIDs.push(value)}
-			remove={(index: number) => group.spec.userIDs.splice(index, 1)}
+			onValueChange={(e) => (group.spec.userIDs = e.value)}
 		>
 			{#snippet selected(value: string)}
 				{data.users.find((x) => x.metadata.id == value)?.spec.subject}
@@ -111,8 +94,7 @@
 			label="Select group members."
 			options={serviceAccounts}
 			value={group.spec.serviceAccountIDs}
-			add={(value: string) => group.spec.serviceAccountIDs.push(value)}
-			remove={(index: number) => group.spec.serviceAccountIDs.splice(index, 1)}
+			onValueChange={(e) => (group.spec.serviceAccountIDs = e.value)}
 		>
 			{#snippet selected(value: string)}
 				{data.serviceAccounts.find((x) => x.metadata.id == value)?.metadata.name}
@@ -130,7 +112,7 @@
 		<Button
 			icon="mdi:tick"
 			label="Update"
-			class="variant-filled-primary"
+			class="preset-filled-primary-500"
 			clicked={submit}
 			disabled={!valid}
 		/>

@@ -21,7 +21,7 @@
 		<label for={id}>{label}</label>
 
 		{#if hint}
-			<div class="text-xs italic text-surface-500">{hint}</div>
+			<div class="text-xs italic text-surface-700">{hint}</div>
 		{/if}
 	</div>
 

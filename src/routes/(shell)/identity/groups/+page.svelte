@@ -6,14 +6,7 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-	const modalStore = getModalStore();
-
 	import * as Clients from '$lib/clients';
-	import * as Identity from '$lib/openapi/identity';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
@@ -22,9 +15,8 @@
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
-	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
-	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Button from '$lib/forms/Button.svelte';
+	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
@@ -38,27 +30,16 @@
 		return () => clearInterval(interval);
 	});
 
-	function remove(resource: Identity.GroupRead) {
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: `Are you sure?`,
-			body: `Removing group "${resource.metadata.name}" disassociate any projects referencing it.`,
-			response: (ok: boolean) => {
-				if (!ok) return;
-
-				const parameters = {
-					organizationID: data.organizationID,
-					groupid: resource.metadata.id
-				};
-
-				Clients.identity(data.token)
-					.apiV1OrganizationsOrganizationIDGroupsGroupidDelete(parameters)
-					.then(() => invalidate('page:groups'))
-					.catch((e: Error) => Clients.error(toastStore, e));
-			}
+	function confirm(id: string) {
+		const parameters = {
+			organizationID: data.organizationID,
+			groupid: id
 		};
 
-		modalStore.trigger(modal);
+		Clients.identity(data.token)
+			.apiV1OrganizationsOrganizationIDGroupsGroupidDelete(parameters)
+			.then(() => invalidate('page:groups'))
+			.catch((e: Error) => Clients.error(e));
 	}
 </script>
 
@@ -82,11 +63,13 @@
 				<ShellListItemMetadata metadata={resource.metadata} />
 
 				{#snippet trail()}
-					<BurgerMenu name="menu-{resource.metadata.id}">
-						<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
-							Delete
-						</BurgerMenuItem>
-					</BurgerMenu>
+					<ModalIcon
+						icon="mdi:trash-can-outline"
+						title="Are you sure?"
+						confirm={() => confirm(resource.metadata.id)}
+					>
+						Removing group "{resource.metadata.name}" disassociate any projects referencing it.
+					</ModalIcon>
 				{/snippet}
 			</ShellListItem>
 		{/each}

@@ -8,7 +8,7 @@
 	let { icon = '', iconcolor = '', children }: Props = $props();
 </script>
 
-<div class="badge variant-outline-soft bg-surface-50-900-token shadow flex gap-2 items-center">
+<div class="badge variant-outline-soft bg-surface-50-950 shadow flex gap-2 items-center">
 	{#if icon !== ''}
 		<iconify-icon class="text-base {iconcolor}" {icon}></iconify-icon>
 	{/if}

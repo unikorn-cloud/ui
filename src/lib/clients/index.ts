@@ -9,7 +9,6 @@ import * as Application from '$lib/openapi/application';
 import * as Identity from '$lib/openapi/identity';
 import * as Region from '$lib/openapi/region';
 import { token, removeCredentials } from '$lib/credentials';
-import type { ToastSettings, ToastStore } from '@skeletonlabs/skeleton';
 
 import { ROOT_CONTEXT, defaultTextMapSetter, trace } from '@opentelemetry/api';
 import type { Span } from '@opentelemetry/api';
@@ -173,16 +172,22 @@ export function region(tokens: InternalToken, fetchImpl?: typeof fetch): Region.
 
 // error is a generic fallback when an exception occurs, everything else should
 // be handled in a middleware, and not on a per API basis.
-export async function error(toaster: ToastStore, error: Error) {
+export async function error(error: Error) {
 	const responseError = error as Identity.ResponseError;
 
 	const errorJSON = Identity.ModelErrorFromJSON(await responseError.response.json());
 
+	/*
 	const toast = {
 		autohide: false,
 		message: `An error has occurred - trace ID: ${responseError.response.headers.get('traceparent')}, error: ${errorJSON.error}, description:  ${errorJSON.errorDescription}`,
-		background: 'variant-filled-error'
+		background: 'preset-filled-error-500'
 	};
 
 	toaster.trigger(toast);
+       */
+
+	console.log(
+		`An error has occurred - trace ID: ${responseError.response.headers.get('traceparent')}, error: ${errorJSON.error}, description:  ${errorJSON.errorDescription}`
+	);
 }

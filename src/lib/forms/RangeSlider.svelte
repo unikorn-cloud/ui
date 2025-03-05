@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { RangeSlider } from '@skeletonlabs/skeleton';
+	import { Slider } from '@skeletonlabs/skeleton-svelte';
 	import type { NumberFormatter } from '$lib/formatters';
 
 	interface Props {
@@ -12,7 +12,8 @@
 		min: number;
 		max: number;
 		step: number;
-		value: number | undefined;
+		value: Array<number>;
+		onValueChange: (e: { value: Array<number> }) => void;
 		formatter?: NumberFormatter | null;
 	}
 
@@ -23,7 +24,8 @@
 		min,
 		max,
 		step,
-		value = $bindable(),
+		value,
+		onValueChange,
 		formatter = null
 	}: Props = $props();
 </script>
@@ -33,16 +35,16 @@
 		<div>{label}</div>
 
 		{#if hint}
-			<div class="text-xs italic text-surface-500">{hint}</div>
+			<div class="text-xs italic text-surface-700">{hint}</div>
 		{/if}
 	</div>
 
-	<div class="flex gap-6">
-		<RangeSlider {name} class="grow" {min} {max} {step} bind:value />
+	<div class="flex gap-6 items-center">
+		<Slider {value} {min} {max} {step} {onValueChange} />
 		{#if formatter}
-			<div>{formatter(value || 0)}</div>
+			<div>{formatter(value[0])}</div>
 		{:else}
-			<div>{value}</div>
+			<div>{value.map((x) => `${x}`).join('-')}</div>
 		{/if}
 	</div>
 </div>

@@ -23,7 +23,7 @@
 		class="overflow-hidden text-ellipsis whitespace-nowrap"
 	/>
 	<button
-		class="variant-filled-primary flex items-center gap-2"
+		class="preset-filled-primary-500 flex items-center gap-2"
 		onclick={() => copyToClipboard()}
 		onkeypress={() => copyToClipboard()}
 	>

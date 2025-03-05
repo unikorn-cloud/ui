@@ -12,7 +12,7 @@
 </script>
 
 <article
-	class="flex gap-2 lg:gap-4 lg:col-span-full lg:grid lg:grid-cols-subgrid lg:items-center card bg-surface-50-900-token shadow-lg p-4"
+	class="flex gap-2 lg:gap-4 lg:col-span-full lg:grid lg:grid-cols-subgrid lg:items-center card shadow-md p-4 bg-surface-50-950"
 >
 	<div class="flex flex-col gap-4 lg:contents overflow-hidden">
 		<div class="flex items-center gap-4 lg:contents overflow-hidden">
@@ -26,7 +26,7 @@
 		{@render children?.()}
 	</div>
 
-	<div class="ml-auto lg:justify-self-end lg:col-start-[-1]">
+	<div class="ml-auto lg:justify-self-end lg:col-start-[-1] flex gap-2 items-center">
 		{@render trail?.()}
 	</div>
 </article>

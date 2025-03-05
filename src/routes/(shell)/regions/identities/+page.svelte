@@ -6,12 +6,6 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-	const modalStore = getModalStore();
-
 	import * as Clients from '$lib/clients';
 	import * as Region from '$lib/openapi/region';
 	import * as RegionUtil from '$lib/regionutil';
@@ -23,9 +17,8 @@
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
-	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
-	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
+	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Regions',
@@ -39,28 +32,17 @@
 		return () => clearInterval(interval);
 	});
 
-	function remove(resource: Region.IdentityRead): void {
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: `Are you sure?`,
-			body: `Removing identity "${resource.metadata.name}" will remove all cloud infrastructure provisioned by it`,
-			response: (ok: boolean) => {
-				if (!ok) return;
-
-				const parameters = {
-					organizationID: data.organizationID,
-					projectID: resource.metadata.projectId,
-					identityID: resource.metadata.id
-				};
-
-				Clients.region(data.token)
-					.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDelete(parameters)
-					.then(() => invalidate('layout:identities'))
-					.catch((e: Error) => Clients.error(toastStore, e));
-			}
+	function confirm(resource: Region.IdentityRead): void {
+		const parameters = {
+			organizationID: data.organizationID,
+			projectID: resource.metadata.projectId,
+			identityID: resource.metadata.id
 		};
 
-		modalStore.trigger(modal);
+		Clients.region(data.token)
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDelete(parameters)
+			.then(() => invalidate('layout:identities'))
+			.catch((e: Error) => Clients.error(e));
 	}
 </script>
 
@@ -83,11 +65,13 @@
 				<ShellListItemMetadata metadata={resource.metadata} />
 
 				{#snippet trail()}
-					<BurgerMenu name="menu-{resource.metadata.id}">
-						<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
-							Delete
-						</BurgerMenuItem>
-					</BurgerMenu>
+					<ModalIcon
+						icon="mdi:trash-can-outline"
+						title="Are you sure?"
+						confirm={() => confirm(resource)}
+					>
+						Removing identity "{resource.metadata.name}" will delete any clusters owned by it.
+					</ModalIcon>
 				{/snippet}
 			</ShellListItem>
 		{/each}
