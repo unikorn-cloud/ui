@@ -20,7 +20,7 @@
 		<div class="ig-cell">
 			<iconify-icon icon="mdi:filter-outline" class="text-primary-500 text-lg"></iconify-icon>
 		</div>
-		<select class="select" bind:value>
+		<select class="ig-select" bind:value>
 			<option value="">all</option>
 
 			{#each Object.keys(groups) as key}
