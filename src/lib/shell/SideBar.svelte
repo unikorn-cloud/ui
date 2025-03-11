@@ -195,7 +195,7 @@
 	let activeTitle = $state([] as Array<string>);
 
 	$effect.pre(() => {
-		if (!nav) return;
+		if (!nav || activeTitle.length > 0) return;
 
 		const item = nav.find((x) => $page.url.pathname.startsWith(x.base));
 		if (!item) return;
@@ -273,7 +273,10 @@
 						<ul class="ml-12 text-sm">
 							{#each entry.items as item}
 								<a href={entry.base + '/' + item.href}>
-									<li class="p-2 hover:preset-tonal-primary">
+									<li
+										class="p-2 hover:preset-tonal-primary"
+										class:preset-tonal-primary={activeItem == item}
+									>
 										{item.label}
 									</li>
 								</a>
