@@ -2,7 +2,6 @@
 	import type { Snippet } from 'svelte';
 
 	interface Props {
-		id: string;
 		icon: string;
 		label: string;
 		disabled?: boolean;
@@ -10,7 +9,7 @@
 		[key: string]: any;
 	}
 
-	let { id, icon, label, disabled = $bindable(), contents, ...props }: Props = $props();
+	let { icon, label, disabled = $bindable(), contents, ...props }: Props = $props();
 
 	import { Popover } from '@skeletonlabs/skeleton-svelte';
 
@@ -21,12 +20,11 @@
 	{open}
 	onOpenChange={(e) => (open = e.open)}
 	contentBase="card bg-surface-50-950 p-4 shadow-lg"
+	triggerBase="btn flex items-center gap-2"
 >
 	{#snippet trigger()}
-		<div class="flex gap-2 items-center {props.class || ''}">
-			<iconify-icon {icon}> </iconify-icon>
-			{label}
-		</div>
+		<iconify-icon {icon} class="text-2xl"> </iconify-icon>
+		{label}
 	{/snippet}
 
 	{#snippet content()}

@@ -50,7 +50,6 @@
 </script>
 
 <Select
-	id="direction"
 	label="Network Direction"
 	hint="Ingress allows traffic to the host, egress traffic from the host."
 	bind:value={rule.direction}
@@ -60,19 +59,13 @@
 	{/each}
 </Select>
 
-<Select
-	id="protocol"
-	label="Network Protocol"
-	hint="OSI layer 4 transport protocol"
-	bind:value={rule.protocol}
->
+<Select label="Network Protocol" hint="OSI layer 4 transport protocol" bind:value={rule.protocol}>
 	{#each Object.values(Compute.FirewallRuleProtocolEnum) as protocol}
 		<option value={protocol}>{protocol}</option>
 	{/each}
 </Select>
 
 <TextInput
-	id="port"
 	label="Port"
 	hint="Port number, or start of range of ports (specified as 100-200 inclusive), to allow access to."
 	bind:value={port}
@@ -81,7 +74,6 @@
 />
 
 <TextInput
-	id="portmax"
 	label="Port Range End"
 	hint="If specified this is the end of the port range, including this port number."
 	bind:value={portMax}

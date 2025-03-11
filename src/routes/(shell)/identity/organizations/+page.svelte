@@ -67,7 +67,6 @@
 
 	<ShellSection title="Authentication Type">
 		<Select
-			id="organization-type"
 			label="Select your organization type."
 			hint="When domain authentication is selected, users will
                                 login with an email address, and be routed to the correct identity provider for your
@@ -86,7 +85,6 @@
 	{#if organization.spec.organizationType == Identity.OrganizationType.Domain}
 		<ShellSection title="Email Domain">
 			<TextInput
-				id="domain"
 				label="Your email domain."
 				hint="To ensure you own the domain we require you to update
 					your DNS server with a TXT record unikorn-site-verification to your root domain."
@@ -99,7 +97,6 @@
 
 		<ShellSection title="Identity Provider">
 			<Select
-				id="idp-scope"
 				label="Identity provider type."
 				hint="Selecting global enables the use of predefined globally
                                         available identity providers such as Google or Microsoft. Selecting organization allows
@@ -112,11 +109,7 @@
 			</Select>
 
 			{#if organization.spec.providerScope == Identity.ProviderScope.Global}
-				<Select
-					id="global-idp"
-					label="Identity provider to use."
-					bind:value={organization.spec.providerID}
-				>
+				<Select label="Identity provider to use." bind:value={organization.spec.providerID}>
 					{#each data.oauth2providers as p}
 						<option value={p.metadata.id}>{p.metadata.description}</option>
 					{/each}
@@ -124,7 +117,6 @@
 
 				{#if providerType == Identity.Oauth2ProviderType.Google}
 					<TextInput
-						id="google-cluster-id"
 						label="Your Google customer ID."
 						hint="This can be obtained from the Google admin console."
 						placeholder="x83hRso7"

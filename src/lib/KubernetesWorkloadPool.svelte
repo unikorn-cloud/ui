@@ -83,7 +83,6 @@
 
 <ShellSection title="Pool Metadata">
 	<TextInput
-		id="pool-name"
 		label="Choose a name for your workload pool."
 		hint="Name should be unique, contain 0-9, a-z, . or - and be at most 63 characters."
 		validators={Validation.GetKubernetesNameValidators([])}

@@ -9,8 +9,6 @@
 	}
 
 	interface Props {
-		// Unique element ID.
-		id: string;
 		// Value to bind to.
 		value: Array<string>;
 		// Pass the new array up to the client.
@@ -25,7 +23,7 @@
 		selected: Snippet<[string]>;
 	}
 
-	let { id, value, onValueChange, label, hint = '', options, selected }: Props = $props();
+	let { value, onValueChange, label, hint = '', options, selected }: Props = $props();
 
 	function remove(i: number) {
 		let mutated = [] as Array<string>;
@@ -42,7 +40,7 @@
 
 <div class="flex flex-col gap-4">
 	<div class="flex flex-col gap-1">
-		<label for={id}>{label}</label>
+		{label}
 
 		{#if hint}
 			<div class="text-xs italic text-surface-700">{hint}</div>

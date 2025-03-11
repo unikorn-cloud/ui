@@ -48,7 +48,6 @@
 
 	<ShellSection title="Access Control">
 		<Select
-			id="sa-state"
 			label="Account State"
 			hint="Active users can login and do things, other states don't allow login but retail group memberships."
 			disabled={user.spec.state == Identity.UserState.Pending}
@@ -62,7 +61,6 @@
 		</Select>
 
 		<MultiSelect
-			id="group-ids"
 			label="Select group access."
 			hint="Groups associate users with users and grant them permissions to create, view, edit and delete."
 			options={groups}

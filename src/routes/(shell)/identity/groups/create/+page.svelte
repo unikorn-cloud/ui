@@ -63,7 +63,6 @@
 
 	<ShellSection title="Roles">
 		<MultiSelect
-			id="role-ids"
 			label="Select roles for group members."
 			hint="You must select at least one role."
 			options={roles}
@@ -78,7 +77,6 @@
 
 	<ShellSection title="Users">
 		<MultiSelect
-			id="user-ids"
 			label="Select group members."
 			options={users}
 			value={resource.spec.userIDs}
@@ -92,7 +90,6 @@
 
 	<ShellSection title="Service Accounts">
 		<MultiSelect
-			id="sa-ids"
 			label="Select group members."
 			options={serviceAccounts}
 			value={resource.spec.serviceAccountIDs}

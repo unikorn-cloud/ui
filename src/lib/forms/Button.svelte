@@ -12,7 +12,7 @@
 </script>
 
 {#snippet content()}
-	<iconify-icon {icon}></iconify-icon>
+	<iconify-icon {icon} class="text-2xl"></iconify-icon>
 	{#if label}
 		<div>{label}</div>
 	{/if}

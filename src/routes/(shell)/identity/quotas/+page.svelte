@@ -37,12 +37,7 @@
 <ShellPage {settings}>
 	<ShellSection title="Quotas">
 		{#each quotas.quotas as quota}
-			<NumberInput
-				id={quota.kind}
-				label={quota.displayName}
-				hint={quota.description}
-				bind:value={quota.quantity}
-			/>
+			<NumberInput label={quota.displayName} hint={quota.description} bind:value={quota.quantity} />
 		{/each}
 	</ShellSection>
 

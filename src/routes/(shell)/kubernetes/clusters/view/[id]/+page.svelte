@@ -166,7 +166,6 @@
 
 				<ShellSection title="Platform Configuration">
 					<Select
-						id="kubernetes-version"
 						label="Choose a Kubernetes version."
 						hint="Kubernetes provides guarantees backward
                                                 compatibility so choosing the newest is usually the right choice as that provides a rich
