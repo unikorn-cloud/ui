@@ -5,10 +5,6 @@
 
 	import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
 
-	import { getToastStore } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-
 	import * as Clients from '$lib/clients';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 
@@ -107,7 +103,7 @@
 		Clients.kubernetes(data.token)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(parameters)
 			.then(() => window.location.assign('/kubernetes/clusters'))
-			.catch((e: Error) => Clients.error(toastStore, e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	let step: number = $state(0);
@@ -173,7 +169,7 @@
 						label="Choose a Kubernetes version."
 						hint="Kubernetes provides guarantees backward
                                                 compatibility so choosing the newest is usually the right choice as that provides a rich
-                                                feature set and enhanced security. Certain applications &mdash; e.g. Kubeflow &mdash;
+                                                feature set and enhanced security. Certain applications — e.g. Kubeflow —
                                                 may require a specific version."
 						bind:value={resource.spec.version}
 					>

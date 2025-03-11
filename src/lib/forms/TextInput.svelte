@@ -39,14 +39,14 @@
 		<label for={id}>{label}</label>
 
 		{#if hint}
-			<div class="text-xs italic text-surface-500">{hint}</div>
+			<div class="text-xs italic text-surface-800">{hint}</div>
 		{/if}
 	</div>
 
 	{#if validators.length}
-		<div class="input-group input-group-divider grid-cols-[1fr_auto] shadow-lg">
+		<div class="input-group grid-cols-[1fr_auto] shadow-lg">
 			<input {id} class="input" type="text" {placeholder} bind:value />
-			<div class="input-group-shim">
+			<div class="ig-cell">
 				{#if valid}
 					<iconify-icon class="text-success-500 text-lg" icon="mdi:tick-circle-outline"
 					></iconify-icon>

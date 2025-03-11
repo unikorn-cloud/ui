@@ -3,8 +3,7 @@
 	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
 
-	import { AppRail, AppRailAnchor, AppRailTile, getDrawerStore } from '@skeletonlabs/skeleton';
-	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
+	import { Navigation, Accordion } from '@skeletonlabs/skeleton-svelte';
 
 	import type { InternalToken } from '$lib/oauth2';
 	import { logout } from '$lib/credentials';
@@ -19,11 +18,9 @@
 		organizations: Array<Identity.OrganizationRead>;
 		organizationID: string;
 		acl: Identity.Acl;
-		[key: string]: any;
 	}
 
-	let { token, organizations, organizationID, acl, ...props }: Props = $props();
-	const drawerStore = getDrawerStore();
+	let { token, organizations, organizationID, acl }: Props = $props();
 
 	type NavItems = Array<{ label: string; href: string; rbac?: Array<RBAC.OrganizationScope> }>;
 	type Nav = Array<{ base: string; title: string; icon: string; items: NavItems }>;
@@ -195,12 +192,25 @@
 		return filteredNav;
 	});
 
-	let activeCategory = $derived(nav.find((x) => $page.url.pathname.startsWith(x.base)));
-	let activeItem = $derived(
-		activeCategory?.items?.find((x) =>
-			$page.url.pathname.startsWith(activeCategory.base + '/' + x.href)
-		)
-	);
+	let activeTitle = $state([] as Array<string>);
+
+	$effect.pre(() => {
+		if (!nav) return;
+
+		const item = nav.find((x) => $page.url.pathname.startsWith(x.base));
+		if (!item) return;
+
+		activeTitle = [item.title];
+	});
+
+	let activeItem = $derived.by(() => {
+		if (!nav) return;
+
+		const item = nav.find((x) => $page.url.pathname.startsWith(x.base));
+		if (!item) return;
+
+		return item.items?.find((x) => $page.url.pathname.startsWith(item.base + '/' + x.href));
+	});
 
 	let selectedOrganizationID = $state(organizationID);
 
@@ -215,63 +225,63 @@
 	});
 </script>
 
-<div class="h-full bg-surface-50-900-token lg:w-[320px] overflow-hidden {props.class || ''}">
-	<div class="flex flex-col">
-		<!-- Oragnization -->
-		<div class="p-4 flex flex-col gap-4 text-sm">
-			<div class="font-bold">Organization</div>
+<div class="overflow-hidden flex flex-col">
+	<!-- Oragnization -->
+	<div class="p-4 flex flex-col gap-4 text-sm">
+		<div class="font-bold">Organization</div>
 
-			<div class="input-group input-group-divider grid-cols-[auto_1fr] shadow-lg">
-				<div class="input-group-shim">
-					<iconify-icon icon="mdi:office-building-outline" class="text-lg text-primary-500"
-					></iconify-icon>
-				</div>
-				<select bind:value={selectedOrganizationID}>
-					{#each organizations || [] as organization}
-						<option value={organization.metadata.id}>{organization.metadata.name}</option>
-					{/each}
-				</select>
+		<div class="input-group grid-cols-[auto_1fr] shadow-lg">
+			<div class="ig-cell">
+				<iconify-icon icon="mdi:office-building-outline" class="text-lg text-primary-500"
+				></iconify-icon>
 			</div>
-		</div>
-
-		<div class="flex flex-col">
-			<div class="p-4 font-bold text-sm">Main Menu</div>
-
-			{#each navStatic as entry}
-				<a href={entry.href} class="flex gap-4 hover:bg-primary-hover-token p-2 px-4">
-					<iconify-icon icon={entry.icon} class="text-2xl text-primary-500 align-middle"
-					></iconify-icon>
-					{entry.title}
-				</a>
-			{/each}
-
-			<Accordion autocollapse rounded="none">
-				{#each nav as entry}
-					<AccordionItem open={entry == activeCategory}>
-						{#snippet lead()}
-							<iconify-icon icon={entry.icon} class="text-2xl text-primary-500 align-middle"
-							></iconify-icon>
-						{/snippet}
-						{#snippet summary()}
-							{entry.title}
-						{/snippet}
-						{#snippet content()}
-							<ul class="list-nav text-sm ml-6">
-								{#each entry.items as item}
-									<a
-										href={entry.base + '/' + item.href}
-										class={item == activeItem ? 'variant-glass-primary' : ''}
-									>
-										<li>
-											{item.label}
-										</li>
-									</a>
-								{/each}
-							</ul>
-						{/snippet}
-					</AccordionItem>
+			<select class="ig-select" bind:value={selectedOrganizationID}>
+				{#each organizations || [] as organization}
+					<option value={organization.metadata.id}>{organization.metadata.name}</option>
 				{/each}
-			</Accordion>
+			</select>
 		</div>
+	</div>
+
+	<div class="flex flex-col">
+		<div class="p-4 font-bold text-sm">Main Menu</div>
+
+		{#each navStatic as entry}
+			<a href={entry.href} class="flex gap-4 hover:preset-tonal-primary p-2 px-4 mb-2">
+				<iconify-icon icon={entry.icon} class="text-2xl text-primary-500 align-middle"
+				></iconify-icon>
+				{entry.title}
+			</a>
+		{/each}
+
+		<Accordion
+			rounded="none"
+			value={activeTitle}
+			onValueChange={(e) => (activeTitle = e.value)}
+			collapsible
+		>
+			{#each nav as entry}
+				<Accordion.Item value={entry.title} panelPadding="">
+					{#snippet lead()}
+						<iconify-icon icon={entry.icon} class="text-2xl text-primary-500 align-middle"
+						></iconify-icon>
+					{/snippet}
+					{#snippet control()}
+						{entry.title}
+					{/snippet}
+					{#snippet panel()}
+						<ul class="ml-12 text-sm">
+							{#each entry.items as item}
+								<a href={entry.base + '/' + item.href}>
+									<li class="p-2 hover:preset-tonal-primary">
+										{item.label}
+									</li>
+								</a>
+							{/each}
+						</ul>
+					{/snippet}
+				</Accordion.Item>
+			{/each}
+		</Accordion>
 	</div>
 </div>

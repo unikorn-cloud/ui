@@ -1,7 +1,7 @@
 <script lang="ts">
 	interface Props {
 		icon: string;
-		label: string;
+		label?: string;
 		disabled?: boolean;
 		href?: string;
 		clicked?: () => void;
@@ -13,7 +13,9 @@
 
 {#snippet content()}
 	<iconify-icon {icon}></iconify-icon>
-	<div>{label}</div>
+	{#if label}
+		<div>{label}</div>
+	{/if}
 {/snippet}
 
 {#if href}

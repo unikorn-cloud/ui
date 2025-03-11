@@ -6,10 +6,6 @@
 
 	import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
 
-	import { getToastStore } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-
 	import * as Clients from '$lib/clients';
 	import * as Compute from '$lib/openapi/compute';
 
@@ -112,7 +108,7 @@
 		Clients.compute(data.token)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(parameters)
 			.then(() => window.location.assign('/compute/clusters'))
-			.catch((e: Error) => Clients.error(toastStore, e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	let firewallRuleValid: boolean = $state(false);

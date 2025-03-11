@@ -4,10 +4,6 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import { getToastStore } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-
 	import * as Clients from '$lib/clients';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 	import * as RegionUtil from '$lib/regionutil';
@@ -148,7 +144,7 @@
 		Clients.kubernetes(data.token)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDPut(parameters)
 			.then(() => window.location.assign('/kubernetes/clusters'))
-			.catch((e: Error) => Clients.error(toastStore, e));
+			.catch((e: Error) => Clients.error(e));
 	}
 </script>
 
@@ -174,7 +170,7 @@
 						label="Choose a Kubernetes version."
 						hint="Kubernetes provides guarantees backward
                                                 compatibility so choosing the newest is usually the right choice as that provides a rich
-                                                feature set and enhanced security. Certain applications &mdash; e.g. Kubeflow &mdash;
+                                                feature set and enhanced security. Certain applications — e.g. Kubeflow —
 						may require a specific version."
 						bind:value={cluster.spec.version}
 					>

@@ -1,50 +1,43 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import type { AutocompleteOption, PopupSettings } from '@skeletonlabs/skeleton';
-	import { Autocomplete, popup } from '@skeletonlabs/skeleton';
+	import { Combobox } from '@skeletonlabs/skeleton-svelte';
 
-	import type { SizeOptions } from '@floating-ui/dom';
+	interface ComboData {
+		label: string;
+		value: string;
+	}
 
 	interface Props {
 		// Unique element ID.
 		id: string;
 		// Value to bind to.
 		value: Array<string>;
+		// Pass the new array up to the client.
+		onValueChange: (e: { value: Array<string> }) => void;
 		// Label to attach describing the input.
 		label: string;
 		// Formatting hint.
 		hint?: string;
 		// List of all possible options.
-		options: Array<AutocompleteOption<string>>;
-		// Member addition callback.
-		add: (value: string) => void;
-		// Member remove callback.
-		remove: (index: number) => void;
+		options: Array<ComboData>;
 		// Rendering snippet for a selected item.
 		selected: Snippet<[string]>;
 	}
 
-	let { id, value, label, hint = '', options, add, remove, selected }: Props = $props();
+	let { id, value, onValueChange, label, hint = '', options, selected }: Props = $props();
 
-	let svalue = $state();
+	function remove(i: number) {
+		let mutated = [] as Array<string>;
 
-	const sizeOptions: SizeOptions = {
-		apply({ rects, elements }) {
-			Object.assign(elements.floating.style, {
-				minWidth: `${rects.reference.width}px`
-			});
+		for (let j = 0; j < value.length; j++) {
+			if (j == i) continue;
+
+			mutated.push(value[j]);
 		}
-	};
 
-	const popupSettings: PopupSettings = {
-		event: 'focus-click',
-		target: 'popupAutocomplete-' + id,
-		placement: 'bottom-start',
-		middleware: {
-			size: sizeOptions
-		}
-	};
+		onValueChange({ value: mutated });
+	}
 </script>
 
 <div class="flex flex-col gap-4">
@@ -52,13 +45,13 @@
 		<label for={id}>{label}</label>
 
 		{#if hint}
-			<div class="text-xs italic text-surface-500">{hint}</div>
+			<div class="text-xs italic text-surface-700">{hint}</div>
 		{/if}
 	</div>
 
 	<div class="flex flex-col gap-2">
 		{#each value as v, i}
-			<div class="card shadow-lg bg-surface-50-900-token flex justify-between items-center p-3">
+			<div class="card shadow-lg bg-surface-50-950 flex justify-between items-center p-3">
 				{@render selected(v)}
 				<button onclick={() => remove(i)} onkeypress={() => remove(i)} aria-label="Remove item">
 					<iconify-icon icon="mdi:trash-can-outline" class="text-xl text-primary-500"
@@ -69,22 +62,6 @@
 	</div>
 
 	<div class="inline-flex flex-col">
-		<input
-			class="input"
-			type="search"
-			name={id}
-			bind:value={svalue}
-			placeholder="Search..."
-			use:popup={popupSettings}
-		/>
-
-		<div class="card p-2 shadow-lg max-h-32 overflow-y-auto" data-popup={'popupAutocomplete-' + id}>
-			<Autocomplete
-				bind:input={svalue}
-				{options}
-				denylist={value}
-				on:selection={(event: CustomEvent<AutocompleteOption<string>>) => add(event.detail.value)}
-			/>
-		</div>
+		<Combobox data={options} {value} {onValueChange} multiple={true} />
 	</div>
 </div>

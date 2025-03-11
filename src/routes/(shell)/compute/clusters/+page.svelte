@@ -7,12 +7,6 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-	const modalStore = getModalStore();
-
 	import * as Clients from '$lib/clients';
 	import * as Identity from '$lib/openapi/identity';
 	import * as Compute from '$lib/openapi/compute';
@@ -25,10 +19,10 @@
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
-	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
-	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
+	import Button from '$lib/forms/Button.svelte';
 	import PopupButton from '$lib/forms/PopupButton.svelte';
+	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -59,28 +53,17 @@
 		return data.projects.find((x) => x.metadata.id == id) as Identity.ProjectRead;
 	}
 
-	function remove(resource: Compute.ComputeClusterRead): void {
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: `Are you sure?`,
-			body: `Remove cluster "${resource.metadata.name}".`,
-			response: (ok: boolean) => {
-				if (!ok) return;
-
-				const parameters = {
-					organizationID: data.organizationID,
-					projectID: resource.metadata.projectId,
-					clusterID: resource.metadata.id
-				};
-
-				Clients.compute(data.token)
-					.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDDelete(parameters)
-					.then(() => invalidate('layout:clusters'))
-					.catch((e: Error) => Clients.error(toastStore, e));
-			}
+	function confirm(resource: Compute.ComputeClusterRead): void {
+		const parameters = {
+			organizationID: data.organizationID,
+			projectID: resource.metadata.projectId,
+			clusterID: resource.metadata.id
 		};
 
-		modalStore.trigger(modal);
+		Clients.compute(data.token)
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDDelete(parameters)
+			.then(() => invalidate('layout:clusters'))
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	function getSSHKey(resource: Compute.ComputeClusterRead): void {
@@ -116,7 +99,7 @@
 				</div>
 
 				<PopupButton id="create-{projectID}" icon="mdi:add" class="self-end" label="Create">
-					{#snippet content()}
+					{#snippet contents()}
 						<div class="pb-4">Select region</div>
 
 						<div class="flex flex-col gap-2">
@@ -157,14 +140,12 @@
 				<ShellListItemMetadata metadata={resource.metadata} />
 
 				{#snippet trail()}
-					<BurgerMenu name="menu-{resource.metadata.id}">
-						<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
-							Delete
-						</BurgerMenuItem>
-						<BurgerMenuItem clicked={() => getSSHKey(resource)} icon="mdi:download">
-							SSH Key
-						</BurgerMenuItem>
-					</BurgerMenu>
+					<Button icon="mdi:download" clicked={() => getSSHKey(resource)} />
+					<ModalIcon
+						icon="mdi:trash-can-outline"
+						title="Are you sure?"
+						confirm={() => confirm(resource)}
+					></ModalIcon>
 				{/snippet}
 			</ShellListItem>
 		{/snippet}

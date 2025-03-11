@@ -52,7 +52,7 @@
 				<div class="flex justify-center gap-4">
 					{#if data.providers.includes(Identity.Oauth2ProviderType.Google)}
 						<button
-							class="btn variant-ghost-surface shadow-lg flex align-center"
+							class="btn preset-tonal-surface border border-surface-500 shadow-lg flex align-center"
 							onclick={() => login(Identity.Oauth2ProviderType.Google)}
 							onkeypress={() => login(Identity.Oauth2ProviderType.Google)}
 							aria-label="Google"
@@ -62,7 +62,7 @@
 					{/if}
 					{#if data.providers.includes(Identity.Oauth2ProviderType.Microsoft)}
 						<button
-							class="btn variant-ghost-surface shadow-lg flex align-center"
+							class="btn preset-tonal-surface border border-surface-500 shadow-lg flex align-center"
 							onclick={() => login(Identity.Oauth2ProviderType.Microsoft)}
 							onkeypress={() => login(Identity.Oauth2ProviderType.Microsoft)}
 							aria-label="Mircosoft"
@@ -72,7 +72,7 @@
 					{/if}
 					{#if data.providers.includes(Identity.Oauth2ProviderType.Github)}
 						<button
-							class="btn variant-ghost-surface shadow-lg flex align-center"
+							class="btn preset-tonal-surface border border-surface-500 shadow-lg flex align-center"
 							onclick={() => login(Identity.Oauth2ProviderType.Github)}
 							onkeypress={() => login(Identity.Oauth2ProviderType.Github)}
 							aria-label="GitHub"

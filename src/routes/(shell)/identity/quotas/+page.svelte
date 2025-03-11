@@ -3,10 +3,6 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import { getToastStore } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-
 	import * as Clients from '$lib/clients';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
@@ -34,7 +30,7 @@
 
 		Clients.identity(data.token)
 			.apiV1OrganizationsOrganizationIDQuotasPut(parameters)
-			.catch((e: Error) => Clients.error(toastStore, e));
+			.catch((e: Error) => Clients.error(e));
 	}
 </script>
 
@@ -51,6 +47,6 @@
 	</ShellSection>
 
 	<div class="flex justify-end">
-		<Button icon="mdi:tick" label="Update" class="variant-filled-primary" clicked={submit} />
+		<Button icon="mdi:tick" label="Update" class="preset-filled-primary-500" clicked={submit} />
 	</div>
 </ShellPage>

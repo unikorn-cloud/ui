@@ -6,12 +6,6 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-	const modalStore = getModalStore();
-
 	import * as Clients from '$lib/clients';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 
@@ -22,8 +16,7 @@
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
-	import BurgerMenu from '$lib/layouts/BurgerMenu.svelte';
-	import BurgerMenuItem from '$lib/layouts/BurgerMenuItem.svelte';
+	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -37,30 +30,19 @@
 		return () => clearInterval(interval);
 	});
 
-	function remove(resource: Kubernetes.ClusterManagerRead): void {
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: `Are you sure?`,
-			body: `Removing cluster manager "${resource.metadata.name}" will remove all resources owned by it.`,
-			response: (ok: boolean) => {
-				if (!ok) return;
-
-				const parameters = {
-					organizationID: data.organizationID,
-					projectID: resource.metadata.projectId,
-					clusterManagerID: resource.metadata.id
-				};
-
-				Clients.kubernetes(data.token)
-					.apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersClusterManagerIDDelete(
-						parameters
-					)
-					.then(() => invalidate('layout:clustermanagers'))
-					.catch((e: Error) => Clients.error(toastStore, e));
-			}
+	function confirm(resource: Kubernetes.ClusterManagerRead): void {
+		const parameters = {
+			organizationID: data.organizationID,
+			projectID: resource.metadata.projectId,
+			clusterManagerID: resource.metadata.id
 		};
 
-		modalStore.trigger(modal);
+		Clients.kubernetes(data.token)
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersClusterManagerIDDelete(
+				parameters
+			)
+			.then(() => invalidate('layout:clustermanagers'))
+			.catch((e: Error) => Clients.error(e));
 	}
 </script>
 
@@ -77,11 +59,14 @@
 				<ShellListItemMetadata metadata={resource.metadata} />
 
 				{#snippet trail()}
-					<BurgerMenu name="menu-{resource.metadata.id}">
-						<BurgerMenuItem clicked={() => remove(resource)} icon="mdi:trash-can-outline">
-							Delete
-						</BurgerMenuItem>
-					</BurgerMenu>
+					<ModalIcon
+						icon="mdi:trash-can-outline"
+						title="Are you sure?"
+						confirm={() => confirm(resource)}
+					>
+						Removing cluster manager "{resource.metadata.name}" will remove any clusters managed by
+						it.
+					</ModalIcon>
 				{/snippet}
 			</ShellListItem>
 		{/each}

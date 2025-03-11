@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { InputChip } from '@skeletonlabs/skeleton';
+	import { TagsInput } from '@skeletonlabs/skeleton-svelte';
 
 	interface Props {
 		// Unique element name.
@@ -20,9 +20,9 @@
 		<div>{label}</div>
 
 		{#if hint}
-			<div class="text-xs italic text-surface-500">{hint}</div>
+			<div class="text-xs italic text-surface-700">{hint}</div>
 		{/if}
 	</div>
 
-	<InputChip {name} bind:value />
+	<TagsInput {value} onValueChange={(e) => (value = e.value)} />
 </div>

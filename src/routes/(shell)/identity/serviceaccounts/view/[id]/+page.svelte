@@ -4,11 +4,6 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import type { AutocompleteOption } from '@skeletonlabs/skeleton';
-	import { getToastStore } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-
 	import * as Clients from '$lib/clients';
 	import * as Identity from '$lib/openapi/identity';
 
@@ -43,7 +38,7 @@
 		Clients.identity(data.token)
 			.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDPut(parameters)
 			.then(() => window.location.assign('/identity/serviceaccounts'))
-			.catch((e: Error) => Clients.error(toastStore, e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	let newServiceAccount: Identity.ServiceAccountCreate | undefined = $state();
@@ -57,14 +52,10 @@
 		Clients.identity(data.token)
 			.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePost(parameters)
 			.then((v: Identity.ServiceAccountCreate) => (newServiceAccount = v))
-			.catch((e: Error) => Clients.error(toastStore, e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
-	let groups = $derived(
-		data.groups.map(
-			(x) => ({ label: x.metadata.name, value: x.metadata.id }) as AutocompleteOption<string>
-		)
-	);
+	let groups = $derived(data.groups.map((x) => ({ label: x.metadata.name, value: x.metadata.id })));
 </script>
 
 <ShellPage {settings}>
@@ -90,7 +81,7 @@
 			<Button
 				icon="mdi:tick"
 				label="Done"
-				class="variant-filled-primary"
+				class="preset-filled-primary-500"
 				href="/identity/serviceaccounts"
 			/>
 		</div>
@@ -115,8 +106,7 @@
 				hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
 				options={groups}
 				value={serviceAccount.spec.groupIDs}
-				add={(value: string) => serviceAccount.spec.groupIDs.push(value)}
-				remove={(index: number) => serviceAccount.spec.groupIDs.splice(index, 1)}
+				onValueChange={(e) => (serviceAccount.spec.groupIDs = e.value)}
 			>
 				{#snippet selected(value: string)}
 					{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
@@ -138,7 +128,7 @@
 				clicked={rotate}
 			/>
 
-			<Button icon="mdi:tick" label="Update" class="variant-filled-primary" clicked={submit} />
+			<Button icon="mdi:tick" label="Update" class="preset-filled-primary-500" clicked={submit} />
 		</div>
 	{/if}
 </ShellPage>

@@ -4,11 +4,6 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import type { AutocompleteOption } from '@skeletonlabs/skeleton';
-	import { getToastStore } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-
 	import * as Clients from '$lib/clients';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
@@ -50,14 +45,10 @@
 		Clients.identity(data.token)
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDPut(parameters)
 			.then(() => window.location.assign('/identity/projects'))
-			.catch((e: Error) => Clients.error(toastStore, e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
-	let groups = $derived(
-		data.groups.map(
-			(x) => ({ label: x.metadata.name, value: x.metadata.id }) as AutocompleteOption<string>
-		)
-	);
+	let groups = $derived(data.groups.map((x) => ({ label: x.metadata.name, value: x.metadata.id })));
 </script>
 
 <ShellPage {settings}>
@@ -71,8 +62,7 @@
 			hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
 			options={groups}
 			value={project.spec.groupIDs}
-			add={(value: string) => project.spec.groupIDs.push(value)}
-			remove={(index: number) => project.spec.groupIDs.splice(index, 1)}
+			onValueChange={(e) => (project.spec.groupIDs = e.value)}
 		>
 			{#snippet selected(value: string)}
 				{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
@@ -90,7 +80,7 @@
 		<Button
 			icon="mdi:tick"
 			label="Update"
-			class="variant-filled-primary"
+			class="preset-filled-primary-500"
 			clicked={submit}
 			disabled={!valid}
 		/>

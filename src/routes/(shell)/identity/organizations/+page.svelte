@@ -3,10 +3,6 @@
 
 	let { data }: { data: PageData } = $props();
 
-	import { getToastStore } from '@skeletonlabs/skeleton';
-
-	const toastStore = getToastStore();
-
 	import * as Clients from '$lib/clients';
 	import * as Identity from '$lib/openapi/identity';
 
@@ -41,7 +37,7 @@
 
 		Clients.identity(data.token)
 			.apiV1OrganizationsOrganizationIDPut(parameters)
-			.catch((e: Error) => Clients.error(toastStore, e));
+			.catch((e: Error) => Clients.error(e));
 	}
 
 	let providerType = $derived.by(() => {
@@ -151,7 +147,7 @@
 		<Button
 			icon="mdi:tick"
 			label="Update"
-			class="variant-filled-primary"
+			class="preset-filled-primary-500"
 			clicked={submit}
 			disabled={!valid}
 		/>

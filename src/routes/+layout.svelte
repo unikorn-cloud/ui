@@ -1,6 +1,6 @@
 <script lang="ts">
 	/* Required for styling */
-	import '../app.postcss';
+	import '../app.css';
 	interface Props {
 		children?: import('svelte').Snippet;
 	}

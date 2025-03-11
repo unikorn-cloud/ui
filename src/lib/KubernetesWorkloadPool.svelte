@@ -1,6 +1,5 @@
 <script lang="ts">
 	import * as Kubernetes from '$lib/openapi/kubernetes';
-	import * as Region from '$lib/openapi/region';
 
 	import * as Formatters from '$lib/formatters';
 	import * as Validation from '$lib/validation';
@@ -9,8 +8,6 @@
 	import SlideToggle from '$lib/forms/SlideToggle.svelte';
 	import Select from '$lib/forms/Select.svelte';
 	import RangeSlider from '$lib/forms/RangeSlider.svelte';
-	import { popup } from '@skeletonlabs/skeleton';
-	import { ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
 	import SelectNew from '$lib/forms/SelectNew.svelte';
 	import Flavor from '$lib/Flavor.svelte';
 
@@ -20,12 +17,12 @@
 		/* Whether the configuration is valid */
 		valid: boolean;
 		/* Flavors allows the pool type to be populated */
-		flavors: Array<Region.Flavor>;
+		flavors: Array<Kubernetes.Flavor>;
 	}
 
 	let { pool = $bindable(), valid = $bindable(), flavors }: Props = $props();
 
-	function updateFlavors(flavors: Array<Region.Flavor>): void {
+	function updateFlavors(flavors: Array<Kubernetes.Flavor>): void {
 		if (!flavors || flavors.find((x) => x.metadata.id == pool.machine.flavorId)) return;
 		pool.machine.flavorId = flavors[0].metadata.id;
 	}
@@ -54,10 +51,10 @@
 	let persistentStorage: boolean = $state(Boolean(pool.machine.disk));
 
 	$effect.pre(() => {
-		if (!flavors || !pool.machine.flavorId) return;
+		if (!pool.machine.flavorId) return;
 
 		/* Volumes cannot be used on baremetal nodes */
-		const allowed = !lookupFlavor(flavors, pool.machine.flavorId).spec.baremetal;
+		const allowed = !lookupFlavor(pool.machine.flavorId).spec.baremetal;
 		if (!allowed) {
 			if (pool.machine.disk) {
 				delete pool.machine.disk;
@@ -79,29 +76,8 @@
 		valid = Validation.kubernetesNameValid(pool.name);
 	});
 
-	function lookupFlavor(
-		flavors: Array<Region.Flavor> | undefined,
-		flavorID: string | undefined
-	): Region.Flavor {
-		const defaultFlavor = {
-			metadata: {
-				id: 'undefined',
-				name: 'undefined',
-				creationTime: new Date()
-			},
-			spec: {
-				cpus: 0,
-				memory: 0,
-				disk: 0
-			}
-		};
-
-		if (!flavors || !flavorID) return defaultFlavor;
-
-		const flavor = flavors.find((x) => x.metadata.id == flavorID);
-		if (!flavor) return defaultFlavor;
-
-		return flavor;
+	function lookupFlavor(id: string): Kubernetes.Flavor {
+		return flavors.find((x) => x.metadata.id == id) as Kubernetes.Flavor;
 	}
 </script>
 
@@ -119,24 +95,19 @@
 <ShellSection title="Pool Topology">
 	{#if flavors && pool.machine.flavorId}
 		<SelectNew
-			id="flavor"
+			value={pool.machine.flavorId}
+			options={flavors.map((x) => x.metadata.id)}
+			onValueChange={(e) => (pool.machine.flavorId = e.value)}
 			label="Choose a pool type."
 			hint="Allows the selection of the pool's available resources to be used by workloads per pool
 			member. This includes CPU, GPU and memory."
 		>
-			{#snippet selected_body()}
-				<Flavor flavor={lookupFlavor(flavors, pool.machine.flavorId)} />
-			{/snippet}
-			{#snippet children()}
-				{#each flavors || [] as flavor}
-					<ListBoxItem bind:group={pool.machine.flavorId} name="foo" value={flavor.metadata.id}>
-						<Flavor {flavor} />
-					</ListBoxItem>
-				{/each}
+			{#snippet contents(id: string)}
+				<Flavor flavor={lookupFlavor(id)} />
 			{/snippet}
 		</SelectNew>
 
-		{#if !lookupFlavor(flavors, pool.machine.flavorId).spec.baremetal}
+		{#if !lookupFlavor(pool.machine.flavorId).spec.baremetal}
 			<SlideToggle
 				name="persistent-storage"
 				label="Enable persistent storage."
@@ -147,7 +118,7 @@
 				bind:checked={persistentStorage}
 			/>
 
-			{#if pool.machine.disk}
+			{#if pool.machine.disk?.size}
 				<RangeSlider
 					name="storage-size"
 					label="Select the disk size per machine."
@@ -155,7 +126,12 @@
 					max={4000}
 					step={50}
 					formatter={Formatters.formatGB}
-					bind:value={pool.machine.disk.size}
+					value={[pool.machine.disk.size]}
+					onValueChange={(e) => {
+						if (pool.machine.disk) {
+							pool.machine.disk.size = e.value[0];
+						}
+					}}
 				/>
 			{/if}
 		{/if}
@@ -170,34 +146,34 @@
 		bind:checked={autoscaling}
 	/>
 
-	{#if pool.autoscaling}
-		<RangeSlider
-			name="min-size"
-			label="Select the minimum number of replicas."
-			hint="When zero, the pool will not consume any resources when not in use. Otherwise, it will define a minimum number of members that must exist at any time,
+	{#if pool.machine.replicas}
+		{#if pool.autoscaling}
+			<RangeSlider
+				name="min-size"
+				label="Select the number of replicas."
+				hint="When the minimum is zero, the pool will not consume any resources when not in use. Otherwise, it will define a minimum number of members that must exist at any time,
                         providing resource that can be used immediately without waiting for automatic scaling."
-			min={0}
-			max={100}
-			step={1}
-			bind:value={pool.autoscaling.minimumReplicas}
-		/>
-
-		<RangeSlider
-			name="max-size"
-			label="Select the maximum number of replicas."
-			min={1}
-			max={100}
-			step={1}
-			bind:value={pool.machine.replicas}
-		/>
-	{:else}
-		<RangeSlider
-			name="size"
-			label="Select the minimum number of replicas."
-			min={1}
-			max={100}
-			step={1}
-			bind:value={pool.machine.replicas}
-		/>
+				min={0}
+				max={100}
+				step={1}
+				value={[pool.autoscaling.minimumReplicas, pool.machine.replicas]}
+				onValueChange={(e) => {
+					if (pool.autoscaling) {
+						pool.autoscaling.minimumReplicas = e.value[0];
+					}
+					pool.machine.replicas = e.value[1];
+				}}
+			/>
+		{:else}
+			<RangeSlider
+				name="size"
+				label="Select the minimum number of replicas."
+				min={1}
+				max={100}
+				step={1}
+				value={[pool.machine.replicas]}
+				onValueChange={(e) => (pool.machine.replicas = e.value[0])}
+			/>
+		{/if}
 	{/if}
 </ShellSection>
