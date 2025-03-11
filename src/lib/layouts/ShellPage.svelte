@@ -11,13 +11,14 @@
 </script>
 
 <div class="p-4 lg:px-16 lg:py-8 w-full mx-auto flex flex-col gap-8">
-	<div class="flex flex-col gap-4">
-		<div class="flex items-center justify-between">
+	<div class="flex jusify-between">
+		<div class="flex flex-col gap-4 grow">
 			<h1 class="h2 font-bold">{settings.name}</h1>
-
+			<p>{settings.description}</p>
+		</div>
+		<div class="self-end">
 			{@render tools?.()}
 		</div>
-		<p>{settings.description}</p>
 	</div>
 
 	<main class="flex flex-col gap-8">

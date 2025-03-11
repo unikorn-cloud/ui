@@ -69,7 +69,6 @@
 		<Clipboard id="callback" value={callback} />
 
 		<TextInput
-			id="issuer"
 			label="Issuer address"
 			validators={[Validation.stringSet]}
 			placeholder="https://identity.domain.com"
@@ -77,7 +76,6 @@
 			bind:valid={issuerValid}
 		/>
 		<TextInput
-			id="client-id"
 			label="Client ID"
 			validators={[Validation.stringSet]}
 			placeholder="73458e95-1d2c-481b-81e8-7225fd089060"
@@ -85,7 +83,6 @@
 			bind:valid={clientIdValid}
 		/>
 		<TextInput
-			id="client-secret"
 			label="Client secret"
 			validators={[Validation.stringSet]}
 			placeholder="ooHovOvanogyisAvChuOvbyctoffOdloidKuAlsyemgosJias3twanechorjIdCo"

@@ -8,18 +8,18 @@
 	let { data }: { data: PageData } = $props();
 
 	import * as Clients from '$lib/clients';
-	import * as Identity from '$lib/openapi/identity';
 	import * as Kubernetes from '$lib/openapi/kubernetes';
+	import * as Region from '$lib/openapi/region';
 	import * as RegionUtil from '$lib/regionutil';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
 	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
-	import GroupedList from '$lib/layouts/GroupedList.svelte';
 	import Button from '$lib/forms/Button.svelte';
 	import PopupButton from '$lib/forms/PopupButton.svelte';
 	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
@@ -35,23 +35,6 @@
 
 		return () => clearInterval(interval);
 	});
-
-	let groups = $derived.by(() => {
-		let temp: Record<string, Array<Kubernetes.KubernetesClusterRead>> = {};
-
-		// Sort by name.
-		const names = data.projects.map((x) => ({ id: x.metadata.id, name: x.metadata.name }));
-		names.sort((x, y) => x.name.localeCompare(y.name));
-
-		names.forEach((x) => (temp[x.id] = []));
-		data.clusters.forEach((x) => temp[x.metadata.projectId].push(x));
-
-		return temp;
-	});
-
-	function project(id: string): Identity.ProjectRead {
-		return data.projects.find((x) => x.metadata.id == id) as Identity.ProjectRead;
-	}
 
 	function confirm(resource: Kubernetes.KubernetesClusterRead): void {
 		const parameters = {
@@ -95,73 +78,90 @@
 			})
 			.catch((e: Error) => Clients.error(e));
 	}
+
+	let createProjectID = $state(data.projects[0].metadata.id);
+	let createRegionID = $state(data.regions[0].metadata.id);
+
+	function lookupRegion(id: string): Region.RegionRead {
+		return data.regions.find((x) => x.metadata.id == id) as Region.RegionRead;
+	}
 </script>
 
 <ShellPage {settings}>
-	<GroupedList {groups}>
-		{#snippet option(projectID: string)}
-			{project(projectID).metadata.name}
-		{/snippet}
+	{#snippet tools()}
+		<PopupButton icon="mdi:add" class="self-end" label="Create">
+			{#snippet contents()}
+				<div class="flex flex-col gap-4">
+					<div class="font-bold">Project</div>
 
-		{#snippet header(projectID: string)}
-			<header class="flex justify-between">
-				<div class="flex gap-4 items-center">
-					<iconify-icon icon="mdi:account-group-outline" class="text-3xl text-primary-500"
-					></iconify-icon>
+					<div class="input-group grid grid-cols-[auto_1fr]">
+						<iconify-icon icon="mdi:account-group-outline" class="ig-cell"></iconify-icon>
 
-					<div class="h4">{project(projectID).metadata.name}</div>
-				</div>
-
-				<PopupButton id="create-{projectID}" icon="mdi:add" class="self-end" label="Create">
-					{#snippet contents()}
-						<div class="pb-4">Select region</div>
-
-						<div class="flex flex-col gap-2">
-							{#each data.regions as region}
-								<a
-									href="/kubernetes/clusters/create?projectID={projectID}&regionID={region.metadata
-										.id}"
-									class="flex gap-4 items-center"
-								>
-									<iconify-icon icon={RegionUtil.iconIcon(region)}></iconify-icon>
-									{region.metadata.name}
-								</a>
+						<select class="ig-select" bind:value={createProjectID}>
+							{#each data.projects as p}
+								<option value={p.metadata.id}>{p.metadata.name}</option>
 							{/each}
-						</div>
+						</select>
+					</div>
+
+					<div class="font-bold">Region</div>
+
+					<div class="input-group grid grid-cols-[auto_1fr]">
+						<iconify-icon icon={RegionUtil.iconIcon(lookupRegion(createRegionID))} class="ig-cell"
+						></iconify-icon>
+
+						<select class="ig-select" bind:value={createRegionID}>
+							{#each data.regions as r}
+								<option value={r.metadata.id}>{r.metadata.name}</option>
+							{/each}
+						</select>
+					</div>
+
+					<a
+						href="/kubernetes/clusters/create?projectID={createProjectID}&regionID={createRegionID}"
+						class="btn preset-filled-primary-500">Create</a
+					>
+				</div>
+			{/snippet}
+		</PopupButton>
+	{/snippet}
+
+	{#if data.projects.length == 0}
+		<i>You are not yet a member of any projects, ask an administrator to create one.</i>
+	{:else if data.clusters.length == 0}
+		<i>No clusters to display, create one to get started.</i>
+	{:else}
+		<ShellList>
+			{#each data.clusters as resource}
+				<ShellListItem icon="mdi:kubernetes">
+					{#snippet main()}
+						<ShellListItemHeader
+							metadata={resource.metadata}
+							href="/kubernetes/clusters/view/{resource.metadata.id}"
+							projects={data.projects}
+						/>
 					{/snippet}
-				</PopupButton>
-			</header>
-		{/snippet}
 
-		{#snippet item(resource: Kubernetes.KubernetesClusterRead)}
-			<ShellListItem icon="mdi:kubernetes">
-				{#snippet main()}
-					<ShellListItemHeader
-						metadata={resource.metadata}
-						href="/kubernetes/clusters/view/{resource.metadata.id}"
-						projects={data.projects}
-					/>
-				{/snippet}
+					<ShellListItemBadges metadata={resource.metadata}>
+						{#snippet extra()}
+							<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
+								{RegionUtil.name(data.regions, resource.spec.regionId)}
+							</Badge>
+						{/snippet}
+					</ShellListItemBadges>
 
-				<ShellListItemBadges metadata={resource.metadata}>
-					{#snippet extra()}
-						<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
-							{RegionUtil.name(data.regions, resource.spec.regionId)}
-						</Badge>
+					<ShellListItemMetadata metadata={resource.metadata} />
+
+					{#snippet trail()}
+						<Button icon="mdi:download" clicked={() => getKubeconfig(resource)} />
+						<ModalIcon
+							icon="mdi:trash-can-outline"
+							title="Are you sure?"
+							confirm={() => confirm(resource)}
+						></ModalIcon>
 					{/snippet}
-				</ShellListItemBadges>
-
-				<ShellListItemMetadata metadata={resource.metadata} />
-
-				{#snippet trail()}
-					<Button icon="mdi:download" clicked={() => getKubeconfig(resource)} />
-					<ModalIcon
-						icon="mdi:trash-can-outline"
-						title="Are you sure?"
-						confirm={() => confirm(resource)}
-					></ModalIcon>
-				{/snippet}
-			</ShellListItem>
-		{/snippet}
-	</GroupedList>
+				</ShellListItem>
+			{/each}
+		</ShellList>
+	{/if}
 </ShellPage>

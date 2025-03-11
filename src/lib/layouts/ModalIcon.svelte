@@ -29,6 +29,7 @@
 	onOpenChange={(e) => (open = e.open)}
 	contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-screen-sm"
 	backdropClasses="backdrop-blur-sm"
+	triggerBase="btn flex items-center"
 >
 	{#snippet trigger()}
 		<iconify-icon {icon} class="text-2xl"></iconify-icon>

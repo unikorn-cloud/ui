@@ -2,8 +2,6 @@
 	import * as Validation from '$lib/validation';
 
 	interface Props {
-		// Unique element ID.
-		id: string;
 		// Value to bind to.
 		value: string | undefined;
 		// Label to attach describing the input.
@@ -19,7 +17,6 @@
 	}
 
 	let {
-		id,
 		value = $bindable(),
 		label,
 		hint = '',
@@ -36,7 +33,7 @@
 
 <div class="flex flex-col gap-4">
 	<div class="flex flex-col gap-1">
-		<label for={id}>{label}</label>
+		{label}
 
 		{#if hint}
 			<div class="text-xs italic text-surface-800">{hint}</div>
@@ -45,7 +42,7 @@
 
 	{#if validators.length}
 		<div class="input-group grid-cols-[1fr_auto] shadow-lg">
-			<input {id} class="input" type="text" {placeholder} bind:value />
+			<input class="input" type="text" {placeholder} bind:value />
 			<div class="ig-cell">
 				{#if valid}
 					<iconify-icon class="text-success-500 text-lg" icon="mdi:tick-circle-outline"
@@ -56,6 +53,6 @@
 			</div>
 		</div>
 	{:else}
-		<input {id} class="input shadow-lg" type="text" {placeholder} bind:value />
+		<input class="input shadow-lg" type="text" {placeholder} bind:value />
 	{/if}
 </div>

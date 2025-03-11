@@ -29,7 +29,6 @@
 <ShellSection title="Resource Metadata">
 	{#if nameMutable}
 		<TextInput
-			id="name"
 			bind:value={metadata.name}
 			label="Resource name."
 			hint="Name should be unique, contain 0-9, a-z, . or - and be at most 63 characters."
@@ -38,7 +37,6 @@
 		/>
 	{/if}
 	<TextInput
-		id="description"
 		bind:value={metadata.description}
 		label="Resource decription."
 		hint="This is optional but may add more verbose information about the resource."

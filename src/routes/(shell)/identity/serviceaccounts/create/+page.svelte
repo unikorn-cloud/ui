@@ -78,7 +78,6 @@
 
 		<ShellSection title="Access Control">
 			<MultiSelect
-				id="group-ids"
 				label="Select group access."
 				hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
 				options={groups}
