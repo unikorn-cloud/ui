@@ -92,6 +92,7 @@
 							organizations={data.organizations}
 							organizationID={data.organizationID}
 							acl={data.acl}
+							onClicked={() => (drawerOpen = false)}
 						/>
 					{/snippet}
 				</Modal>
@@ -147,7 +148,7 @@
 	</AppBar>
 
 	<div class="w-full h-full flex overflow-hidden">
-		<div class="hidden lg:block lg:w-[320px]">
+		<div class="hidden lg:block lg:w-[320px] overflow-y-auto">
 			<SideBar
 				token={data.token}
 				organizations={data.organizations}
@@ -156,7 +157,7 @@
 			/>
 		</div>
 
-		<div class="flex-1 overflow-x-hidden flex flex-col shadow-inner bg-surface-100-900/50">
+		<div class="flex-1 overflow-y-auto flex flex-col shadow-inner bg-surface-100-900/50">
 			{@render children?.()}
 		</div>
 	</div>

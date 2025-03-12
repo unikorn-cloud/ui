@@ -26,7 +26,9 @@
 		{@render children?.()}
 	</div>
 
-	<div class="ml-auto lg:justify-self-end lg:col-start-[-1] flex gap-2 items-center">
+	<div
+		class="ml-auto lg:justify-self-end lg:col-start-[-1] flex flex-col lg:flex-row gap-2 items-center"
+	>
 		{@render trail?.()}
 	</div>
 </article>

@@ -18,9 +18,10 @@
 		organizations: Array<Identity.OrganizationRead>;
 		organizationID: string;
 		acl: Identity.Acl;
+		onClicked?: () => void;
 	}
 
-	let { token, organizations, organizationID, acl }: Props = $props();
+	let { token, organizations, organizationID, acl, onClicked }: Props = $props();
 
 	type NavItems = Array<{ label: string; href: string; rbac?: Array<RBAC.OrganizationScope> }>;
 	type Nav = Array<{ base: string; title: string; icon: string; items: NavItems }>;
@@ -225,7 +226,7 @@
 	});
 </script>
 
-<div class="overflow-hidden flex flex-col">
+<div class="flex flex-col overflow-y-auto">
 	<!-- Oragnization -->
 	<div class="p-4 flex flex-col gap-4 text-sm">
 		<div class="font-bold">Organization</div>
@@ -272,7 +273,11 @@
 					{#snippet panel()}
 						<ul class="ml-12 text-sm">
 							{#each entry.items as item}
-								<a href={entry.base + '/' + item.href}>
+								<a
+									href={entry.base + '/' + item.href}
+									onclick={() => onClicked?.()}
+									onkeypress={() => onClicked?.()}
+								>
 									<li
 										class="p-2 hover:preset-tonal-primary"
 										class:preset-tonal-primary={activeItem == item}
