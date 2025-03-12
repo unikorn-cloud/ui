@@ -153,7 +153,7 @@
 					<ShellListItemMetadata metadata={resource.metadata} />
 
 					{#snippet trail()}
-						<Button icon="mdi:download" clicked={() => getKubeconfig(resource)} />
+						<Button icon="mdi:connection" clicked={() => getKubeconfig(resource)} />
 						<ModalIcon
 							icon="mdi:trash-can-outline"
 							title="Are you sure?"

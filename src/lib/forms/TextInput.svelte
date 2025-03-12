@@ -42,7 +42,7 @@
 
 	{#if validators.length}
 		<div class="input-group grid-cols-[1fr_auto] shadow-lg">
-			<input class="input" type="text" {placeholder} bind:value />
+			<input class="ig-input" type="text" {placeholder} bind:value />
 			<div class="ig-cell">
 				{#if valid}
 					<iconify-icon class="text-success-500 text-lg" icon="mdi:tick-circle-outline"

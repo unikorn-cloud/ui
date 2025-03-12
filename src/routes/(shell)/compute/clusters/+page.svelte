@@ -139,7 +139,7 @@
 					<ShellListItemMetadata metadata={resource.metadata} />
 
 					{#snippet trail()}
-						<Button icon="mdi:download" clicked={() => getSSHKey(resource)} />
+						<Button icon="mdi:connection" clicked={() => getSSHKey(resource)} />
 						<ModalIcon
 							icon="mdi:trash-can-outline"
 							title="Are you sure?"
