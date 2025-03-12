@@ -17,6 +17,30 @@
 			form.submit();
 		}
 	}
+
+	interface Provider {
+		type: Identity.Oauth2ProviderType;
+		label: string;
+		icon: string;
+	}
+
+	const providers: Array<Provider> = [
+		{
+			type: Identity.Oauth2ProviderType.Google,
+			label: 'Google',
+			icon: 'logos:google-icon'
+		},
+		{
+			type: Identity.Oauth2ProviderType.Microsoft,
+			label: 'Microsoft',
+			icon: 'logos:microsoft-icon'
+		},
+		{
+			type: Identity.Oauth2ProviderType.Github,
+			label: 'GitHub',
+			icon: 'mdi:github'
+		}
+	];
 </script>
 
 <div class="grid grid-cols-[1fr_max-content_1fr] grid-rows-[1fr_max-content_1fr] w-full h-screen">
@@ -46,40 +70,22 @@
 
 			<em class="text-surface-400">or</em>
 
-			<section class="flex flex-col gap-4">
+			<section class="flex flex-col gap-4 items-center">
 				<p>Choose a generic provider</p>
 
 				<div class="flex justify-center gap-4">
-					{#if data.providers.includes(Identity.Oauth2ProviderType.Google)}
-						<button
-							class="btn preset-tonal-surface border border-surface-500 shadow-lg flex align-center"
-							onclick={() => login(Identity.Oauth2ProviderType.Google)}
-							onkeypress={() => login(Identity.Oauth2ProviderType.Google)}
-							aria-label="Google"
-						>
-							<iconify-icon icon="logos:google-icon"></iconify-icon>
-						</button>
-					{/if}
-					{#if data.providers.includes(Identity.Oauth2ProviderType.Microsoft)}
-						<button
-							class="btn preset-tonal-surface border border-surface-500 shadow-lg flex align-center"
-							onclick={() => login(Identity.Oauth2ProviderType.Microsoft)}
-							onkeypress={() => login(Identity.Oauth2ProviderType.Microsoft)}
-							aria-label="Mircosoft"
-						>
-							<iconify-icon icon="logos:microsoft-icon"></iconify-icon>
-						</button>
-					{/if}
-					{#if data.providers.includes(Identity.Oauth2ProviderType.Github)}
-						<button
-							class="btn preset-tonal-surface border border-surface-500 shadow-lg flex align-center"
-							onclick={() => login(Identity.Oauth2ProviderType.Github)}
-							onkeypress={() => login(Identity.Oauth2ProviderType.Github)}
-							aria-label="GitHub"
-						>
-							<iconify-icon icon="logos:github-icon"></iconify-icon>
-						</button>
-					{/if}
+					{#each providers as provider}
+						{#if data.providers.includes(provider.type)}
+							<button
+								class="btn border border-surface-500 shadow-lg flex align-center"
+								onclick={() => login(provider.type)}
+								onkeypress={() => login(provider.type)}
+								aria-label={provider.label}
+							>
+								<iconify-icon icon={provider.icon} class="p-1 text-xl"></iconify-icon>
+							</button>
+						{/if}
+					{/each}
 				</div>
 			</section>
 		</main>
