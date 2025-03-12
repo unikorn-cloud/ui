@@ -271,7 +271,7 @@
 						{entry.title}
 					{/snippet}
 					{#snippet panel()}
-						<ul class="ml-12 text-sm">
+						<ul class="ml-12 mr-2 text-sm">
 							{#each entry.items as item}
 								<a
 									href={entry.base + '/' + item.href}
@@ -279,7 +279,7 @@
 									onkeypress={() => onClicked?.()}
 								>
 									<li
-										class="p-2 hover:preset-tonal-primary"
+										class="p-2 hover:preset-tonal-primary rounded"
 										class:preset-tonal-primary={activeItem == item}
 									>
 										{item.label}
