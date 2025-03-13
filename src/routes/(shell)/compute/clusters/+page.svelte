@@ -65,8 +65,8 @@
 		}
 	}
 
-	let createProjectID = $state(data.projects[0].metadata.id);
-	let createRegionID = $state(data.regions[0].metadata.id);
+	let createProjectID = $state(data.projects[0]?.metadata.id);
+	let createRegionID = $state(data.regions[0]?.metadata.id);
 
 	function lookupRegion(id: string): Region.RegionRead {
 		return data.regions.find((x) => x.metadata.id == id) as Region.RegionRead;
@@ -75,41 +75,43 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<PopupButton icon="mdi:add" class="self-end" label="Create">
-			{#snippet contents()}
-				<div class="flex flex-col gap-4">
-					<div class="font-bold">Project</div>
+		{#if data.projects.length}
+			<PopupButton icon="mdi:add" class="self-end" label="Create">
+				{#snippet contents()}
+					<div class="flex flex-col gap-4">
+						<div class="font-bold">Project</div>
 
-					<div class="input-group grid grid-cols-[auto_1fr]">
-						<iconify-icon icon="mdi:account-group-outline" class="ig-cell"></iconify-icon>
+						<div class="input-group grid grid-cols-[auto_1fr]">
+							<iconify-icon icon="mdi:account-group-outline" class="ig-cell"></iconify-icon>
 
-						<select class="ig-select" bind:value={createProjectID}>
-							{#each data.projects as p}
-								<option value={p.metadata.id}>{p.metadata.name}</option>
-							{/each}
-						</select>
+							<select class="ig-select" bind:value={createProjectID}>
+								{#each data.projects as p}
+									<option value={p.metadata.id}>{p.metadata.name}</option>
+								{/each}
+							</select>
+						</div>
+
+						<div class="font-bold">Region</div>
+
+						<div class="input-group grid grid-cols-[auto_1fr]">
+							<iconify-icon icon={RegionUtil.iconIcon(lookupRegion(createRegionID))} class="ig-cell"
+							></iconify-icon>
+
+							<select class="ig-select" bind:value={createRegionID}>
+								{#each data.regions as r}
+									<option value={r.metadata.id}>{r.metadata.name}</option>
+								{/each}
+							</select>
+						</div>
+
+						<a
+							href="/compute/clusters/create?projectID={createProjectID}&regionID={createRegionID}"
+							class="btn preset-filled-primary-500">Create</a
+						>
 					</div>
-
-					<div class="font-bold">Region</div>
-
-					<div class="input-group grid grid-cols-[auto_1fr]">
-						<iconify-icon icon={RegionUtil.iconIcon(lookupRegion(createRegionID))} class="ig-cell"
-						></iconify-icon>
-
-						<select class="ig-select" bind:value={createRegionID}>
-							{#each data.regions as r}
-								<option value={r.metadata.id}>{r.metadata.name}</option>
-							{/each}
-						</select>
-					</div>
-
-					<a
-						href="/compute/clusters/create?projectID={createProjectID}&regionID={createRegionID}"
-						class="btn preset-filled-primary-500">Create</a
-					>
-				</div>
-			{/snippet}
-		</PopupButton>
+				{/snippet}
+			</PopupButton>
+		{/if}
 	{/snippet}
 
 	{#if data.projects.length == 0}
