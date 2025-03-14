@@ -226,7 +226,7 @@
 	});
 </script>
 
-<div class="flex flex-col overflow-y-auto">
+<div class="flex flex-col overflow-y-auto min-h-full border-r border-surface-200-800">
 	<!-- Oragnization -->
 	<div class="p-4 flex flex-col gap-4 text-sm">
 		<div class="font-bold">Organization</div>

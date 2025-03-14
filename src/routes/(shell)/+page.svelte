@@ -20,7 +20,7 @@
 	<ShellSection title="Resource Utilization">
 		<div class="flex flex-col lg:flex-row lg:flex-wrap gap-4">
 			{#each data.quotas.quotas as quota}
-				<div class="flex flex-col gap-4 card bg-surface-50-950 shadow p-4">
+				<div class="flex flex-col gap-4 card border border-surface-200-800 shadow p-4">
 					<div class="flex flex-col gap-2">
 						<div class="h4">{quota.displayName}</div>
 						<div class="italic text-sm text-surface-700">{quota.description}</div>
