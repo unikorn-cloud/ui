@@ -14,16 +14,16 @@
 	}
 </script>
 
-<div class="input-group input-group-divider grid-cols-[1fr_auto]">
+<div class="input-group grid-cols-[1fr_auto]">
 	<input
 		{id}
 		{value}
 		type="text"
 		disabled
-		class="overflow-hidden text-ellipsis whitespace-nowrap"
+		class="ig-input overflow-hidden text-ellipsis whitespace-nowrap"
 	/>
 	<button
-		class="preset-filled-primary-500 flex items-center gap-2"
+		class="ig-btn flex items-center gap-2"
 		onclick={() => copyToClipboard()}
 		onkeypress={() => copyToClipboard()}
 	>

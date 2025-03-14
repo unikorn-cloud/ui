@@ -68,7 +68,7 @@
 	</div>
 {/if}
 
-<div class="w-full lg:h-screen flex flex-col">
+<div class="w-screen h-screen flex flex-col">
 	<AppBar background="bg-surface-50-950">
 		{#snippet lead()}
 			<div class="flex items-center gap-4">
