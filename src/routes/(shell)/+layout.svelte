@@ -69,7 +69,7 @@
 {/if}
 
 <div class="w-screen h-screen flex flex-col">
-	<AppBar background="bg-surface-50-950">
+	<AppBar background="bg-surface-50-950" border="border-b border-surface-200-800">
 		{#snippet lead()}
 			<div class="flex items-center gap-4">
 				<!-- Hamburger menu (mobile only) -->
@@ -77,6 +77,7 @@
 					open={drawerOpen}
 					onOpenChange={(e) => (drawerOpen = e.open)}
 					contentBase="bg-surface-50-950 shadow-xl w-[320px] h-screen"
+					triggerBase="flex items-center"
 					positionerJustify="justify-start"
 					positionerAlign=""
 					positionerPadding=""
@@ -84,7 +85,8 @@
 					transitionsPositionerOut={{ x: -320, duration: 200 }}
 				>
 					{#snippet trigger()}
-						<iconify-icon icon="material-symbols:menu" class="text-2xl lg:!hidden"></iconify-icon>
+						<iconify-icon icon="material-symbols:menu" class="text-3xl lg:!hidden align-center"
+						></iconify-icon>
 					{/snippet}
 					{#snippet content()}
 						<SideBar
@@ -99,7 +101,7 @@
 
 				<!-- Logo, crop to just the icon in responsive mode -->
 				<a href="/">
-					<div class="w-8 lg:w-auto overflow-hidden">
+					<div class="w-8 w-auto overflow-hidden">
 						<Logo class="h-8 w-auto" />
 					</div>
 				</a>
@@ -128,7 +130,7 @@
 							{email}
 						</section>
 
-						<hr class="!border-t-1 border-surface-100-900" />
+						<hr class="!border-t-1 border-surface-200-800" />
 
 						<button
 							class="btn hover:preset-tonal-primary justify-start"
@@ -148,7 +150,7 @@
 	</AppBar>
 
 	<div class="w-full h-full flex overflow-hidden">
-		<div class="hidden lg:block lg:w-[320px] overflow-y-auto">
+		<div class="hidden lg:block lg:w-[320px] overflow-y-auto min-h-full">
 			<SideBar
 				token={data.token}
 				organizations={data.organizations}
@@ -157,7 +159,7 @@
 			/>
 		</div>
 
-		<div class="flex-1 overflow-y-auto flex flex-col shadow-inner bg-surface-100-900/50">
+		<div class="flex-1 overflow-y-auto flex flex-col shadow-inner bg-surface-100-900/10">
 			{@render children?.()}
 		</div>
 	</div>

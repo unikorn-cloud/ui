@@ -12,7 +12,7 @@
 </script>
 
 <article
-	class="flex gap-2 lg:gap-4 lg:col-span-full lg:grid lg:grid-cols-subgrid lg:items-center card shadow-md p-4 bg-surface-50-950"
+	class="flex gap-2 lg:gap-4 lg:col-span-full lg:grid lg:grid-cols-subgrid lg:items-center card shadow-md p-4 border border-surface-100-900"
 >
 	<div class="flex flex-col gap-4 lg:contents overflow-hidden">
 		<div class="flex items-center gap-4 lg:contents overflow-hidden">
