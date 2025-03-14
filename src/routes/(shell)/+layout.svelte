@@ -149,7 +149,7 @@
 		{/snippet}
 	</AppBar>
 
-	<div class="w-full h-full flex overflow-hidden">
+	<div class="w-full h-full flex overflow-hidden bg-surface-100-900/10">
 		<div class="hidden lg:block lg:w-[320px] overflow-y-auto min-h-full">
 			<SideBar
 				token={data.token}
@@ -159,7 +159,7 @@
 			/>
 		</div>
 
-		<div class="flex-1 overflow-y-auto flex flex-col shadow-inner bg-surface-100-900/10">
+		<div class="flex-1 overflow-y-auto flex flex-col shadow-inner">
 			{@render children?.()}
 		</div>
 	</div>
