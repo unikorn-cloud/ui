@@ -36,7 +36,7 @@
 		{label}
 
 		{#if hint}
-			<div class="text-xs italic text-surface-800">{hint}</div>
+			<div class="text-xs italic text-surface-700-300">{hint}</div>
 		{/if}
 	</div>
 

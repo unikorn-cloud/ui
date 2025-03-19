@@ -15,7 +15,7 @@
 
 {#if href}
 	{#if disabled}
-		<div class="text-surface-700">
+		<div class="text-surface-300-700">
 			{@render content()}
 		</div>
 	{:else}
@@ -26,7 +26,7 @@
 {:else if clicked}
 	<button
 		class={disabled ? 'text-surface-300-700' : 'text-primary-500'}
-		class:text-surface-700-600={disabled}
+		class:text-surface-700-300={disabled}
 		{disabled}
 		onclick={clicked}
 		onkeypress={clicked}
