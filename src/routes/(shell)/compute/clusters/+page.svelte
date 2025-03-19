@@ -23,6 +23,7 @@
 	import Button from '$lib/forms/Button.svelte';
 	import PopupButton from '$lib/forms/PopupButton.svelte';
 	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
+	import Placeholder from '$lib/layouts/Placeholder.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
@@ -115,9 +116,11 @@
 	{/snippet}
 
 	{#if data.projects.length == 0}
-		<i>You are not yet a member of any projects, ask an administrator to create one.</i>
+		<Placeholder
+			>You are not yet a member of any projects, ask an administrator to create one.</Placeholder
+		>
 	{:else if data.clusters.length == 0}
-		<i>No clusters to display, create one to get started.</i>
+		<Placeholder>No clusters to display, create one to get started.</Placeholder>
 	{:else}
 		<ShellList>
 			{#each data.clusters as resource}
