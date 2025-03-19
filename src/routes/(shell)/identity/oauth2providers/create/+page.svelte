@@ -95,7 +95,7 @@
 		<Button
 			icon="mdi:cancel-bold"
 			label="Cancel"
-			class="variant-outline-primary"
+			class="preset-filled-surface-500"
 			href="/identity/oauth2providers"
 		/>
 		<Button

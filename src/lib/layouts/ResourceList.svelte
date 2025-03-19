@@ -103,7 +103,7 @@
 
 {@render description?.()}
 
-<div class="fle flex-col lg:grid lg:grid-cols-[repeat(6,max-content)_1fr] gap-2" {style}>
+<div class="flex flex-col lg:grid lg:grid-cols-[repeat(6,max-content)_1fr] gap-2" {style}>
 	{#each items as item, index}
 		{#if activeItem == index}
 			<div
@@ -129,15 +129,13 @@
 			</div>
 		{:else}
 			<div
-				class="flex gap-2 items-start lg:gap-4 lg:col-span-full lg:grid lg:grid-cols-subgrid lg:items-center card preset-outlined-surface-500 shadow-lg p-4"
+				class="flex gap-2 items-start lg:gap-6 lg:col-span-full lg:grid lg:grid-cols-subgrid lg:items-center card preset-outlined-surface-500 shadow-lg p-4"
 			>
 				<div class="flex flex-col gap-4 lg:contents overflow-hidden">
 					{@render normal(item, index)}
 				</div>
 
-				<div
-					class="text-2xl flex ml-auto gap-2 text-primary-500 lg:justify-self-end lg:col-start-[-1]"
-				>
+				<div class="flex ml-auto gap-2 lg:justify-self-end lg:col-start-[-1]">
 					<ButtonIcon
 						icon="mdi:edit-outline"
 						clicked={() => itemActivate(index)}

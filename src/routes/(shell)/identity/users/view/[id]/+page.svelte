@@ -77,7 +77,7 @@
 		<Button
 			icon="mdi:cancel-bold"
 			label="Cancel"
-			class="variant-outline-primary"
+			class="preset-filled-surface-500"
 			href="/identity/users"
 		/>
 		<Button icon="mdi:tick" label="Update" class="preset-filled-primary-500" clicked={submit} />

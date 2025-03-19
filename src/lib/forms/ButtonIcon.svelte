@@ -10,7 +10,7 @@
 </script>
 
 {#snippet content()}
-	<iconify-icon {icon}></iconify-icon>
+	<iconify-icon {icon} class="text-2xl"></iconify-icon>
 {/snippet}
 
 {#if href}
@@ -19,13 +19,13 @@
 			{@render content()}
 		</div>
 	{:else}
-		<a {href} class="text-primary-500">
+		<a {href} class="text-primary-600-400">
 			{@render content()}
 		</a>
 	{/if}
 {:else if clicked}
 	<button
-		class={disabled ? 'text-surface-300-700' : 'text-primary-500'}
+		class="btn"
 		class:text-surface-700-300={disabled}
 		{disabled}
 		onclick={clicked}

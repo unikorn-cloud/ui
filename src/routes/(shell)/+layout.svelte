@@ -63,7 +63,7 @@
 		in:fade={{ duration: 1000 }}
 		out:fade={{ duration: 200 }}
 	>
-		<iconify-icon icon="svg-spinners:bars-scale-fade" class="text-primary-500 text-5xl">
+		<iconify-icon icon="svg-spinners:bars-scale-fade" class="text-primary-600-400 text-5xl">
 		</iconify-icon>
 	</div>
 {/if}
@@ -125,7 +125,7 @@
 				{#snippet content()}
 					<div class="card bg-surface-50-950 shadow-lg p-4 flex flex-col gap-4">
 						<section class="flex gap-2 items-center">
-							<iconify-icon icon="mdi:perm-identity" class="text-2xl text-primary-500"
+							<iconify-icon icon="mdi:perm-identity" class="text-2xl text-primary-600-400"
 							></iconify-icon>
 							{email}
 						</section>
@@ -138,7 +138,7 @@
 							onkeypress={logout}
 						>
 							<div class="flex gap-2 items-center">
-								<iconify-icon icon="material-symbols:logout" class="text-2xl text-primary-500"
+								<iconify-icon icon="material-symbols:logout" class="text-2xl text-primary-600-400"
 								></iconify-icon>
 								Logout
 							</div>
