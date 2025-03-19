@@ -14,7 +14,7 @@
 	<div class="flex jusify-between">
 		<div class="flex flex-col gap-4 grow">
 			<h1 class="h2 font-bold">{settings.name}</h1>
-			<p>{settings.description}</p>
+			<p class="text-surface-700-300">{settings.description}</p>
 		</div>
 		<div class="self-end">
 			{@render tools?.()}
