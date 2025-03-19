@@ -117,13 +117,13 @@
 			<Button
 				icon="mdi:cancel-bold"
 				label="Cancel"
-				class="variant-outline-primary"
+				class="preset-filled-surface-500"
 				href="/identity/serviceaccounts"
 			/>
 			<Button
 				icon="mdi:refresh"
 				label="Refresh Access Token"
-				class="variant-outline-primary"
+				class="preset-filled-surface-500"
 				clicked={rotate}
 			/>
 

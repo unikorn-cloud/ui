@@ -24,9 +24,9 @@
 						<div class="flex gap-2 items-center">
 							{flavor.spec.gpu.physicalCount}
 							{#if flavor.spec.gpu.vendor == 'AMD'}
-								<iconify-icon icon="logos:amd"></iconify-icon>
+								<iconify-icon icon="file-icons:amd"></iconify-icon>
 							{:else if flavor.spec.gpu.vendor == 'NVIDIA'}
-								<iconify-icon icon="logos:nvidia"></iconify-icon>
+								<iconify-icon icon="file-icons:nvidia"></iconify-icon>
 							{/if}
 							{flavor.spec.gpu.model}
 						</div>

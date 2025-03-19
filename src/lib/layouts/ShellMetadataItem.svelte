@@ -9,7 +9,7 @@
 	let { icon, label, value, children }: Props = $props();
 </script>
 
-<iconify-icon class="text-lg text-primary-500" {icon}></iconify-icon>
+<iconify-icon class="text-lg text-primary-600-400" {icon}></iconify-icon>
 
 <div class="font-bold">
 	{label}

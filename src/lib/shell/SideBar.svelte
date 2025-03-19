@@ -233,7 +233,7 @@
 
 		<div class="input-group grid-cols-[auto_1fr] shadow-lg">
 			<div class="ig-cell">
-				<iconify-icon icon="mdi:office-building-outline" class="text-lg text-primary-500"
+				<iconify-icon icon="mdi:office-building-outline" class="text-lg text-primary-600-400"
 				></iconify-icon>
 			</div>
 			<select class="ig-select" bind:value={selectedOrganizationID}>
@@ -249,7 +249,7 @@
 
 		{#each navStatic as entry}
 			<a href={entry.href} class="flex gap-4 hover:preset-tonal-primary p-2 px-4 mb-2">
-				<iconify-icon icon={entry.icon} class="text-2xl text-primary-500 align-middle"
+				<iconify-icon icon={entry.icon} class="text-2xl text-primary-600-400 align-middle"
 				></iconify-icon>
 				{entry.title}
 			</a>
@@ -264,7 +264,7 @@
 			{#each nav as entry}
 				<Accordion.Item value={entry.title} panelPadding="">
 					{#snippet lead()}
-						<iconify-icon icon={entry.icon} class="text-2xl text-primary-500 align-middle"
+						<iconify-icon icon={entry.icon} class="text-2xl text-primary-600-400 align-middle"
 						></iconify-icon>
 					{/snippet}
 					{#snippet control()}
