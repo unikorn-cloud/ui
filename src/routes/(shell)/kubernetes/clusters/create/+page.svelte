@@ -24,9 +24,7 @@
 		description: 'Create and deploy a new Kubernetes cluster.'
 	};
 
-	const versions = [
-		...new Set(data.images.map((x) => x.spec.softwareVersions?.kubernetes || ''))
-	].reverse();
+	const versions = [...new Set(data.images.map((x) => x.spec.softwareVersions?.kubernetes || ''))];
 
 	let clusters = $derived(data.clusters.filter((x) => x.metadata.projectId == data.projectID));
 	let names: Array<string> = $derived((clusters || []).map((x) => x.metadata.name));
