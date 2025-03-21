@@ -24,5 +24,5 @@
 		{/if}
 	</div>
 
-	<Switch {name} checked onCheckedChange={(e) => (checked = e.checked)} />
+	<Switch {name} {checked} onCheckedChange={(e) => (checked = e.checked)} />
 </div>
