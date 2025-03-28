@@ -50,7 +50,7 @@
 
 	<ShellList>
 		{#each data.projects || [] as resource}
-			<ShellListItem icon="mdi:account-group-outline">
+			<ShellListItem icon="mdi:folder-open-outline">
 				{#snippet main()}
 					<ShellListItemHeader
 						metadata={resource.metadata}
