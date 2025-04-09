@@ -13,7 +13,7 @@ export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
 		organizationID: organizationID
 	});
 
-	const regions = Clients.region(token, fetch).apiV1OrganizationsOrganizationIDRegionsGet({
+	const regions = Clients.compute(token, fetch).apiV1OrganizationsOrganizationIDRegionsGet({
 		organizationID: organizationID
 	});
 

@@ -130,6 +130,10 @@
 				icon: 'mdi:kubernetes',
 				items: [
 					{
+						label: 'Virtual clusters',
+						href: 'virtualclusters'
+					},
+					{
 						label: 'Clusters',
 						href: 'clusters'
 					},

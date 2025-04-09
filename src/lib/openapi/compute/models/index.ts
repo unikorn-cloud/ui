@@ -1,5 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './AllowedAddressPair';
 export * from './ComputeClusterMachineStatus';
 export * from './ComputeClusterNetwork';
 export * from './ComputeClusterRead';
@@ -28,6 +29,11 @@ export * from './OsFamily';
 export * from './OsKernel';
 export * from './ProjectScopedResourceReadMetadata';
 export * from './PublicIPAllocation';
+export * from './RegionFeatures';
+export * from './RegionKubernetes';
+export * from './RegionRead';
+export * from './RegionSpec';
+export * from './RegionType';
 export * from './ResourceMetadata';
 export * from './ResourceProvisioningStatus';
 export * from './ResourceReadMetadata';

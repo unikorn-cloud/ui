@@ -1,6 +1,7 @@
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
+models/AllowedAddressPair.ts
 models/ComputeClusterMachineStatus.ts
 models/ComputeClusterNetwork.ts
 models/ComputeClusterRead.ts
@@ -29,6 +30,11 @@ models/OsFamily.ts
 models/OsKernel.ts
 models/ProjectScopedResourceReadMetadata.ts
 models/PublicIPAllocation.ts
+models/RegionFeatures.ts
+models/RegionKubernetes.ts
+models/RegionRead.ts
+models/RegionSpec.ts
+models/RegionType.ts
 models/ResourceMetadata.ts
 models/ResourceProvisioningStatus.ts
 models/ResourceReadMetadata.ts

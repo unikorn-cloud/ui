@@ -30,6 +30,7 @@ models/OsKernel.ts
 models/ProjectScopedResourceReadMetadata.ts
 models/QuotasSpec.ts
 models/RegionFeatures.ts
+models/RegionKubernetes.ts
 models/RegionRead.ts
 models/RegionSpec.ts
 models/RegionType.ts
@@ -48,6 +49,7 @@ models/SecurityGroupRuleWriteSpec.ts
 models/SecurityGroupWrite.ts
 models/ServerImage.ts
 models/ServerNetwork.ts
+models/ServerNetworkAllowedAddressPair.ts
 models/ServerPublicIPAllocation.ts
 models/ServerRead.ts
 models/ServerReadSpec.ts

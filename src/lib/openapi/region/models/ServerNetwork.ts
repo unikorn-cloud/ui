@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ServerNetworkAllowedAddressPair } from './ServerNetworkAllowedAddressPair';
+import {
+    ServerNetworkAllowedAddressPairFromJSON,
+    ServerNetworkAllowedAddressPairFromJSONTyped,
+    ServerNetworkAllowedAddressPairToJSON,
+} from './ServerNetworkAllowedAddressPair';
+
 /**
  * The server's network.
  * @export
@@ -25,6 +32,12 @@ export interface ServerNetwork {
      * @memberof ServerNetwork
      */
     id: string;
+    /**
+     * A list of allowed address pairs.
+     * @type {Array<ServerNetworkAllowedAddressPair>}
+     * @memberof ServerNetwork
+     */
+    allowedAddressPairs?: Array<ServerNetworkAllowedAddressPair>;
 }
 
 /**
@@ -48,6 +61,7 @@ export function ServerNetworkFromJSONTyped(json: any, ignoreDiscriminator: boole
     return {
         
         'id': json['id'],
+        'allowedAddressPairs': !exists(json, 'allowedAddressPairs') ? undefined : ((json['allowedAddressPairs'] as Array<any>).map(ServerNetworkAllowedAddressPairFromJSON)),
     };
 }
 
@@ -61,6 +75,7 @@ export function ServerNetworkToJSON(value?: ServerNetwork | null): any {
     return {
         
         'id': value.id,
+        'allowedAddressPairs': value.allowedAddressPairs === undefined ? undefined : ((value.allowedAddressPairs as Array<any>).map(ServerNetworkAllowedAddressPairToJSON)),
     };
 }
 
