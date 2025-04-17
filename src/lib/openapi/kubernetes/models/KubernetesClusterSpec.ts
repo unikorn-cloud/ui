@@ -19,6 +19,12 @@ import {
     KubernetesClusterAPIFromJSONTyped,
     KubernetesClusterAPIToJSON,
 } from './KubernetesClusterAPI';
+import type { KubernetesClusterAutoUpgrade } from './KubernetesClusterAutoUpgrade';
+import {
+    KubernetesClusterAutoUpgradeFromJSON,
+    KubernetesClusterAutoUpgradeFromJSONTyped,
+    KubernetesClusterAutoUpgradeToJSON,
+} from './KubernetesClusterAutoUpgrade';
 import type { KubernetesClusterNetwork } from './KubernetesClusterNetwork';
 import {
     KubernetesClusterNetworkFromJSON,
@@ -57,6 +63,18 @@ export interface KubernetesClusterSpec {
      * @memberof KubernetesClusterSpec
      */
     version: string;
+    /**
+     * An explicit set of applications to use for deploy.
+     * @type {string}
+     * @memberof KubernetesClusterSpec
+     */
+    applicationBundleName?: string;
+    /**
+     * 
+     * @type {KubernetesClusterAutoUpgrade}
+     * @memberof KubernetesClusterSpec
+     */
+    autoUpgrade?: KubernetesClusterAutoUpgrade;
     /**
      * A list of Kubernetes cluster workload pools.
      * @type {Array<KubernetesClusterWorkloadPool>}
@@ -102,6 +120,8 @@ export function KubernetesClusterSpecFromJSONTyped(json: any, ignoreDiscriminato
         'regionId': json['regionId'],
         'clusterManagerId': !exists(json, 'clusterManagerId') ? undefined : json['clusterManagerId'],
         'version': json['version'],
+        'applicationBundleName': !exists(json, 'applicationBundleName') ? undefined : json['applicationBundleName'],
+        'autoUpgrade': !exists(json, 'autoUpgrade') ? undefined : KubernetesClusterAutoUpgradeFromJSON(json['autoUpgrade']),
         'workloadPools': ((json['workloadPools'] as Array<any>).map(KubernetesClusterWorkloadPoolFromJSON)),
         'api': !exists(json, 'api') ? undefined : KubernetesClusterAPIFromJSON(json['api']),
         'networking': !exists(json, 'networking') ? undefined : KubernetesClusterNetworkFromJSON(json['networking']),
@@ -120,6 +140,8 @@ export function KubernetesClusterSpecToJSON(value?: KubernetesClusterSpec | null
         'regionId': value.regionId,
         'clusterManagerId': value.clusterManagerId,
         'version': value.version,
+        'applicationBundleName': value.applicationBundleName,
+        'autoUpgrade': KubernetesClusterAutoUpgradeToJSON(value.autoUpgrade),
         'workloadPools': ((value.workloadPools as Array<any>).map(KubernetesClusterWorkloadPoolToJSON)),
         'api': KubernetesClusterAPIToJSON(value.api),
         'networking': KubernetesClusterNetworkToJSON(value.networking),

@@ -4,15 +4,25 @@
 	interface Props {
 		// Unique element name.
 		name: string;
+		// default is the default state.
+		initial?: boolean;
 		// Whether the toggle is checked.
-		checked: boolean;
+		onCheckedChange: (e: { checked: boolean }) => void;
 		// Label to attach describing the input.
 		label: string;
 		// Formatting hint.
 		hint?: string;
 	}
 
-	let { name, checked = $bindable(), label, hint = '' }: Props = $props();
+	let { name, initial = false, onCheckedChange, label, hint = '' }: Props = $props();
+
+	let checked = $state(initial);
+
+	function update(e: { checked: boolean }) {
+		checked = e.checked;
+
+		onCheckedChange(e);
+	}
 </script>
 
 <div class="flex gap-4 items-center justify-between">
@@ -24,5 +34,5 @@
 		{/if}
 	</div>
 
-	<Switch {name} {checked} onCheckedChange={(e) => (checked = e.checked)} />
+	<Switch {name} {checked} onCheckedChange={update} />
 </div>

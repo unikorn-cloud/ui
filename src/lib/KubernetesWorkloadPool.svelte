@@ -5,7 +5,7 @@
 	import * as Validation from '$lib/validation';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import TextInput from '$lib/forms/TextInput.svelte';
-	import SlideToggle from '$lib/forms/SlideToggle.svelte';
+	import Switch from '$lib/forms/Switch.svelte';
 	import Select from '$lib/forms/Select.svelte';
 	import RangeSlider from '$lib/forms/RangeSlider.svelte';
 	import SelectNew from '$lib/forms/SelectNew.svelte';
@@ -32,25 +32,17 @@
 	});
 
 	/* Default to autoscaling with scale from zero */
-	let autoscaling: boolean = $state(Boolean(pool.autoscaling));
-
-	function updateAutoscaling(enabled: boolean) {
-		if (enabled && !pool.autoscaling) {
+	function autoscalingChange(e: { checked: boolean }) {
+		if (e.checked && !pool.autoscaling) {
 			pool.autoscaling = {
 				minimumReplicas: 0
 			};
-		} else if (!enabled && pool.autoscaling) {
+		} else if (!e.checked) {
 			delete pool.autoscaling;
 		}
 	}
 
-	$effect.pre(() => {
-		updateAutoscaling(autoscaling);
-	});
-
-	let persistentStorage: boolean = $state(Boolean(pool.machine.disk));
-
-	$effect.pre(() => {
+	function persistentStorageChange(e: { checked: boolean }) {
 		if (!pool.machine.flavorId) return;
 
 		/* Volumes cannot be used on baremetal nodes */
@@ -63,14 +55,14 @@
 			return;
 		}
 
-		if (persistentStorage && !pool.machine.disk) {
+		if (e.checked && !pool.machine.disk) {
 			pool.machine.disk = {
 				size: 50
 			};
-		} else if (!persistentStorage && pool.machine.disk) {
+		} else if (!e.checked) {
 			delete pool.machine.disk;
 		}
-	});
+	}
 
 	$effect.pre(() => {
 		valid = Validation.kubernetesNameValid(pool.name);
@@ -107,14 +99,15 @@
 		</SelectNew>
 
 		{#if !lookupFlavor(pool.machine.flavorId).spec.baremetal}
-			<SlideToggle
+			<Switch
 				name="persistent-storage"
 				label="Enable persistent storage."
 				hint="If not selected, the disk size will be
                 fixed to that offered by the pool type, and will be ephemeral with higher performance. If
                 selected, the disk will be network attached with higher availabilty and the option to change the
                 size."
-				bind:checked={persistentStorage}
+				initial={Boolean($state.snapshot(pool.machine.disk))}
+				onCheckedChange={persistentStorageChange}
 			/>
 
 			{#if pool.machine.disk?.size}
@@ -136,13 +129,14 @@
 		{/if}
 	{/if}
 
-	<SlideToggle
+	<Switch
 		name="autoscaling"
 		label="Enable autoscaling."
 		hint="This scaling enables the pool to grow, and shrink, depending on workload requirements. With
                 automatic scaling you only pay for what you us, but there is an associated performance penalty
                 when nodes are dynamically created and added to the cluster."
-		bind:checked={autoscaling}
+		initial={Boolean($state.snapshot(pool.autoscaling))}
+		onCheckedChange={autoscalingChange}
 	/>
 
 	{#if pool.machine.replicas}
