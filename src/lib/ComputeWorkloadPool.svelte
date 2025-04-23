@@ -7,7 +7,7 @@
 	import * as Validation from '$lib/validation';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import TextInput from '$lib/forms/TextInput.svelte';
-	import SlideToggle from '$lib/forms/SlideToggle.svelte';
+	import Switch from '$lib/forms/Switch.svelte';
 	import SelectNew from '$lib/forms/SelectNew.svelte';
 	import RangeSlider from '$lib/forms/RangeSlider.svelte';
 	import Select from '$lib/forms/Select.svelte';
@@ -30,20 +30,15 @@
 
 	let { pool = $bindable(), valid = $bindable(), flavors, images, firewall }: Props = $props();
 
-	// Handle public IP addition or deletion for the pool.
-	let publicIP: boolean = $derived(
-		(pool.machine.publicIPAllocation && pool.machine.publicIPAllocation.enabled) || false
-	);
-
-	$effect.pre(() => {
-		if (publicIP) {
+	function onPublicIPChange(e: { checked: boolean }) {
+		if (e.checked) {
 			pool.machine.publicIPAllocation = {
 				enabled: true
 			};
 		} else {
 			delete pool.machine.publicIPAllocation;
 		}
-	});
+	}
 
 	// Select a flavor for the workload pool if one is not already set or it no longer exists.
 	$effect.pre(() => {
@@ -119,10 +114,7 @@
 	// Update whether persistent storage is allowed once the flavor ID is determined.
 	let persistentStorageAllowed = $derived(flavor && !flavor.spec.baremetal);
 
-	// Update persistent storage if requested by the user.
-	let persistentStorage: boolean = $state(Boolean(pool.machine.disk));
-
-	$effect.pre(() => {
+	function persistentStorageChange(e: { checked: boolean }) {
 		// Volumes cannot be used on baremetal nodes */
 		if (!persistentStorageAllowed) {
 			if (pool.machine.disk) {
@@ -132,14 +124,14 @@
 			return;
 		}
 
-		if (persistentStorage && !pool.machine.disk) {
+		if (e.checked && !pool.machine.disk) {
 			pool.machine.disk = {
 				size: 50
 			};
-		} else if (!persistentStorage && pool.machine.disk) {
+		} else if (!e.checked) {
 			delete pool.machine.disk;
 		}
-	});
+	}
 
 	// Pool is valid if the name is.
 	$effect.pre(() => {
@@ -219,14 +211,15 @@
 			</SelectNew>
 
 			{#if persistentStorageAllowed}
-				<SlideToggle
+				<Switch
 					name="persistent-storage"
 					label="Enable persistent storage."
 					hint="If not selected, the disk size will be
                 fixed to that offered by the pool type, and will be ephemeral with higher performance. If
                 selected, the disk will be network attached with higher availabilty and the option to change the
                 size."
-					bind:checked={persistentStorage}
+					initial={Boolean($state.snapshot(pool.machine.disk))}
+					onCheckedChange={persistentStorageChange}
 				/>
 
 				{#if pool.machine.disk?.size}
@@ -272,11 +265,12 @@
 			onValueChange={(e) => (pool.machine.replicas = e.value[0])}
 		/>
 
-		<SlideToggle
+		<Switch
 			name="public_ip"
 			label="Enable Public Access."
 			hint="Selecting this option allocates a public IP address to each node in the pool."
-			checked={publicIP}
+			initial={Boolean($state.snapshot(pool.machine.publicIPAllocation?.enabled))}
+			onCheckedChange={onPublicIPChange}
 		/>
 
 		{@render firewall()}

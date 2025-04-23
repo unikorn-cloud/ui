@@ -15,7 +15,9 @@
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
 	import Select from '$lib/forms/Select.svelte';
+	import Switch from '$lib/forms/Switch.svelte';
 	import Stepper from '$lib/layouts/Stepper.svelte';
+	import TimeWindow from '$lib/layouts/TimeWindow.svelte';
 	import ResourceList from '$lib/layouts/ResourceList.svelte';
 	import KubernetesWorkloadPool from '$lib/KubernetesWorkloadPool.svelte';
 	import Flavor from '$lib/Flavor.svelte';
@@ -32,6 +34,17 @@
 		return cluster;
 	});
 
+	$effect.pre(() => {
+		if (!cluster) return;
+
+		// Upgrade legacy clusters...
+		if (!cluster.spec.autoUpgrade) {
+			cluster.spec.autoUpgrade = {
+				enabled: true
+			};
+		}
+	});
+
 	// TODO: move into +page.ts
 	let clusters = $derived(
 		data.clusters.filter((x) => x.metadata.projectId == data.cluster.metadata.projectId)
@@ -46,6 +59,102 @@
 	const versions = [
 		...new Set(data.images.map((x) => x.spec.softwareVersions?.kubernetes || ''))
 	].reverse();
+
+	function autoUpgradeChange(e: { checked: boolean }) {
+		if (!cluster.spec.autoUpgrade) {
+			cluster.spec.autoUpgrade = { enabled: e.checked };
+			return;
+		}
+
+		cluster.spec.autoUpgrade.enabled = e.checked;
+	}
+
+	function autoUpgradeOverideChange(e: { checked: boolean }) {
+		if (!cluster.spec.autoUpgrade) return;
+
+		if (e.checked) {
+			cluster.spec.autoUpgrade.daysOfWeek = {};
+		} else {
+			delete cluster.spec.autoUpgrade.daysOfWeek;
+		}
+	}
+
+	function autoUpgradeChangeSunday(checked: boolean, start: number, end: number) {
+		if (!cluster.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			cluster.spec.autoUpgrade.daysOfWeek.sunday = { start: start, end: end };
+			return;
+		}
+
+		delete cluster.spec.autoUpgrade.daysOfWeek.sunday;
+	}
+
+	function autoUpgradeChangeMonday(checked: boolean, start: number, end: number) {
+		if (!cluster.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			cluster.spec.autoUpgrade.daysOfWeek.monday = { start: start, end: end };
+			return;
+		}
+
+		delete cluster.spec.autoUpgrade.daysOfWeek.monday;
+	}
+
+	function autoUpgradeChangeTuesday(checked: boolean, start: number, end: number) {
+		if (!cluster.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			cluster.spec.autoUpgrade.daysOfWeek.tuesday = { start: start, end: end };
+			return;
+		}
+
+		delete cluster.spec.autoUpgrade.daysOfWeek.tuesday;
+	}
+
+	function autoUpgradeChangeWednesday(checked: boolean, start: number, end: number) {
+		if (!cluster.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			cluster.spec.autoUpgrade.daysOfWeek.wednesday = { start: start, end: end };
+			return;
+		}
+
+		delete cluster.spec.autoUpgrade.daysOfWeek.wednesday;
+	}
+
+	function autoUpgradeChangeThursday(checked: boolean, start: number, end: number) {
+		if (!cluster.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			cluster.spec.autoUpgrade.daysOfWeek.thursday = { start: start, end: end };
+			return;
+		}
+
+		delete cluster.spec.autoUpgrade.daysOfWeek.thursday;
+	}
+
+	function autoUpgradeChangeFriday(checked: boolean, start: number, end: number) {
+		if (!cluster.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			cluster.spec.autoUpgrade.daysOfWeek.friday = { start: start, end: end };
+			return;
+		}
+
+		delete cluster.spec.autoUpgrade.daysOfWeek.friday;
+	}
+
+	function autoUpgradeChangeSaturday(checked: boolean, start: number, end: number) {
+		if (!cluster.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			cluster.spec.autoUpgrade.daysOfWeek.saturday = { start: start, end: end };
+			return;
+		}
+
+		delete cluster.spec.autoUpgrade.daysOfWeek.saturday;
+	}
 
 	let workloadPoolValid: boolean = $state(false);
 
@@ -157,7 +266,7 @@
 		{/snippet}
 	</ShellViewHeader>
 
-	<Stepper steps={2} bind:step {valid} {complete}>
+	<Stepper steps={3} bind:step {valid} {complete}>
 		{#snippet content(index: number)}
 			{#if index === 0}
 				<h2 class="h2">Basic Cluster Setup</h2>
@@ -215,6 +324,91 @@
 						/>
 					{/snippet}
 				</ResourceList>
+			{:else if index === 2}
+				<h2 class="h2">Advanced Options</h2>
+
+				<ShellSection title="Auto Upgrade">
+					<p>
+						Kubernetes clusters are provisioned using pre-defined bundles of applications. These are
+						periodically updated to provide security updates, bug fixes and platorm stability. These
+						are enabled by default to protect you and mitigate any issues that may arise.
+					</p>
+
+					<Switch
+						name="autoupgrade"
+						label="Enable auto-upgrade"
+						hint="Upgrades may still occur as application bundles reach end-of-life even if you choose to opt out."
+						initial={$state.snapshot(cluster.spec.autoUpgrade) === undefined ||
+							Boolean($state.snapshot(cluster.spec.autoUpgrade?.enabled))}
+						onCheckedChange={autoUpgradeChange}
+					/>
+
+					{#if cluster.spec.autoUpgrade?.enabled}
+						<Switch
+							name="autoupgradeoverride"
+							label="Override auto-upgrade default time windows"
+							hint="Auto upgrades are scheduled Monday-Friday beween 00:00 and 07:00 UTC.  This provides a good level of support coverage, and upgrades occur outside of European business hours."
+							initial={Boolean($state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek))}
+							onCheckedChange={autoUpgradeOverideChange}
+						/>
+
+						{#if cluster.spec.autoUpgrade?.daysOfWeek}
+							<div class="grid grid-cols-[auto_auto_1fr] gap-4">
+								<TimeWindow
+									title="Sunday"
+									checked={Boolean($state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.sunday))}
+									start={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.sunday?.start)}
+									end={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.sunday?.end)}
+									onChange={autoUpgradeChangeSunday}
+								/>
+								<TimeWindow
+									title="Monday"
+									checked={Boolean($state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.monday))}
+									start={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.monday?.start)}
+									end={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.monday?.end)}
+									onChange={autoUpgradeChangeMonday}
+								/>
+								<TimeWindow
+									title="Tuesday"
+									checked={Boolean($state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.tuesday))}
+									start={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.tuesday?.start)}
+									end={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.tuesday?.end)}
+									onChange={autoUpgradeChangeTuesday}
+								/>
+								<TimeWindow
+									title="Wednesday"
+									checked={Boolean(
+										$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.wednesday)
+									)}
+									start={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.wednesday?.start)}
+									end={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.wednesday?.end)}
+									onChange={autoUpgradeChangeWednesday}
+								/>
+								<TimeWindow
+									title="Thursday"
+									checked={Boolean($state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.thursday))}
+									start={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.thursday?.start)}
+									end={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.thursday?.end)}
+									onChange={autoUpgradeChangeThursday}
+								/>
+								<TimeWindow
+									title="Friday"
+									checked={Boolean($state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.friday))}
+									start={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.friday?.start)}
+									end={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.friday?.end)}
+									onChange={autoUpgradeChangeFriday}
+								/>
+								<TimeWindow
+									title="Saturday"
+									checked={Boolean($state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.saturday))}
+									start={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.saturday?.start)}
+									end={$state.snapshot(cluster.spec.autoUpgrade?.daysOfWeek?.saturday?.end)}
+									onChange={autoUpgradeChangeSaturday}
+								/>
+							</div>
+						{/if}
+					{/if}
+				</ShellSection>
 			{/if}
 		{/snippet}
 	</Stepper>

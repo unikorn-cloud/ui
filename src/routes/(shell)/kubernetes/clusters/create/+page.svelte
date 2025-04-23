@@ -14,6 +14,8 @@
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import Select from '$lib/forms/Select.svelte';
 	import Stepper from '$lib/layouts/Stepper.svelte';
+	import TimeWindow from '$lib/layouts/TimeWindow.svelte';
+	import Switch from '$lib/forms/Switch.svelte';
 	import ResourceList from '$lib/layouts/ResourceList.svelte';
 	import KubernetesWorkloadPool from '$lib/KubernetesWorkloadPool.svelte';
 	import Flavor from '$lib/Flavor.svelte';
@@ -40,6 +42,9 @@
 		spec: {
 			regionId: data.regionID,
 			version: versions[0],
+			autoUpgrade: {
+				enabled: true
+			},
 			workloadPools: [
 				{
 					name: 'default',
@@ -53,6 +58,102 @@
 			]
 		}
 	});
+
+	function autoUpgradeChange(e: { checked: boolean }) {
+		if (!resource.spec.autoUpgrade) {
+			resource.spec.autoUpgrade = { enabled: e.checked };
+			return;
+		}
+
+		resource.spec.autoUpgrade.enabled = e.checked;
+	}
+
+	function autoUpgradeOverideChange(e: { checked: boolean }) {
+		if (!resource.spec.autoUpgrade) return;
+
+		if (e.checked) {
+			resource.spec.autoUpgrade.daysOfWeek = {};
+		} else {
+			delete resource.spec.autoUpgrade.daysOfWeek;
+		}
+	}
+
+	function autoUpgradeChangeSunday(checked: boolean, start: number, end: number) {
+		if (!resource.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			resource.spec.autoUpgrade.daysOfWeek.sunday = { start: start, end: end };
+			return;
+		}
+
+		delete resource.spec.autoUpgrade.daysOfWeek.sunday;
+	}
+
+	function autoUpgradeChangeMonday(checked: boolean, start: number, end: number) {
+		if (!resource.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			resource.spec.autoUpgrade.daysOfWeek.monday = { start: start, end: end };
+			return;
+		}
+
+		delete resource.spec.autoUpgrade.daysOfWeek.monday;
+	}
+
+	function autoUpgradeChangeTuesday(checked: boolean, start: number, end: number) {
+		if (!resource.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			resource.spec.autoUpgrade.daysOfWeek.tuesday = { start: start, end: end };
+			return;
+		}
+
+		delete resource.spec.autoUpgrade.daysOfWeek.tuesday;
+	}
+
+	function autoUpgradeChangeWednesday(checked: boolean, start: number, end: number) {
+		if (!resource.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			resource.spec.autoUpgrade.daysOfWeek.wednesday = { start: start, end: end };
+			return;
+		}
+
+		delete resource.spec.autoUpgrade.daysOfWeek.wednesday;
+	}
+
+	function autoUpgradeChangeThursday(checked: boolean, start: number, end: number) {
+		if (!resource.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			resource.spec.autoUpgrade.daysOfWeek.thursday = { start: start, end: end };
+			return;
+		}
+
+		delete resource.spec.autoUpgrade.daysOfWeek.thursday;
+	}
+
+	function autoUpgradeChangeFriday(checked: boolean, start: number, end: number) {
+		if (!resource.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			resource.spec.autoUpgrade.daysOfWeek.friday = { start: start, end: end };
+			return;
+		}
+
+		delete resource.spec.autoUpgrade.daysOfWeek.friday;
+	}
+
+	function autoUpgradeChangeSaturday(checked: boolean, start: number, end: number) {
+		if (!resource.spec.autoUpgrade?.daysOfWeek) return;
+
+		if (checked) {
+			resource.spec.autoUpgrade.daysOfWeek.saturday = { start: start, end: end };
+			return;
+		}
+
+		delete resource.spec.autoUpgrade.daysOfWeek.saturday;
+	}
 
 	let workloadPoolValid: boolean = $state(false);
 
@@ -154,7 +255,7 @@
 </script>
 
 <ShellPage {settings}>
-	<Stepper steps={2} bind:step {valid} {complete}>
+	<Stepper steps={3} bind:step {valid} {complete}>
 		{#snippet content(index: number)}
 			{#if index === 0}
 				<h2 class="h2">Basic Configuration</h2>
@@ -213,6 +314,45 @@
 						/>
 					{/snippet}
 				</ResourceList>
+			{:else if index === 2}
+				<h2 class="h2">Advanced Options</h2>
+
+				<ShellSection title="Auto Upgrade">
+					<p>
+						Kubernetes clusters are provisioned using pre-defined bundles of applications. These are
+						periodically updated to provide security updates, bug fixes and platorm stability. These
+						are enabled by default to protect you and mitigate any issues that may arise.
+					</p>
+
+					<Switch
+						name="autoupgrade"
+						label="Enable auto-upgrade"
+						hint="Upgrades may still occur as application bundles reach end-of-life even if you choose to opt out."
+						initial={true}
+						onCheckedChange={autoUpgradeChange}
+					/>
+
+					{#if resource.spec.autoUpgrade?.enabled}
+						<Switch
+							name="autoupgradeoverride"
+							label="Override auto-upgrade default time windows"
+							hint="Auto upgrades are scheduled Monday-Friday beween 00:00 and 07:00 UTC.  This provides a good level of support coverage, and upgrades occur outside of European business hours."
+							onCheckedChange={autoUpgradeOverideChange}
+						/>
+
+						{#if resource.spec.autoUpgrade?.daysOfWeek}
+							<div class="grid grid-cols-[auto_auto_1fr] gap-4">
+								<TimeWindow title="Sunday" onChange={autoUpgradeChangeSunday} />
+								<TimeWindow title="Monday" onChange={autoUpgradeChangeMonday} />
+								<TimeWindow title="Tuesday" onChange={autoUpgradeChangeTuesday} />
+								<TimeWindow title="Wednesday" onChange={autoUpgradeChangeWednesday} />
+								<TimeWindow title="Thursday" onChange={autoUpgradeChangeThursday} />
+								<TimeWindow title="Friday" onChange={autoUpgradeChangeFriday} />
+								<TimeWindow title="Saturday" onChange={autoUpgradeChangeSaturday} />
+							</div>
+						{/if}
+					{/if}
+				</ShellSection>
 			{/if}
 		{/snippet}
 	</Stepper>
