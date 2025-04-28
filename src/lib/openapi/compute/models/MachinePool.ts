@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { AllowedAddressPair } from './AllowedAddressPair';
+import {
+    AllowedAddressPairFromJSON,
+    AllowedAddressPairFromJSONTyped,
+    AllowedAddressPairToJSON,
+} from './AllowedAddressPair';
 import type { ComputeImage } from './ComputeImage';
 import {
     ComputeImageFromJSON,
@@ -86,6 +92,12 @@ export interface MachinePool {
      * @memberof MachinePool
      */
     userData?: string;
+    /**
+     * A list of allowed address pairs.
+     * @type {Array<AllowedAddressPair>}
+     * @memberof MachinePool
+     */
+    allowedAddressPairs?: Array<AllowedAddressPair>;
 }
 
 /**
@@ -117,6 +129,7 @@ export function MachinePoolFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'publicIPAllocation': !exists(json, 'publicIPAllocation') ? undefined : PublicIPAllocationFromJSON(json['publicIPAllocation']),
         'image': ComputeImageFromJSON(json['image']),
         'userData': !exists(json, 'userData') ? undefined : json['userData'],
+        'allowedAddressPairs': !exists(json, 'allowedAddressPairs') ? undefined : ((json['allowedAddressPairs'] as Array<any>).map(AllowedAddressPairFromJSON)),
     };
 }
 
@@ -136,6 +149,7 @@ export function MachinePoolToJSON(value?: MachinePool | null): any {
         'publicIPAllocation': PublicIPAllocationToJSON(value.publicIPAllocation),
         'image': ComputeImageToJSON(value.image),
         'userData': value.userData,
+        'allowedAddressPairs': value.allowedAddressPairs === undefined ? undefined : ((value.allowedAddressPairs as Array<any>).map(AllowedAddressPairToJSON)),
     };
 }
 

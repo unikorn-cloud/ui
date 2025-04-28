@@ -20,6 +20,7 @@ import type {
   Flavor,
   Image,
   ModelError,
+  RegionRead,
 } from '../models/index';
 import {
     ComputeClusterReadFromJSON,
@@ -32,6 +33,8 @@ import {
     ImageToJSON,
     ModelErrorFromJSON,
     ModelErrorToJSON,
+    RegionReadFromJSON,
+    RegionReadToJSON,
 } from '../models/index';
 
 export interface ApiV1OrganizationsOrganizationIDClustersGetRequest {
@@ -55,6 +58,10 @@ export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRe
     organizationID: string;
     projectID: string;
     computeClusterWrite: ComputeClusterWrite;
+}
+
+export interface ApiV1OrganizationsOrganizationIDRegionsGetRequest {
+    organizationID: string;
 }
 
 export interface ApiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGetRequest {
@@ -241,6 +248,41 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ComputeClusterRead> {
         const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Lists a curated set of regions.
+     */
+    async apiV1OrganizationsOrganizationIDRegionsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDRegionsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<RegionRead>>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDRegionsGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/regions`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(RegionReadFromJSON));
+    }
+
+    /**
+     * Lists a curated set of regions.
+     */
+    async apiV1OrganizationsOrganizationIDRegionsGet(requestParameters: ApiV1OrganizationsOrganizationIDRegionsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<RegionRead>> {
+        const response = await this.apiV1OrganizationsOrganizationIDRegionsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

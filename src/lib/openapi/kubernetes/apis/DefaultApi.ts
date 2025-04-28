@@ -22,6 +22,10 @@ import type {
   KubernetesClusterRead,
   KubernetesClusterWrite,
   ModelError,
+  RegionRead,
+  RegionTypeParameter,
+  VirtualKubernetesClusterRead,
+  VirtualKubernetesClusterWrite,
 } from '../models/index';
 import {
     ClusterManagerReadFromJSON,
@@ -38,6 +42,14 @@ import {
     KubernetesClusterWriteToJSON,
     ModelErrorFromJSON,
     ModelErrorToJSON,
+    RegionReadFromJSON,
+    RegionReadToJSON,
+    RegionTypeParameterFromJSON,
+    RegionTypeParameterToJSON,
+    VirtualKubernetesClusterReadFromJSON,
+    VirtualKubernetesClusterReadToJSON,
+    VirtualKubernetesClusterWriteFromJSON,
+    VirtualKubernetesClusterWriteToJSON,
 } from '../models/index';
 
 export interface ApiV1OrganizationsOrganizationIDClustermanagersGetRequest {
@@ -92,6 +104,36 @@ export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDClustersPostRe
     kubernetesClusterWrite: KubernetesClusterWrite;
 }
 
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDDeleteRequest {
+    organizationID: string;
+    projectID: string;
+    clusterID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDKubeconfigGetRequest {
+    organizationID: string;
+    projectID: string;
+    clusterID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDPutRequest {
+    organizationID: string;
+    projectID: string;
+    clusterID: string;
+    virtualKubernetesClusterWrite: VirtualKubernetesClusterWrite;
+}
+
+export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersPostRequest {
+    organizationID: string;
+    projectID: string;
+    virtualKubernetesClusterWrite: VirtualKubernetesClusterWrite;
+}
+
+export interface ApiV1OrganizationsOrganizationIDRegionsGetRequest {
+    organizationID: string;
+    regionType: RegionTypeParameter;
+}
+
 export interface ApiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGetRequest {
     organizationID: string;
     regionID: string;
@@ -100,6 +142,10 @@ export interface ApiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGetReques
 export interface ApiV1OrganizationsOrganizationIDRegionsRegionIDImagesGetRequest {
     organizationID: string;
     regionID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDVirtualclustersGetRequest {
+    organizationID: string;
 }
 
 /**
@@ -494,6 +540,228 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
+     * Delete a virtual cluster.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDDeleteRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDDelete.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDDelete.');
+        }
+
+        if (requestParameters.clusterID === null || requestParameters.clusterID === undefined) {
+            throw new runtime.RequiredError('clusterID','Required parameter requestParameters.clusterID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDDelete.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/virtualclusters/{clusterID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"clusterID"}}`, encodeURIComponent(String(requestParameters.clusterID))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Delete a virtual cluster.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDDelete(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDDeleteRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Get a virtual cluster\'s Kubernetes configuration.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDKubeconfigGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDKubeconfigGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDKubeconfigGet.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDKubeconfigGet.');
+        }
+
+        if (requestParameters.clusterID === null || requestParameters.clusterID === undefined) {
+            throw new runtime.RequiredError('clusterID','Required parameter requestParameters.clusterID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDKubeconfigGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/virtualclusters/{clusterID}/kubeconfig`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"clusterID"}}`, encodeURIComponent(String(requestParameters.clusterID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Get a virtual cluster\'s Kubernetes configuration.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDKubeconfigGet(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDKubeconfigGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDKubeconfigGetRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Update a virtual cluster.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDPutRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDPut.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDPut.');
+        }
+
+        if (requestParameters.clusterID === null || requestParameters.clusterID === undefined) {
+            throw new runtime.RequiredError('clusterID','Required parameter requestParameters.clusterID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDPut.');
+        }
+
+        if (requestParameters.virtualKubernetesClusterWrite === null || requestParameters.virtualKubernetesClusterWrite === undefined) {
+            throw new runtime.RequiredError('virtualKubernetesClusterWrite','Required parameter requestParameters.virtualKubernetesClusterWrite was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDPut.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/virtualclusters/{clusterID}`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))).replace(`{${"clusterID"}}`, encodeURIComponent(String(requestParameters.clusterID))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: VirtualKubernetesClusterWriteToJSON(requestParameters.virtualKubernetesClusterWrite),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Update a virtual cluster.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDPut(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDPutRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Creates a new virtual cluster.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersPostRaw(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<VirtualKubernetesClusterRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersPost.');
+        }
+
+        if (requestParameters.projectID === null || requestParameters.projectID === undefined) {
+            throw new runtime.RequiredError('projectID','Required parameter requestParameters.projectID was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersPost.');
+        }
+
+        if (requestParameters.virtualKubernetesClusterWrite === null || requestParameters.virtualKubernetesClusterWrite === undefined) {
+            throw new runtime.RequiredError('virtualKubernetesClusterWrite','Required parameter requestParameters.virtualKubernetesClusterWrite was null or undefined when calling apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/projects/{projectID}/virtualclusters`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"projectID"}}`, encodeURIComponent(String(requestParameters.projectID))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: VirtualKubernetesClusterWriteToJSON(requestParameters.virtualKubernetesClusterWrite),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => VirtualKubernetesClusterReadFromJSON(jsonValue));
+    }
+
+    /**
+     * Creates a new virtual cluster.
+     */
+    async apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersPost(requestParameters: ApiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<VirtualKubernetesClusterRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Lists a curated set of regions.
+     */
+    async apiV1OrganizationsOrganizationIDRegionsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDRegionsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<RegionRead>>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDRegionsGet.');
+        }
+
+        if (requestParameters.regionType === null || requestParameters.regionType === undefined) {
+            throw new runtime.RequiredError('regionType','Required parameter requestParameters.regionType was null or undefined when calling apiV1OrganizationsOrganizationIDRegionsGet.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.regionType !== undefined) {
+            queryParameters['regionType'] = requestParameters.regionType;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/regions`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(RegionReadFromJSON));
+    }
+
+    /**
+     * Lists a curated set of regions.
+     */
+    async apiV1OrganizationsOrganizationIDRegionsGet(requestParameters: ApiV1OrganizationsOrganizationIDRegionsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<RegionRead>> {
+        const response = await this.apiV1OrganizationsOrganizationIDRegionsGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Lists all Kubernetes compatible flavors that the user has access to.
      */
     async apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Flavor>>> {
@@ -568,6 +836,41 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet(requestParameters: ApiV1OrganizationsOrganizationIDRegionsRegionIDImagesGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Image>> {
         const response = await this.apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * List all virutal clusters within the organization.
+     */
+    async apiV1OrganizationsOrganizationIDVirtualclustersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDVirtualclustersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<VirtualKubernetesClusterRead>>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDVirtualclustersGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/virtualclusters`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(VirtualKubernetesClusterReadFromJSON));
+    }
+
+    /**
+     * List all virutal clusters within the organization.
+     */
+    async apiV1OrganizationsOrganizationIDVirtualclustersGet(requestParameters: ApiV1OrganizationsOrganizationIDVirtualclustersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<VirtualKubernetesClusterRead>> {
+        const response = await this.apiV1OrganizationsOrganizationIDVirtualclustersGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

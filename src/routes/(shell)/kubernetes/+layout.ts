@@ -13,12 +13,7 @@ export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
 		organizationID: organizationID
 	});
 
-	const regions = Clients.region(token, fetch).apiV1OrganizationsOrganizationIDRegionsGet({
-		organizationID: organizationID
-	});
-
 	return {
-		projects: await projects,
-		regions: await regions
+		projects: await projects
 	};
 };
