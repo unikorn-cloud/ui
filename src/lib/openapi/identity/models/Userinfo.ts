@@ -20,47 +20,107 @@ import { exists, mapValues } from '../runtime';
  */
 export interface Userinfo {
     /**
-     * The token issuer.
-     * @type {string}
-     * @memberof Userinfo
-     */
-    iss?: string;
-    /**
      * The access token's subject.
      * @type {string}
      * @memberof Userinfo
      */
     sub: string;
     /**
-     * The intended token audience.
+     * The user's email address.
      * @type {string}
      * @memberof Userinfo
      */
-    aud?: string;
+    email?: string;
     /**
-     * The token expiry time.
-     * @type {number}
+     * Whether the email address has been verified.
+     * @type {boolean}
      * @memberof Userinfo
      */
-    exp?: number;
+    emailVerified?: boolean;
     /**
-     * The token start time.
-     * @type {number}
-     * @memberof Userinfo
-     */
-    nbf?: number;
-    /**
-     * When the token was issued.
-     * @type {number}
-     * @memberof Userinfo
-     */
-    iat?: number;
-    /**
-     * The token ID.
+     * The user's full name.
      * @type {string}
      * @memberof Userinfo
      */
-    jti?: string;
+    name?: string;
+    /**
+     * The user's forename.
+     * @type {string}
+     * @memberof Userinfo
+     */
+    givenName?: string;
+    /**
+     * The user's surname.
+     * @type {string}
+     * @memberof Userinfo
+     */
+    familyName?: string;
+    /**
+     * The user's middle name(s).
+     * @type {string}
+     * @memberof Userinfo
+     */
+    middleName?: string;
+    /**
+     * The user's nickname.
+     * @type {string}
+     * @memberof Userinfo
+     */
+    nickname?: string;
+    /**
+     * How the user chooses to be addressed.
+     * @type {string}
+     * @memberof Userinfo
+     */
+    preferredUsername?: string;
+    /**
+     * URL to the user's profile page.
+     * @type {string}
+     * @memberof Userinfo
+     */
+    profile?: string;
+    /**
+     * URL to the user's picture.
+     * @type {string}
+     * @memberof Userinfo
+     */
+    picture?: string;
+    /**
+     * URL to the user's website.
+     * @type {string}
+     * @memberof Userinfo
+     */
+    website?: string;
+    /**
+     * The user's gender.
+     * @type {string}
+     * @memberof Userinfo
+     */
+    gender?: string;
+    /**
+     * The users' birth date formatted according to ISO8601.  The year portion may be 0000 if they choose not to reveal they are really old.
+     * @type {Date}
+     * @memberof Userinfo
+     */
+    birthdate?: Date;
+    /**
+     * The user's IANA assigned timezone.
+     * @type {string}
+     * @memberof Userinfo
+     */
+    zoneinfo?: string;
+    /**
+     * The user's RFC5646 language tag.
+     * @type {string}
+     * @memberof Userinfo
+     */
+    locale?: string;
+    /**
+     * Then the user's profile was last updated.
+     * @type {string}
+     * @memberof Userinfo
+     */
+    updatedAt?: string;
 }
 
 /**
@@ -83,13 +143,23 @@ export function UserinfoFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     }
     return {
         
-        'iss': !exists(json, 'iss') ? undefined : json['iss'],
         'sub': json['sub'],
-        'aud': !exists(json, 'aud') ? undefined : json['aud'],
-        'exp': !exists(json, 'exp') ? undefined : json['exp'],
-        'nbf': !exists(json, 'nbf') ? undefined : json['nbf'],
-        'iat': !exists(json, 'iat') ? undefined : json['iat'],
-        'jti': !exists(json, 'jti') ? undefined : json['jti'],
+        'email': !exists(json, 'email') ? undefined : json['email'],
+        'emailVerified': !exists(json, 'email_verified') ? undefined : json['email_verified'],
+        'name': !exists(json, 'name') ? undefined : json['name'],
+        'givenName': !exists(json, 'given_name') ? undefined : json['given_name'],
+        'familyName': !exists(json, 'family_name') ? undefined : json['family_name'],
+        'middleName': !exists(json, 'middle_name') ? undefined : json['middle_name'],
+        'nickname': !exists(json, 'nickname') ? undefined : json['nickname'],
+        'preferredUsername': !exists(json, 'preferred_username') ? undefined : json['preferred_username'],
+        'profile': !exists(json, 'profile') ? undefined : json['profile'],
+        'picture': !exists(json, 'picture') ? undefined : json['picture'],
+        'website': !exists(json, 'website') ? undefined : json['website'],
+        'gender': !exists(json, 'gender') ? undefined : json['gender'],
+        'birthdate': !exists(json, 'birthdate') ? undefined : (new Date(json['birthdate'])),
+        'zoneinfo': !exists(json, 'zoneinfo') ? undefined : json['zoneinfo'],
+        'locale': !exists(json, 'locale') ? undefined : json['locale'],
+        'updatedAt': !exists(json, 'updated_at') ? undefined : json['updated_at'],
     };
 }
 
@@ -102,13 +172,23 @@ export function UserinfoToJSON(value?: Userinfo | null): any {
     }
     return {
         
-        'iss': value.iss,
         'sub': value.sub,
-        'aud': value.aud,
-        'exp': value.exp,
-        'nbf': value.nbf,
-        'iat': value.iat,
-        'jti': value.jti,
+        'email': value.email,
+        'email_verified': value.emailVerified,
+        'name': value.name,
+        'given_name': value.givenName,
+        'family_name': value.familyName,
+        'middle_name': value.middleName,
+        'nickname': value.nickname,
+        'preferred_username': value.preferredUsername,
+        'profile': value.profile,
+        'picture': value.picture,
+        'website': value.website,
+        'gender': value.gender,
+        'birthdate': value.birthdate === undefined ? undefined : (value.birthdate.toISOString()),
+        'zoneinfo': value.zoneinfo,
+        'locale': value.locale,
+        'updated_at': value.updatedAt,
     };
 }
 

@@ -30,7 +30,6 @@ export * from './OsKernel';
 export * from './ProjectScopedResourceReadMetadata';
 export * from './PublicIPAllocation';
 export * from './RegionFeatures';
-export * from './RegionKubernetes';
 export * from './RegionRead';
 export * from './RegionSpec';
 export * from './RegionType';

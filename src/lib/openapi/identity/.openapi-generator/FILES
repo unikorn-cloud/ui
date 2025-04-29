@@ -9,6 +9,7 @@ models/AllocationRead.ts
 models/AllocationSpec.ts
 models/AllocationWrite.ts
 models/AuthMethod.ts
+models/AuthorizationRequestOptions.ts
 models/Claim.ts
 models/CodeChallengeMethod.ts
 models/GrantType.ts
@@ -22,6 +23,7 @@ models/Oauth2ProviderRead.ts
 models/Oauth2ProviderSpec.ts
 models/Oauth2ProviderType.ts
 models/Oauth2ProviderWrite.ts
+models/OnboardRequestOptions.ts
 models/OpenidConfiguration.ts
 models/OrganizationRead.ts
 models/OrganizationScopedResourceReadMetadata.ts
@@ -42,6 +44,7 @@ models/ResourceMetadata.ts
 models/ResourceProvisioningStatus.ts
 models/ResourceReadMetadata.ts
 models/ResourceWriteMetadata.ts
+models/ResponseMode.ts
 models/ResponseType.ts
 models/RoleRead.ts
 models/Scope.ts
@@ -62,5 +65,6 @@ models/UserState.ts
 models/UserStatus.ts
 models/UserWrite.ts
 models/Userinfo.ts
+models/UserinfoRequestOptions.ts
 models/index.ts
 runtime.ts

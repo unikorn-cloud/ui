@@ -24,6 +24,7 @@ import type {
   NetworkRead,
   NetworkWrite,
   QuotasSpec,
+  RegionDetailRead,
   RegionRead,
   SecurityGroupRead,
   SecurityGroupRuleRead,
@@ -51,6 +52,8 @@ import {
     NetworkWriteToJSON,
     QuotasSpecFromJSON,
     QuotasSpecToJSON,
+    RegionDetailReadFromJSON,
+    RegionDetailReadToJSON,
     RegionReadFromJSON,
     RegionReadToJSON,
     SecurityGroupReadFromJSON,
@@ -210,6 +213,11 @@ export interface ApiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesPost
 
 export interface ApiV1OrganizationsOrganizationIDRegionsGetRequest {
     organizationID: string;
+}
+
+export interface ApiV1OrganizationsOrganizationIDRegionsRegionIDDetailGetRequest {
+    organizationID: string;
+    regionID: string;
 }
 
 export interface ApiV1OrganizationsOrganizationIDRegionsRegionIDExternalnetworksGetRequest {
@@ -1225,6 +1233,45 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiV1OrganizationsOrganizationIDRegionsGet(requestParameters: ApiV1OrganizationsOrganizationIDRegionsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<RegionRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDRegionsGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get a detailed view of the region, which may contain credentials.
+     */
+    async apiV1OrganizationsOrganizationIDRegionsRegionIDDetailGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDRegionsRegionIDDetailGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RegionDetailRead>> {
+        if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
+            throw new runtime.RequiredError('organizationID','Required parameter requestParameters.organizationID was null or undefined when calling apiV1OrganizationsOrganizationIDRegionsRegionIDDetailGet.');
+        }
+
+        if (requestParameters.regionID === null || requestParameters.regionID === undefined) {
+            throw new runtime.RequiredError('regionID','Required parameter requestParameters.regionID was null or undefined when calling apiV1OrganizationsOrganizationIDRegionsRegionIDDetailGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2Authentication", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/organizations/{organizationID}/regions/{regionID}/detail`.replace(`{${"organizationID"}}`, encodeURIComponent(String(requestParameters.organizationID))).replace(`{${"regionID"}}`, encodeURIComponent(String(requestParameters.regionID))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => RegionDetailReadFromJSON(jsonValue));
+    }
+
+    /**
+     * Get a detailed view of the region, which may contain credentials.
+     */
+    async apiV1OrganizationsOrganizationIDRegionsRegionIDDetailGet(requestParameters: ApiV1OrganizationsOrganizationIDRegionsRegionIDDetailGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RegionDetailRead> {
+        const response = await this.apiV1OrganizationsOrganizationIDRegionsRegionIDDetailGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

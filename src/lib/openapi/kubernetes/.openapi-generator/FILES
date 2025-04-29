@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
@@ -31,7 +30,6 @@ models/OsFamily.ts
 models/OsKernel.ts
 models/ProjectScopedResourceReadMetadata.ts
 models/RegionFeatures.ts
-models/RegionKubernetes.ts
 models/RegionRead.ts
 models/RegionSpec.ts
 models/RegionType.ts

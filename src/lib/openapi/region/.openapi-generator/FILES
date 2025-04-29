@@ -29,8 +29,10 @@ models/OsFamily.ts
 models/OsKernel.ts
 models/ProjectScopedResourceReadMetadata.ts
 models/QuotasSpec.ts
+models/RegionDetailKubernetes.ts
+models/RegionDetailRead.ts
+models/RegionDetailSpec.ts
 models/RegionFeatures.ts
-models/RegionKubernetes.ts
 models/RegionRead.ts
 models/RegionSpec.ts
 models/RegionType.ts

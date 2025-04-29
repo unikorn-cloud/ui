@@ -31,7 +31,6 @@ models/OsKernel.ts
 models/ProjectScopedResourceReadMetadata.ts
 models/PublicIPAllocation.ts
 models/RegionFeatures.ts
-models/RegionKubernetes.ts
 models/RegionRead.ts
 models/RegionSpec.ts
 models/RegionType.ts

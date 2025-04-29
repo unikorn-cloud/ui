@@ -29,7 +29,6 @@ export * from './OsFamily';
 export * from './OsKernel';
 export * from './ProjectScopedResourceReadMetadata';
 export * from './RegionFeatures';
-export * from './RegionKubernetes';
 export * from './RegionRead';
 export * from './RegionSpec';
 export * from './RegionType';
