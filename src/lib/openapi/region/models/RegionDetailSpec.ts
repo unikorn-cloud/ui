@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { RegionDetailKubernetes } from './RegionDetailKubernetes';
+import {
+    RegionDetailKubernetesFromJSON,
+    RegionDetailKubernetesFromJSONTyped,
+    RegionDetailKubernetesToJSON,
+} from './RegionDetailKubernetes';
 import type { RegionFeatures } from './RegionFeatures';
 import {
     RegionFeaturesFromJSON,
@@ -29,50 +35,56 @@ import {
 /**
  * Information about the region.
  * @export
- * @interface RegionSpec
+ * @interface RegionDetailSpec
  */
-export interface RegionSpec {
+export interface RegionDetailSpec {
     /**
      * 
      * @type {RegionType}
-     * @memberof RegionSpec
+     * @memberof RegionDetailSpec
      */
     type: RegionType;
     /**
      * 
-     * @type {RegionFeatures}
-     * @memberof RegionSpec
+     * @type {RegionDetailKubernetes}
+     * @memberof RegionDetailSpec
      */
-    features: RegionFeatures;
+    kubernetes?: RegionDetailKubernetes;
+    /**
+     * 
+     * @type {RegionFeatures}
+     * @memberof RegionDetailSpec
+     */
+    features?: RegionFeatures;
 }
 
 /**
- * Check if a given object implements the RegionSpec interface.
+ * Check if a given object implements the RegionDetailSpec interface.
  */
-export function instanceOfRegionSpec(value: object): boolean {
+export function instanceOfRegionDetailSpec(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "type" in value;
-    isInstance = isInstance && "features" in value;
 
     return isInstance;
 }
 
-export function RegionSpecFromJSON(json: any): RegionSpec {
-    return RegionSpecFromJSONTyped(json, false);
+export function RegionDetailSpecFromJSON(json: any): RegionDetailSpec {
+    return RegionDetailSpecFromJSONTyped(json, false);
 }
 
-export function RegionSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean): RegionSpec {
+export function RegionDetailSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean): RegionDetailSpec {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
         'type': RegionTypeFromJSON(json['type']),
-        'features': RegionFeaturesFromJSON(json['features']),
+        'kubernetes': !exists(json, 'kubernetes') ? undefined : RegionDetailKubernetesFromJSON(json['kubernetes']),
+        'features': !exists(json, 'features') ? undefined : RegionFeaturesFromJSON(json['features']),
     };
 }
 
-export function RegionSpecToJSON(value?: RegionSpec | null): any {
+export function RegionDetailSpecToJSON(value?: RegionDetailSpec | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -82,6 +94,7 @@ export function RegionSpecToJSON(value?: RegionSpec | null): any {
     return {
         
         'type': RegionTypeToJSON(value.type),
+        'kubernetes': RegionDetailKubernetesToJSON(value.kubernetes),
         'features': RegionFeaturesToJSON(value.features),
     };
 }

@@ -18,6 +18,7 @@ import type {
   Acl,
   AllocationRead,
   AllocationWrite,
+  AuthorizationRequestOptions,
   GroupRead,
   GroupWrite,
   JsonWebKeySet,
@@ -25,6 +26,7 @@ import type {
   ModelError,
   Oauth2ProviderRead,
   Oauth2ProviderWrite,
+  OnboardRequestOptions,
   OpenidConfiguration,
   OrganizationRead,
   OrganizationWrite,
@@ -41,6 +43,7 @@ import type {
   UserRead,
   UserWrite,
   Userinfo,
+  UserinfoRequestOptions,
 } from '../models/index';
 import {
     AclFromJSON,
@@ -49,6 +52,8 @@ import {
     AllocationReadToJSON,
     AllocationWriteFromJSON,
     AllocationWriteToJSON,
+    AuthorizationRequestOptionsFromJSON,
+    AuthorizationRequestOptionsToJSON,
     GroupReadFromJSON,
     GroupReadToJSON,
     GroupWriteFromJSON,
@@ -63,6 +68,8 @@ import {
     Oauth2ProviderReadToJSON,
     Oauth2ProviderWriteFromJSON,
     Oauth2ProviderWriteToJSON,
+    OnboardRequestOptionsFromJSON,
+    OnboardRequestOptionsToJSON,
     OpenidConfigurationFromJSON,
     OpenidConfigurationToJSON,
     OrganizationReadFromJSON,
@@ -95,7 +102,13 @@ import {
     UserWriteToJSON,
     UserinfoFromJSON,
     UserinfoToJSON,
+    UserinfoRequestOptionsFromJSON,
+    UserinfoRequestOptionsToJSON,
 } from '../models/index';
+
+export interface ApiV1OrganizationsGetRequest {
+    email?: string;
+}
 
 export interface ApiV1OrganizationsOrganizationIDAclGetRequest {
     organizationID: string;
@@ -271,12 +284,24 @@ export interface ApiV1OrganizationsPostRequest {
     organizationWrite: OrganizationWrite;
 }
 
+export interface Oauth2V2AuthorizationPostRequest {
+    authorizationRequestOptions: AuthorizationRequestOptions;
+}
+
 export interface Oauth2V2LoginPostRequest {
     loginRequestOptions: LoginRequestOptions;
 }
 
+export interface Oauth2V2OnboardPostRequest {
+    onboardRequestOptions: OnboardRequestOptions;
+}
+
 export interface Oauth2V2TokenPostRequest {
     tokenRequestOptions: TokenRequestOptions;
+}
+
+export interface Oauth2V2UserinfoPostRequest {
+    userinfoRequestOptions?: UserinfoRequestOptions;
 }
 
 /**
@@ -349,8 +374,12 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns a list of organizations that are owned/managed by the user.
      */
-    async apiV1OrganizationsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<OrganizationRead>>> {
+    async apiV1OrganizationsGetRaw(requestParameters: ApiV1OrganizationsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<OrganizationRead>>> {
         const queryParameters: any = {};
+
+        if (requestParameters.email !== undefined) {
+            queryParameters['email'] = requestParameters.email;
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -372,8 +401,8 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Returns a list of organizations that are owned/managed by the user.
      */
-    async apiV1OrganizationsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<OrganizationRead>> {
-        const response = await this.apiV1OrganizationsGetRaw(initOverrides);
+    async apiV1OrganizationsGet(requestParameters: ApiV1OrganizationsGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<OrganizationRead>> {
+        const response = await this.apiV1OrganizationsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -1824,6 +1853,38 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
+     * Provides authentication and authorisation as per the OAuth2 specification. This particular implementation requires a \"code\" type response, and PKCE. You may specify the \"openid\" scope in order to have an OpenID Connect identity token returned during code exchange.
+     */
+    async oauth2V2AuthorizationPostRaw(requestParameters: Oauth2V2AuthorizationPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.authorizationRequestOptions === null || requestParameters.authorizationRequestOptions === undefined) {
+            throw new runtime.RequiredError('authorizationRequestOptions','Required parameter requestParameters.authorizationRequestOptions was null or undefined when calling oauth2V2AuthorizationPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/x-www-form-urlencoded';
+
+        const response = await this.request({
+            path: `/oauth2/v2/authorization`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: AuthorizationRequestOptionsToJSON(requestParameters.authorizationRequestOptions),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Provides authentication and authorisation as per the OAuth2 specification. This particular implementation requires a \"code\" type response, and PKCE. You may specify the \"openid\" scope in order to have an OpenID Connect identity token returned during code exchange.
+     */
+    async oauth2V2AuthorizationPost(requestParameters: Oauth2V2AuthorizationPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.oauth2V2AuthorizationPostRaw(requestParameters, initOverrides);
+    }
+
+    /**
      * Returns an array of public keys used to verify JWT tokens issued by this server, for example identity or authorisation tokens.
      */
     async oauth2V2JwksGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<JsonWebKeySet>> {
@@ -1879,6 +1940,38 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async oauth2V2LoginPost(requestParameters: Oauth2V2LoginPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.oauth2V2LoginPostRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Sends the users\'s provided email address to the identity service.
+     */
+    async oauth2V2OnboardPostRaw(requestParameters: Oauth2V2OnboardPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.onboardRequestOptions === null || requestParameters.onboardRequestOptions === undefined) {
+            throw new runtime.RequiredError('onboardRequestOptions','Required parameter requestParameters.onboardRequestOptions was null or undefined when calling oauth2V2OnboardPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/x-www-form-urlencoded';
+
+        const response = await this.request({
+            path: `/oauth2/v2/onboard`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: OnboardRequestOptionsToJSON(requestParameters.onboardRequestOptions),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Sends the users\'s provided email address to the identity service.
+     */
+    async oauth2V2OnboardPost(requestParameters: Oauth2V2OnboardPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.oauth2V2OnboardPostRaw(requestParameters, initOverrides);
     }
 
     /**
@@ -1942,6 +2035,35 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async oauth2V2UserinfoGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Userinfo> {
         const response = await this.oauth2V2UserinfoGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Returns introspection information about an access token.
+     */
+    async oauth2V2UserinfoPostRaw(requestParameters: Oauth2V2UserinfoPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Userinfo>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/x-www-form-urlencoded';
+
+        const response = await this.request({
+            path: `/oauth2/v2/userinfo`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UserinfoRequestOptionsToJSON(requestParameters.userinfoRequestOptions),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserinfoFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns introspection information about an access token.
+     */
+    async oauth2V2UserinfoPost(requestParameters: Oauth2V2UserinfoPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Userinfo> {
+        const response = await this.oauth2V2UserinfoPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

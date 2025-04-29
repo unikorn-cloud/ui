@@ -37,6 +37,12 @@ import {
     GrantTypeFromJSONTyped,
     GrantTypeToJSON,
 } from './GrantType';
+import type { ResponseMode } from './ResponseMode';
+import {
+    ResponseModeFromJSON,
+    ResponseModeFromJSONTyped,
+    ResponseModeToJSON,
+} from './ResponseMode';
 import type { ResponseType } from './ResponseType';
 import {
     ResponseTypeFromJSON,
@@ -111,6 +117,12 @@ export interface OpenidConfiguration {
      */
     responseTypesSupported: Array<ResponseType>;
     /**
+     * A list of supported response modes.
+     * @type {Array<ResponseMode>}
+     * @memberof OpenidConfiguration
+     */
+    responseModesSupported: Array<ResponseMode>;
+    /**
      * A list of supported authentication methods for the token endpoint.
      * @type {Array<AuthMethod>}
      * @memberof OpenidConfiguration
@@ -134,6 +146,24 @@ export interface OpenidConfiguration {
      * @memberof OpenidConfiguration
      */
     codeChallengeMethodsSupported: Array<CodeChallengeMethod>;
+    /**
+     * Whether claims can be requested indvidually.
+     * @type {boolean}
+     * @memberof OpenidConfiguration
+     */
+    claimsParameterSupported: boolean;
+    /**
+     * Whether requests can be passed as a JWT object.
+     * @type {boolean}
+     * @memberof OpenidConfiguration
+     */
+    requestParameterSupported: boolean;
+    /**
+     * Whether requests can be passed via a URI.
+     * @type {boolean}
+     * @memberof OpenidConfiguration
+     */
+    requestUriParameterSupported: boolean;
 }
 
 /**
@@ -149,10 +179,14 @@ export function instanceOfOpenidConfiguration(value: object): boolean {
     isInstance = isInstance && "scopesSupported" in value;
     isInstance = isInstance && "claimsSupported" in value;
     isInstance = isInstance && "responseTypesSupported" in value;
+    isInstance = isInstance && "responseModesSupported" in value;
     isInstance = isInstance && "tokenEndpointAuthMethodsSupported" in value;
     isInstance = isInstance && "grantTypesSupported" in value;
     isInstance = isInstance && "idTokenSigningAlgValuesSupported" in value;
     isInstance = isInstance && "codeChallengeMethodsSupported" in value;
+    isInstance = isInstance && "claimsParameterSupported" in value;
+    isInstance = isInstance && "requestParameterSupported" in value;
+    isInstance = isInstance && "requestUriParameterSupported" in value;
 
     return isInstance;
 }
@@ -175,10 +209,14 @@ export function OpenidConfigurationFromJSONTyped(json: any, ignoreDiscriminator:
         'scopesSupported': ((json['scopes_supported'] as Array<any>).map(ScopeFromJSON)),
         'claimsSupported': ((json['claims_supported'] as Array<any>).map(ClaimFromJSON)),
         'responseTypesSupported': ((json['response_types_supported'] as Array<any>).map(ResponseTypeFromJSON)),
+        'responseModesSupported': ((json['response_modes_supported'] as Array<any>).map(ResponseModeFromJSON)),
         'tokenEndpointAuthMethodsSupported': ((json['token_endpoint_auth_methods_supported'] as Array<any>).map(AuthMethodFromJSON)),
         'grantTypesSupported': ((json['grant_types_supported'] as Array<any>).map(GrantTypeFromJSON)),
         'idTokenSigningAlgValuesSupported': ((json['id_token_signing_alg_values_supported'] as Array<any>).map(SigningAlgorithmFromJSON)),
         'codeChallengeMethodsSupported': ((json['code_challenge_methods_supported'] as Array<any>).map(CodeChallengeMethodFromJSON)),
+        'claimsParameterSupported': json['claims_parameter_supported'],
+        'requestParameterSupported': json['request_parameter_supported'],
+        'requestUriParameterSupported': json['request_uri_parameter_supported'],
     };
 }
 
@@ -199,10 +237,14 @@ export function OpenidConfigurationToJSON(value?: OpenidConfiguration | null): a
         'scopes_supported': ((value.scopesSupported as Array<any>).map(ScopeToJSON)),
         'claims_supported': ((value.claimsSupported as Array<any>).map(ClaimToJSON)),
         'response_types_supported': ((value.responseTypesSupported as Array<any>).map(ResponseTypeToJSON)),
+        'response_modes_supported': ((value.responseModesSupported as Array<any>).map(ResponseModeToJSON)),
         'token_endpoint_auth_methods_supported': ((value.tokenEndpointAuthMethodsSupported as Array<any>).map(AuthMethodToJSON)),
         'grant_types_supported': ((value.grantTypesSupported as Array<any>).map(GrantTypeToJSON)),
         'id_token_signing_alg_values_supported': ((value.idTokenSigningAlgValuesSupported as Array<any>).map(SigningAlgorithmToJSON)),
         'code_challenge_methods_supported': ((value.codeChallengeMethodsSupported as Array<any>).map(CodeChallengeMethodToJSON)),
+        'claims_parameter_supported': value.claimsParameterSupported,
+        'request_parameter_supported': value.requestParameterSupported,
+        'request_uri_parameter_supported': value.requestUriParameterSupported,
     };
 }
 

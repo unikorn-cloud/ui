@@ -14,7 +14,7 @@
 
 
 /**
- * The region type, physical means a full Kubernetes cluster deployment, virtual is a virtual
+ * The region type, "physical" means a full Kubernetes cluster deployment, "virtual" is a virtual
  * Kubernetes cluster hosted by another one.
  * @export
  */

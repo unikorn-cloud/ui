@@ -19,12 +19,6 @@ import {
     RegionFeaturesFromJSONTyped,
     RegionFeaturesToJSON,
 } from './RegionFeatures';
-import type { RegionKubernetes } from './RegionKubernetes';
-import {
-    RegionKubernetesFromJSON,
-    RegionKubernetesFromJSONTyped,
-    RegionKubernetesToJSON,
-} from './RegionKubernetes';
 import type { RegionType } from './RegionType';
 import {
     RegionTypeFromJSON,
@@ -44,12 +38,6 @@ export interface RegionSpec {
      * @memberof RegionSpec
      */
     type: RegionType;
-    /**
-     * 
-     * @type {RegionKubernetes}
-     * @memberof RegionSpec
-     */
-    kubernetes?: RegionKubernetes;
     /**
      * 
      * @type {RegionFeatures}
@@ -80,7 +68,6 @@ export function RegionSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     return {
         
         'type': RegionTypeFromJSON(json['type']),
-        'kubernetes': !exists(json, 'kubernetes') ? undefined : RegionKubernetesFromJSON(json['kubernetes']),
         'features': RegionFeaturesFromJSON(json['features']),
     };
 }
@@ -95,7 +82,6 @@ export function RegionSpecToJSON(value?: RegionSpec | null): any {
     return {
         
         'type': RegionTypeToJSON(value.type),
-        'kubernetes': RegionKubernetesToJSON(value.kubernetes),
         'features': RegionFeaturesToJSON(value.features),
     };
 }

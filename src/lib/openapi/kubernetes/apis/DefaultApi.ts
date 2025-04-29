@@ -840,7 +840,7 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * List all virutal clusters within the organization.
+     * List all virtual clusters within the organization.
      */
     async apiV1OrganizationsOrganizationIDVirtualclustersGetRaw(requestParameters: ApiV1OrganizationsOrganizationIDVirtualclustersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<VirtualKubernetesClusterRead>>> {
         if (requestParameters.organizationID === null || requestParameters.organizationID === undefined) {
@@ -867,7 +867,7 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * List all virutal clusters within the organization.
+     * List all virtual clusters within the organization.
      */
     async apiV1OrganizationsOrganizationIDVirtualclustersGet(requestParameters: ApiV1OrganizationsOrganizationIDVirtualclustersGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<VirtualKubernetesClusterRead>> {
         const response = await this.apiV1OrganizationsOrganizationIDVirtualclustersGetRaw(requestParameters, initOverrides);
