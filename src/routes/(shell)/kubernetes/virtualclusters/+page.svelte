@@ -97,7 +97,7 @@
 						<div class="font-bold">Project</div>
 
 						<div class="input-group grid grid-cols-[auto_1fr]">
-							<iconify-icon icon="mdi:account-group-outline" class="ig-cell"></iconify-icon>
+							<iconify-icon icon="mdi:folder-open-outline" class="ig-cell"></iconify-icon>
 
 							<select class="ig-select" bind:value={createProjectID}>
 								{#each data.projects as p}
