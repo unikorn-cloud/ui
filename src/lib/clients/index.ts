@@ -9,6 +9,7 @@ import * as Application from '$lib/openapi/application';
 import * as Identity from '$lib/openapi/identity';
 import * as Region from '$lib/openapi/region';
 import { token, removeCredentials } from '$lib/credentials';
+import { toaster } from '$lib/toaster';
 
 import { ROOT_CONTEXT, defaultTextMapSetter, trace } from '@opentelemetry/api';
 import type { Span } from '@opentelemetry/api';
@@ -177,17 +178,9 @@ export async function error(error: Error) {
 
 	const errorJSON = Identity.ModelErrorFromJSON(await responseError.response.json());
 
-	/*
-	const toast = {
-		autohide: false,
-		message: `An error has occurred - trace ID: ${responseError.response.headers.get('traceparent')}, error: ${errorJSON.error}, description:  ${errorJSON.errorDescription}`,
-		background: 'preset-filled-error-500'
-	};
-
-	toaster.trigger(toast);
-       */
-
-	console.log(
-		`An error has occurred - trace ID: ${responseError.response.headers.get('traceparent')}, error: ${errorJSON.error}, description:  ${errorJSON.errorDescription}`
-	);
+	toaster.error({
+		title: 'API Error',
+		description: `An error has occurred - trace ID: ${responseError.response.headers.get('traceparent')}, error: ${errorJSON.error}, description:  ${errorJSON.errorDescription}`,
+		duration: 3600000
+	});
 }
