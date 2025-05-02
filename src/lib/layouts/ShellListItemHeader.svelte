@@ -33,7 +33,7 @@
 	<header class="flex flex-col gap-1">
 		{#if project}
 			<div class="flex gap-2 items-center tex-sm overflow-hidden text-ellipsis whitespace-nowrap">
-				<iconify-icon icon="mdi:account-group-outline"></iconify-icon>
+				<iconify-icon icon="mdi:folder-open-outline"></iconify-icon>
 				{project}
 			</div>
 		{/if}
