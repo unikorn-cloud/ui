@@ -28,9 +28,9 @@
 						<div class="italic text-sm text-surface-700-300">{quota.description}</div>
 					</div>
 					<div class="flex items-center gap-4">
+						<!-- the default is to treat the value as a pencentage -->
 						<ProgressRing
-							value={quota.used}
-							max={quota.quantity}
+							value={quota.quantity <= 0 ? 0 : (quota.used / quota.quantity) * 100}
 							showLabel
 							trackStroke="stroke-primary-500/20"
 							strokeWidth="0.75rem"
