@@ -37,7 +37,7 @@
 			serviceAccountID: id
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDDelete(parameters)
 			.then(() => invalidate('layout:serviceaccounts'))
 			.catch((e: Error) => Clients.error(e));

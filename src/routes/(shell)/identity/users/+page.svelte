@@ -40,7 +40,7 @@
 			userID: id
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDUsersUserIDDelete(parameters)
 			.then(() => invalidate('layout:users'))
 			.catch((e: Error) => Clients.error(e));

@@ -36,7 +36,7 @@
 			providerID: id
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDOauth2providersProviderIDDelete(parameters)
 			.then(() => invalidate('layout:oauth2providers'))
 			.catch((e: Error) => Clients.error(e));

@@ -250,7 +250,7 @@
 			kubernetesClusterWrite: cluster
 		};
 
-		Clients.kubernetes(data.token)
+		Clients.kubernetes()
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDPut(parameters)
 			.then(() => window.location.assign('/kubernetes/clusters'))
 			.catch((e: Error) => Clients.error(e));

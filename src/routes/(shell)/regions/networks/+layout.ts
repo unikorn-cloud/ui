@@ -7,9 +7,9 @@ import * as Clients from '$lib/clients';
 export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
 	depends('layout:networks');
 
-	const { token, organizationID } = await parent();
+	const { organizationID } = await parent();
 
-	const networks = Clients.region(token, fetch).apiV1OrganizationsOrganizationIDNetworksGet({
+	const networks = Clients.region(fetch).apiV1OrganizationsOrganizationIDNetworksGet({
 		organizationID: organizationID
 	});
 

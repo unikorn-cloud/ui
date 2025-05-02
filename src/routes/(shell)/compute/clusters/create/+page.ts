@@ -6,23 +6,21 @@ import { error } from '@sveltejs/kit';
 import * as Clients from '$lib/clients';
 
 export const load: PageLoad = async ({ fetch, parent, url }) => {
-	const { token, organizationID } = await parent();
+	const { organizationID } = await parent();
 
 	const regionID = url.searchParams.get('regionID');
 	if (!regionID) {
 		error(400, 'region ID not in query');
 	}
 
-	const images = Clients.kubernetes(
-		token,
-		fetch
-	).apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet({
-		organizationID: organizationID,
-		regionID: regionID
-	});
+	const images = Clients.kubernetes(fetch).apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet(
+		{
+			organizationID: organizationID,
+			regionID: regionID
+		}
+	);
 
 	const flavors = Clients.kubernetes(
-		token,
 		fetch
 	).apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet({
 		organizationID: organizationID,

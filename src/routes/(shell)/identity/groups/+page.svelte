@@ -36,7 +36,7 @@
 			groupid: id
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDGroupsGroupidDelete(parameters)
 			.then(() => invalidate('page:groups'))
 			.catch((e: Error) => Clients.error(e));

@@ -41,7 +41,7 @@
 			userWrite: resource
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDUsersPost(parameters)
 			.then(() => window.location.assign('/identity/users'))
 			.catch((e: Error) => Clients.error(e));

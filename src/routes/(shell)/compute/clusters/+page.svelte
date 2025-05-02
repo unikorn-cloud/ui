@@ -44,7 +44,7 @@
 			clusterID: resource.metadata.id
 		};
 
-		Clients.compute(data.token)
+		Clients.compute()
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDDelete(parameters)
 			.then(() => invalidate('layout:clusters'))
 			.catch((e: Error) => Clients.error(e));

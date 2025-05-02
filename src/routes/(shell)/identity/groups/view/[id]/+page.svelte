@@ -40,7 +40,7 @@
 			groupWrite: group
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDGroupsGroupidPut(parameters)
 			.then(() => window.location.assign('/identity/groups'))
 			.catch((e: Error) => Clients.error(e));

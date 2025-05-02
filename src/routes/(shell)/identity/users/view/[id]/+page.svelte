@@ -34,7 +34,7 @@
 			userWrite: user
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDUsersUserIDPut(parameters)
 			.then(() => window.location.assign('/identity/users'))
 			.catch((e: Error) => Clients.error(e));

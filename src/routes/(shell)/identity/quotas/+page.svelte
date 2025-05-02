@@ -28,7 +28,7 @@
 			quotasWrite: quotas
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDQuotasPut(parameters)
 			.catch((e: Error) => Clients.error(e));
 	}

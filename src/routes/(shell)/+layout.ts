@@ -34,7 +34,7 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 
 	// Every view will need to know the organization the user is currently viewing,
 	// we persist this across sessions.
-	const organizations = await Clients.identity(token, fetch).apiV1OrganizationsGet();
+	const organizations = await Clients.identity(fetch).apiV1OrganizationsGet();
 	if (organizations.length == 0) {
 		error(500, 'User is not a member of any organizations');
 	}
@@ -46,13 +46,12 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 	}
 
 	// Some views will alter based on ACL data for that organization.
-	const acl = await Clients.identity(token, fetch).apiV1OrganizationsOrganizationIDAclGet({
+	const acl = await Clients.identity(fetch).apiV1OrganizationsOrganizationIDAclGet({
 		organizationID: organizationID
 	});
 
 	return {
 		profile: profile,
-		token: token,
 		organizations: organizations,
 		organizationID: organizationID,
 		acl: acl

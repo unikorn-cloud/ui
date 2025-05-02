@@ -126,7 +126,7 @@
 			virtualKubernetesClusterWrite: cluster
 		};
 
-		Clients.kubernetes(data.token)
+		Clients.kubernetes()
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDVirtualclustersClusterIDPut(parameters)
 			.then(() => window.location.assign('/kubernetes/virtualclusters'))
 			.catch((e: Error) => Clients.error(e));

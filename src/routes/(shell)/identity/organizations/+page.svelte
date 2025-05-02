@@ -35,7 +35,7 @@
 			organizationWrite: organization
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDPut(parameters)
 			.catch((e: Error) => Clients.error(e));
 	}

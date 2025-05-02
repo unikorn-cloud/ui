@@ -6,7 +6,7 @@ import { error } from '@sveltejs/kit';
 import * as Clients from '$lib/clients';
 
 export const load: PageLoad = async ({ fetch, parent, url }) => {
-	const { token, organizationID } = await parent();
+	const { organizationID } = await parent();
 
 	const regionID = url.searchParams.get('regionID');
 	if (!regionID) {
@@ -19,7 +19,6 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
 	}
 
 	const flavors = Clients.kubernetes(
-		token,
 		fetch
 	).apiV1OrganizationsOrganizationIDRegionsRegionIDFlavorsGet({
 		organizationID: organizationID,
