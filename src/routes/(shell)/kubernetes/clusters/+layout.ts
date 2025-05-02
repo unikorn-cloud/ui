@@ -8,13 +8,13 @@ import * as Kubernetes from '$lib/openapi/kubernetes';
 export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
 	depends('layout:clusters');
 
-	const { token, organizationID } = await parent();
+	const { organizationID } = await parent();
 
-	const clusters = Clients.kubernetes(token, fetch).apiV1OrganizationsOrganizationIDClustersGet({
+	const clusters = Clients.kubernetes(fetch).apiV1OrganizationsOrganizationIDClustersGet({
 		organizationID: organizationID
 	});
 
-	const regions = Clients.kubernetes(token, fetch).apiV1OrganizationsOrganizationIDRegionsGet({
+	const regions = Clients.kubernetes(fetch).apiV1OrganizationsOrganizationIDRegionsGet({
 		organizationID: organizationID,
 		regionType: Kubernetes.RegionTypeParameter.Physical
 	});

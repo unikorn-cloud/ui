@@ -37,7 +37,7 @@
 			clusterManagerID: resource.metadata.id
 		};
 
-		Clients.kubernetes(data.token)
+		Clients.kubernetes()
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustermanagersClusterManagerIDDelete(
 				parameters
 			)

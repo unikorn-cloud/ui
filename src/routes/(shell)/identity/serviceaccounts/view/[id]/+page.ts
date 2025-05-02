@@ -6,14 +6,14 @@ import { error } from '@sveltejs/kit';
 import * as Clients from '$lib/clients';
 
 export const load: PageLoad = async ({ fetch, parent, params }) => {
-	const { token, organizationID, serviceAccounts } = await parent();
+	const { organizationID, serviceAccounts } = await parent();
 
 	const serviceAccount = serviceAccounts.find((x) => x.metadata.id == params['id']);
 	if (!serviceAccount) {
 		error(404, 'service account not found');
 	}
 
-	const groups = Clients.identity(token, fetch).apiV1OrganizationsOrganizationIDGroupsGet({
+	const groups = Clients.identity(fetch).apiV1OrganizationsOrganizationIDGroupsGet({
 		organizationID: organizationID
 	});
 

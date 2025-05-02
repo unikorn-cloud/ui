@@ -36,7 +36,7 @@
 			projectID: id
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDDelete(parameters)
 			.then(() => invalidate('layout:projects'))
 			.catch((e: Error) => Clients.error(e));

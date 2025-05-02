@@ -47,7 +47,7 @@
 			oauth2ProviderWrite: resource
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDOauth2providersPost(parameters)
 			.then(() => window.location.assign('/identity/oauth2providers'))
 			.catch((e: Error) => Clients.error(e));

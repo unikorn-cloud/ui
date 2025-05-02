@@ -45,7 +45,7 @@
 			serviceAccountWrite: resource
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDServiceaccountsPost(parameters)
 			.then((v: Identity.ServiceAccountCreate) => (serviceAccount = v))
 			.catch((e: Error) => Clients.error(e));

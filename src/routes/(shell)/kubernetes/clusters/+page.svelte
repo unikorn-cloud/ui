@@ -44,7 +44,7 @@
 			clusterID: resource.metadata.id
 		};
 
-		Clients.kubernetes(data.token)
+		Clients.kubernetes()
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDDelete(parameters)
 			.then(() => invalidate('layout:clusters'))
 			.catch((e: Error) => Clients.error(e));
@@ -57,7 +57,7 @@
 			clusterID: resource.metadata.id
 		};
 
-		Clients.kubernetes(data.token)
+		Clients.kubernetes()
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDKubeconfigGetRaw(
 				parameters
 			)

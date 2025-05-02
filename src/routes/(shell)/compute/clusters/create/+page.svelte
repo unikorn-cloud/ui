@@ -105,7 +105,7 @@
 			computeClusterWrite: resource
 		};
 
-		Clients.compute(data.token)
+		Clients.compute()
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(parameters)
 			.then(() => window.location.assign('/compute/clusters'))
 			.catch((e: Error) => Clients.error(e));

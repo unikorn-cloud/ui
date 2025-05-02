@@ -14,14 +14,13 @@
 	import * as RBAC from '$lib/rbac';
 
 	interface Props {
-		token: InternalToken;
 		organizations: Array<Identity.OrganizationRead>;
 		organizationID: string;
 		acl: Identity.Acl;
 		onClicked?: () => void;
 	}
 
-	let { token, organizations, organizationID, acl, onClicked }: Props = $props();
+	let { organizations, organizationID, acl, onClicked }: Props = $props();
 
 	type NavItems = Array<{ label: string; href: string; rbac?: Array<RBAC.OrganizationScope> }>;
 	type Nav = Array<{ base: string; title: string; icon: string; items: NavItems }>;

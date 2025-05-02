@@ -93,7 +93,6 @@
 					{/snippet}
 					{#snippet content()}
 						<SideBar
-							token={data.token}
 							organizations={data.organizations}
 							organizationID={data.organizationID}
 							acl={data.acl}
@@ -155,7 +154,6 @@
 	<div class="w-full h-full flex overflow-hidden bg-surface-100-900/10">
 		<div class="hidden lg:block lg:w-[320px] overflow-y-auto min-h-full">
 			<SideBar
-				token={data.token}
 				organizations={data.organizations}
 				organizationID={data.organizationID}
 				acl={data.acl}

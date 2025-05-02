@@ -35,7 +35,7 @@
 			serviceAccountWrite: serviceAccount
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDPut(parameters)
 			.then(() => window.location.assign('/identity/serviceaccounts'))
 			.catch((e: Error) => Clients.error(e));
@@ -49,7 +49,7 @@
 			serviceAccountID: $page.params.id
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDServiceaccountsServiceAccountIDRotatePost(parameters)
 			.then((v: Identity.ServiceAccountCreate) => (newServiceAccount = v))
 			.catch((e: Error) => Clients.error(e));

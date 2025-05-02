@@ -42,7 +42,7 @@
 			projectWrite: project
 		};
 
-		Clients.identity(data.token)
+		Clients.identity()
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDPut(parameters)
 			.then(() => window.location.assign('/identity/projects'))
 			.catch((e: Error) => Clients.error(e));

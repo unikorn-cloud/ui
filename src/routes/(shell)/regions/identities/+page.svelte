@@ -39,7 +39,7 @@
 			identityID: resource.metadata.id
 		};
 
-		Clients.region(data.token)
+		Clients.region()
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDIdentitiesIdentityIDDelete(parameters)
 			.then(() => invalidate('layout:identities'))
 			.catch((e: Error) => Clients.error(e));
