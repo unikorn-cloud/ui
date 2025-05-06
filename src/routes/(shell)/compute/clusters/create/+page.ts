@@ -4,6 +4,7 @@ import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
 import * as Clients from '$lib/clients';
+import { assertNonEmptyList } from '$lib/loadutil';
 
 export const load: PageLoad = async ({ fetch, parent, url }) => {
 	const { organizationID } = await parent();
@@ -28,7 +29,7 @@ export const load: PageLoad = async ({ fetch, parent, url }) => {
 	});
 
 	return {
-		images: await images,
-		flavors: await flavors
+		images: await assertNonEmptyList(images),
+		flavors: await assertNonEmptyList(flavors)
 	};
 };
