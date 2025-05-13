@@ -4,12 +4,12 @@ description: A Helm chart for deploying Unikorn UI
 
 type: application
 
-version: v1.0.0-rc2
-appVersion: v1.0.0-rc2
+version: v1.0.0-rc3
+appVersion: v1.0.0-rc3
 
 icon: https://assets.unikorn-cloud.org/assets/images/logos/dark-on-light/icon.png
 
 dependencies:
 - name: unikorn-common
   version: v0.1.15
-  repository: https://unikorn-cloud.github.io/helm-common
+  repository: https://nscaledev.github.io/uni-helm-common
