@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unikorn-ui
+  name: {{ .Release.Name }}
   labels:
     {{- include "unikorn.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: unikorn-ui
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: unikorn-ui
+        app: {{ .Release.Name }}
     spec:
       containers:
-      - name: unikorn-ui
+      - name: {{ .Release.Name }}
         image: {{ include "unikorn-ui.image" . }}
         ports:
         - name: http
@@ -49,22 +49,22 @@ spec:
             {{- if .Values.oauth2.clientSecretSecretName }}
             name: {{ .Values.oauth2.clientSecretSecretName }}
             {{- else }}
-            name: unikorn-ui-oidc-secret
+            name: {{ .Release.Name }}-oidc-secret
             {{- end }}
             optional: false
         securityContext:
           readOnlyRootFilesystem: true
         {{- if .Values.tls.private }}
         volumeMounts:
-        - name: unikorn-ui-ingress-tls
+        - name: {{ .Release.Name }}-ingress-tls
           mountPath: /var/run/secrets/unikorn-cloud.org
         {{- end }}
-      serviceAccountName: unikorn-ui
+      serviceAccountName: {{ .Release.Name }}
       securityContext:
         runAsNonRoot: true
       {{- if .Values.tls.private }}
       volumes:
-      - name: unikorn-ui-ingress-tls
+      - name: {{ .Release.Name }}-ingress-tls
         secret:
-          secretName: unikorn-ui-ingress-tls
+          secretName: {{ .Release.Name }}-ingress-tls
       {{- end }}
