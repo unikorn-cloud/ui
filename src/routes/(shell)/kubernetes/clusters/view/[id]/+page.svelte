@@ -56,9 +56,9 @@
 	);
 
 	// TODO: move into +page.ts
-	const versions = [
-		...new Set(data.images.map((x) => x.spec.softwareVersions?.kubernetes || ''))
-	].reverse();
+	const versions = [...new Set(data.images.map((x) => x.spec.softwareVersions?.kubernetes || ''))]
+		.sort()
+		.reverse();
 
 	function autoUpgradeChange(e: { checked: boolean }) {
 		if (!cluster.spec.autoUpgrade) {
