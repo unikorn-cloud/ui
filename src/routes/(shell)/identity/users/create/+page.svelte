@@ -17,7 +17,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'Create User',
-		description: 'Create a new user in the organization.'
+		description: 'Create a new user in the organization.',
+		icon: 'mdi:user-outline'
 	};
 
 	let names = $derived(data.users.map((x) => x.spec.subject));

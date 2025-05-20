@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ResourceHealthStatus } from './ResourceHealthStatus';
+import {
+    ResourceHealthStatusFromJSON,
+    ResourceHealthStatusFromJSONTyped,
+    ResourceHealthStatusToJSON,
+} from './ResourceHealthStatus';
 import type { ResourceProvisioningStatus } from './ResourceProvisioningStatus';
 import {
     ResourceProvisioningStatusFromJSON,
@@ -93,6 +99,12 @@ export interface ResourceReadMetadata {
      * @memberof ResourceReadMetadata
      */
     provisioningStatus: ResourceProvisioningStatus;
+    /**
+     * 
+     * @type {ResourceHealthStatus}
+     * @memberof ResourceReadMetadata
+     */
+    healthStatus: ResourceHealthStatus;
 }
 
 /**
@@ -104,6 +116,7 @@ export function instanceOfResourceReadMetadata(value: object): boolean {
     isInstance = isInstance && "id" in value;
     isInstance = isInstance && "creationTime" in value;
     isInstance = isInstance && "provisioningStatus" in value;
+    isInstance = isInstance && "healthStatus" in value;
 
     return isInstance;
 }
@@ -128,6 +141,7 @@ export function ResourceReadMetadataFromJSONTyped(json: any, ignoreDiscriminator
         'modifiedBy': !exists(json, 'modifiedBy') ? undefined : json['modifiedBy'],
         'deletionTime': !exists(json, 'deletionTime') ? undefined : (new Date(json['deletionTime'])),
         'provisioningStatus': ResourceProvisioningStatusFromJSON(json['provisioningStatus']),
+        'healthStatus': ResourceHealthStatusFromJSON(json['healthStatus']),
     };
 }
 
@@ -150,6 +164,7 @@ export function ResourceReadMetadataToJSON(value?: ResourceReadMetadata | null):
         'modifiedBy': value.modifiedBy,
         'deletionTime': value.deletionTime === undefined ? undefined : (value.deletionTime.toISOString()),
         'provisioningStatus': ResourceProvisioningStatusToJSON(value.provisioningStatus),
+        'healthStatus': ResourceHealthStatusToJSON(value.healthStatus),
     };
 }
 

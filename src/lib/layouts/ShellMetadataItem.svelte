@@ -2,23 +2,20 @@
 	interface Props {
 		icon: string;
 		label: string;
-		value?: string;
-		children?: import('svelte').Snippet;
+		value: string;
 	}
 
-	let { icon, label, value, children }: Props = $props();
+	let { icon, label, value }: Props = $props();
 </script>
 
-<iconify-icon class="text-lg text-primary-600-400" {icon}></iconify-icon>
+<div class="col-span-3 grid grid-cols-subgrid items-center text-sm">
+	<iconify-icon class="text-lg text-primary-600-400" {icon}></iconify-icon>
 
-<div class="font-bold">
-	{label}
-</div>
+	<div class="font-bold">
+		{label}
+	</div>
 
-{#if value}
 	<div>
 		{value}
 	</div>
-{:else if children}
-	{@render children()}
-{/if}
+</div>

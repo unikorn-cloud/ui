@@ -55,7 +55,7 @@ export interface RegionDetailSpec {
      * @type {RegionFeatures}
      * @memberof RegionDetailSpec
      */
-    features?: RegionFeatures;
+    features: RegionFeatures;
 }
 
 /**
@@ -64,6 +64,7 @@ export interface RegionDetailSpec {
 export function instanceOfRegionDetailSpec(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "type" in value;
+    isInstance = isInstance && "features" in value;
 
     return isInstance;
 }
@@ -80,7 +81,7 @@ export function RegionDetailSpecFromJSONTyped(json: any, ignoreDiscriminator: bo
         
         'type': RegionTypeFromJSON(json['type']),
         'kubernetes': !exists(json, 'kubernetes') ? undefined : RegionDetailKubernetesFromJSON(json['kubernetes']),
-        'features': !exists(json, 'features') ? undefined : RegionFeaturesFromJSON(json['features']),
+        'features': RegionFeaturesFromJSON(json['features']),
     };
 }
 

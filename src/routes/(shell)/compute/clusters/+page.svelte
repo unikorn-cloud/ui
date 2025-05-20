@@ -20,15 +20,16 @@
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
-	import Button from '$lib/forms/Button.svelte';
 	import PopupButton from '$lib/forms/PopupButton.svelte';
+	import SubtleButton from '$lib/forms/SubtleButton.svelte';
 	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 	import Placeholder from '$lib/layouts/Placeholder.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
 		name: 'Compute Clusters',
-		description: 'Manage your Compute clusters.'
+		description: 'Manage your Compute clusters.',
+		icon: 'mdi:server-network-outline'
 	};
 
 	onMount(() => {
@@ -124,7 +125,7 @@
 	{:else}
 		<ShellList>
 			{#each data.clusters as resource}
-				<ShellListItem icon="mdi:server-network-outline">
+				<ShellListItem>
 					{#snippet main()}
 						<ShellListItemHeader
 							metadata={resource.metadata}
@@ -133,20 +134,27 @@
 						/>
 					{/snippet}
 
-					<ShellListItemBadges metadata={resource.metadata}>
-						{#snippet extra()}
-							<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
-								{RegionUtil.name(data.regions, resource.spec.regionId)}
-							</Badge>
-						{/snippet}
-					</ShellListItemBadges>
+					{#snippet badges()}
+						<ShellListItemBadges metadata={resource.metadata}>
+							{#snippet extra()}
+								<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
+									{RegionUtil.name(data.regions, resource.spec.regionId)}
+								</Badge>
+							{/snippet}
+						</ShellListItemBadges>
+					{/snippet}
 
 					<ShellListItemMetadata metadata={resource.metadata} />
 
 					{#snippet trail()}
-						<Button icon="mdi:connection" clicked={() => getSSHKey(resource)} />
+						<SubtleButton
+							icon="mdi:connection"
+							label="Get SSH Key"
+							clicked={() => getSSHKey(resource)}
+						/>
 						<ModalIcon
 							icon="mdi:trash-can-outline"
+							label="Delete"
 							title="Are you sure?"
 							confirm={() => confirm(resource)}
 						></ModalIcon>

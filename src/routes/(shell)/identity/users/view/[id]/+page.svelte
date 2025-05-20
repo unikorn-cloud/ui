@@ -18,7 +18,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'View/Update User',
-		description: 'Manage your user.'
+		description: 'Manage your user.',
+		icon: 'mdi:user-outline'
 	};
 
 	// Once we know the users, select the one we are viewing.

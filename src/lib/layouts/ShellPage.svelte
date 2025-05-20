@@ -11,12 +11,19 @@
 </script>
 
 <div class="p-4 lg:px-16 lg:py-8 w-full mx-auto flex flex-col gap-8">
-	<div class="flex jusify-between">
-		<div class="flex flex-col gap-4 grow">
-			<h1 class="h1 font-bold">{settings.name}</h1>
-			<p class="text-surface-700-300">{settings.description}</p>
+	<div class="flex flex-col gap-4 lg:flex-row lg:jusify-between">
+		<div class="flex gap-4 grow">
+			<div class="flex flex-col gap-4">
+				<div class="flex gap-4 items-center">
+					{#if settings.icon}
+						<iconify-icon icon={settings.icon} class="text-6xl text-primary-600-400"></iconify-icon>
+					{/if}
+					<h1 class="text-3xl lg:text-5xl">{settings.name}</h1>
+				</div>
+				<p class="text-surface-700-300">{settings.description}</p>
+			</div>
 		</div>
-		<div class="self-end">
+		<div class="self-start lg:self-end">
 			{@render tools?.()}
 		</div>
 	</div>

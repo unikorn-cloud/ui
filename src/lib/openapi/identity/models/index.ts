@@ -39,6 +39,7 @@ export * from './QuotaWrite';
 export * from './QuotasRead';
 export * from './QuotasWrite';
 export * from './ResourceAllocation';
+export * from './ResourceHealthStatus';
 export * from './ResourceMetadata';
 export * from './ResourceProvisioningStatus';
 export * from './ResourceReadMetadata';

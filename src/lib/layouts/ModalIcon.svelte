@@ -3,12 +3,14 @@
 
 	interface Props {
 		icon: string;
+		label?: string;
 		title: string;
 		children?: Snippet;
 		confirm: () => void;
+		[key: string]: any;
 	}
 
-	let { icon, title, children, confirm }: Props = $props();
+	let { icon, label, title, children, confirm, ...props }: Props = $props();
 
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 
@@ -29,10 +31,13 @@
 	onOpenChange={(e) => (open = e.open)}
 	contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-screen-sm"
 	backdropClasses="backdrop-blur-sm"
-	triggerBase="btn flex items-center"
+	triggerBase="btn flex items-center p-0 {props.class || ''}"
 >
 	{#snippet trigger()}
 		<iconify-icon {icon} class="text-2xl"></iconify-icon>
+		{#if label}
+			{label}
+		{/if}
 	{/snippet}
 
 	{#snippet content()}

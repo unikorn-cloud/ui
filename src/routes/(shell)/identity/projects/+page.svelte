@@ -15,13 +15,15 @@
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
-	import Button from '$lib/forms/Button.svelte';
+	import SubtleButton from '$lib/forms/SubtleButton.svelte';
 	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'Projects',
-		description: 'Manage your resources.'
+		description:
+			'Projects bind groups of users to projects and allow infrastructure to be provisioned within them.',
+		icon: 'mdi:folder-open-outline'
 	};
 
 	onMount(() => {
@@ -45,12 +47,12 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<Button icon="mdi:add" label="Create" href="/identity/projects/create" />
+		<SubtleButton icon="mdi:add" label="Create" href="/identity/projects/create" />
 	{/snippet}
 
 	<ShellList>
 		{#each data.projects || [] as resource}
-			<ShellListItem icon="mdi:folder-open-outline">
+			<ShellListItem>
 				{#snippet main()}
 					<ShellListItemHeader
 						metadata={resource.metadata}
@@ -58,13 +60,16 @@
 					/>
 				{/snippet}
 
-				<ShellListItemBadges metadata={resource.metadata} />
+				{#snippet badges()}
+					<ShellListItemBadges metadata={resource.metadata} />
+				{/snippet}
 
 				<ShellListItemMetadata metadata={resource.metadata} />
 
 				{#snippet trail()}
 					<ModalIcon
 						icon="mdi:trash-can-outline"
+						label="Delete"
 						title="Are you sure?"
 						confirm={() => confirm(resource.metadata.id)}
 					>

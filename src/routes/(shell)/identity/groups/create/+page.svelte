@@ -16,7 +16,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'Create Group',
-		description: 'Create a new group in the organization.'
+		description: 'Create a new group in the organization.',
+		icon: 'mdi:account-group-outline'
 	};
 
 	let names = $derived(data.groups.map((x) => x.metadata.name));

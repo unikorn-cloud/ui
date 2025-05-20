@@ -1,14 +1,15 @@
 <script lang="ts">
-	import * as Kubernetes from '$lib/openapi/kubernetes';
+	import * as Identity from '$lib/openapi/identity';
 	import * as Formatters from '$lib/formatters';
-	import * as Status from '$lib/status';
+	import * as ProvisioningStatus from '$lib/provisioningStatus';
+	import * as HealthStatus from '$lib/healthStatus';
 	import Badge from '$lib/layouts/Badge.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 
 	import type { Snippet } from 'svelte';
 
 	interface Props {
-		metadata: Kubernetes.ResourceReadMetadata;
+		metadata: Identity.ResourceReadMetadata;
 		badges?: import('svelte').Snippet;
 		extraMetadata?: Snippet;
 	}
@@ -17,9 +18,12 @@
 </script>
 
 <div class="flex flex-col gap-4">
-	<div class="flex gap-2 items-center">
-		<Badge icon={Status.icon(metadata)} iconcolor={Status.color(metadata)}>
+	<div class="flex gap-2 items-center flex-wrap">
+		<Badge icon={ProvisioningStatus.icon(metadata)} iconcolor={ProvisioningStatus.color(metadata)}>
 			{metadata.provisioningStatus}
+		</Badge>
+		<Badge icon={HealthStatus.icon(metadata)} iconcolor={HealthStatus.color(metadata)}>
+			{metadata.healthStatus}
 		</Badge>
 
 		{@render badges?.()}

@@ -15,13 +15,14 @@
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
-	import Button from '$lib/forms/Button.svelte';
+	import SubtleButton from '$lib/forms/SubtleButton.svelte';
 	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'OAuth2 Providers',
-		description: 'Manage your OAuth2 providers.'
+		description: 'Manage your OAuth2 providers.',
+		icon: 'mdi:key-outline'
 	};
 
 	onMount(() => {
@@ -45,12 +46,12 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<Button icon="mdi:add" label="Create" href="/identity/oauth2providers/create" />
+		<SubtleButton icon="mdi:add" label="Create" href="/identity/oauth2providers/create" />
 	{/snippet}
 
 	<ShellList>
 		{#each data.oauth2providers || [] as resource}
-			<ShellListItem icon="mdi:key-outline">
+			<ShellListItem>
 				{#snippet main()}
 					<ShellListItemHeader
 						metadata={resource.metadata}
@@ -65,6 +66,7 @@
 				{#snippet trail()}
 					<ModalIcon
 						icon="mdi:trash-can-outline"
+						label="Delete"
 						title="Are you sure?"
 						confirm={() => confirm(resource.metadata.id)}
 					>

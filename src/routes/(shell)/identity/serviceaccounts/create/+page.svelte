@@ -18,7 +18,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'Create Service Account',
-		description: 'Create a new service account in the organization.'
+		description: 'Create a new service account in the organization.',
+		icon: 'mdi:account-service-outline'
 	};
 
 	let names = $derived(data.serviceAccounts.map((x) => x.metadata.name));

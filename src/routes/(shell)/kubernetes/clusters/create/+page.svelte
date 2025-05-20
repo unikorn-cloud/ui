@@ -23,7 +23,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
 		name: 'Create Kubernetes Cluster',
-		description: 'Create and deploy a new Kubernetes cluster.'
+		description: 'Create and deploy a new Kubernetes cluster.',
+		icon: 'mdi:kubernetes'
 	};
 
 	const versions = [...new Set(data.images.map((x) => x.spec.softwareVersions?.kubernetes || ''))]

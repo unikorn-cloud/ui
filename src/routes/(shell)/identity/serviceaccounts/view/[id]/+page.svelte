@@ -20,7 +20,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'View/Update Service Account',
-		description: 'Manage your service account.'
+		description: 'Manage your service account.',
+		icon: 'mdi:account-service-outline'
 	};
 
 	let serviceAccount = $derived.by(() => {
@@ -65,7 +66,7 @@
 				<ShellMetadataItem
 					icon="mdi:key-outline"
 					label="Expiry"
-					value={newServiceAccount?.status.expiry.toUTCString()}
+					value={newServiceAccount?.status.expiry.toUTCString() || 'unknown'}
 				/>
 			{/snippet}
 		</ShellViewHeader>
@@ -113,7 +114,7 @@
 			</MultiSelect>
 		</ShellSection>
 
-		<div class="flex justify-between">
+		<div class="flex flex-wrap justify-between gap-4">
 			<Button
 				icon="mdi:cancel-bold"
 				label="Cancel"

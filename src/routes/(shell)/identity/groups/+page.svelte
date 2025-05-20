@@ -15,13 +15,14 @@
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
-	import Button from '$lib/forms/Button.svelte';
+	import SubtleButton from '$lib/forms/SubtleButton.svelte';
 	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'Groups',
-		description: 'Manage your organizations groups and roles.'
+		description: 'Groups bind users and service accounts to roles.',
+		icon: 'mdi:account-group-outline'
 	};
 
 	onMount(() => {
@@ -45,12 +46,12 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<Button icon="mdi:add" label="Create" href="/identity/groups/create" />
+		<SubtleButton icon="mdi:add" label="Create" href="/identity/groups/create" />
 	{/snippet}
 
 	<ShellList>
 		{#each data.groups || [] as resource}
-			<ShellListItem icon="mdi:account-group-outline">
+			<ShellListItem>
 				{#snippet main()}
 					<ShellListItemHeader
 						metadata={resource.metadata}
@@ -58,13 +59,16 @@
 					/>
 				{/snippet}
 
-				<ShellListItemBadges metadata={resource.metadata} />
+				{#snippet badges()}
+					<ShellListItemBadges metadata={resource.metadata} />
+				{/snippet}
 
 				<ShellListItemMetadata metadata={resource.metadata} />
 
 				{#snippet trail()}
 					<ModalIcon
 						icon="mdi:trash-can-outline"
+						label="Delete"
 						title="Are you sure?"
 						confirm={() => confirm(resource.metadata.id)}
 					>

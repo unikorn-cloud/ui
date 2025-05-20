@@ -2,33 +2,40 @@
 	import type { Snippet } from 'svelte';
 
 	interface Props {
-		icon: string;
 		main: Snippet;
+		badges?: Snippet;
 		trail?: Snippet;
 		children?: Snippet;
 	}
 
-	let { icon, main, trail, children }: Props = $props();
+	let { main, badges, trail, children }: Props = $props();
 </script>
 
 <article
-	class="flex gap-2 lg:gap-6 lg:col-span-full lg:grid lg:grid-cols-subgrid lg:items-center card shadow-md p-4 lg:px-6 bg-surface-50-950 border border-surface-200-800"
+	class="flex flex-col gap-4 lg:gap-[unset] lg:col-span-full lg:grid lg:grid-cols-subgrid card shadow-md p-4 bg-surface-50-950 border border-surface-200-800"
 >
-	<div class="flex flex-col gap-6 lg:contents overflow-hidden">
-		<div class="flex items-center gap-4 lg:contents overflow-hidden">
-			<iconify-icon {icon} class="hidden lg:block text-4xl text-primary-600-400"></iconify-icon>
-
-			<div class="overflow-hidden text-ellipsis">
-				{@render main()}
-			</div>
+	<div class="contents lg:col-span-full lg:flex lg:pb-4 justify-between">
+		{#if badges}
+			{@render badges()}
+		{/if}
+		<div class="hidden lg:flex gap-4">
+			{@render trail?.()}
 		</div>
+	</div>
 
-		{@render children?.()}
+	<div class="flex gap-4 lg:pr-4">
+		<div class="overflow-hidden text-ellipsis">
+			{@render main()}
+		</div>
 	</div>
 
 	<div
-		class="ml-auto lg:justify-self-end lg:col-start-[-1] flex flex-col lg:flex-row gap-2 items-center"
+		class="grid grid-cols-[repeat(3,max-content)] gap-2 lg:col-span-6 lg:grid-cols-subgrid lg:grid-rows-2 lg:grid-flow-col lg:place-self-start"
 	>
+		{@render children?.()}
+	</div>
+
+	<div class="flex flex-col items-start gap-4 flex-wrap lg:hidden">
 		{@render trail?.()}
 	</div>
 </article>

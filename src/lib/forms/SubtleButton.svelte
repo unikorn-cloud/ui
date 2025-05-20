@@ -20,13 +20,13 @@
 
 {#if href}
 	<a {href}>
-		<div class="btn flex gap-2 items-center {props.class || ''}">
+		<div class="btn flex gap-2 items-center p-0 {props.class || ''}">
 			{@render content()}
 		</div>
 	</a>
 {:else if clicked}
 	<button
-		class="btn flex gap-2 items-center {props.class || ''}"
+		class="btn flex gap-2 items-center p-0 {props.class || ''}"
 		{disabled}
 		onclick={clicked}
 		onkeypress={clicked}

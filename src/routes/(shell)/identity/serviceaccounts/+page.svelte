@@ -16,13 +16,14 @@
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
-	import Button from '$lib/forms/Button.svelte';
+	import SubtleButton from '$lib/forms/SubtleButton.svelte';
 	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'Service Accounts',
-		description: "Manage your organization's service accounts."
+		description: 'Service accounts provide long-lived user accounts for use with CLI tooling.',
+		icon: 'mdi:account-service-outline'
 	};
 
 	onMount(() => {
@@ -46,12 +47,12 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<Button icon="mdi:add" label="Create" href="/identity/serviceaccounts/create" />
+		<SubtleButton icon="mdi:add" label="Create" href="/identity/serviceaccounts/create" />
 	{/snippet}
 
 	<ShellList>
 		{#each data.serviceAccounts || [] as resource}
-			<ShellListItem icon="mdi:account-service-outline">
+			<ShellListItem>
 				{#snippet main()}
 					<ShellListItemHeader
 						metadata={resource.metadata}
@@ -59,9 +60,11 @@
 					/>
 				{/snippet}
 
-				<ShellListItemBadges metadata={resource.metadata} />
+				{#snippet badges()}
+					<ShellListItemBadges metadata={resource.metadata} />
+				{/snippet}
 
-				<ShellListItemMetadata metadata={resource.metadata} />
+				<ShellListItemMetadata metadata={resource.metadata}></ShellListItemMetadata>
 
 				<ShellListItemMetadata>
 					<ShellMetadataItem
@@ -74,6 +77,7 @@
 				{#snippet trail()}
 					<ModalIcon
 						icon="mdi:trash-can-outline"
+						label="Delete"
 						title="Are you sure?"
 						confirm={() => confirm(resource.metadata.id)}
 					>
