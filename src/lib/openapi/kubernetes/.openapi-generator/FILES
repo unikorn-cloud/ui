@@ -34,6 +34,7 @@ models/RegionRead.ts
 models/RegionSpec.ts
 models/RegionType.ts
 models/RegionTypeParameter.ts
+models/ResourceHealthStatus.ts
 models/ResourceMetadata.ts
 models/ResourceProvisioningStatus.ts
 models/ResourceReadMetadata.ts

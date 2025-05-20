@@ -19,13 +19,14 @@
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
-	import Button from '$lib/forms/Button.svelte';
+	import SubtleButton from '$lib/forms/SubtleButton.svelte';
 	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'Users',
-		description: "Manage your organization's users."
+		description: 'Known user accounts who are permitted access to the organization.',
+		icon: 'mdi:user-outline'
 	};
 
 	onMount(() => {
@@ -79,12 +80,12 @@
 
 <ShellPage {settings}>
 	{#snippet tools()}
-		<Button icon="mdi:add" label="Create" href="/identity/users/create" />
+		<SubtleButton icon="mdi:add" label="Create" href="/identity/users/create" />
 	{/snippet}
 
 	<ShellList>
 		{#each data.users || [] as resource}
-			<ShellListItem icon="mdi:user-outline">
+			<ShellListItem>
 				{#snippet main()}
 					<ShellListItemHeader
 						title={resource.spec.subject}
@@ -92,16 +93,17 @@
 					/>
 				{/snippet}
 
-				<ShellListItemBadges>
-					{#snippet extra()}
-						<Badge icon={stateIcon(resource)} iconcolor={stateColor(resource)}
-							>{resource.spec.state}</Badge
-						>
-					{/snippet}
-				</ShellListItemBadges>
+				{#snippet badges()}
+					<ShellListItemBadges>
+						{#snippet extra()}
+							<Badge icon={stateIcon(resource)} iconcolor={stateColor(resource)}
+								>{resource.spec.state}</Badge
+							>
+						{/snippet}
+					</ShellListItemBadges>
+				{/snippet}
 
-				<ShellListItemMetadata metadata={resource.metadata} />
-
+				<ShellListItemMetadata metadata={resource.metadata}></ShellListItemMetadata>
 				<ShellListItemMetadata>
 					<ShellMetadataItem icon="mdi:run" label="Last Active" value={userLastActive(resource)} />
 				</ShellListItemMetadata>
@@ -109,6 +111,7 @@
 				{#snippet trail()}
 					<ModalIcon
 						icon="mdi:trash-can-outline"
+						label="Delete"
 						title="Are you sure?"
 						confirm={() => confirm(resource.metadata.id)}
 					>

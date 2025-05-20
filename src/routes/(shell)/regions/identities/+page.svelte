@@ -23,7 +23,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Regions',
 		name: 'Identities',
-		description: 'Manage your cloud identities'
+		description: 'Manage your cloud identities',
+		icon: 'mdi:user-outline'
 	};
 
 	onMount(() => {
@@ -49,24 +50,27 @@
 <ShellPage {settings}>
 	<ShellList>
 		{#each data.identities as resource}
-			<ShellListItem icon="mdi:user-outline">
+			<ShellListItem>
 				{#snippet main()}
 					<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
 				{/snippet}
 
-				<ShellListItemBadges metadata={resource.metadata}>
-					{#snippet extra()}
-						<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
-							{RegionUtil.name(data.regions, resource.spec.regionId)}
-						</Badge>
-					{/snippet}
-				</ShellListItemBadges>
+				{#snippet badges()}
+					<ShellListItemBadges metadata={resource.metadata}>
+						{#snippet extra()}
+							<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
+								{RegionUtil.name(data.regions, resource.spec.regionId)}
+							</Badge>
+						{/snippet}
+					</ShellListItemBadges>
+				{/snippet}
 
 				<ShellListItemMetadata metadata={resource.metadata} />
 
 				{#snippet trail()}
 					<ModalIcon
 						icon="mdi:trash-can-outline"
+						label="Delete"
 						title="Are you sure?"
 						confirm={() => confirm(resource)}
 					>

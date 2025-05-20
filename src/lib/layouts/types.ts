@@ -5,4 +5,6 @@ export interface ShellPageSettings {
 	name: string;
 	/* Description of what the page does/represents */
 	description: string;
+	/* Icon of the page */
+	icon: string;
 }

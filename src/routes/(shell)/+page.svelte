@@ -12,7 +12,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'None',
 		name: 'Dashboard',
-		description: 'Summary of your resources.'
+		description: 'Summary of your resources.',
+		icon: 'mdi:gauge'
 	};
 </script>
 

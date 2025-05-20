@@ -25,7 +25,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
 		name: 'View/update Kubernetes Cluster',
-		description: 'Update an existing Kubernetes cluster.'
+		description: 'Update an existing Kubernetes cluster.',
+		icon: 'mdi:kubernetes'
 	};
 
 	// TODO: move into +page.ts

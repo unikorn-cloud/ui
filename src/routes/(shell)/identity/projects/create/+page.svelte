@@ -16,7 +16,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'Create Project',
-		description: 'Create a new project.'
+		description: 'Create a new project.',
+		icon: 'mdi:folder-open-outline'
 	};
 
 	let names: Array<string> = $derived(data.projects.map((x) => x.metadata.name));

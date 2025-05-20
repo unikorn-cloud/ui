@@ -17,7 +17,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'View/Update Group',
-		description: 'Manage your group membership.'
+		description: 'Manage your group membership.',
+		icon: 'mdi:account-group-outline'
 	};
 
 	let group = $derived.by(() => {

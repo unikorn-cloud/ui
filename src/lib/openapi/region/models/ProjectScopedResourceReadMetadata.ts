@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ResourceHealthStatus } from './ResourceHealthStatus';
+import {
+    ResourceHealthStatusFromJSON,
+    ResourceHealthStatusFromJSONTyped,
+    ResourceHealthStatusToJSON,
+} from './ResourceHealthStatus';
 import type { ResourceProvisioningStatus } from './ResourceProvisioningStatus';
 import {
     ResourceProvisioningStatusFromJSON,
@@ -94,6 +100,12 @@ export interface ProjectScopedResourceReadMetadata {
      */
     provisioningStatus: ResourceProvisioningStatus;
     /**
+     * 
+     * @type {ResourceHealthStatus}
+     * @memberof ProjectScopedResourceReadMetadata
+     */
+    healthStatus: ResourceHealthStatus;
+    /**
      * The organization identifier the resource belongs to.
      * @type {string}
      * @memberof ProjectScopedResourceReadMetadata
@@ -116,6 +128,7 @@ export function instanceOfProjectScopedResourceReadMetadata(value: object): bool
     isInstance = isInstance && "id" in value;
     isInstance = isInstance && "creationTime" in value;
     isInstance = isInstance && "provisioningStatus" in value;
+    isInstance = isInstance && "healthStatus" in value;
     isInstance = isInstance && "organizationId" in value;
     isInstance = isInstance && "projectId" in value;
 
@@ -142,6 +155,7 @@ export function ProjectScopedResourceReadMetadataFromJSONTyped(json: any, ignore
         'modifiedBy': !exists(json, 'modifiedBy') ? undefined : json['modifiedBy'],
         'deletionTime': !exists(json, 'deletionTime') ? undefined : (new Date(json['deletionTime'])),
         'provisioningStatus': ResourceProvisioningStatusFromJSON(json['provisioningStatus']),
+        'healthStatus': ResourceHealthStatusFromJSON(json['healthStatus']),
         'organizationId': json['organizationId'],
         'projectId': json['projectId'],
     };
@@ -166,6 +180,7 @@ export function ProjectScopedResourceReadMetadataToJSON(value?: ProjectScopedRes
         'modifiedBy': value.modifiedBy,
         'deletionTime': value.deletionTime === undefined ? undefined : (value.deletionTime.toISOString()),
         'provisioningStatus': ResourceProvisioningStatusToJSON(value.provisioningStatus),
+        'healthStatus': ResourceHealthStatusToJSON(value.healthStatus),
         'organizationId': value.organizationId,
         'projectId': value.projectId,
     };

@@ -33,6 +33,7 @@ export * from './RegionFeatures';
 export * from './RegionRead';
 export * from './RegionSpec';
 export * from './RegionType';
+export * from './ResourceHealthStatus';
 export * from './ResourceMetadata';
 export * from './ResourceProvisioningStatus';
 export * from './ResourceReadMetadata';

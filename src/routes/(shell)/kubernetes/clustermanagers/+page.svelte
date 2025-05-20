@@ -21,7 +21,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
 		name: 'Kubernetes Cluster Managers',
-		description: 'Manage your Kubernetes cluster life-cycle managers.'
+		description: 'Manage your Kubernetes cluster life-cycle managers.',
+		icon: 'mdi:kubernetes'
 	};
 
 	onMount(() => {
@@ -49,18 +50,21 @@
 <ShellPage {settings}>
 	<ShellList>
 		{#each data.clustermanagers as resource}
-			<ShellListItem icon="mdi:kubernetes">
+			<ShellListItem>
 				{#snippet main()}
 					<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
 				{/snippet}
 
-				<ShellListItemBadges metadata={resource.metadata} />
+				{#snippet badges()}
+					<ShellListItemBadges metadata={resource.metadata} />
+				{/snippet}
 
 				<ShellListItemMetadata metadata={resource.metadata} />
 
 				{#snippet trail()}
 					<ModalIcon
 						icon="mdi:trash-can-outline"
+						label="Delete"
 						title="Are you sure?"
 						confirm={() => confirm(resource)}
 					>

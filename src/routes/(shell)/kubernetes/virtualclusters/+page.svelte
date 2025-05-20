@@ -20,15 +20,16 @@
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellListItemMetadata from '$lib/layouts/ShellListItemMetadata.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
-	import Button from '$lib/forms/Button.svelte';
 	import PopupButton from '$lib/forms/PopupButton.svelte';
+	import SubtleButton from '$lib/forms/SubtleButton.svelte';
 	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 	import Placeholder from '$lib/layouts/Placeholder.svelte';
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
 		name: 'Virtual Kubernetes Clusters',
-		description: 'Manage your virtual Kubernetes clusters.'
+		description: 'Manage your virtual Kubernetes clusters.',
+		icon: 'mdi:kubernetes'
 	};
 
 	onMount(() => {
@@ -138,7 +139,7 @@
 	{:else}
 		<ShellList>
 			{#each data.clusters as resource}
-				<ShellListItem icon="mdi:kubernetes">
+				<ShellListItem>
 					{#snippet main()}
 						<ShellListItemHeader
 							metadata={resource.metadata}
@@ -147,20 +148,27 @@
 						/>
 					{/snippet}
 
-					<ShellListItemBadges metadata={resource.metadata}>
-						{#snippet extra()}
-							<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
-								{RegionUtil.name(data.regions, resource.spec.regionId)}
-							</Badge>
-						{/snippet}
-					</ShellListItemBadges>
+					{#snippet badges()}
+						<ShellListItemBadges metadata={resource.metadata}>
+							{#snippet extra()}
+								<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
+									{RegionUtil.name(data.regions, resource.spec.regionId)}
+								</Badge>
+							{/snippet}
+						</ShellListItemBadges>
+					{/snippet}
 
 					<ShellListItemMetadata metadata={resource.metadata} />
 
 					{#snippet trail()}
-						<Button icon="mdi:connection" clicked={() => getKubeconfig(resource)} />
+						<SubtleButton
+							icon="mdi:connection"
+							label="Get kubeconfig"
+							clicked={() => getKubeconfig(resource)}
+						/>
 						<ModalIcon
 							icon="mdi:trash-can-outline"
+							label="Delete"
 							title="Are you sure?"
 							confirm={() => confirm(resource)}
 						></ModalIcon>

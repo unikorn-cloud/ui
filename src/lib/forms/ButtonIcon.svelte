@@ -2,35 +2,22 @@
 	interface Props {
 		icon: string;
 		disabled?: boolean;
-		href?: string;
-		clicked?: () => void;
+		clicked: () => void;
+		[key: string]: any;
 	}
 
-	let { icon, disabled = $bindable(), href, clicked }: Props = $props();
+	let { icon, disabled = $bindable(), href, clicked, ...props }: Props = $props();
 </script>
 
 {#snippet content()}
 	<iconify-icon {icon} class="text-2xl"></iconify-icon>
 {/snippet}
 
-{#if href}
-	{#if disabled}
-		<div class="text-surface-300-700">
-			{@render content()}
-		</div>
-	{:else}
-		<a {href} class="text-primary-600-400">
-			{@render content()}
-		</a>
-	{/if}
-{:else if clicked}
-	<button
-		class="btn"
-		class:text-surface-700-300={disabled}
-		{disabled}
-		onclick={clicked}
-		onkeypress={clicked}
-	>
-		{@render content()}
-	</button>
-{/if}
+<button
+	class="btn flex gap-2 items-center p-0 {props.class || ''}"
+	{disabled}
+	onclick={clicked}
+	onkeypress={clicked}
+>
+	{@render content()}
+</button>

@@ -17,7 +17,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'View/Update Project',
-		description: 'Manage your project.'
+		description: 'Manage your project.',
+		icon: 'mdi:folder-open-outline'
 	};
 
 	let project = $derived.by(() => {

@@ -22,7 +22,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
 		name: 'Create Compute Cluster',
-		description: 'Create and deploy a new compute cluster.'
+		description: 'Create and deploy a new compute cluster.',
+		icon: 'mdi:server-network-outline'
 	};
 
 	let projectID = $derived(page.url.searchParams.get('projectID'));

@@ -1,24 +1,24 @@
 import * as Identity from '$lib/openapi/identity';
 
-export function statusColor(s: string): string {
+export function statusColor(s: Identity.ResourceProvisioningStatus): string {
 	switch (s) {
-		case 'provisioned':
+		case Identity.ResourceProvisioningStatus.Provisioned:
 			return 'text-success-500';
-		case 'error':
+		case Identity.ResourceProvisioningStatus.Error:
 			return 'text-error-500';
-		case 'unknown':
+		case Identity.ResourceProvisioningStatus.Unknown:
 			return 'text-warning-500';
 	}
 	return 'dark:text-surface-500';
 }
 
-export function statusIcon(s: string): string {
+export function statusIcon(s: Identity.ResourceProvisioningStatus): string {
 	switch (s) {
-		case 'provisioned':
+		case Identity.ResourceProvisioningStatus.Provisioned:
 			return 'mdi:tick-circle-outline';
-		case 'error':
+		case Identity.ResourceProvisioningStatus.Error:
 			return 'mdi:error-outline';
-		case 'unknown':
+		case Identity.ResourceProvisioningStatus.Unknown:
 			return 'mdi:question-mark';
 	}
 	return 'svg-spinners:ring-resize';

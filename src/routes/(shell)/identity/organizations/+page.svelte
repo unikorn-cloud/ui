@@ -20,7 +20,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'View/Update Organization',
-		description: 'Manage your organization.'
+		description: 'Manage your organization.',
+		icon: 'mdi:business'
 	};
 
 	let organization = $derived.by(() => {

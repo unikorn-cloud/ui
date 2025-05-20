@@ -19,7 +19,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'Create OAuth2 Provider',
-		description: 'Create a new oauth2 provider.'
+		description: 'Create a new oauth2 provider.',
+		icon: 'mdi:key-outline'
 	};
 
 	let names = $derived(data.oauth2providers.map((x) => x.metadata.name));

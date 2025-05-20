@@ -21,7 +21,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Regions',
 		name: 'Networks',
-		description: 'Manage your networks'
+		description: 'Manage your networks',
+		icon: 'mdi:network-outline'
 	};
 
 	onMount(() => {
@@ -34,18 +35,20 @@
 <ShellPage {settings}>
 	<ShellList>
 		{#each data.networks as resource}
-			<ShellListItem icon="mdi:network-outline">
+			<ShellListItem>
 				{#snippet main()}
 					<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
 				{/snippet}
 
-				<ShellListItemBadges metadata={resource.metadata}>
-					{#snippet extra()}
-						<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
-							{RegionUtil.name(data.regions, resource.spec.regionId)}
-						</Badge>
-					{/snippet}
-				</ShellListItemBadges>
+				{#snippet badges()}
+					<ShellListItemBadges metadata={resource.metadata}>
+						{#snippet extra()}
+							<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
+								{RegionUtil.name(data.regions, resource.spec.regionId)}
+							</Badge>
+						{/snippet}
+					</ShellListItemBadges>
+				{/snippet}
 
 				<ShellListItemMetadata metadata={resource.metadata} />
 

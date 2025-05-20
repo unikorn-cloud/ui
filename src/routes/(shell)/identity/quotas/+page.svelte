@@ -14,7 +14,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Identity',
 		name: 'Manage Quotas',
-		description: 'Manage quotas for the organization.'
+		description: 'Manage quotas for the organization.',
+		icon: 'mdi:gauge'
 	};
 
 	let quotas = $derived.by(() => {

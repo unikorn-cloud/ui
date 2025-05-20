@@ -19,7 +19,8 @@
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
 		name: 'Create Virtual Kubernetes Cluster',
-		description: 'Create and deploy a new Kubernetes cluster.'
+		description: 'Create and deploy a new Kubernetes cluster.',
+		icon: 'mdi:kubernetes'
 	};
 
 	let clusters = $derived(data.clusters.filter((x) => x.metadata.projectId == data.projectID));
