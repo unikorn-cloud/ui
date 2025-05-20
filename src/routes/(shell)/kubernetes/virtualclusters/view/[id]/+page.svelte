@@ -20,7 +20,7 @@
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
-		name: 'View/update Vritual Kubernetes Cluster',
+		name: 'View/update Virtual Kubernetes Cluster',
 		description: 'Update an existing virtual Kubernetes cluster.'
 	};
 
