@@ -4,13 +4,14 @@ import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
 import * as Clients from '$lib/clients';
+import { assertNonEmptyList } from '$lib/loadutil';
 
 export const load: PageLoad = async ({ fetch, parent, params }) => {
 	const { organizationID, clusters } = await parent();
 
 	const cluster = clusters.find((x) => params['id'] == x.metadata.id);
 	if (!cluster) {
-		error(404, 'kubernetes cluster not found');
+		error(404, 'compute cluster not found');
 	}
 
 	// Find all clusters in this project that aren't the one we care about and
@@ -20,12 +21,6 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
 	);
 
 	const names = otherProjectClusters.map((x) => x.metadata.name);
-
-	const clustermanagers = Clients.kubernetes(
-		fetch
-	).apiV1OrganizationsOrganizationIDClustermanagersGet({
-		organizationID: organizationID
-	});
 
 	const images = Clients.kubernetes(fetch).apiV1OrganizationsOrganizationIDRegionsRegionIDImagesGet(
 		{
@@ -44,8 +39,7 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
 	return {
 		cluster: cluster,
 		names: names,
-		clustermanagers: await clustermanagers,
-		images: await images,
-		flavors: await flavors
+		images: await assertNonEmptyList(images),
+		flavors: await assertNonEmptyList(flavors)
 	};
 };

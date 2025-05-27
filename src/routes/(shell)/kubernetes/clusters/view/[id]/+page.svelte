@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { page } from '$app/state';
 
 	let { data }: { data: PageData } = $props();
 
@@ -45,16 +44,6 @@
 			};
 		}
 	});
-
-	// TODO: move into +page.ts
-	let clusters = $derived(
-		data.clusters.filter((x) => x.metadata.projectId == data.cluster.metadata.projectId)
-	);
-
-	// TODO: move into +page.ts
-	let names: Array<string> = $derived(
-		(clusters || []).filter((x) => x.metadata.id != page.params.id).map((x) => x.metadata.name)
-	);
 
 	// TODO: move into +page.ts
 	const versions = [...new Set(data.images.map((x) => x.spec.softwareVersions?.kubernetes || ''))]
@@ -272,7 +261,11 @@
 			{#if index === 0}
 				<h2 class="h2">Basic Cluster Setup</h2>
 
-				<ShellMetadataSection metadata={cluster.metadata} {names} bind:valid={metadataValid} />
+				<ShellMetadataSection
+					metadata={cluster.metadata}
+					names={data.names}
+					bind:valid={metadataValid}
+				/>
 
 				<ShellSection title="Platform Configuration">
 					<Select
