@@ -2,7 +2,7 @@
 	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
 	import { invalidate } from '$app/navigation';
-	import { navigating } from '$app/state';
+	import { navigating, page } from '$app/state';
 
 	let { data }: { data: PageData } = $props();
 
@@ -21,6 +21,7 @@
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
+	import SubtleButton from '$lib/forms/SubtleButton.svelte';
 	import Flavor from '$lib/Flavor.svelte';
 	import Image from '$lib/Image.svelte';
 
@@ -52,6 +53,14 @@
 </script>
 
 <ShellPage {settings}>
+	{#snippet tools()}
+		<SubtleButton
+			icon="mdi:edit-outline"
+			label="Edit"
+			href="/compute/clusters/edit/{page.params.id}"
+		/>
+	{/snippet}
+
 	<ShellViewHeader metadata={data.cluster.metadata}>
 		{#snippet badges()}
 			<Badge icon={RegionUtil.icon(data.regions, data.cluster.spec.regionId)}>
