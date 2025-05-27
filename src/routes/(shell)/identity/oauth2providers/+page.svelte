@@ -59,7 +59,9 @@
 					/>
 				{/snippet}
 
-				<ShellListItemBadges metadata={resource.metadata} />
+				{#snippet badges()}
+					<ShellListItemBadges metadata={resource.metadata} />
+				{/snippet}
 
 				<ShellListItemMetadata metadata={resource.metadata} />
 
