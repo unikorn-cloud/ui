@@ -14,25 +14,25 @@
 
 
 /**
- * The GPU vendor.
+ * The direction of the rule.
  * @export
  */
-export const GpuVendor = {
-    Nvidia: 'NVIDIA',
-    Amd: 'AMD'
+export const NetworkDirection = {
+    Ingress: 'ingress',
+    Egress: 'egress'
 } as const;
-export type GpuVendor = typeof GpuVendor[keyof typeof GpuVendor];
+export type NetworkDirection = typeof NetworkDirection[keyof typeof NetworkDirection];
 
 
-export function GpuVendorFromJSON(json: any): GpuVendor {
-    return GpuVendorFromJSONTyped(json, false);
+export function NetworkDirectionFromJSON(json: any): NetworkDirection {
+    return NetworkDirectionFromJSONTyped(json, false);
 }
 
-export function GpuVendorFromJSONTyped(json: any, ignoreDiscriminator: boolean): GpuVendor {
-    return json as GpuVendor;
+export function NetworkDirectionFromJSONTyped(json: any, ignoreDiscriminator: boolean): NetworkDirection {
+    return json as NetworkDirection;
 }
 
-export function GpuVendorToJSON(value?: GpuVendor | null): any {
+export function NetworkDirectionToJSON(value?: NetworkDirection | null): any {
     return value as any;
 }
 

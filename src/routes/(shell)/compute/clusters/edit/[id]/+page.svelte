@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { page } from '$app/state';
 
 	let { data }: { data: PageData } = $props();
 
@@ -69,7 +70,7 @@
 
 		Clients.compute()
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDPut(parameters)
-			.then(() => window.location.assign('/compute/clusters'))
+			.then(() => window.location.assign('/compute/clusters/view/' + page.params.id))
 			.catch((e: Error) => Clients.error(e));
 	}
 

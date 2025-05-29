@@ -1,3 +1,4 @@
+.openapi-generator-ignore
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
@@ -18,6 +19,8 @@ models/ImageOS.ts
 models/ImageSpec.ts
 models/ImageVirtualization.ts
 models/ModelError.ts
+models/NetworkDirection.ts
+models/NetworkProtocol.ts
 models/NetworkRead.ts
 models/NetworkReadSpec.ts
 models/NetworkSpecOpenstack.ts
@@ -46,20 +49,18 @@ models/SecurityGroupReadSpec.ts
 models/SecurityGroupRulePort.ts
 models/SecurityGroupRulePortRange.ts
 models/SecurityGroupRuleRead.ts
-models/SecurityGroupRuleReadSpec.ts
+models/SecurityGroupRuleSpec.ts
 models/SecurityGroupRuleWrite.ts
-models/SecurityGroupRuleWriteSpec.ts
 models/SecurityGroupWrite.ts
 models/ServerImage.ts
 models/ServerNetwork.ts
 models/ServerNetworkAllowedAddressPair.ts
 models/ServerPublicIPAllocation.ts
 models/ServerRead.ts
-models/ServerReadSpec.ts
-models/ServerReadStatus.ts
 models/ServerSecurityGroup.ts
+models/ServerSpec.ts
+models/ServerStatus.ts
 models/ServerWrite.ts
-models/ServerWriteSpec.ts
 models/StaticResourceMetadata.ts
 models/Tag.ts
 models/index.ts
