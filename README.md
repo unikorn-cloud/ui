@@ -1,17 +1,14 @@
-# Unikorn-UI
-
-![Unikorn Logo](https://raw.githubusercontent.com/unikorn-cloud/assets/main/images/logos/light-on-dark/logo.svg#gh-dark-mode-only)
-![Unikorn Logo](https://raw.githubusercontent.com/unikorn-cloud/assets/main/images/logos/dark-on-light/logo.svg#gh-light-mode-only)
+# UNI UI
 
 ## Overview
 
-This is a user-friendly user interface built on top of [Unikorn](https://github.com/unikorn-cloud) server.
+This is a user-friendly user interface built on top of [UNI](https://github.com/nscaledev/uni)
 
 ## Installing
 
 ### Prerequisites
 
-First install the [Unikorn Identity Service](https://github.com/unikorn-cloud/identity) creating an OIDC client for your UI.
+First install the [UNI Identity Service](https://github.com/nscaledev/uni/identity) creating an OIDC client for your UI.
 
 Your identity `values.yaml` for Helm should have something similar to this:
 

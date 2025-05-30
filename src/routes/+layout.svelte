@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<title>Unikorn Dashboard</title>
+	<title>UNI Dashboard</title>
 	<script src="/js/iconify-icon-1.0.5.min.js"></script>
 	<script src="/js/svg-inject.min.js"></script>
 </svelte:head>
