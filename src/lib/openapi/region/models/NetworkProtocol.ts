@@ -14,25 +14,25 @@
 
 
 /**
- * The GPU vendor.
+ * The protocol to allow.
  * @export
  */
-export const GpuVendor = {
-    Nvidia: 'NVIDIA',
-    Amd: 'AMD'
+export const NetworkProtocol = {
+    Tcp: 'tcp',
+    Udp: 'udp'
 } as const;
-export type GpuVendor = typeof GpuVendor[keyof typeof GpuVendor];
+export type NetworkProtocol = typeof NetworkProtocol[keyof typeof NetworkProtocol];
 
 
-export function GpuVendorFromJSON(json: any): GpuVendor {
-    return GpuVendorFromJSONTyped(json, false);
+export function NetworkProtocolFromJSON(json: any): NetworkProtocol {
+    return NetworkProtocolFromJSONTyped(json, false);
 }
 
-export function GpuVendorFromJSONTyped(json: any, ignoreDiscriminator: boolean): GpuVendor {
-    return json as GpuVendor;
+export function NetworkProtocolFromJSONTyped(json: any, ignoreDiscriminator: boolean): NetworkProtocol {
+    return json as NetworkProtocol;
 }
 
-export function GpuVendorToJSON(value?: GpuVendor | null): any {
+export function NetworkProtocolToJSON(value?: NetworkProtocol | null): any {
     return value as any;
 }
 

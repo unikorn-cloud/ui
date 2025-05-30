@@ -38,17 +38,12 @@
 		return () => clearInterval(interval);
 	});
 
-	function getPoolSpec(
-		pool: Compute.ComputeClusterWorkloadPoolStatus
-	): Compute.ComputeClusterWorkloadPool {
-		return data.cluster.spec.workloadPools.find(
-			(x) => x.name == pool.name
-		) as Compute.ComputeClusterWorkloadPool;
+	function getImage(id: string): Compute.Image {
+		return data.images.find((x) => x.metadata.id == id) as Compute.Image;
 	}
 
-	function getFlavor(pool: Compute.ComputeClusterWorkloadPoolStatus): Compute.Flavor {
-		const poolSpec = getPoolSpec(pool);
-		return data.flavors.find((x) => x.metadata.id == poolSpec.machine.flavorId) as Compute.Flavor;
+	function getFlavor(id: string): Compute.Flavor {
+		return data.flavors.find((x) => x.metadata.id == id) as Compute.Flavor;
 	}
 </script>
 
@@ -78,8 +73,8 @@
 							{#snippet main()}
 								<div class="flex gap-4 items-center">
 									<ShellListItemHeader title={machine.hostname} />
-									<Flavor flavor={getFlavor(pool)} />
-									<Image selector={getPoolSpec(pool).machine.image?.selector} />
+									<Flavor flavor={getFlavor(machine.flavorID)} />
+									<Image image={getImage(machine.imageID)} />
 								</div>
 							{/snippet}
 
