@@ -44,6 +44,20 @@ spec:
         - name: NODE_EXTRA_CA_CERTS
           value: /var/run/secrets/unikorn-cloud.org/ca.crt
         {{- end }}
+        {{- with $branding := .Values.branding }}
+          {{- if $branding.title }}
+        - name: PUBLIC_TITLE
+          value: {{ $branding.title }}
+          {{- end }}
+          {{- if $branding.favicon }}
+        - name: PUBLIC_FAVICON
+          value: {{ $branding.favicon}}
+          {{- end }}
+          {{- if $branding.logo }}
+        - name: PUBLIC_LOGO
+          value: {{ $branding.logo }}
+          {{- end }}
+        {{- end }}
         envFrom:
         - secretRef:
             {{- if .Values.oauth2.clientSecretSecretName }}
