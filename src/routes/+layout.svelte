@@ -1,6 +1,8 @@
 <script lang="ts">
 	/* Required for styling */
 	import '../app.css';
+	import { env } from '$env/dynamic/public';
+
 	interface Props {
 		children?: import('svelte').Snippet;
 	}
@@ -9,7 +11,10 @@
 </script>
 
 <svelte:head>
-	<title>UNI Dashboard</title>
+	<title>{env.PUBLIC_TITLE}</title>
+	{#if env.PUBLIC_FAVICON}
+		<link rel="icon" type="image/png" href={env.PUBLIC_FAVICON} />
+	{/if}
 	<script src="/js/iconify-icon-1.0.5.min.js"></script>
 	<script src="/js/svg-inject.min.js"></script>
 </svelte:head>
