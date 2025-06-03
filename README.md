@@ -1,14 +1,14 @@
-# UNI UI
+# UI
 
 ## Overview
 
-This is a user-friendly user interface built on top of [UNI](https://github.com/nscaledev/uni)
+This is a user-friendly user interface built on top of [all our other services](https://github.com/nscaledev/uni)
 
 ## Installing
 
 ### Prerequisites
 
-First install the [UNI Identity Service](https://github.com/nscaledev/uni/identity) creating an OIDC client for your UI.
+First install the [Identity Service](https://github.com/nscaledev/uni/identity) creating an OIDC client for your UI.
 
 Your identity `values.yaml` for Helm should have something similar to this:
 
