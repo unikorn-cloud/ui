@@ -164,7 +164,7 @@
 				{#snippet trail()}
 					<SubtleButton
 						icon="mdi:connection"
-						label="Get kubeconfig"
+						label="Kubeconfig"
 						clicked={() => getKubeconfig(resource)}
 					/>
 					<ModalIcon

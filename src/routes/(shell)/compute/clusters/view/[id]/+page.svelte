@@ -86,11 +86,7 @@
 			label="Edit"
 			href="/compute/clusters/edit/{data.cluster.metadata.id}"
 		/>
-		<SubtleButton
-			icon="mdi:connection"
-			label="Get SSH Key"
-			clicked={() => getSSHKey(data.cluster)}
-		/>
+		<SubtleButton icon="mdi:connection" label="SSH Key" clicked={() => getSSHKey(data.cluster)} />
 		<ModalIcon
 			icon="mdi:trash-can-outline"
 			label="Delete"
