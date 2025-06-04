@@ -7,7 +7,7 @@
 	import * as Identity from '$lib/openapi/identity';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
@@ -55,56 +55,55 @@
 	let groups = $derived(data.groups.map((x) => ({ label: x.metadata.name, value: x.metadata.id })));
 </script>
 
-<ShellPage {settings}>
-	{#if serviceAccount}
-		<ShellViewHeader metadata={serviceAccount.metadata} />
+<ShellPageHeader {settings} />
+{#if serviceAccount}
+	<ShellViewHeader metadata={serviceAccount.metadata} />
 
-		<ShellSection title="Access Token">
-			<p>
-				<em>This token will only be shown once, so make a copy and keep it secure.</em>
-			</p>
-			<Clipboard id="access-token" value={serviceAccount.status.accessToken || ''} />
-		</ShellSection>
+	<ShellSection title="Access Token">
+		<p>
+			<em>This token will only be shown once, so make a copy and keep it secure.</em>
+		</p>
+		<Clipboard id="access-token" value={serviceAccount.status.accessToken || ''} />
+	</ShellSection>
 
-		<div class="flex">
-			<Button
-				icon="mdi:tick"
-				label="Done"
-				class="preset-filled-primary-500"
-				href="/identity/serviceaccounts"
-			/>
-		</div>
-	{:else}
-		<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
+	<div class="flex">
+		<Button
+			icon="mdi:tick"
+			label="Done"
+			class="preset-filled-primary-500"
+			href="/identity/serviceaccounts"
+		/>
+	</div>
+{:else}
+	<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
-		<ShellSection title="Access Control">
-			<MultiSelect
-				label="Select group access."
-				hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
-				options={groups}
-				value={resource.spec.groupIDs}
-				onValueChange={(e) => (resource.spec.groupIDs = e.value)}
-			>
-				{#snippet selected(value: string)}
-					{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
-				{/snippet}
-			</MultiSelect>
-		</ShellSection>
+	<ShellSection title="Access Control">
+		<MultiSelect
+			label="Select group access."
+			hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
+			options={groups}
+			value={resource.spec.groupIDs}
+			onValueChange={(e) => (resource.spec.groupIDs = e.value)}
+		>
+			{#snippet selected(value: string)}
+				{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
+			{/snippet}
+		</MultiSelect>
+	</ShellSection>
 
-		<div class="flex justify-between">
-			<Button
-				icon="mdi:cancel-bold"
-				label="Cancel"
-				class="preset-filled-surface-500"
-				href="/identity/serviceaccounts"
-			/>
-			<Button
-				icon="mdi:tick"
-				label="Create"
-				class="preset-filled-primary-500"
-				clicked={submit}
-				disabled={!valid}
-			/>
-		</div>
-	{/if}
-</ShellPage>
+	<div class="flex justify-between">
+		<Button
+			icon="mdi:cancel-bold"
+			label="Cancel"
+			class="preset-filled-surface-500"
+			href="/identity/serviceaccounts"
+		/>
+		<Button
+			icon="mdi:tick"
+			label="Create"
+			class="preset-filled-primary-500"
+			clicked={submit}
+			disabled={!valid}
+		/>
+	</div>
+{/if}

@@ -9,7 +9,7 @@
 	import * as RegionUtil from '$lib/regionutil';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
@@ -134,58 +134,57 @@
 	}
 </script>
 
-<ShellPage {settings}>
-	<ShellViewHeader metadata={cluster.metadata}>
-		{#snippet badges()}
-			<Badge icon={RegionUtil.icon(data.regions, cluster.spec.regionId)}>
-				{RegionUtil.name(data.regions, cluster.spec.regionId)}
-			</Badge>
-		{/snippet}
-	</ShellViewHeader>
+<ShellPageHeader {settings} />
+<ShellViewHeader metadata={cluster.metadata}>
+	{#snippet badges()}
+		<Badge icon={RegionUtil.icon(data.regions, cluster.spec.regionId)}>
+			{RegionUtil.name(data.regions, cluster.spec.regionId)}
+		</Badge>
+	{/snippet}
+</ShellViewHeader>
 
-	<Stepper steps={2} bind:step {valid} {complete}>
-		{#snippet content(index: number)}
-			{#if index === 0}
-				<h2 class="h2">Basic Cluster Setup</h2>
+<Stepper steps={2} bind:step {valid} {complete}>
+	{#snippet content(index: number)}
+		{#if index === 0}
+			<h2 class="h2">Basic Cluster Setup</h2>
 
-				<ShellMetadataSection metadata={cluster.metadata} {names} bind:valid={metadataValid} />
-			{:else if step === 1}
-				<ResourceList
-					title="Workload Pool Configuration"
-					columns={3}
-					items={cluster.spec.workloadPools}
-					bind:active={workloadPoolActive}
-					valid={workloadPoolValidFull}
-					add={workloadPoolAdd}
-					remove={workloadPoolRemove}
-				>
-					{#snippet description()}
-						<p>
-							Workload pools provide compute resouce for your cluster. You may have as many as
-							required for your workload. Each pool has a set of CPU, GPU and memory that can be
-							selected from a defined set of flavours.
-						</p>
-					{/snippet}
+			<ShellMetadataSection metadata={cluster.metadata} {names} bind:valid={metadataValid} />
+		{:else if step === 1}
+			<ResourceList
+				title="Workload Pool Configuration"
+				columns={3}
+				items={cluster.spec.workloadPools}
+				bind:active={workloadPoolActive}
+				valid={workloadPoolValidFull}
+				add={workloadPoolAdd}
+				remove={workloadPoolRemove}
+			>
+				{#snippet description()}
+					<p>
+						Workload pools provide compute resouce for your cluster. You may have as many as
+						required for your workload. Each pool has a set of CPU, GPU and memory that can be
+						selected from a defined set of flavours.
+					</p>
+				{/snippet}
 
-					<!-- eslint-disable @typescript-eslint/no-unused-vars -->
-					{#snippet normal(pool: Kubernetes.VirtualKubernetesClusterWorkloadPool, index: number)}
-						<div class="h5 font-bold">{pool.name}</div>
+				<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+				{#snippet normal(pool: Kubernetes.VirtualKubernetesClusterWorkloadPool, index: number)}
+					<div class="h5 font-bold">{pool.name}</div>
 
-						<div>{replicasString(pool)}</div>
+					<div>{replicasString(pool)}</div>
 
-						<Flavor flavor={lookupFlavor(pool.flavorId)} />
-					{/snippet}
+					<Flavor flavor={lookupFlavor(pool.flavorId)} />
+				{/snippet}
 
-					<!-- eslint-disable @typescript-eslint/no-unused-vars -->
-					{#snippet expanded(pool: Kubernetes.VirtualKubernetesClusterWorkloadPool, index: number)}
-						<VirtualKubernetesWorkloadPool
-							flavors={data.flavors}
-							bind:pool={cluster.spec.workloadPools[index]}
-							bind:valid={workloadPoolValid}
-						/>
-					{/snippet}
-				</ResourceList>
-			{/if}
-		{/snippet}
-	</Stepper>
-</ShellPage>
+				<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+				{#snippet expanded(pool: Kubernetes.VirtualKubernetesClusterWorkloadPool, index: number)}
+					<VirtualKubernetesWorkloadPool
+						flavors={data.flavors}
+						bind:pool={cluster.spec.workloadPools[index]}
+						bind:valid={workloadPoolValid}
+					/>
+				{/snippet}
+			</ResourceList>
+		{/if}
+	{/snippet}
+</Stepper>

@@ -8,7 +8,7 @@
 	import * as Identity from '$lib/openapi/identity';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellViewHeaderSimple from '$lib/layouts/ShellViewHeaderSimple.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import Select from '$lib/forms/Select.svelte';
@@ -44,43 +44,42 @@
 	let groups = $derived(data.groups.map((x) => ({ label: x.metadata.name, value: x.metadata.id })));
 </script>
 
-<ShellPage {settings}>
-	<ShellViewHeaderSimple name={user.spec.subject} />
+<ShellPageHeader {settings} />
+<ShellViewHeaderSimple name={user.spec.subject} />
 
-	<ShellSection title="Access Control">
-		<Select
-			label="Account State"
-			hint="Active users can login and do things, other states don't allow login but retail group memberships."
-			disabled={user.spec.state == Identity.UserState.Pending}
-			bind:value={user.spec.state}
-		>
-			<option value={Identity.UserState.Active}>Active</option>
-			{#if user.spec.state == Identity.UserState.Pending}
-				<option value={Identity.UserState.Pending}>Pending</option>
-			{/if}
-			<option value={Identity.UserState.Suspended}>Suspended</option>
-		</Select>
+<ShellSection title="Access Control">
+	<Select
+		label="Account State"
+		hint="Active users can login and do things, other states don't allow login but retail group memberships."
+		disabled={user.spec.state == Identity.UserState.Pending}
+		bind:value={user.spec.state}
+	>
+		<option value={Identity.UserState.Active}>Active</option>
+		{#if user.spec.state == Identity.UserState.Pending}
+			<option value={Identity.UserState.Pending}>Pending</option>
+		{/if}
+		<option value={Identity.UserState.Suspended}>Suspended</option>
+	</Select>
 
-		<MultiSelect
-			label="Select group access."
-			hint="Groups associate users with users and grant them permissions to create, view, edit and delete."
-			options={groups}
-			value={user.spec.groupIDs}
-			onValueChange={(e) => (user.spec.groupIDs = e.value)}
-		>
-			{#snippet selected(value: string)}
-				{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
-			{/snippet}
-		</MultiSelect>
-	</ShellSection>
+	<MultiSelect
+		label="Select group access."
+		hint="Groups associate users with users and grant them permissions to create, view, edit and delete."
+		options={groups}
+		value={user.spec.groupIDs}
+		onValueChange={(e) => (user.spec.groupIDs = e.value)}
+	>
+		{#snippet selected(value: string)}
+			{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
+		{/snippet}
+	</MultiSelect>
+</ShellSection>
 
-	<div class="flex justify-between">
-		<Button
-			icon="mdi:cancel-bold"
-			label="Cancel"
-			class="preset-filled-surface-500"
-			href="/identity/users"
-		/>
-		<Button icon="mdi:tick" label="Update" class="preset-filled-primary-500" clicked={submit} />
-	</div>
-</ShellPage>
+<div class="flex justify-between">
+	<Button
+		icon="mdi:cancel-bold"
+		label="Cancel"
+		class="preset-filled-surface-500"
+		href="/identity/users"
+	/>
+	<Button icon="mdi:tick" label="Update" class="preset-filled-primary-500" clicked={submit} />
+</div>

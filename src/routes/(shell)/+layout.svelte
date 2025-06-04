@@ -161,7 +161,9 @@
 		</div>
 
 		<div class="flex-1 overflow-y-auto flex flex-col shadow-inner">
-			{@render children?.()}
+			<main class="p-4 lg:px-16 lg:py-8 w-full mx-auto flex flex-col gap-8">
+				{@render children?.()}
+			</main>
 		</div>
 	</div>
 </div>
