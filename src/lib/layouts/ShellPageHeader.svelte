@@ -22,7 +22,8 @@
 			<p class="text-surface-700-300">{settings.description}</p>
 		</div>
 	</div>
-	<div class="self-start lg:self-end">
+
+	<div class="self-start lg:self-end flex gap-4">
 		{@render tools?.()}
 	</div>
 </div>

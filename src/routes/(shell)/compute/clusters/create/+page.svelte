@@ -108,7 +108,9 @@
 
 		Clients.compute()
 			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersPost(parameters)
-			.then(() => window.location.assign('/compute/clusters'))
+			.then((v: Compute.ComputeClusterRead) =>
+				window.location.assign('/compute/clusters/view/' + v.metadata.id)
+			)
 			.catch((e: Error) => Clients.error(e));
 	}
 
