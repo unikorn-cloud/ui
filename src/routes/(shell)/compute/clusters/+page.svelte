@@ -148,11 +148,7 @@
 				<ShellListItemMetadata metadata={resource.metadata} />
 
 				{#snippet trail()}
-					<SubtleButton
-						icon="mdi:connection"
-						label="Get SSH Key"
-						clicked={() => getSSHKey(resource)}
-					/>
+					<SubtleButton icon="mdi:connection" label="SSH Key" clicked={() => getSSHKey(resource)} />
 					<ModalIcon
 						icon="mdi:trash-can-outline"
 						label="Delete"
