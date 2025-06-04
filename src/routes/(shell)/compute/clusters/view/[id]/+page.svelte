@@ -9,6 +9,7 @@
 
 	import * as RegionUtil from '$lib/regionutil';
 	import * as ProvisioningStatus from '$lib/provisioningStatus';
+	import * as HealthStatus from '$lib/healthStatus';
 	import * as Clients from '$lib/clients';
 	import * as Compute from '$lib/openapi/compute';
 	import * as Identity from '$lib/openapi/identity';
@@ -123,11 +124,21 @@
 								{#snippet extra()}
 									<Badge
 										icon={ProvisioningStatus.statusIcon(
-											machine.status as Identity.ResourceProvisioningStatus
+											machine.provisioningStatus as Identity.ResourceProvisioningStatus
 										)}
-										iconcolor={ProvisioningStatus.statusColor(machine.status)}
-										>{machine.status as Identity.ResourceProvisioningStatus}</Badge
+										iconcolor={ProvisioningStatus.statusColor(machine.provisioningStatus)}
+										>{machine.provisioningStatus as Identity.ResourceProvisioningStatus}</Badge
 									>
+									<Badge
+										icon={HealthStatus.statusIcon(
+											machine.healthStatus as Identity.ResourceHealthStatus
+										)}
+										iconcolor={HealthStatus.statusColor(
+											machine.healthStatus as Identity.ResourceHealthStatus
+										)}
+									>
+										{machine.healthStatus}
+									</Badge>
 								{/snippet}
 							</ShellListItemBadges>
 						{/snippet}
