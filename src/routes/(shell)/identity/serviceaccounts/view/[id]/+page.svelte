@@ -8,7 +8,7 @@
 	import * as Identity from '$lib/openapi/identity';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
@@ -59,76 +59,75 @@
 	let groups = $derived(data.groups.map((x) => ({ label: x.metadata.name, value: x.metadata.id })));
 </script>
 
-<ShellPage {settings}>
-	{#if newServiceAccount}
-		<ShellViewHeader metadata={newServiceAccount.metadata}>
-			{#snippet extraMetadata()}
-				<ShellMetadataItem
-					icon="mdi:key-outline"
-					label="Expiry"
-					value={newServiceAccount?.status.expiry.toUTCString() || 'unknown'}
-				/>
+<ShellPageHeader {settings} />
+{#if newServiceAccount}
+	<ShellViewHeader metadata={newServiceAccount.metadata}>
+		{#snippet extraMetadata()}
+			<ShellMetadataItem
+				icon="mdi:key-outline"
+				label="Expiry"
+				value={newServiceAccount?.status.expiry.toUTCString() || 'unknown'}
+			/>
+		{/snippet}
+	</ShellViewHeader>
+
+	<ShellSection title="Access Token">
+		<p>
+			<em>This token will only be shown once, so make a copy and keep it secure.</em>
+		</p>
+		<Clipboard id="access-token" value={newServiceAccount.status.accessToken || ''} />
+	</ShellSection>
+
+	<div class="flex">
+		<Button
+			icon="mdi:tick"
+			label="Done"
+			class="preset-filled-primary-500"
+			href="/identity/serviceaccounts"
+		/>
+	</div>
+{:else}
+	<ShellViewHeader metadata={serviceAccount.metadata}>
+		{#snippet extraMetadata()}
+			<ShellMetadataItem
+				icon="mdi:key-outline"
+				label="Expiry"
+				value={serviceAccount?.status.expiry.toUTCString()}
+			/>
+		{/snippet}
+	</ShellViewHeader>
+
+	<!-- Token subjects are bound to the user name, so names are immutable -->
+	<ShellMetadataSection metadata={serviceAccount.metadata} nameMutable={false} />
+
+	<ShellSection title="Access Control">
+		<MultiSelect
+			label="Select group access."
+			hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
+			options={groups}
+			value={serviceAccount.spec.groupIDs}
+			onValueChange={(e) => (serviceAccount.spec.groupIDs = e.value)}
+		>
+			{#snippet selected(value: string)}
+				{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
 			{/snippet}
-		</ShellViewHeader>
+		</MultiSelect>
+	</ShellSection>
 
-		<ShellSection title="Access Token">
-			<p>
-				<em>This token will only be shown once, so make a copy and keep it secure.</em>
-			</p>
-			<Clipboard id="access-token" value={newServiceAccount.status.accessToken || ''} />
-		</ShellSection>
+	<div class="flex flex-wrap justify-between gap-4">
+		<Button
+			icon="mdi:cancel-bold"
+			label="Cancel"
+			class="preset-filled-surface-500"
+			href="/identity/serviceaccounts"
+		/>
+		<Button
+			icon="mdi:refresh"
+			label="Refresh Access Token"
+			class="preset-filled-surface-500"
+			clicked={rotate}
+		/>
 
-		<div class="flex">
-			<Button
-				icon="mdi:tick"
-				label="Done"
-				class="preset-filled-primary-500"
-				href="/identity/serviceaccounts"
-			/>
-		</div>
-	{:else}
-		<ShellViewHeader metadata={serviceAccount.metadata}>
-			{#snippet extraMetadata()}
-				<ShellMetadataItem
-					icon="mdi:key-outline"
-					label="Expiry"
-					value={serviceAccount?.status.expiry.toUTCString()}
-				/>
-			{/snippet}
-		</ShellViewHeader>
-
-		<!-- Token subjects are bound to the user name, so names are immutable -->
-		<ShellMetadataSection metadata={serviceAccount.metadata} nameMutable={false} />
-
-		<ShellSection title="Access Control">
-			<MultiSelect
-				label="Select group access."
-				hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
-				options={groups}
-				value={serviceAccount.spec.groupIDs}
-				onValueChange={(e) => (serviceAccount.spec.groupIDs = e.value)}
-			>
-				{#snippet selected(value: string)}
-					{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
-				{/snippet}
-			</MultiSelect>
-		</ShellSection>
-
-		<div class="flex flex-wrap justify-between gap-4">
-			<Button
-				icon="mdi:cancel-bold"
-				label="Cancel"
-				class="preset-filled-surface-500"
-				href="/identity/serviceaccounts"
-			/>
-			<Button
-				icon="mdi:refresh"
-				label="Refresh Access Token"
-				class="preset-filled-surface-500"
-				clicked={rotate}
-			/>
-
-			<Button icon="mdi:tick" label="Update" class="preset-filled-primary-500" clicked={submit} />
-		</div>
-	{/if}
-</ShellPage>
+		<Button icon="mdi:tick" label="Update" class="preset-filled-primary-500" clicked={submit} />
+	</div>
+{/if}

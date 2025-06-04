@@ -11,7 +11,7 @@
 	import * as Formatters from '$lib/formatters';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
@@ -78,47 +78,47 @@
 	}
 </script>
 
-<ShellPage {settings}>
+<ShellPageHeader {settings}>
 	{#snippet tools()}
 		<SubtleButton icon="mdi:add" label="Create" href="/identity/users/create" />
 	{/snippet}
+</ShellPageHeader>
 
-	<ShellList>
-		{#each data.users || [] as resource}
-			<ShellListItem>
-				{#snippet main()}
-					<ShellListItemHeader
-						title={resource.spec.subject}
-						href="/identity/users/view/{resource.metadata.id}"
-					/>
-				{/snippet}
+<ShellList>
+	{#each data.users || [] as resource}
+		<ShellListItem>
+			{#snippet main()}
+				<ShellListItemHeader
+					title={resource.spec.subject}
+					href="/identity/users/view/{resource.metadata.id}"
+				/>
+			{/snippet}
 
-				{#snippet badges()}
-					<ShellListItemBadges>
-						{#snippet extra()}
-							<Badge icon={stateIcon(resource)} iconcolor={stateColor(resource)}
-								>{resource.spec.state}</Badge
-							>
-						{/snippet}
-					</ShellListItemBadges>
-				{/snippet}
+			{#snippet badges()}
+				<ShellListItemBadges>
+					{#snippet extra()}
+						<Badge icon={stateIcon(resource)} iconcolor={stateColor(resource)}
+							>{resource.spec.state}</Badge
+						>
+					{/snippet}
+				</ShellListItemBadges>
+			{/snippet}
 
-				<ShellListItemMetadata metadata={resource.metadata}></ShellListItemMetadata>
-				<ShellListItemMetadata>
-					<ShellMetadataItem icon="mdi:run" label="Last Active" value={userLastActive(resource)} />
-				</ShellListItemMetadata>
+			<ShellListItemMetadata metadata={resource.metadata}></ShellListItemMetadata>
+			<ShellListItemMetadata>
+				<ShellMetadataItem icon="mdi:run" label="Last Active" value={userLastActive(resource)} />
+			</ShellListItemMetadata>
 
-				{#snippet trail()}
-					<ModalIcon
-						icon="mdi:trash-can-outline"
-						label="Delete"
-						title="Are you sure?"
-						confirm={() => confirm(resource.metadata.id)}
-					>
-						Removing user "{resource.spec.subject}" will remove their access to this organization.
-					</ModalIcon>
-				{/snippet}
-			</ShellListItem>
-		{/each}
-	</ShellList>
-</ShellPage>
+			{#snippet trail()}
+				<ModalIcon
+					icon="mdi:trash-can-outline"
+					label="Delete"
+					title="Are you sure?"
+					confirm={() => confirm(resource.metadata.id)}
+				>
+					Removing user "{resource.spec.subject}" will remove their access to this organization.
+				</ModalIcon>
+			{/snippet}
+		</ShellListItem>
+	{/each}
+</ShellList>

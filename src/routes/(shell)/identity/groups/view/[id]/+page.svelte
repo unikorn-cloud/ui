@@ -7,7 +7,7 @@
 	import * as Clients from '$lib/clients';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
@@ -56,63 +56,62 @@
 	);
 </script>
 
-<ShellPage {settings}>
-	<ShellViewHeader metadata={group.metadata} />
-	<ShellMetadataSection metadata={group.metadata} {names} bind:valid={metadataValid} />
+<ShellPageHeader {settings} />
+<ShellViewHeader metadata={group.metadata} />
+<ShellMetadataSection metadata={group.metadata} {names} bind:valid={metadataValid} />
 
-	<ShellSection title="Roles">
-		<MultiSelect
-			label="Select roles for group members."
-			hint="You must select at least one role."
-			options={roles}
-			value={group.spec.roleIDs}
-			onValueChange={(e) => (group.spec.roleIDs = e.value)}
-		>
-			{#snippet selected(value: string)}
-				{data.roles.find((x) => x.metadata.id == value)?.metadata.name}
-			{/snippet}
-		</MultiSelect>
-	</ShellSection>
+<ShellSection title="Roles">
+	<MultiSelect
+		label="Select roles for group members."
+		hint="You must select at least one role."
+		options={roles}
+		value={group.spec.roleIDs}
+		onValueChange={(e) => (group.spec.roleIDs = e.value)}
+	>
+		{#snippet selected(value: string)}
+			{data.roles.find((x) => x.metadata.id == value)?.metadata.name}
+		{/snippet}
+	</MultiSelect>
+</ShellSection>
 
-	<ShellSection title="Users">
-		<MultiSelect
-			label="Select group members."
-			options={users}
-			value={group.spec.userIDs}
-			onValueChange={(e) => (group.spec.userIDs = e.value)}
-		>
-			{#snippet selected(value: string)}
-				{data.users.find((x) => x.metadata.id == value)?.spec.subject}
-			{/snippet}
-		</MultiSelect>
-	</ShellSection>
+<ShellSection title="Users">
+	<MultiSelect
+		label="Select group members."
+		options={users}
+		value={group.spec.userIDs}
+		onValueChange={(e) => (group.spec.userIDs = e.value)}
+	>
+		{#snippet selected(value: string)}
+			{data.users.find((x) => x.metadata.id == value)?.spec.subject}
+		{/snippet}
+	</MultiSelect>
+</ShellSection>
 
-	<ShellSection title="Service Accounts">
-		<MultiSelect
-			label="Select group members."
-			options={serviceAccounts}
-			value={group.spec.serviceAccountIDs}
-			onValueChange={(e) => (group.spec.serviceAccountIDs = e.value)}
-		>
-			{#snippet selected(value: string)}
-				{data.serviceAccounts.find((x) => x.metadata.id == value)?.metadata.name}
-			{/snippet}
-		</MultiSelect>
-	</ShellSection>
+<ShellSection title="Service Accounts">
+	<MultiSelect
+		label="Select group members."
+		options={serviceAccounts}
+		value={group.spec.serviceAccountIDs}
+		onValueChange={(e) => (group.spec.serviceAccountIDs = e.value)}
+	>
+		{#snippet selected(value: string)}
+			{data.serviceAccounts.find((x) => x.metadata.id == value)?.metadata.name}
+		{/snippet}
+	</MultiSelect>
+</ShellSection>
 
-	<div class="flex justify-between">
-		<Button
-			icon="mdi:cancel-bold"
-			label="Cancel"
-			class="preset-filled-surface-500"
-			href="/identity/groups"
-		/>
-		<Button
-			icon="mdi:tick"
-			label="Update"
-			class="preset-filled-primary-500"
-			clicked={submit}
-			disabled={!valid}
-		/>
-	</div>
-</ShellPage>
+<div class="flex justify-between">
+	<Button
+		icon="mdi:cancel-bold"
+		label="Cancel"
+		class="preset-filled-surface-500"
+		href="/identity/groups"
+	/>
+	<Button
+		icon="mdi:tick"
+		label="Update"
+		class="preset-filled-primary-500"
+		clicked={submit}
+		disabled={!valid}
+	/>
+</div>

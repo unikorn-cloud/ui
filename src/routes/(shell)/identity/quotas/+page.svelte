@@ -6,7 +6,7 @@
 	import * as Clients from '$lib/clients';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import NumberInput from '$lib/forms/NumberInput.svelte';
 	import Button from '$lib/forms/Button.svelte';
@@ -35,14 +35,13 @@
 	}
 </script>
 
-<ShellPage {settings}>
-	<ShellSection title="Quotas">
-		{#each quotas.quotas as quota}
-			<NumberInput label={quota.displayName} hint={quota.description} bind:value={quota.quantity} />
-		{/each}
-	</ShellSection>
+<ShellPageHeader {settings} />
+<ShellSection title="Quotas">
+	{#each quotas.quotas as quota}
+		<NumberInput label={quota.displayName} hint={quota.description} bind:value={quota.quantity} />
+	{/each}
+</ShellSection>
 
-	<div class="flex justify-end">
-		<Button icon="mdi:tick" label="Update" class="preset-filled-primary-500" clicked={submit} />
-	</div>
-</ShellPage>
+<div class="flex justify-end">
+	<Button icon="mdi:tick" label="Update" class="preset-filled-primary-500" clicked={submit} />
+</div>

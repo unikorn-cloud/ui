@@ -12,7 +12,7 @@
 	import * as Identity from '$lib/openapi/identity';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
@@ -47,7 +47,7 @@
 	}
 </script>
 
-<ShellPage {settings}>
+<ShellPageHeader {settings}>
 	{#snippet tools()}
 		<SubtleButton
 			icon="mdi:edit-outline"
@@ -55,62 +55,62 @@
 			href="/compute/clusters/edit/{page.params.id}"
 		/>
 	{/snippet}
+</ShellPageHeader>
 
-	<ShellViewHeader metadata={data.cluster.metadata}>
-		{#snippet badges()}
-			<Badge icon={RegionUtil.icon(data.regions, data.cluster.spec.regionId)}>
-				{RegionUtil.name(data.regions, data.cluster.spec.regionId)}
-			</Badge>
-		{/snippet}
-	</ShellViewHeader>
+<ShellViewHeader metadata={data.cluster.metadata}>
+	{#snippet badges()}
+		<Badge icon={RegionUtil.icon(data.regions, data.cluster.spec.regionId)}>
+			{RegionUtil.name(data.regions, data.cluster.spec.regionId)}
+		</Badge>
+	{/snippet}
+</ShellViewHeader>
 
-	<ShellSection title="Machine Status">
-		{#if data.cluster.status?.workloadPools}
-			<ShellList>
-				{#each data.cluster.status.workloadPools || [] as pool}
-					{#each pool.machines || [] as machine}
-						<ShellListItem>
-							{#snippet main()}
-								<div class="flex gap-4 items-center">
-									<ShellListItemHeader title={machine.hostname} />
-									<Flavor flavor={getFlavor(machine.flavorID)} />
-									<Image image={getImage(machine.imageID)} />
-								</div>
-							{/snippet}
+<ShellSection title="Machine Status">
+	{#if data.cluster.status?.workloadPools}
+		<ShellList>
+			{#each data.cluster.status.workloadPools || [] as pool}
+				{#each pool.machines || [] as machine}
+					<ShellListItem>
+						{#snippet main()}
+							<div class="flex gap-4 items-center">
+								<ShellListItemHeader title={machine.hostname} />
+								<Flavor flavor={getFlavor(machine.flavorID)} />
+								<Image image={getImage(machine.imageID)} />
+							</div>
+						{/snippet}
 
-							{#snippet badges()}
-								<ShellListItemBadges>
-									{#snippet extra()}
-										<Badge
-											icon={ProvisioningStatus.statusIcon(
-												machine.status as Identity.ResourceProvisioningStatus
-											)}
-											iconcolor={ProvisioningStatus.statusColor(machine.status)}
-											>{machine.status as Identity.ResourceProvisioningStatus}</Badge
-										>
-									{/snippet}
-								</ShellListItemBadges>
-							{/snippet}
+						{#snippet badges()}
+							<ShellListItemBadges>
+								{#snippet extra()}
+									<Badge
+										icon={ProvisioningStatus.statusIcon(
+											machine.status as Identity.ResourceProvisioningStatus
+										)}
+										iconcolor={ProvisioningStatus.statusColor(machine.status)}
+										>{machine.status as Identity.ResourceProvisioningStatus}</Badge
+									>
+								{/snippet}
+							</ShellListItemBadges>
+						{/snippet}
 
-							{#if machine.privateIP}
-								<ShellMetadataItem
-									icon="mdi:local-area-network"
-									label="Private IP"
-									value={machine.privateIP}
-								/>
-							{/if}
+						{#if machine.privateIP}
+							<ShellMetadataItem
+								icon="mdi:local-area-network"
+								label="Private IP"
+								value={machine.privateIP}
+							/>
+						{/if}
 
-							{#if machine.publicIP}
-								<ShellMetadataItem
-									icon="mdi:local-area-network"
-									label="Public IP"
-									value={machine.publicIP}
-								/>
-							{/if}
-						</ShellListItem>
-					{/each}
+						{#if machine.publicIP}
+							<ShellMetadataItem
+								icon="mdi:local-area-network"
+								label="Public IP"
+								value={machine.publicIP}
+							/>
+						{/if}
+					</ShellListItem>
 				{/each}
-			</ShellList>
-		{/if}
-	</ShellSection>
-</ShellPage>
+			{/each}
+		</ShellList>
+	{/if}
+</ShellSection>

@@ -7,7 +7,7 @@
 	import * as Clients from '$lib/clients';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellViewHeader from '$lib/layouts/ShellViewHeader.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
@@ -52,37 +52,36 @@
 	let groups = $derived(data.groups.map((x) => ({ label: x.metadata.name, value: x.metadata.id })));
 </script>
 
-<ShellPage {settings}>
-	<ShellViewHeader metadata={project.metadata} />
-	<ShellMetadataSection metadata={project.metadata} {names} bind:valid={metadataValid} />
+<ShellPageHeader {settings} />
+<ShellViewHeader metadata={project.metadata} />
+<ShellMetadataSection metadata={project.metadata} {names} bind:valid={metadataValid} />
 
-	<ShellSection title="Groups">
-		<MultiSelect
-			label="Select group access."
-			hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
-			options={groups}
-			value={project.spec.groupIDs}
-			onValueChange={(e) => (project.spec.groupIDs = e.value)}
-		>
-			{#snippet selected(value: string)}
-				{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
-			{/snippet}
-		</MultiSelect>
-	</ShellSection>
+<ShellSection title="Groups">
+	<MultiSelect
+		label="Select group access."
+		hint="Groups associate users with projects and grant them permissions to create, view, edit and delete."
+		options={groups}
+		value={project.spec.groupIDs}
+		onValueChange={(e) => (project.spec.groupIDs = e.value)}
+	>
+		{#snippet selected(value: string)}
+			{data.groups.find((x) => x.metadata.id == value)?.metadata.name}
+		{/snippet}
+	</MultiSelect>
+</ShellSection>
 
-	<div class="flex justify-between">
-		<Button
-			icon="mdi:cancel-bold"
-			label="Cancel"
-			class="preset-filled-surface-500"
-			href="/identity/projects"
-		/>
-		<Button
-			icon="mdi:tick"
-			label="Update"
-			class="preset-filled-primary-500"
-			clicked={submit}
-			disabled={!valid}
-		/>
-	</div>
-</ShellPage>
+<div class="flex justify-between">
+	<Button
+		icon="mdi:cancel-bold"
+		label="Cancel"
+		class="preset-filled-surface-500"
+		href="/identity/projects"
+	/>
+	<Button
+		icon="mdi:tick"
+		label="Update"
+		class="preset-filled-primary-500"
+		clicked={submit}
+		disabled={!valid}
+	/>
+</div>

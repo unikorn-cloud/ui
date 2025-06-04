@@ -9,7 +9,7 @@
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 	import Select from '$lib/forms/Select.svelte';
@@ -257,106 +257,105 @@
 	}
 </script>
 
-<ShellPage {settings}>
-	<Stepper steps={3} bind:step {valid} {complete}>
-		{#snippet content(index: number)}
-			{#if index === 0}
-				<h2 class="h2">Basic Configuration</h2>
+<ShellPageHeader {settings} />
+<Stepper steps={3} bind:step {valid} {complete}>
+	{#snippet content(index: number)}
+		{#if index === 0}
+			<h2 class="h2">Basic Configuration</h2>
 
-				<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
+			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
 
-				<ShellSection title="Kubernetes Configuration">
-					<Select
-						label="Choose a Kubernetes version."
-						hint="Kubernetes provides guarantees backward
+			<ShellSection title="Kubernetes Configuration">
+				<Select
+					label="Choose a Kubernetes version."
+					hint="Kubernetes provides guarantees backward
                                                 compatibility so choosing the newest is usually the right choice as that provides a rich
                                                 feature set and enhanced security. Certain applications — e.g. Kubeflow —
                                                 may require a specific version."
-						bind:value={resource.spec.version}
-					>
-						{#each versions as version}
-							<option value={version}>{version}</option>
-						{/each}
-					</Select>
-				</ShellSection>
-			{:else if index === 1}
-				<ResourceList
-					title="Workload Pool Configuration"
-					columns={3}
-					items={resource.spec.workloadPools}
-					initialItem={0}
-					bind:active={workloadPoolActive}
-					valid={workloadPoolValidFull}
-					add={workloadPoolAdd}
-					remove={workloadPoolRemove}
+					bind:value={resource.spec.version}
 				>
-					{#snippet description()}
-						<p>
-							Workload pools provide compute resouce for your cluster. You may have as many as
-							required for your workload. Each pool has a set of CPU, GPU and memory that can be
-							selected from a defined set of flavours. Workload pools support automatic scaling,
-							thus reducing overall operational cost when not in use.
-						</p>
-					{/snippet}
-
-					<!-- eslint-disable @typescript-eslint/no-unused-vars -->
-					{#snippet normal(pool: Kubernetes.KubernetesClusterWorkloadPool, index: number)}
-						<div class="h5 font-bold">{pool.name}</div>
-
-						<div>{replicasString(pool)}</div>
-
-						<Flavor flavor={lookupFlavor(pool.machine.flavorId)} />
-					{/snippet}
-
-					<!-- eslint-disable @typescript-eslint/no-unused-vars -->
-					{#snippet expanded(pool: Kubernetes.KubernetesClusterWorkloadPool, index: number)}
-						<KubernetesWorkloadPool
-							flavors={data.flavors}
-							bind:pool={resource.spec.workloadPools[index]}
-							bind:valid={workloadPoolValid}
-						/>
-					{/snippet}
-				</ResourceList>
-			{:else if index === 2}
-				<h2 class="h2">Advanced Options</h2>
-
-				<ShellSection title="Auto Upgrade">
+					{#each versions as version}
+						<option value={version}>{version}</option>
+					{/each}
+				</Select>
+			</ShellSection>
+		{:else if index === 1}
+			<ResourceList
+				title="Workload Pool Configuration"
+				columns={3}
+				items={resource.spec.workloadPools}
+				initialItem={0}
+				bind:active={workloadPoolActive}
+				valid={workloadPoolValidFull}
+				add={workloadPoolAdd}
+				remove={workloadPoolRemove}
+			>
+				{#snippet description()}
 					<p>
-						Kubernetes clusters are provisioned using pre-defined bundles of applications. These are
-						periodically updated to provide security updates, bug fixes and platorm stability. These
-						are enabled by default to protect you and mitigate any issues that may arise.
+						Workload pools provide compute resouce for your cluster. You may have as many as
+						required for your workload. Each pool has a set of CPU, GPU and memory that can be
+						selected from a defined set of flavours. Workload pools support automatic scaling, thus
+						reducing overall operational cost when not in use.
 					</p>
+				{/snippet}
 
+				<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+				{#snippet normal(pool: Kubernetes.KubernetesClusterWorkloadPool, index: number)}
+					<div class="h5 font-bold">{pool.name}</div>
+
+					<div>{replicasString(pool)}</div>
+
+					<Flavor flavor={lookupFlavor(pool.machine.flavorId)} />
+				{/snippet}
+
+				<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+				{#snippet expanded(pool: Kubernetes.KubernetesClusterWorkloadPool, index: number)}
+					<KubernetesWorkloadPool
+						flavors={data.flavors}
+						bind:pool={resource.spec.workloadPools[index]}
+						bind:valid={workloadPoolValid}
+					/>
+				{/snippet}
+			</ResourceList>
+		{:else if index === 2}
+			<h2 class="h2">Advanced Options</h2>
+
+			<ShellSection title="Auto Upgrade">
+				<p>
+					Kubernetes clusters are provisioned using pre-defined bundles of applications. These are
+					periodically updated to provide security updates, bug fixes and platorm stability. These
+					are enabled by default to protect you and mitigate any issues that may arise.
+				</p>
+
+				<Switch
+					name="autoupgrade"
+					label="Enable auto-upgrade"
+					hint="Upgrades may still occur as application bundles reach end-of-life even if you choose to opt out."
+					initial={true}
+					onCheckedChange={autoUpgradeChange}
+				/>
+
+				{#if resource.spec.autoUpgrade?.enabled}
 					<Switch
-						name="autoupgrade"
-						label="Enable auto-upgrade"
-						hint="Upgrades may still occur as application bundles reach end-of-life even if you choose to opt out."
-						initial={true}
-						onCheckedChange={autoUpgradeChange}
+						name="autoupgradeoverride"
+						label="Override auto-upgrade default time windows"
+						hint="Auto upgrades are scheduled Monday-Friday beween 00:00 and 07:00 UTC.  This provides a good level of support coverage, and upgrades occur outside of European business hours."
+						onCheckedChange={autoUpgradeOverideChange}
 					/>
 
-					{#if resource.spec.autoUpgrade?.enabled}
-						<Switch
-							name="autoupgradeoverride"
-							label="Override auto-upgrade default time windows"
-							hint="Auto upgrades are scheduled Monday-Friday beween 00:00 and 07:00 UTC.  This provides a good level of support coverage, and upgrades occur outside of European business hours."
-							onCheckedChange={autoUpgradeOverideChange}
-						/>
-
-						{#if resource.spec.autoUpgrade?.daysOfWeek}
-							<div class="grid grid-cols-[auto_auto_1fr] gap-4">
-								<TimeWindow title="Sunday" onChange={autoUpgradeChangeSunday} />
-								<TimeWindow title="Monday" onChange={autoUpgradeChangeMonday} />
-								<TimeWindow title="Tuesday" onChange={autoUpgradeChangeTuesday} />
-								<TimeWindow title="Wednesday" onChange={autoUpgradeChangeWednesday} />
-								<TimeWindow title="Thursday" onChange={autoUpgradeChangeThursday} />
-								<TimeWindow title="Friday" onChange={autoUpgradeChangeFriday} />
-								<TimeWindow title="Saturday" onChange={autoUpgradeChangeSaturday} />
-							</div>
-						{/if}
+					{#if resource.spec.autoUpgrade?.daysOfWeek}
+						<div class="grid grid-cols-[auto_auto_1fr] gap-4">
+							<TimeWindow title="Sunday" onChange={autoUpgradeChangeSunday} />
+							<TimeWindow title="Monday" onChange={autoUpgradeChangeMonday} />
+							<TimeWindow title="Tuesday" onChange={autoUpgradeChangeTuesday} />
+							<TimeWindow title="Wednesday" onChange={autoUpgradeChangeWednesday} />
+							<TimeWindow title="Thursday" onChange={autoUpgradeChangeThursday} />
+							<TimeWindow title="Friday" onChange={autoUpgradeChangeFriday} />
+							<TimeWindow title="Saturday" onChange={autoUpgradeChangeSaturday} />
+						</div>
 					{/if}
-				</ShellSection>
-			{/if}
-		{/snippet}
-	</Stepper>
-</ShellPage>
+				{/if}
+			</ShellSection>
+		{/if}
+	{/snippet}
+</Stepper>

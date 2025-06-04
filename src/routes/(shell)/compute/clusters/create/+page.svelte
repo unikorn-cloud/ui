@@ -10,7 +10,7 @@
 	import * as Compute from '$lib/openapi/compute';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import Stepper from '$lib/layouts/Stepper.svelte';
 	import ResourceList from '$lib/layouts/ResourceList.svelte';
@@ -191,101 +191,98 @@
 	}
 </script>
 
-<ShellPage {settings}>
-	<Stepper steps={2} bind:step {complete} {valid}>
-		{#snippet content(index: number)}
-			{#if index === 0}
-				<h2 class="h2">Basic Configuration</h2>
+<ShellPageHeader {settings} />
+<Stepper steps={2} bind:step {complete} {valid}>
+	{#snippet content(index: number)}
+		{#if index === 0}
+			<h2 class="h2">Basic Configuration</h2>
 
-				<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
-			{:else if index === 1}
-				<ResourceList
-					title="Workload Pool Configuration"
-					columns={4}
-					items={resource.spec.workloadPools}
-					initialItem={0}
-					bind:active={workloadPoolActive}
-					valid={workloadPoolValidFull}
-					add={workloadPoolAdd}
-					remove={workloadPoolRemove}
-					activate={workloadPoolActivate}
-					deactivate={workloadPoolDeactivate}
-				>
-					{#snippet description()}
-						<p>
-							Workload pools provide compute resouce for your cluster. You may have as many as
-							required for your workload. Each pool has a set of CPU, GPU and memory that can be
-							selected from a defined set of flavours.
-						</p>
-					{/snippet}
+			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
+		{:else if index === 1}
+			<ResourceList
+				title="Workload Pool Configuration"
+				columns={4}
+				items={resource.spec.workloadPools}
+				initialItem={0}
+				bind:active={workloadPoolActive}
+				valid={workloadPoolValidFull}
+				add={workloadPoolAdd}
+				remove={workloadPoolRemove}
+				activate={workloadPoolActivate}
+				deactivate={workloadPoolDeactivate}
+			>
+				{#snippet description()}
+					<p>
+						Workload pools provide compute resouce for your cluster. You may have as many as
+						required for your workload. Each pool has a set of CPU, GPU and memory that can be
+						selected from a defined set of flavours.
+					</p>
+				{/snippet}
 
-					<!-- eslint-disable @typescript-eslint/no-unused-vars -->
-					{#snippet normal(pool: Compute.ComputeClusterWorkloadPool, index: number)}
-						<div class="h5 font-bold">{pool.name}</div>
+				<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+				{#snippet normal(pool: Compute.ComputeClusterWorkloadPool, index: number)}
+					<div class="h5 font-bold">{pool.name}</div>
 
-						<div>
-							{pool.machine.replicas} replica{pool.machine.replicas > 1 ? 's' : ''}
-						</div>
+					<div>
+						{pool.machine.replicas} replica{pool.machine.replicas > 1 ? 's' : ''}
+					</div>
 
-						<Flavor flavor={lookupFlavor(pool.machine.flavorId)} />
+					<Flavor flavor={lookupFlavor(pool.machine.flavorId)} />
 
-						<Image selector={pool.machine.image?.selector} />
-					{/snippet}
+					<Image selector={pool.machine.image?.selector} />
+				{/snippet}
 
-					{#snippet expanded(pool: Compute.ComputeClusterWorkloadPool, index: number)}
-						<ComputeWorkloadPool
-							flavors={data.flavors}
-							images={data.images}
-							bind:pool={resource.spec.workloadPools[index]}
-							bind:valid={workloadPoolValid}
-						>
-							{#snippet firewall()}
-								<ResourceList
-									title="Firewall Rules"
-									titleClass="h3"
-									columns={4}
-									items={firewallRules}
-									bind:active={firewallRuleActive}
-									valid={firewallRuleValid}
-									add={firewallRuleAdd}
-									remove={firewallRuleRemove}
-								>
-									{#snippet normal(rule: Compute.FirewallRule, index: number)}
-										<div class="flex gap-2 items-center">
-											<iconify-icon icon="tabler:arrows-down-up" class="text-2xl"></iconify-icon>
-											{rule.direction}
-										</div>
-										<div class="flex gap-2 items-center">
-											<iconify-icon icon="tabler:protocol" class="text-2xl"></iconify-icon>
-											{rule.protocol}
-										</div>
-										<div class="flex gap-2 items-center">
-											<iconify-icon icon="fluent:usb-port-24-regular" class="text-2xl"
-											></iconify-icon>
-											{rule.port.toString() + (rule.portMax ? '-' + rule.portMax.toString() : '')}
-										</div>
-										<div class="flex gap-2 items-center">
-											<iconify-icon icon="mdi:check-network-outline" class="text-2xl"
-											></iconify-icon>
+				{#snippet expanded(pool: Compute.ComputeClusterWorkloadPool, index: number)}
+					<ComputeWorkloadPool
+						flavors={data.flavors}
+						images={data.images}
+						bind:pool={resource.spec.workloadPools[index]}
+						bind:valid={workloadPoolValid}
+					>
+						{#snippet firewall()}
+							<ResourceList
+								title="Firewall Rules"
+								titleClass="h3"
+								columns={4}
+								items={firewallRules}
+								bind:active={firewallRuleActive}
+								valid={firewallRuleValid}
+								add={firewallRuleAdd}
+								remove={firewallRuleRemove}
+							>
+								{#snippet normal(rule: Compute.FirewallRule, index: number)}
+									<div class="flex gap-2 items-center">
+										<iconify-icon icon="tabler:arrows-down-up" class="text-2xl"></iconify-icon>
+										{rule.direction}
+									</div>
+									<div class="flex gap-2 items-center">
+										<iconify-icon icon="tabler:protocol" class="text-2xl"></iconify-icon>
+										{rule.protocol}
+									</div>
+									<div class="flex gap-2 items-center">
+										<iconify-icon icon="fluent:usb-port-24-regular" class="text-2xl"></iconify-icon>
+										{rule.port.toString() + (rule.portMax ? '-' + rule.portMax.toString() : '')}
+									</div>
+									<div class="flex gap-2 items-center">
+										<iconify-icon icon="mdi:check-network-outline" class="text-2xl"></iconify-icon>
 
-											{rule.prefixes.join(', ')}
-										</div>
-									{/snippet}
+										{rule.prefixes.join(', ')}
+									</div>
+								{/snippet}
 
-									{#snippet expanded(rule: Compute.FirewallRule, index: number)}
-										<div class="flex flex-col gap-4">
-											<ComputeWorkloadPoolSecurityRule
-												bind:rule={firewallRules[index]}
-												bind:valid={firewallRuleValid}
-											/>
-										</div>
-									{/snippet}
-								</ResourceList>
-							{/snippet}
-						</ComputeWorkloadPool>
-					{/snippet}
-				</ResourceList>
-			{/if}
-		{/snippet}
-	</Stepper>
-</ShellPage>
+								{#snippet expanded(rule: Compute.FirewallRule, index: number)}
+									<div class="flex flex-col gap-4">
+										<ComputeWorkloadPoolSecurityRule
+											bind:rule={firewallRules[index]}
+											bind:valid={firewallRuleValid}
+										/>
+									</div>
+								{/snippet}
+							</ResourceList>
+						{/snippet}
+					</ComputeWorkloadPool>
+				{/snippet}
+			</ResourceList>
+		{/if}
+	{/snippet}
+</Stepper>

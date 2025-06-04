@@ -13,7 +13,7 @@
 	import * as RegionUtil from '$lib/regionutil';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
@@ -89,7 +89,7 @@
 	}
 </script>
 
-<ShellPage {settings}>
+<ShellPageHeader {settings}>
 	{#snippet tools()}
 		{#if data.projects.length}
 			<PopupButton icon="mdi:add" class="self-end" label="Create">
@@ -129,52 +129,52 @@
 			</PopupButton>
 		{/if}
 	{/snippet}
+</ShellPageHeader>
 
-	{#if data.projects.length == 0}
-		<Placeholder
-			>You are not yet a member of any projects, ask an administrator to create one.</Placeholder
-		>
-	{:else if data.clusters.length == 0}
-		<Placeholder>No clusters to display, create one to get started.</Placeholder>
-	{:else}
-		<ShellList>
-			{#each data.clusters as resource}
-				<ShellListItem>
-					{#snippet main()}
-						<ShellListItemHeader
-							metadata={resource.metadata}
-							href="/kubernetes/virtualclusters/view/{resource.metadata.id}"
-							projects={data.projects}
-						/>
-					{/snippet}
+{#if data.projects.length == 0}
+	<Placeholder
+		>You are not yet a member of any projects, ask an administrator to create one.</Placeholder
+	>
+{:else if data.clusters.length == 0}
+	<Placeholder>No clusters to display, create one to get started.</Placeholder>
+{:else}
+	<ShellList>
+		{#each data.clusters as resource}
+			<ShellListItem>
+				{#snippet main()}
+					<ShellListItemHeader
+						metadata={resource.metadata}
+						href="/kubernetes/virtualclusters/view/{resource.metadata.id}"
+						projects={data.projects}
+					/>
+				{/snippet}
 
-					{#snippet badges()}
-						<ShellListItemBadges metadata={resource.metadata}>
-							{#snippet extra()}
-								<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
-									{RegionUtil.name(data.regions, resource.spec.regionId)}
-								</Badge>
-							{/snippet}
-						</ShellListItemBadges>
-					{/snippet}
+				{#snippet badges()}
+					<ShellListItemBadges metadata={resource.metadata}>
+						{#snippet extra()}
+							<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
+								{RegionUtil.name(data.regions, resource.spec.regionId)}
+							</Badge>
+						{/snippet}
+					</ShellListItemBadges>
+				{/snippet}
 
-					<ShellListItemMetadata metadata={resource.metadata} />
+				<ShellListItemMetadata metadata={resource.metadata} />
 
-					{#snippet trail()}
-						<SubtleButton
-							icon="mdi:connection"
-							label="Get kubeconfig"
-							clicked={() => getKubeconfig(resource)}
-						/>
-						<ModalIcon
-							icon="mdi:trash-can-outline"
-							label="Delete"
-							title="Are you sure?"
-							confirm={() => confirm(resource)}
-						></ModalIcon>
-					{/snippet}
-				</ShellListItem>
-			{/each}
-		</ShellList>
-	{/if}
-</ShellPage>
+				{#snippet trail()}
+					<SubtleButton
+						icon="mdi:connection"
+						label="Get kubeconfig"
+						clicked={() => getKubeconfig(resource)}
+					/>
+					<ModalIcon
+						icon="mdi:trash-can-outline"
+						label="Delete"
+						title="Are you sure?"
+						confirm={() => confirm(resource)}
+					></ModalIcon>
+				{/snippet}
+			</ShellListItem>
+		{/each}
+	</ShellList>
+{/if}

@@ -11,7 +11,7 @@
 	import * as RegionUtil from '$lib/regionutil';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
@@ -47,37 +47,36 @@
 	}
 </script>
 
-<ShellPage {settings}>
-	<ShellList>
-		{#each data.identities as resource}
-			<ShellListItem>
-				{#snippet main()}
-					<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
-				{/snippet}
+<ShellPageHeader {settings} />
+<ShellList>
+	{#each data.identities as resource}
+		<ShellListItem>
+			{#snippet main()}
+				<ShellListItemHeader metadata={resource.metadata} projects={data.projects} />
+			{/snippet}
 
-				{#snippet badges()}
-					<ShellListItemBadges metadata={resource.metadata}>
-						{#snippet extra()}
-							<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
-								{RegionUtil.name(data.regions, resource.spec.regionId)}
-							</Badge>
-						{/snippet}
-					</ShellListItemBadges>
-				{/snippet}
+			{#snippet badges()}
+				<ShellListItemBadges metadata={resource.metadata}>
+					{#snippet extra()}
+						<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>
+							{RegionUtil.name(data.regions, resource.spec.regionId)}
+						</Badge>
+					{/snippet}
+				</ShellListItemBadges>
+			{/snippet}
 
-				<ShellListItemMetadata metadata={resource.metadata} />
+			<ShellListItemMetadata metadata={resource.metadata} />
 
-				{#snippet trail()}
-					<ModalIcon
-						icon="mdi:trash-can-outline"
-						label="Delete"
-						title="Are you sure?"
-						confirm={() => confirm(resource)}
-					>
-						Removing identity "{resource.metadata.name}" will delete any clusters owned by it.
-					</ModalIcon>
-				{/snippet}
-			</ShellListItem>
-		{/each}
-	</ShellList>
-</ShellPage>
+			{#snippet trail()}
+				<ModalIcon
+					icon="mdi:trash-can-outline"
+					label="Delete"
+					title="Are you sure?"
+					confirm={() => confirm(resource)}
+				>
+					Removing identity "{resource.metadata.name}" will delete any clusters owned by it.
+				</ModalIcon>
+			{/snippet}
+		</ShellListItem>
+	{/each}
+</ShellList>

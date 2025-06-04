@@ -9,7 +9,7 @@
 	import * as Clients from '$lib/clients';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellList from '$lib/layouts/ShellList.svelte';
 	import ShellListItem from '$lib/layouts/ShellListItem.svelte';
 	import ShellListItemHeader from '$lib/layouts/ShellListItemHeader.svelte';
@@ -44,38 +44,38 @@
 	}
 </script>
 
-<ShellPage {settings}>
+<ShellPageHeader {settings}>
 	{#snippet tools()}
 		<SubtleButton icon="mdi:add" label="Create" href="/identity/oauth2providers/create" />
 	{/snippet}
+</ShellPageHeader>
 
-	<ShellList>
-		{#each data.oauth2providers || [] as resource}
-			<ShellListItem>
-				{#snippet main()}
-					<ShellListItemHeader
-						metadata={resource.metadata}
-						href="/identity/oauth2providers/view/{resource.metadata.id}"
-					/>
-				{/snippet}
+<ShellList>
+	{#each data.oauth2providers || [] as resource}
+		<ShellListItem>
+			{#snippet main()}
+				<ShellListItemHeader
+					metadata={resource.metadata}
+					href="/identity/oauth2providers/view/{resource.metadata.id}"
+				/>
+			{/snippet}
 
-				{#snippet badges()}
-					<ShellListItemBadges metadata={resource.metadata} />
-				{/snippet}
+			{#snippet badges()}
+				<ShellListItemBadges metadata={resource.metadata} />
+			{/snippet}
 
-				<ShellListItemMetadata metadata={resource.metadata} />
+			<ShellListItemMetadata metadata={resource.metadata} />
 
-				{#snippet trail()}
-					<ModalIcon
-						icon="mdi:trash-can-outline"
-						label="Delete"
-						title="Are you sure?"
-						confirm={() => confirm(resource.metadata.id)}
-					>
-						Removing oauth provider "{resource.metadata.name}" may prevent user authentication.
-					</ModalIcon>
-				{/snippet}
-			</ShellListItem>
-		{/each}
-	</ShellList>
-</ShellPage>
+			{#snippet trail()}
+				<ModalIcon
+					icon="mdi:trash-can-outline"
+					label="Delete"
+					title="Are you sure?"
+					confirm={() => confirm(resource.metadata.id)}
+				>
+					Removing oauth provider "{resource.metadata.name}" may prevent user authentication.
+				</ModalIcon>
+			{/snippet}
+		</ShellListItem>
+	{/each}
+</ShellList>

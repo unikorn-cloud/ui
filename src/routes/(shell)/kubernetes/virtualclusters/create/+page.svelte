@@ -9,7 +9,7 @@
 	import * as Kubernetes from '$lib/openapi/kubernetes';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellMetadataSection from '$lib/layouts/ShellMetadataSection.svelte';
 	import Stepper from '$lib/layouts/Stepper.svelte';
 	import ResourceList from '$lib/layouts/ResourceList.svelte';
@@ -138,51 +138,50 @@
 	}
 </script>
 
-<ShellPage {settings}>
-	<Stepper steps={2} bind:step {valid} {complete}>
-		{#snippet content(index: number)}
-			{#if index === 0}
-				<h2 class="h2">Basic Configuration</h2>
+<ShellPageHeader {settings} />
+<Stepper steps={2} bind:step {valid} {complete}>
+	{#snippet content(index: number)}
+		{#if index === 0}
+			<h2 class="h2">Basic Configuration</h2>
 
-				<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
-			{:else if index === 1}
-				<ResourceList
-					title="Workload Pool Configuration"
-					columns={3}
-					items={resource.spec.workloadPools}
-					initialItem={0}
-					bind:active={workloadPoolActive}
-					valid={workloadPoolValidFull}
-					add={workloadPoolAdd}
-					remove={workloadPoolRemove}
-				>
-					{#snippet description()}
-						<p>
-							Workload pools provide compute resouce for your cluster. You may have as many as
-							required for your workload. Each pool has a set of CPU, GPU and memory that can be
-							selected from a defined set of flavours.
-						</p>
-					{/snippet}
+			<ShellMetadataSection metadata={resource.metadata} {names} bind:valid={metadataValid} />
+		{:else if index === 1}
+			<ResourceList
+				title="Workload Pool Configuration"
+				columns={3}
+				items={resource.spec.workloadPools}
+				initialItem={0}
+				bind:active={workloadPoolActive}
+				valid={workloadPoolValidFull}
+				add={workloadPoolAdd}
+				remove={workloadPoolRemove}
+			>
+				{#snippet description()}
+					<p>
+						Workload pools provide compute resouce for your cluster. You may have as many as
+						required for your workload. Each pool has a set of CPU, GPU and memory that can be
+						selected from a defined set of flavours.
+					</p>
+				{/snippet}
 
-					<!-- eslint-disable @typescript-eslint/no-unused-vars -->
-					{#snippet normal(pool: Kubernetes.VirtualKubernetesClusterWorkloadPool, index: number)}
-						<div class="h5 font-bold">{pool.name}</div>
+				<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+				{#snippet normal(pool: Kubernetes.VirtualKubernetesClusterWorkloadPool, index: number)}
+					<div class="h5 font-bold">{pool.name}</div>
 
-						<div>{replicasString(pool)}</div>
+					<div>{replicasString(pool)}</div>
 
-						<Flavor flavor={lookupFlavor(pool.flavorId)} />
-					{/snippet}
+					<Flavor flavor={lookupFlavor(pool.flavorId)} />
+				{/snippet}
 
-					<!-- eslint-disable @typescript-eslint/no-unused-vars -->
-					{#snippet expanded(pool: Kubernetes.VirtualKubernetesClusterWorkloadPool, index: number)}
-						<VirtualKubernetesWorkloadPool
-							flavors={data.flavors}
-							bind:pool={resource.spec.workloadPools[index]}
-							bind:valid={workloadPoolValid}
-						/>
-					{/snippet}
-				</ResourceList>
-			{/if}
-		{/snippet}
-	</Stepper>
-</ShellPage>
+				<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+				{#snippet expanded(pool: Kubernetes.VirtualKubernetesClusterWorkloadPool, index: number)}
+					<VirtualKubernetesWorkloadPool
+						flavors={data.flavors}
+						bind:pool={resource.spec.workloadPools[index]}
+						bind:valid={workloadPoolValid}
+					/>
+				{/snippet}
+			</ResourceList>
+		{/if}
+	{/snippet}
+</Stepper>

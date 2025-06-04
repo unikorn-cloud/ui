@@ -6,7 +6,7 @@
 	import { ProgressRing } from '@skeletonlabs/skeleton-svelte';
 
 	import type { ShellPageSettings } from '$lib/layouts/types.ts';
-	import ShellPage from '$lib/layouts/ShellPage.svelte';
+	import ShellPageHeader from '$lib/layouts/ShellPageHeader.svelte';
 	import ShellSection from '$lib/layouts/ShellSection.svelte';
 
 	const settings: ShellPageSettings = {
@@ -17,7 +17,7 @@
 	};
 </script>
 
-<ShellPage {settings}>
+<ShellPageHeader {settings}>
 	<ShellSection title="Resource Utilization">
 		<div class="flex flex-col lg:flex-row lg:flex-wrap gap-4">
 			{#each data.quotas.quotas as quota}
@@ -57,4 +57,4 @@
 			{/each}
 		</div>
 	</ShellSection>
-</ShellPage>
+</ShellPageHeader>
