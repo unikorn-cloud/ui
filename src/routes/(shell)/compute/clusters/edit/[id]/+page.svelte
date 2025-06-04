@@ -154,6 +154,7 @@
 </script>
 
 <ShellPageHeader {settings} />
+
 <ShellViewHeader metadata={resource.metadata}>
 	{#snippet badges()}
 		<Badge icon={RegionUtil.icon(data.regions, resource.spec.regionId)}>

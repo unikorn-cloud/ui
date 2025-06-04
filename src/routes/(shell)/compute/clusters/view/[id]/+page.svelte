@@ -2,12 +2,14 @@
 	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
 	import { invalidate } from '$app/navigation';
-	import { navigating, page } from '$app/state';
+	import { navigating } from '$app/state';
+	import { browser } from '$app/environment';
 
 	let { data }: { data: PageData } = $props();
 
 	import * as RegionUtil from '$lib/regionutil';
 	import * as ProvisioningStatus from '$lib/provisioningStatus';
+	import * as Clients from '$lib/clients';
 	import * as Compute from '$lib/openapi/compute';
 	import * as Identity from '$lib/openapi/identity';
 
@@ -21,6 +23,7 @@
 	import ShellListItemBadges from '$lib/layouts/ShellListItemBadges.svelte';
 	import ShellMetadataItem from '$lib/layouts/ShellMetadataItem.svelte';
 	import Badge from '$lib/layouts/Badge.svelte';
+	import ModalIcon from '$lib/layouts/ModalIcon.svelte';
 	import SubtleButton from '$lib/forms/SubtleButton.svelte';
 	import Flavor from '$lib/Flavor.svelte';
 	import Image from '$lib/Image.svelte';
@@ -45,6 +48,35 @@
 	function getFlavor(id: string): Compute.Flavor {
 		return data.flavors.find((x) => x.metadata.id == id) as Compute.Flavor;
 	}
+
+	function confirm(resource: Compute.ComputeClusterRead): void {
+		const parameters = {
+			organizationID: resource.metadata.organizationId,
+			projectID: resource.metadata.projectId,
+			clusterID: resource.metadata.id
+		};
+
+		Clients.compute()
+			.apiV1OrganizationsOrganizationIDProjectsProjectIDClustersClusterIDDelete(parameters)
+			.then(() => window.location.assign('/compute/clusters'))
+			.catch((e: Error) => Clients.error(e));
+	}
+
+	function getSSHKey(resource: Compute.ComputeClusterRead): void {
+		if (browser && resource.status?.sshPrivateKey) {
+			const url = window.URL.createObjectURL(new Blob([resource.status.sshPrivateKey]));
+
+			const a = document.createElement('a');
+			a.style.display = 'none';
+			a.href = url;
+			a.download = `id_${resource.metadata.name}`;
+
+			document.body.appendChild(a);
+			a.click();
+
+			window.URL.revokeObjectURL(url);
+		}
+	}
 </script>
 
 <ShellPageHeader {settings}>
@@ -52,8 +84,19 @@
 		<SubtleButton
 			icon="mdi:edit-outline"
 			label="Edit"
-			href="/compute/clusters/edit/{page.params.id}"
+			href="/compute/clusters/edit/{data.cluster.metadata.id}"
 		/>
+		<SubtleButton
+			icon="mdi:connection"
+			label="Get SSH Key"
+			clicked={() => getSSHKey(data.cluster)}
+		/>
+		<ModalIcon
+			icon="mdi:trash-can-outline"
+			label="Delete"
+			title="Are you sure?"
+			confirm={() => confirm(data.cluster)}
+		></ModalIcon>
 	{/snippet}
 </ShellPageHeader>
 
