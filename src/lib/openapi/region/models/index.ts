@@ -2,7 +2,6 @@
 /* eslint-disable */
 export * from './ExternalNetwork';
 export * from './Flavor';
-export * from './FlavorQuota';
 export * from './FlavorSpec';
 export * from './GpuSpec';
 export * from './GpuVendor';
@@ -29,7 +28,6 @@ export * from './OsDistro';
 export * from './OsFamily';
 export * from './OsKernel';
 export * from './ProjectScopedResourceReadMetadata';
-export * from './QuotasSpec';
 export * from './RegionDetailKubernetes';
 export * from './RegionDetailRead';
 export * from './RegionDetailSpec';
@@ -50,7 +48,6 @@ export * from './SecurityGroupRuleRead';
 export * from './SecurityGroupRuleSpec';
 export * from './SecurityGroupRuleWrite';
 export * from './SecurityGroupWrite';
-export * from './ServerImage';
 export * from './ServerNetwork';
 export * from './ServerNetworkAllowedAddressPair';
 export * from './ServerPublicIPAllocation';

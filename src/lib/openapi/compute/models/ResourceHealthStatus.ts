@@ -20,7 +20,8 @@
 export const ResourceHealthStatus = {
     Unknown: 'unknown',
     Healthy: 'healthy',
-    Degraded: 'degraded'
+    Degraded: 'degraded',
+    Error: 'error'
 } as const;
 export type ResourceHealthStatus = typeof ResourceHealthStatus[keyof typeof ResourceHealthStatus];
 
