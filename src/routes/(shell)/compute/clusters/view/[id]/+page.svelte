@@ -31,8 +31,8 @@
 
 	const settings: ShellPageSettings = {
 		feature: 'Infrastructure',
-		name: 'View/update Compute Cluster',
-		description: 'Update an existing compute cluster.',
+		name: 'View Compute Cluster',
+		description: 'Shows details of a compute cluster.',
 		icon: 'mdi:server-network-outline'
 	};
 
