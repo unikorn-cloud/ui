@@ -1,10 +1,8 @@
-.openapi-generator-ignore
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
 models/ExternalNetwork.ts
 models/Flavor.ts
-models/FlavorQuota.ts
 models/FlavorSpec.ts
 models/GpuSpec.ts
 models/GpuVendor.ts
@@ -31,7 +29,6 @@ models/OsDistro.ts
 models/OsFamily.ts
 models/OsKernel.ts
 models/ProjectScopedResourceReadMetadata.ts
-models/QuotasSpec.ts
 models/RegionDetailKubernetes.ts
 models/RegionDetailRead.ts
 models/RegionDetailSpec.ts
@@ -52,7 +49,6 @@ models/SecurityGroupRuleRead.ts
 models/SecurityGroupRuleSpec.ts
 models/SecurityGroupRuleWrite.ts
 models/SecurityGroupWrite.ts
-models/ServerImage.ts
 models/ServerNetwork.ts
 models/ServerNetworkAllowedAddressPair.ts
 models/ServerPublicIPAllocation.ts
